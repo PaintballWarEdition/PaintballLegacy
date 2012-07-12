@@ -20,6 +20,7 @@ import org.bukkit.event.block.BlockPlaceEvent;
 import org.bukkit.event.entity.EntityDamageByEntityEvent;
 import org.bukkit.event.entity.EntityDamageEvent;
 import org.bukkit.event.entity.FoodLevelChangeEvent;
+import org.bukkit.event.entity.PlayerDeathEvent;
 import org.bukkit.event.entity.ProjectileHitEvent;
 import org.bukkit.event.entity.ProjectileLaunchEvent;
 import org.bukkit.event.inventory.InventoryClickEvent;
@@ -354,6 +355,24 @@ public class EventListener implements Listener{
 			}
 		}
 	}
+	@EventHandler(priority = EventPriority.MONITOR)
+	public void onPlayerDead(PlayerDeathEvent event) {
+		Player player = (Player) event.getEntity();
+		if(Lobby.getTeam(player) != null) {
+			plugin.nf.leave(player.getName());
+			//exit game
+			if(Lobby.isPlaying(player) || Lobby.isSpectating(player)) mm.getMatch(player).left(player);
+			//clear inventory
+			mm.clearInv(player);
+			//drops?
+			event.getDrops().removeAll(event.getDrops());
+			//Exit lobby
+			Lobby.remove(player);
+			//Teleport back NOT, because dead
+			//player.teleport(plugin.pm.getLoc(player.getName()));
+		}
+	}
+	
 	@EventHandler(priority = EventPriority.NORMAL)
 	public void onPlayerJoin(PlayerJoinEvent event) {
 		plugin.pm.addPlayer(event.getPlayer().getName());
@@ -361,7 +380,6 @@ public class EventListener implements Listener{
 	@EventHandler(priority = EventPriority.NORMAL)
 	public void onPlayerQuit(PlayerQuitEvent event) {
 		this.onPlayerDisconnect(event.getPlayer());
-
 	}
 	@EventHandler(priority = EventPriority.HIGHEST)
 	public void onPlayerKick(PlayerKickEvent event) {
