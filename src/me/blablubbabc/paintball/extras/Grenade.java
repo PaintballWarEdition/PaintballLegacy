@@ -1,0 +1,80 @@
+package me.blablubbabc.paintball.extras;
+
+import java.util.ArrayList;
+import java.util.HashMap;
+import me.blablubbabc.paintball.Paintball;
+import org.bukkit.Location;
+import org.bukkit.entity.Egg;
+import org.bukkit.entity.Player;
+import org.bukkit.entity.Projectile;
+import org.bukkit.entity.Snowball;
+import org.bukkit.util.Vector;
+
+public class Grenade{
+	
+	private static HashMap<Player, ArrayList<Egg>> nades = new HashMap<Player, ArrayList<Egg>>();
+	
+	public static void eggThrow(Player player, Egg nade) {
+		Egg id = (Egg) nade;
+		ArrayList<Egg> n = new ArrayList<Egg>();
+		if(nades.get(player) == null) nades.put(player, n);
+		else n.addAll(nades.get(player));
+		n.add(id);
+		nades.put(player, n);
+	}
+	
+	public static void hit(Projectile nade, Paintball plugin) {
+		Egg id = (Egg) nade;
+		for(Player player : nades.keySet()) {
+			ArrayList<Egg> n = new ArrayList<Egg>();
+			n.addAll(nades.get(player));
+			if(n.contains(id)) {
+				n.remove(id);
+				nades.put(player, n);
+				explode(player, nade, plugin);
+				break;
+			}
+		}
+	}
+	
+	public static void explode(Player player, Projectile nade, Paintball plugin) {
+		Location loc = nade.getLocation();
+		loc.getWorld().createExplosion(loc, -1.0F);
+		for(Vector v : directions()) {
+			moveExpSnow(loc.getWorld().spawn(loc, Snowball.class), v, player, plugin);
+		}
+	}
+	
+	private static void moveExpSnow(final Snowball s, Vector v, Player player, Paintball plugin) {
+		s.setShooter(player);
+		Vector v2 = v;
+		v2.setX(v.getX()+ Math.random()- Math.random());
+		v2.setY(v.getY()+ Math.random()- Math.random());
+		v2.setZ(v.getZ()+ Math.random()- Math.random());
+		s.setVelocity(v2.multiply(1));
+		plugin.getServer().getScheduler().scheduleSyncDelayedTask(plugin, new Runnable() {
+			
+			@Override
+			public void run() {
+				if(!s.isDead()) s.remove();
+			}
+		}, (long) plugin.grenadeTime);
+	}
+	
+	private static ArrayList<Vector> directions() {
+		ArrayList<Vector> vectors = new ArrayList<Vector>();
+		//alle Richtungen
+		vectors.add(new Vector(1,0,0)); vectors.add(new Vector(0,1,0)); vectors.add(new Vector(0,0,1));
+		vectors.add(new Vector(1,1,0)); vectors.add(new Vector(1,0,1)); vectors.add(new Vector(0,1,1));
+		vectors.add(new Vector(0,0,0));vectors.add(new Vector(1,1,1)); vectors.add(new Vector(-1,-1,-1));
+		vectors.add(new Vector(-1,0,0)); vectors.add(new Vector(0,-1,0)); vectors.add(new Vector(0,0,-1));
+		vectors.add(new Vector(-1,-1,0)); vectors.add(new Vector(-1,0,-1)); vectors.add(new Vector(0,-1,-1));
+		vectors.add(new Vector(1,-1,0)); vectors.add(new Vector(1,0,-1)); vectors.add(new Vector(0,1,-1));
+		vectors.add(new Vector(-1,1,0)); vectors.add(new Vector(-1,0,1)); vectors.add(new Vector(0,-1,1));
+		vectors.add(new Vector(1,1,-1)); vectors.add(new Vector(1,-1,1)); vectors.add(new Vector(-1,1,1));
+		vectors.add(new Vector(1,-1,-1)); vectors.add(new Vector(-1,1,-1)); vectors.add(new Vector(-1,-1,1));
+		
+		return vectors;
+	}
+	
+}
