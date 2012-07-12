@@ -338,13 +338,18 @@ public class CommandManager implements CommandExecutor{
 			return false;
 		}
 		//brennt? fällt? taucht?
-		if(player.getFireTicks() > 0 || player.getFallDistance() > 0 || player.getRemainingAir() < player.getMaximumAir() || player.getNoDamageTicks() > 0) {
-			player.sendMessage(gray+"You can't join the lobby while falling, being on fire, drowning or recieving damage!");
+		if(player.getFireTicks() > 0 || player.getFallDistance() > 0 || player.getRemainingAir() < player.getMaximumAir()) {
+			player.sendMessage(gray+"You can't join the lobby while falling, being on fire or drowning!");
 			return false;
 		}
-		//hungert, hat wenig leben
-		if(player.getHealth() < 20 || player.getFoodLevel() < 20) {
-			player.sendMessage(gray+"You need full health and a full food level to enter the lobby!");
+		//wenig leben
+		if(player.getHealth() < 20) {
+			player.sendMessage(gray+"You need full health to enter the lobby!");
+			return false;
+		}
+		//hungert
+		if(player.getFoodLevel() < 20) {
+			player.sendMessage(gray+"You need a full food bar to enter the lobby!");
 			return false;
 		}
 		//hat effecte auf sich
