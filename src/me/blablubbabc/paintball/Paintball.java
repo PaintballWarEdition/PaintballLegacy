@@ -35,6 +35,14 @@ public class Paintball extends JavaPlugin{
 	public boolean chatnames;
 	public boolean shop;
 	public ArrayList<String> shopGoods;
+	//lobby join checks
+	public boolean checkInventory;
+	public boolean checkGamemode;
+	public boolean checkFlymode;
+	public boolean checkBurning;
+	public boolean checkHealth;
+	public boolean checkFood;
+	public boolean checkEffects;
 	
 	//points und cash
 	public int pointsPerKill;
@@ -179,6 +187,16 @@ public class Paintball extends JavaPlugin{
 		//shop:
 		shop = getConfig().getBoolean("Paintball.Shop.enabled", true);
 		shopGoods = (ArrayList<String>) getConfig().getList("Paintball.Shop.Goods", goodsDef);
+		
+		//lobby join checks
+		checkInventory = getConfig().getBoolean("Paintball.Lobby join.Checks.Inventory", true);
+		checkGamemode = getConfig().getBoolean("Paintball.Lobby join.Checks.Gamemode", true);
+		checkFlymode = getConfig().getBoolean("Paintball.Lobby join.Checks.Creative-Fly-Mode", true);
+		checkBurning = getConfig().getBoolean("Paintball.Lobby join.Checks.Burning, Falling, Immersion", true);
+		checkHealth = getConfig().getBoolean("Paintball.Lobby join.Checks.Health", true);
+		checkFood = getConfig().getBoolean("Paintball.Lobby join.Checks.FoodLevel", true);
+		checkEffects = getConfig().getBoolean("Paintball.Lobby join.Checks.Effects", true);
+		
 		
 		//Extras
 		grenades = getConfig().getBoolean("Paintball.Extras.Grenades.enabled", true);

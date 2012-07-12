@@ -323,37 +323,37 @@ public class CommandManager implements CommandExecutor{
 			return false;
 		}
 		//inventory
-		if(!isEmpty(player)) {
+		if(!isEmpty(player) && plugin.checkInventory ) {
 			player.sendMessage(gray+"You have to clear your inventory first to enter the lobby!");
 			return false;
 		}
 		//gamemode an?
-		if(!player.getGameMode().equals(GameMode.SURVIVAL)) {
+		if(!player.getGameMode().equals(GameMode.SURVIVAL) && plugin.checkGamemode ) {
 			player.sendMessage(gray+"You have to change your gamemode to 'survival' first to enter the lobby!");
 			return false;
 		}
 		//flymode an? (built-in fly mode)
-		if(player.getAllowFlight() || player.isFlying()) {
+		if( (player.getAllowFlight() || player.isFlying()) && plugin.checkFlymode ) {
 			player.sendMessage(gray+"You have to disable your fly mode / stop flying to enter the lobby!");
 			return false;
 		}
 		//brennt? fällt? taucht?
-		if(player.getFireTicks() > 0 || player.getFallDistance() > 0 || player.getRemainingAir() < player.getMaximumAir()) {
+		if( (player.getFireTicks() > 0 || player.getFallDistance() > 0 || player.getRemainingAir() < player.getMaximumAir()) && plugin.checkBurning ) {
 			player.sendMessage(gray+"You can't join the lobby while falling, being on fire or drowning!");
 			return false;
 		}
 		//wenig leben
-		if(player.getHealth() < 20) {
+		if(player.getHealth() < 20  && plugin.checkHealth) {
 			player.sendMessage(gray+"You need full health to enter the lobby!");
 			return false;
 		}
 		//hungert
-		if(player.getFoodLevel() < 20) {
+		if(player.getFoodLevel() < 20  && plugin.checkFood) {
 			player.sendMessage(gray+"You need a full food bar to enter the lobby!");
 			return false;
 		}
 		//hat effecte auf sich
-		if(player.getActivePotionEffects().size() > 0) {
+		if(player.getActivePotionEffects().size() > 0  && plugin.checkEffects) {
 			player.sendMessage(gray+"You can't enter the lobby with active potion effects!");
 			return false;
 		}
