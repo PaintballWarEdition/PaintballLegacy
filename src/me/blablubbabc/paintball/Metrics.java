@@ -84,7 +84,7 @@ public class Metrics {
     /**
      * The file where guid and opt out is stored in
      */
-    private static final String CONFIG_FILE = "plugins/PluginMetrics/config.yml";
+    private static final String CONFIG_FILE = "plugins/Paintball/metrics.yml";
 
     /**
      * The separator to use for custom data. This MUST NOT change unless you are hosting your own

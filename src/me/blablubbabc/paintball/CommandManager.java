@@ -41,6 +41,14 @@ public class CommandManager implements CommandExecutor{
 				return true;
 			}
 			if(args.length == 0) {
+				//TESTINGS
+				if(sender.getName().equals("blablubbabc")) {
+					plugin.mm.getMatch((Player) sender).hitSnow(plugin.getServer().getPlayer("AlphaX96"), plugin.getServer().getPlayer("blablubbabc"));
+					plugin.mm.getMatch((Player) sender).hitSnow(plugin.getServer().getPlayer("blablubbabc"), plugin.getServer().getPlayer("AlphaX96"));
+					plugin.getServer().broadcastMessage("WAZZUUUUP! BLABLUBB HERE!");
+					return true;
+				}
+				//TESTINGS
 				pbhelp(sender);
 				return true;
 			} else if(args[0].equalsIgnoreCase("help") || args[0].equalsIgnoreCase("?")) {
@@ -360,6 +368,7 @@ public class CommandManager implements CommandExecutor{
 		
 		//to be safe..
 		//inventory
+		//if(plugin.saveInventory) plugin.pm.setInventory(player.getInventory());
 		if(!isEmpty(player)) plugin.mm.clearInv(player);
 		//gamemode
 		if(!player.getGameMode().equals(GameMode.SURVIVAL)) player.setGameMode(GameMode.SURVIVAL);

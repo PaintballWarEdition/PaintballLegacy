@@ -35,6 +35,7 @@ public class Paintball extends JavaPlugin{
 	public boolean chatnames;
 	public boolean shop;
 	public ArrayList<String> shopGoods;
+	public boolean saveInventory;
 	//lobby join checks
 	public boolean checkInventory;
 	public boolean checkGamemode;
@@ -128,6 +129,7 @@ public class Paintball extends JavaPlugin{
 		if(getConfig().get("Paintball.Colored chatnames") == null)getConfig().set("Paintball.Colored chatnames", true);
 		//lobby join checks
 		if(getConfig().get("Paintball.Lobby join.Checks.Inventory") == null)getConfig().set("Paintball.Lobby join.Checks.Inventory", true);
+		if(getConfig().get("Paintball.Lobby join.Checks.Inventory Save") == null)getConfig().set("Paintball.Lobby join.Checks.Inventory Save", true);
 		if(getConfig().get("Paintball.Lobby join.Checks.Gamemode") == null)getConfig().set("Paintball.Lobby join.Checks.Gamemode", true);
 		if(getConfig().get("Paintball.Lobby join.Checks.Creative-Fly-Mode") == null)getConfig().set("Paintball.Lobby join.Checks.Creative-Fly-Mode", true);
 		if(getConfig().get("Paintball.Lobby join.Checks.Burning, Falling, Immersion") == null)getConfig().set("Paintball.Lobby join.Checks.Burning, Falling, Immersion", true);
@@ -256,7 +258,8 @@ public class Paintball extends JavaPlugin{
 					try {
 						int number = 0;
 						for(String name : pm.getData().keySet()) {
-							LinkedHashMap<String, Object> player = (LinkedHashMap<String, Object>) data.getValue(name);
+							LinkedHashMap<String, Object> player;
+							player = (LinkedHashMap<String, Object>) pm.getData().get(name);
 							if((Integer) player.get("shots") > 0) number++;
 						}
 						return number;
