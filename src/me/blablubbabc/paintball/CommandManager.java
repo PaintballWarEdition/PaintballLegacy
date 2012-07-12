@@ -1,5 +1,7 @@
 package me.blablubbabc.paintball;
 
+import java.util.ArrayList;
+
 import me.blablubbabc.paintball.commands.CmdAdmin;
 import me.blablubbabc.paintball.commands.CmdArena;
 import me.blablubbabc.paintball.commands.CmdShop;
@@ -352,18 +354,33 @@ public class CommandManager implements CommandExecutor{
 		}
 		
 		//to be safe..
-		plugin.mm.clearInv(player);
+		//inventory
+		if(!isEmpty(player)) plugin.mm.clearInv(player);
+		//gamemode
+		if(!player.getGameMode().equals(GameMode.SURVIVAL)) player.setGameMode(GameMode.SURVIVAL);
+		//flymode (built-in)
+		if(player.getAllowFlight()) player.setAllowFlight(false);
+		if(player.isFlying()) player.setFlying(false);
+		//feuer
+		if(player.getFireTicks() > 0) player.setFireTicks(0);
+		//Health + Food
+		if(player.getHealth() < 20) player.setHealth(20);
+		if(player.getFoodLevel() < 20) player.setFoodLevel(20);
 		//effekte entfernen
-		for(PotionEffect eff : player.getActivePotionEffects()) {
-			player.removePotionEffect(eff.getType());
+		if(player.getActivePotionEffects().size() > 0) {
+			ArrayList<PotionEffect> effects = new ArrayList<PotionEffect>();
+			for(PotionEffect eff : player.getActivePotionEffects()) {
+				effects.add(eff);
+			}
+			for(PotionEffect eff :effects) {
+				player.removePotionEffect(eff.getType());
+			}	
 		}
+		
 		//save Location
 		plugin.pm.setLoc(player.getName(), player.getLocation());
 		//Lobbyteleport
 		player.teleport(plugin.transformLocation(plugin.getLobbySpawns().get(0)));
-		//Health + Food
-		if(player.getHealth() < 20) player.setHealth(20);
-		if(player.getFoodLevel() < 20) player.setFoodLevel(20);
 		//lobby add
 		Lobby.LOBBY.addMember(player);
 		plugin.nf.join(player.getName());
