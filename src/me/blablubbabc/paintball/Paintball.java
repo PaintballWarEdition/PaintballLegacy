@@ -4,6 +4,8 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.LinkedHashMap;
 import me.blablubbabc.BlaDB.BlaDB;
+import me.blablubbabc.paintball.Metrics.Graph;
+
 import org.bukkit.Location;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.plugin.java.JavaPlugin;
@@ -213,9 +215,14 @@ public class Paintball extends JavaPlugin{
 		//METRICS
 		try {
 			Metrics metrics = new Metrics(this);
+			
 			//Custom Data:
+			
+			// Construct a graph, which can be immediately used and considered as valid
+			Graph graph = metrics.createGraph("Players");
+			
 			//Effective players
-			metrics.addCustomData(new Metrics.Plotter("Effective Paintball Players") {
+			graph.addPlotter(new Metrics.Plotter("Ever played Paintball") {
 
 				@Override
 				public int getValue() {
@@ -234,7 +241,7 @@ public class Paintball extends JavaPlugin{
 			});
 
 			//Actual playing players (Lobby)
-			metrics.addCustomData(new Metrics.Plotter("Actual Players Playing (Lobby)") {
+			graph.addPlotter(new Metrics.Plotter("Actual playing (lobby)") {
 
 				@Override
 				public int getValue() {
