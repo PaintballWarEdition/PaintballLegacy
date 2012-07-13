@@ -288,13 +288,15 @@ public class Match {
 	//AKTIONS
 	
 	public void shot(Player player) {
-		if(matchOver) return;
 		//add 1
 		shots.put(player, (shots.get(player)+1));
 	}
 	
 	public void hitSnow(Player target, Player shooter) {
+		//math over already?
 		if(matchOver) return;
+		//target already dead?
+		if(!isSurvivor(target)) return;
 		//Teams?
 		if(enemys(target, shooter)) {
 			//player not dead already?
@@ -321,7 +323,10 @@ public class Match {
 	}
 	
 	public void frag(final Player target, final Player killer) {
+		//math over already?
 		if(matchOver) return;
+		//target already dead?
+		if(!isSurvivor(target)) return;
 		//teleport lobby:
 		final Match this2 = this;
 		plugin.getServer().getScheduler().scheduleSyncDelayedTask(plugin, new Runnable() {
