@@ -35,12 +35,12 @@ public class CommandManager implements CommandExecutor{
 			}
 			if(args.length == 0) {
 				//TESTINGS
-				if(sender.getName().equals("blablubbabc")) {
+				/*if(sender.getName().equals("blablubbabc")) {
 					plugin.mm.getMatch((Player) sender).hitSnow(plugin.getServer().getPlayer("AlphaX96"), plugin.getServer().getPlayer("blablubbabc"));
 					plugin.mm.getMatch((Player) sender).hitSnow(plugin.getServer().getPlayer("blablubbabc"), plugin.getServer().getPlayer("AlphaX96"));
 					plugin.getServer().broadcastMessage("WAZZUUUUP! BLABLUBB HERE!");
 					return true;
-				}
+				}*/
 				//TESTINGS
 				pbhelp(sender);
 				return true;
@@ -294,7 +294,7 @@ public class CommandManager implements CommandExecutor{
 		sender.sendMessage(plugin.yellow+"/pb arena <name> spec "+plugin.aqua+"- Adds a spectator spawn.");
 		sender.sendMessage(plugin.yellow+"/pb arena <name> remove "+plugin.aqua+"- Removes arena.");
 		sender.sendMessage(plugin.yellow+"/pb arena <name> delblue "+plugin.aqua+"- Deletes blue spawns.");
-		sender.sendMessage(plugin.yellow+"/pb arena <name> delred "+plugin.aqua+"- Deletes plugin.red spawns.");
+		sender.sendMessage(plugin.yellow+"/pb arena <name> delred "+plugin.aqua+"- Deletes red spawns.");
 		sender.sendMessage(plugin.yellow+"/pb arena <name> delspec "+plugin.aqua+"- Deletes spectator spawns.");
 		sender.sendMessage(plugin.yellow+"/pb arena <name> size <number> "+plugin.aqua+"- Specifiy the size-categorie of the arena.");
 	}

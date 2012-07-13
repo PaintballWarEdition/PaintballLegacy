@@ -265,10 +265,43 @@ public class Paintball extends JavaPlugin{
 			
 			//Custom Data:
 			
-			// Construct a graph, which can be immediately used and considered as valid
-			Graph graph = metrics.createGraph("Players");
+			//Default graph:
+			//Actual playing players (Lobby)
+			metrics.addCustomData(new Metrics.Plotter("Actual playing (lobby)") {
+
+				@Override
+				public int getValue() {
+					try {
+						return Lobby.LOBBY.number();
+					} catch (Exception e) {
+						// Failed to get the value :(
+						return 0;
+					}
+				}
+			});
 			
-			//Effective players
+			//Maximum playing (lobby) since last update
+			metrics.addCustomData(new Metrics.Plotter("Maximum playing (lobby) since last update") {
+
+				@Override
+				public int getValue() {
+					try {
+						//reset max:
+						Lobby.resetMaxPlayers();
+						return Lobby.LOBBY.maxNumber();
+					} catch (Exception e) {
+						// Failed to get the value :(
+						//reset max:
+						Lobby.resetMaxPlayers();
+						return 0;
+					}
+				}
+			});
+			
+			//Graph 2
+			Graph graph = metrics.createGraph("Players ever played Paintball");
+			
+			//Players ever played Paintball Plotter
 			graph.addPlotter(new Metrics.Plotter("Ever played Paintball") {
 
 				@Override
@@ -283,38 +316,6 @@ public class Paintball extends JavaPlugin{
 						return number;
 					} catch (Exception e) {
 						// Failed to get the value :(
-						return 0;
-					}
-				}
-			});
-
-			//Actual playing players (Lobby)
-			graph.addPlotter(new Metrics.Plotter("Actual playing (lobby)") {
-
-				@Override
-				public int getValue() {
-					try {
-						return Lobby.LOBBY.number();
-					} catch (Exception e) {
-						// Failed to get the value :(
-						return 0;
-					}
-				}
-			});
-			
-			//Maximum playing (lobby) since last update
-			graph.addPlotter(new Metrics.Plotter("Maximum playing (lobby) since last update") {
-
-				@Override
-				public int getValue() {
-					try {
-						//reset max:
-						Lobby.resetMaxPlayers();
-						return Lobby.LOBBY.maxNumber();
-					} catch (Exception e) {
-						// Failed to get the value :(
-						//reset max:
-						Lobby.resetMaxPlayers();
 						return 0;
 					}
 				}

@@ -275,8 +275,8 @@ public class Match {
 	}
 	
 	public ArrayList<Player> getAllPlayers() {
-		return players;
-		/*ArrayList<Player> list = new ArrayList<Player>();
+		//return players;
+		ArrayList<Player> list = new ArrayList<Player>();
 		Set<Player> players = shots.keySet();
 		for(Player p : players) {
 			list.add(p);
@@ -284,7 +284,7 @@ public class Match {
 		for(Player p : spec) {
 			list.add(p);
 		}
-		return list;*/
+		return list;
 	}
 	//AKTIONS
 	
@@ -324,10 +324,6 @@ public class Match {
 	}
 	
 	public void frag(final Player target, final Player killer) {
-		//math over already?
-		if(matchOver) return;
-		//target already dead?
-		if(getTeam(target).get(target) <= 0) return;
 		//teleport lobby:
 		final Match this2 = this;
 		plugin.getServer().getScheduler().scheduleSyncDelayedTask(plugin, new Runnable() {
