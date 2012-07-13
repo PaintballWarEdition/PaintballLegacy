@@ -18,7 +18,8 @@ public enum Lobby {
 	LOBBY		(Material.AIR, (byte)0, ChatColor.WHITE);
 	
 	private Paintball plugin;
-	private LinkedHashMap<Player, Boolean> players;	//members of a team: true: playing, false: waiting
+	private LinkedHashMap<Player, Boolean> players;	//members of a team: true: playing, false: waiting; Lobby: true/false toggle messages
+	private int maxPlayers;
 	private ItemStack helmet;
 	private ChatColor color;
 	private Register data;
@@ -53,7 +54,11 @@ public enum Lobby {
 	//METHODS
 	//SETTER
 	public void addMember(Player player) {
-		if(!players.containsKey(player)) players.put(player, false);
+		if(!players.containsKey(player)) {
+			players.put(player, false);
+			//max Players since last metrics submit-try
+			if(players.size() > maxPlayers) maxPlayers = players.size();
+		}
 	}
 	public void removeMember(Player player) {
 		if(players.containsKey(player)) players.remove(player);
@@ -91,6 +96,9 @@ public enum Lobby {
 	}
 	public int number() {
 		return players.size();
+	}
+	public int maxNumber() {
+		return maxPlayers;
 	}
 	public ItemStack helmet() {
 		return helmet;
@@ -144,6 +152,12 @@ public enum Lobby {
 		
 		for(Lobby l : Lobby.values()) {
 			l.removeMember(player);
+		}
+	}
+	
+	public static void resetMaxPlayers() {
+		for(Lobby l : Lobby.values()) {
+			l.maxPlayers = l.players.size();
 		}
 	}
 }

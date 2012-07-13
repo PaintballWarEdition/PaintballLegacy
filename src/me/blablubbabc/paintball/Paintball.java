@@ -301,6 +301,24 @@ public class Paintball extends JavaPlugin{
 					}
 				}
 			});
+			
+			//Maximum playing (lobby) since last update
+			graph.addPlotter(new Metrics.Plotter("Maximum playing (lobby) since last update") {
+
+				@Override
+				public int getValue() {
+					try {
+						//reset max:
+						Lobby.resetMaxPlayers();
+						return Lobby.LOBBY.maxNumber();
+					} catch (Exception e) {
+						// Failed to get the value :(
+						//reset max:
+						Lobby.resetMaxPlayers();
+						return 0;
+					}
+				}
+			});
 
 			metrics.start();
 		} catch (IOException e) {
