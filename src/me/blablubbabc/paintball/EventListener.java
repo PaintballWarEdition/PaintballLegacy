@@ -358,17 +358,18 @@ public class EventListener implements Listener{
 	public void onPlayerDead(PlayerDeathEvent event) {
 		Player player = (Player) event.getEntity();
 		if(Lobby.getTeam(player) != null) {
-			plugin.nf.leave(player.getName());
+			//plugin.nf.leave(player.getName());
 			//exit game
 			if(Lobby.isPlaying(player) || Lobby.isSpectating(player)) mm.getMatch(player).left(player);
-			//clear inventory
-			plugin.clearInv(player);
+			plugin.leaveLobby(player, true, false, false);
 			//drops?
 			event.getDrops().removeAll(event.getDrops());
+			/*//clear inventory
+			plugin.clearInv(player);
 			//Exit lobby
 			Lobby.remove(player);
 			//Teleport back NOT, because dead
-			//player.teleport(plugin.pm.getLoc(player.getName()));
+			//player.teleport(plugin.pm.getLoc(player.getName()));*/
 		}
 	}
 	
@@ -389,15 +390,19 @@ public class EventListener implements Listener{
 	}
 	private void onPlayerDisconnect(final Player player) {
 		if(Lobby.getTeam(player) != null) {
-			plugin.nf.leave(player.getName());
+			//plugin.nf.leave(player.getName());
 			//exit game
 			if(Lobby.isPlaying(player) || Lobby.isSpectating(player)) mm.getMatch(player).left(player);
-			//clear inventory
+			plugin.leaveLobby(player, true, true, true);
+			
+			/*//clear inventory
 			plugin.clearInv(player);
 			//Exit lobby
 			Lobby.remove(player);
 			//Teleport back
-			player.teleport(plugin.pm.getLoc(player));
+			player.teleport(plugin.pm.getLoc(player));*/
+			
+			
 		}
 
 	}

@@ -5,12 +5,12 @@ import java.util.ArrayList;
 import java.util.LinkedHashMap;
 import me.blablubbabc.BlaDB.BlaDB;
 import me.blablubbabc.paintball.Metrics.Graph;
-
 import org.bukkit.ChatColor;
 import org.bukkit.Location;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
+import org.bukkit.inventory.PlayerInventory;
 import org.bukkit.plugin.java.JavaPlugin;
 
 //This file is part of blablubbabc's paintball-Plugin. Do not redistribute or modify. Use it as it is. Usage on own risk. No warranties. No commercial usage!
@@ -52,6 +52,7 @@ public class Paintball extends JavaPlugin{
 	public boolean shop;
 	public ArrayList<String> shopGoods;
 	public boolean saveInventory;
+	
 	//lobby join checks
 	public boolean checkInventory;
 	public boolean checkGamemode;
@@ -208,6 +209,7 @@ public class Paintball extends JavaPlugin{
 		
 		//lobby join checks
 		checkInventory = getConfig().getBoolean("Paintball.Lobby join.Checks.Inventory", true);
+		saveInventory = getConfig().getBoolean("Paintball.Lobby join.Checks.Inventory Save", true);
 		checkGamemode = getConfig().getBoolean("Paintball.Lobby join.Checks.Gamemode", true);
 		checkFlymode = getConfig().getBoolean("Paintball.Lobby join.Checks.Creative-Fly-Mode", true);
 		checkBurning = getConfig().getBoolean("Paintball.Lobby join.Checks.Burning, Falling, Immersion", true);
@@ -377,14 +379,25 @@ public class Paintball extends JavaPlugin{
 		return loc;
 	}
 	
-	public void leaveLobby(Player player) {
+	public void leaveLobby(Player player, boolean messages, boolean teleport, boolean restoreInventory) {
 		//lobby remove:
 		Lobby.remove(player);
+		//inventory:
+		//clear inventory
+		clearInv(player);
+		//restore saved inventory
+		if(restoreInventory && saveInventory) {
+			PlayerInventory inv = pm.getInv(player);
+			player.getInventory().setContents(inv.getContents());
+			player.getInventory().setArmorContents(inv.getArmorContents());
+		}
 		//teleport:
-		player.teleport(pm.getLoc(player));
-		//messages:
-		player.sendMessage(gray + "You left the lobby.");
-		nf.leave(player.getName());
+		if(teleport) player.teleport(pm.getLoc(player));
+		if (messages) {
+			//messages:
+			player.sendMessage(gray + "You left the lobby.");
+			nf.leave(player.getName());
+		}
 	}
 	
 	public boolean isEmpty(Player p) {

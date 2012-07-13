@@ -221,7 +221,7 @@ public class CommandManager implements CommandExecutor{
 						player.sendMessage(plugin.gray + "You left your team.");
 						return true;
 					}
-					plugin.leaveLobby(player);
+					plugin.leaveLobby(player, true, true, true);
 					return true;
 					
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -358,7 +358,7 @@ public class CommandManager implements CommandExecutor{
 		
 		//to be safe..
 		//inventory
-		//if(plugin.saveInventory) plugin.pm.setInventory(player.getInventory());
+		if(plugin.saveInventory) plugin.pm.setInv(player, player.getInventory());
 		if(!plugin.isEmpty(player)) plugin.clearInv(player);
 		//gamemode
 		if(!player.getGameMode().equals(GameMode.SURVIVAL)) player.setGameMode(GameMode.SURVIVAL);

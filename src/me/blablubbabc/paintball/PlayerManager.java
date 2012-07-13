@@ -6,13 +6,13 @@ import java.util.LinkedHashMap;
 import me.blablubbabc.BlaDB.Register;
 import org.bukkit.Location;
 import org.bukkit.entity.Player;
-import org.bukkit.inventory.Inventory;
+import org.bukkit.inventory.PlayerInventory;
 
 public class PlayerManager {
 	private static Paintball plugin;
 	private static  Register data;
 	private HashMap<Player, Location> locations;
-	private HashMap<Player, Inventory> inventories;
+	private HashMap<Player, PlayerInventory> inventories;
 	
 	public ArrayList<String> possibleValues;
 	
@@ -25,7 +25,7 @@ public class PlayerManager {
 			addPlayer(p.getName());
 		}
 		locations = new HashMap<Player, Location>();
-		inventories = new HashMap<Player, Inventory>();
+		inventories = new HashMap<Player, PlayerInventory>();
 		
 		possibleValues = new ArrayList<String>(setPossibleValues());
 	}
@@ -172,7 +172,7 @@ public class PlayerManager {
 		if(locations.get(player) != null) return locations.get(player);
 		else return null;
 	}
-	public Inventory getInv(Player player) {
+	public PlayerInventory getInv(Player player) {
 		if(inventories.get(player) != null) return inventories.get(player);
 		else return null;
 	}
@@ -236,7 +236,7 @@ public class PlayerManager {
 		locations.put(player, loc);
 	}
 	
-	public void setLoc(Player player, Inventory inv) {
+	public void setInv(Player player, PlayerInventory inv) {
 		inventories.put(player, inv);
 	}
 	

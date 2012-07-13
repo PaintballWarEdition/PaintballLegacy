@@ -75,8 +75,9 @@ public class MatchManager{
 			list.add(p);
 		}
 		for(Player p : list) {
-			Lobby.remove(p);
-			p.teleport(plugin.pm.getLoc(p));
+			//Lobby.remove(p);
+			//p.teleport(plugin.pm.getLoc(p));
+			plugin.leaveLobby(p, false, true, true);
 		}
 	}
 	
