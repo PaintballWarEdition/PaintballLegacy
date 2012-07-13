@@ -51,6 +51,7 @@ public class Paintball extends JavaPlugin{
 	public boolean shop;
 	public ArrayList<String> shopGoods;
 	public boolean saveInventory;
+	public boolean onlyRandom;
 	
 	//lobby join checks
 	public boolean checkInventory;

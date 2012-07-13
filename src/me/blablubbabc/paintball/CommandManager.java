@@ -144,7 +144,7 @@ public class CommandManager implements CommandExecutor{
 						player.sendMessage(plugin.gray + "You left your current team.");
 					}
 					Lobby.RED.addMember(player);
-					player.sendMessage(plugin.green + "You joined team "+Lobby.RED.color()+"plugin.red!");
+					player.sendMessage(plugin.green + "You joined team "+Lobby.RED.color()+"red!");
 					//players:
 					player.sendMessage(plugin.aqua+""+"Waiting players: " + plugin.nf.getPlayers());
 					if(plugin.mm.ready().equalsIgnoreCase("ready")) {
@@ -271,7 +271,7 @@ public class CommandManager implements CommandExecutor{
 		sender.sendMessage(plugin.yellow+"/pb admin "+plugin.aqua+"- Admin commands.");
 		sender.sendMessage(plugin.green+"/pb lobby "+plugin.aqua+"- Join the lobby.");
 		sender.sendMessage(plugin.green+"/pb blue "+plugin.aqua+"- Join team blue.");
-		sender.sendMessage(plugin.green+"/pb plugin.red "+plugin.aqua+"- Join team plugin.red.");
+		sender.sendMessage(plugin.green+"/pb red "+plugin.aqua+"- Join team red.");
 		sender.sendMessage(plugin.green+"/pb random "+plugin.aqua+"- Join random team.");
 		sender.sendMessage(plugin.green+"/pb spec "+plugin.aqua+"- Join the spectators.");
 		sender.sendMessage(plugin.green+"/pb leave "+plugin.aqua+"- Leave current team. If not in team: leave lobby.");
@@ -290,11 +290,11 @@ public class CommandManager implements CommandExecutor{
 		sender.sendMessage(plugin.yellow+"/pb arena <name> "+plugin.aqua+"- Create a new arena.");
 		sender.sendMessage(plugin.yellow+"/pb arena <name> info "+plugin.aqua+"- Shows arena infos.");
 		sender.sendMessage(plugin.yellow+"/pb arena <name> blue "+plugin.aqua+"- Adds a blue spawn.");
-		sender.sendMessage(plugin.yellow+"/pb arena <name> plugin.red "+plugin.aqua+"- Adds a plugin.red spawn.");
+		sender.sendMessage(plugin.yellow+"/pb arena <name> red "+plugin.aqua+"- Adds a red spawn.");
 		sender.sendMessage(plugin.yellow+"/pb arena <name> spec "+plugin.aqua+"- Adds a spectator spawn.");
 		sender.sendMessage(plugin.yellow+"/pb arena <name> remove "+plugin.aqua+"- Removes arena.");
 		sender.sendMessage(plugin.yellow+"/pb arena <name> delblue "+plugin.aqua+"- Deletes blue spawns.");
-		sender.sendMessage(plugin.yellow+"/pb arena <name> delplugin.red "+plugin.aqua+"- Deletes plugin.red spawns.");
+		sender.sendMessage(plugin.yellow+"/pb arena <name> delred "+plugin.aqua+"- Deletes plugin.red spawns.");
 		sender.sendMessage(plugin.yellow+"/pb arena <name> delspec "+plugin.aqua+"- Deletes spectator spawns.");
 		sender.sendMessage(plugin.yellow+"/pb arena <name> size <number> "+plugin.aqua+"- Specifiy the size-categorie of the arena.");
 	}
@@ -311,7 +311,7 @@ public class CommandManager implements CommandExecutor{
 		sender.sendMessage(plugin.yellow+"/pb admin cash <player> [amount] "+plugin.aqua+"- Shows the player's cash or gives him money.");
 		sender.sendMessage(plugin.yellow+"/pb admin rank <player> [amount] "+plugin.aqua+"- Shows the player's points and rank or gives him points.");
 		sender.sendMessage(plugin.yellow+"/pb admin reset <all|player> [value] "+plugin.aqua+"- Resets all stats of all or one player or a specified value of the players stats.");
-		sender.sendMessage(plugin.yellow+"/pb admin helmet <blue|plugin.red|spec> "+plugin.aqua+"- Sets the helmet to the item holding in hand.");
+		sender.sendMessage(plugin.yellow+"/pb admin helmet <blue|red|spec> "+plugin.aqua+"- Sets the helmet to the item holding in hand.");
 		sender.sendMessage(plugin.yellow+"/pb admin next <arena> "+plugin.aqua+"- Tries to force the next arena to the specified arena.");
 	}
 	private boolean joinLobby(Player player) {

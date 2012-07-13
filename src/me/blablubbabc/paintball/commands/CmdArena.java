@@ -78,19 +78,19 @@ public class CmdArena {
 				} else if(args[2].equalsIgnoreCase("blue")) {
 					am.addBlueSpawn(name, player.getLocation());
 					am.saveData();
-					player.sendMessage(plugin.green+"Blue spawn added. Number of blue spawns now: "+Lobby.BLUE.color()+am.getBlueSpawnsSize(name));
+					player.sendMessage(Lobby.BLUE.color()+"Blue"+plugin.green+" spawn added. Number of blue spawns now: "+Lobby.BLUE.color()+am.getBlueSpawnsSize(name));
 					return true;
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 				} else if(args[2].equalsIgnoreCase("red")) {
 					am.addRedSpawn(name, player.getLocation());
 					am.saveData();
-					player.sendMessage(plugin.green+"plugin.red spawn added. Number of plugin.red spawns now: "+Lobby.RED.color()+am.getRedSpawnsSize(name));
+					player.sendMessage(Lobby.RED.color()+"Red"+plugin.green+" spawn added. Number of red spawns now: "+Lobby.RED.color()+am.getRedSpawnsSize(name));
 					return true;
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 				} else if(args[2].equalsIgnoreCase("spec")) {
 					am.addSpecSpawn(name, player.getLocation());
 					am.saveData();
-					player.sendMessage(plugin.green+"Spectator spawn added. Number of spactator spawns now: "+Lobby.SPECTATE.color()+am.getSpecSpawnsSize(name));
+					player.sendMessage(Lobby.SPECTATE.color()+"Spectator"+plugin.green+" spawn added. Number of spactator spawns now: "+Lobby.SPECTATE.color()+am.getSpecSpawnsSize(name));
 					return true;
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 				} else if(args[2].equalsIgnoreCase("remove")) {
@@ -106,7 +106,7 @@ public class CmdArena {
 					player.sendMessage(plugin.gold+""+num+Lobby.BLUE.color()+" blue "+plugin.green+"spawns removed in arena "+plugin.gray+name);
 					return true;
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-				} else if(args[2].equalsIgnoreCase("red")) {
+				} else if(args[2].equalsIgnoreCase("delred")) {
 					int num = am.getRedSpawnsSize(name);
 					am.removeRedSpawns(name);
 					am.saveData();

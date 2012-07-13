@@ -40,7 +40,9 @@ public enum Lobby {
 		
 		if(this.data.getValue("helmet.id") == null) this.data.setValue("helmet.id", helmet.getTypeId());
 		if(this.data.getValue("helmet.data") == null) this.data.setValue("helmet.data", helmet.getData().getData());
-		if(this.data.getValue("color") == null) this.data.setValue("color", color);
+		//if(this.data.getValue("color") == null) this.data.setValue("color", color);
+		//UPDATE 1.0.5->1.0.6
+		this.data.setValue("color", color);
 		this.saveData();
 	}
 	public void saveData() {

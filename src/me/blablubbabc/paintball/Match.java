@@ -266,6 +266,7 @@ public class Match {
 			getTeam(player).put(player, 0);
 			//survivors?->endGame
 			if(survivors(getTeam(player)) == 0) {
+				matchOver = true;
 				//unhideAll();
 				undoAllColors();
 				plugin.mm.gameEnd(this, getEnemyTeam(player).keySet(), getEnemyTeamName(player), getTeam(player).keySet(), getTeamName(player), spec, shots, hits, deaths, kills, teamattacks);
@@ -296,7 +297,7 @@ public class Match {
 		//math over already?
 		if(matchOver) return;
 		//target already dead?
-		if(!isSurvivor(target)) return;
+		if(getTeam(target).get(target) <= 0) return;
 		//Teams?
 		if(enemys(target, shooter)) {
 			//player not dead already?
@@ -326,7 +327,7 @@ public class Match {
 		//math over already?
 		if(matchOver) return;
 		//target already dead?
-		if(!isSurvivor(target)) return;
+		if(getTeam(target).get(target) <= 0) return;
 		//teleport lobby:
 		final Match this2 = this;
 		plugin.getServer().getScheduler().scheduleSyncDelayedTask(plugin, new Runnable() {
@@ -345,6 +346,7 @@ public class Match {
 				//survivors?->endGame
 				if(survivors(getTeam(target)) == 0) {
 					//unhideAll();
+					matchOver = true;
 					undoAllColors();
 					plugin.mm.gameEnd(this2, getTeam(killer).keySet(), getTeamName(killer), getTeam(target).keySet(), getTeamName(target), spec, shots, hits, deaths, kills, teamattacks);
 				}

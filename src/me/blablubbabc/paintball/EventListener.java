@@ -363,17 +363,6 @@ public class EventListener implements Listener{
 			plugin.leaveLobby(player, true, false, false);
 			//drops?
 			event.getDrops().removeAll(event.getDrops());
-			//ArrayList<ItemStack> drops = new ArrayList<ItemStack>();
-			//drops.addAll(event.getDrops());
-			//for(ItemStack is : drops) {
-			//	is.get
-			//}
-			/*//clear inventory
-			plugin.clearInv(player);
-			//Exit lobby
-			Lobby.remove(player);
-			//Teleport back NOT, because dead
-			//player.teleport(plugin.pm.getLoc(player.getName()));*/
 		}
 	}
 	
