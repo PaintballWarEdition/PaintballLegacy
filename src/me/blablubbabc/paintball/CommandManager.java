@@ -392,7 +392,7 @@ public class CommandManager implements CommandExecutor{
 		}
 		
 		//save Location
-		plugin.pm.setLoc(player.getName(), player.getLocation());
+		plugin.pm.setLoc(player, player.getLocation());
 		//Lobbyteleport
 		player.teleport(plugin.transformLocation(plugin.getLobbySpawns().get(0)));
 		//lobby add
@@ -402,7 +402,7 @@ public class CommandManager implements CommandExecutor{
 	}
 	
 	public void sendBack(Player player) {
-		player.teleport(plugin.pm.getLoc(player.getName()));
+		player.teleport(plugin.pm.getLoc(player));
 	}
 	
 	public static boolean isEmpty(Player p) {

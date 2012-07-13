@@ -1,14 +1,19 @@
 package me.blablubbabc.paintball;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.LinkedHashMap;
 import me.blablubbabc.BlaDB.Register;
 import org.bukkit.Location;
 import org.bukkit.entity.Player;
+import org.bukkit.inventory.Inventory;
 
 public class PlayerManager {
 	private static Paintball plugin;
 	private static  Register data;
+	private HashMap<Player, Location> locations;
+	private HashMap<Player, Inventory> inventories;
+	
 	public ArrayList<String> possibleValues;
 	
 	public PlayerManager(Paintball pl) {
@@ -19,12 +24,15 @@ public class PlayerManager {
 		for(Player p : plugin.getServer().getOnlinePlayers()) {
 			addPlayer(p.getName());
 		}
+		locations = new HashMap<Player, Location>();
+		inventories = new HashMap<Player, Inventory>();
+		
 		possibleValues = new ArrayList<String>(setPossibleValues());
 	}
 	
 	private ArrayList<String> setPossibleValues() {
 		ArrayList<String> list = new ArrayList<String>();
-		list.add("points"); list.add("shots"); list.add("kills"); list.add("deaths"); list.add("wins"); list.add("looses"); list.add("money");
+		list.add("points"); list.add("shots"); list.add("hits"); list.add("teamattacks"); list.add("kills"); list.add("deaths"); list.add("wins"); list.add("looses"); list.add("money");
 		return list;
 	}
 	//METHODS
@@ -35,7 +43,7 @@ public class PlayerManager {
 	}
 	public void addPlayer(String name) {
 		LinkedHashMap<String, Object> player = new LinkedHashMap<String, Object>();
-		LinkedHashMap<String, Object> loc = new LinkedHashMap<String, Object>();
+		//LinkedHashMap<String, Object> loc = new LinkedHashMap<String, Object>();
 		if(data.getValue(name) == null) {
 			player.put("points", 0);
 			player.put("shots", 0);
@@ -46,11 +54,14 @@ public class PlayerManager {
 			player.put("wins", 0);
 			player.put("looses", 0);
 			player.put("money", 0);
-			player.put("location", loc);
+			//player.put("location", loc);
+			//UPDATE_CODE 1.0.5->1.0.6
+			if(player.containsKey("location")) player.remove("location");
 			
 			data.setValue(name, player);
 			saveData();
 		}
+		
 	}
 	
 	public LinkedHashMap<String, Object> getData() {
@@ -60,7 +71,7 @@ public class PlayerManager {
 	public void resetData() {
 		for(String name : data.getData().keySet()) {
 			LinkedHashMap<String, Object> player = new LinkedHashMap<String, Object>();
-			LinkedHashMap<String, Object> loc = new LinkedHashMap<String, Object>();
+			//LinkedHashMap<String, Object> loc = new LinkedHashMap<String, Object>();
 			player.put("points", 0);
 			player.put("shots", 0);
 			player.put("hits", 0);
@@ -70,7 +81,7 @@ public class PlayerManager {
 			player.put("wins", 0);
 			player.put("looses", 0);
 			player.put("money", 0);
-			player.put("location", loc);
+			//player.put("location", loc);
 			
 			data.setValue(name, player);
 			saveData();
@@ -154,11 +165,18 @@ public class PlayerManager {
 		return player;
 	}
 	
-	@SuppressWarnings("unchecked")
-	public Location getLoc(String name) {
-		LinkedHashMap<String, Object> player = (LinkedHashMap<String, Object>) data.getValue(name);
-		return plugin.transformLocation((LinkedHashMap<String, Object>) player.get("location"));
+	
+	public Location getLoc(Player player) {
+		//LinkedHashMap<String, Object> player = (LinkedHashMap<String, Object>) data.getValue(name);
+		//return plugin.transformLocation((LinkedHashMap<String, Object>) player.get("location"));
+		if(locations.get(player) != null) return locations.get(player);
+		else return null;
 	}
+	public Inventory getInv(Player player) {
+		if(inventories.get(player) != null) return inventories.get(player);
+		else return null;
+	}
+	
 	//UPDATES
 	@SuppressWarnings("unchecked")
 	public void setPoints(String name, int points) {
@@ -210,22 +228,25 @@ public class PlayerManager {
 		data.setValue(name, player);
 	}
 	
-	@SuppressWarnings("unchecked")
-	public void setLoc(String name, Location loc) {
-		if(data.getValue(name) == null) addPlayer(name);
-		LinkedHashMap<String, Object> player = (LinkedHashMap<String, Object>) data.getValue(name);
-		player.put("location", plugin.transformLocation(loc));
-		data.setValue(name, player);
+	public void setLoc(Player player, Location loc) {
+		//if(data.getValue(player.getName()) == null) addPlayer(player.getName());
+		//LinkedHashMap<String, Object> player = (LinkedHashMap<String, Object>) data.getValue(name);
+		//player.put("location", plugin.transformLocation(loc));
+		//data.setValue(name, player);
+		locations.put(player, loc);
 	}
 	
+	public void setLoc(Player player, Inventory inv) {
+		inventories.put(player, inv);
+	}
 	
 	
 	@SuppressWarnings("unchecked")
 	public void setIntValue(String name, String value, int valueInt) {
 		if(data.getValue(name) == null) addPlayer(name);
-		if (possibleValues.contains(value)) {
+		if (possibleValues.contains(value.toLowerCase())) {
 			LinkedHashMap<String, Object> player = (LinkedHashMap<String, Object>) data.getValue(name);
-			player.put(value, valueInt);
+			player.put(value.toLowerCase(), valueInt);
 			data.setValue(name, player);
 		}
 	}

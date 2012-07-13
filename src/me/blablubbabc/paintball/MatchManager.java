@@ -86,7 +86,7 @@ public class MatchManager{
 		}
 		for(Player p : list) {
 			Lobby.remove(p);
-			p.teleport(plugin.pm.getLoc(p.getName()));
+			p.teleport(plugin.pm.getLoc(p));
 		}
 	}
 	

@@ -398,7 +398,7 @@ public class EventListener implements Listener{
 			//Exit lobby
 			Lobby.remove(player);
 			//Teleport back
-			player.teleport(plugin.pm.getLoc(player.getName()));
+			player.teleport(plugin.pm.getLoc(player));
 		}
 
 	}
