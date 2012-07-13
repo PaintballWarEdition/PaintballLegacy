@@ -10,7 +10,6 @@ import org.bukkit.Location;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
-import org.bukkit.inventory.PlayerInventory;
 import org.bukkit.plugin.java.JavaPlugin;
 
 //This file is part of blablubbabc's paintball-Plugin. Do not redistribute or modify. Use it as it is. Usage on own risk. No warranties. No commercial usage!
@@ -405,9 +404,10 @@ public class Paintball extends JavaPlugin{
 		clearInv(player);
 		//restore saved inventory
 		if(restoreInventory && saveInventory) {
-			PlayerInventory inv = pm.getInv(player);
-			player.getInventory().setContents(inv.getContents());
-			player.getInventory().setArmorContents(inv.getArmorContents());
+			//PlayerInventory
+			player.getInventory().setContents(pm.getInvContent(player));
+			player.getInventory().setArmorContents(pm.getInvArmor(player));
+			player.sendMessage(gray+"Inventory restored.");
 		}
 		//teleport:
 		if(teleport) player.teleport(pm.getLoc(player));

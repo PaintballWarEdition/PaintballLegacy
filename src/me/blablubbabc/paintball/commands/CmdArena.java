@@ -81,7 +81,7 @@ public class CmdArena {
 					player.sendMessage(plugin.green+"Blue spawn added. Number of blue spawns now: "+Lobby.BLUE.color()+am.getBlueSpawnsSize(name));
 					return true;
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-				} else if(args[2].equalsIgnoreCase("plugin.red")) {
+				} else if(args[2].equalsIgnoreCase("red")) {
 					am.addRedSpawn(name, player.getLocation());
 					am.saveData();
 					player.sendMessage(plugin.green+"plugin.red spawn added. Number of plugin.red spawns now: "+Lobby.RED.color()+am.getRedSpawnsSize(name));
@@ -106,11 +106,11 @@ public class CmdArena {
 					player.sendMessage(plugin.gold+""+num+Lobby.BLUE.color()+" blue "+plugin.green+"spawns removed in arena "+plugin.gray+name);
 					return true;
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-				} else if(args[2].equalsIgnoreCase("delplugin.red")) {
+				} else if(args[2].equalsIgnoreCase("red")) {
 					int num = am.getRedSpawnsSize(name);
 					am.removeRedSpawns(name);
 					am.saveData();
-					player.sendMessage(plugin.gold+""+num+Lobby.RED.color()+" plugin.red "+plugin.green+"spawns removed in arena "+plugin.gray+name);
+					player.sendMessage(plugin.gold+""+num+Lobby.RED.color()+" red "+plugin.green+"spawns removed in arena "+plugin.gray+name);
 					return true;
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 				} else if(args[2].equalsIgnoreCase("delspec")) {

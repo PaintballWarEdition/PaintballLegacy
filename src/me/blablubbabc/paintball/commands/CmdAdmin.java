@@ -74,7 +74,7 @@ public class CmdAdmin {
 						Lobby.BLUE.setHelmet(is.getType(), is.getData().getData());
 						Lobby.BLUE.saveData();
 						return true;
-					} else if(args[2].equalsIgnoreCase("plugin.red")) {
+					} else if(args[2].equalsIgnoreCase("red")) {
 						ItemStack is = player.getItemInHand();
 						Lobby.RED.setHelmet(is.getType(), is.getData().getData());
 						Lobby.RED.saveData();

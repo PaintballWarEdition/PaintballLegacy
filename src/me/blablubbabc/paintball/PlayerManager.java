@@ -6,13 +6,15 @@ import java.util.LinkedHashMap;
 import me.blablubbabc.BlaDB.Register;
 import org.bukkit.Location;
 import org.bukkit.entity.Player;
+import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.PlayerInventory;
 
 public class PlayerManager {
 	private static Paintball plugin;
 	private static  Register data;
 	private HashMap<Player, Location> locations;
-	private HashMap<Player, PlayerInventory> inventories;
+	private HashMap<Player, ItemStack[]> invContent;
+	private HashMap<Player, ItemStack[]> invArmor;
 	
 	public ArrayList<String> possibleValues;
 	
@@ -25,7 +27,8 @@ public class PlayerManager {
 			addPlayer(p.getName());
 		}
 		locations = new HashMap<Player, Location>();
-		inventories = new HashMap<Player, PlayerInventory>();
+		invContent = new HashMap<Player, ItemStack[]>();
+		invArmor = new HashMap<Player, ItemStack[]>();
 		
 		possibleValues = new ArrayList<String>(setPossibleValues());
 	}
@@ -167,14 +170,14 @@ public class PlayerManager {
 	
 	
 	public Location getLoc(Player player) {
-		//LinkedHashMap<String, Object> player = (LinkedHashMap<String, Object>) data.getValue(name);
-		//return plugin.transformLocation((LinkedHashMap<String, Object>) player.get("location"));
 		if(locations.get(player) != null) return locations.get(player);
 		else return null;
 	}
-	public PlayerInventory getInv(Player player) {
-		if(inventories.get(player) != null) return inventories.get(player);
-		else return null;
+	public ItemStack[] getInvContent(Player player) {
+		return invContent.get(player);
+	}
+	public ItemStack[] getInvArmor(Player player) {
+		return invArmor.get(player);
 	}
 	
 	//UPDATES
@@ -229,15 +232,12 @@ public class PlayerManager {
 	}
 	
 	public void setLoc(Player player, Location loc) {
-		//if(data.getValue(player.getName()) == null) addPlayer(player.getName());
-		//LinkedHashMap<String, Object> player = (LinkedHashMap<String, Object>) data.getValue(name);
-		//player.put("location", plugin.transformLocation(loc));
-		//data.setValue(name, player);
 		locations.put(player, loc);
 	}
 	
 	public void setInv(Player player, PlayerInventory inv) {
-		inventories.put(player, inv);
+		invContent.put(player, inv.getContents());
+		invArmor.put(player, inv.getArmorContents());
 	}
 	
 	

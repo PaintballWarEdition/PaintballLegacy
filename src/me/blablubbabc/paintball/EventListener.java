@@ -4,7 +4,6 @@ import java.util.HashMap;
 import java.util.HashSet;
 import me.blablubbabc.paintball.extras.Airstrike;
 import me.blablubbabc.paintball.extras.Grenade;
-
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
 import org.bukkit.block.Block;
@@ -364,6 +363,11 @@ public class EventListener implements Listener{
 			plugin.leaveLobby(player, true, false, false);
 			//drops?
 			event.getDrops().removeAll(event.getDrops());
+			//ArrayList<ItemStack> drops = new ArrayList<ItemStack>();
+			//drops.addAll(event.getDrops());
+			//for(ItemStack is : drops) {
+			//	is.get
+			//}
 			/*//clear inventory
 			plugin.clearInv(player);
 			//Exit lobby

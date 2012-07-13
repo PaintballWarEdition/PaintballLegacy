@@ -121,7 +121,7 @@ public class CommandManager implements CommandExecutor{
 					}
 					return true;
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-				} else if(args[0].equalsIgnoreCase("plugin.red")) {
+				} else if(args[0].equalsIgnoreCase("red")) {
 					if(!Lobby.LOBBY.isMember(player)) {
 						if(!joinLobby(player)) {
 							return true;
@@ -358,7 +358,10 @@ public class CommandManager implements CommandExecutor{
 		
 		//to be safe..
 		//inventory
-		if(plugin.saveInventory) plugin.pm.setInv(player, player.getInventory());
+		if(plugin.saveInventory) {
+			plugin.pm.setInv(player, player.getInventory());
+			player.sendMessage(plugin.gray+"Inventory saved.");
+		}
 		if(!plugin.isEmpty(player)) plugin.clearInv(player);
 		//gamemode
 		if(!player.getGameMode().equals(GameMode.SURVIVAL)) player.setGameMode(GameMode.SURVIVAL);
