@@ -5,7 +5,6 @@ import java.util.ArrayList;
 import java.util.LinkedHashMap;
 import java.util.Map.Entry;
 import java.util.Set;
-import org.bukkit.ChatColor;
 import org.bukkit.entity.Player;
 
 public class MatchManager{
@@ -16,15 +15,6 @@ public class MatchManager{
 	public boolean countdownStarted;
 	private int taskID;
 	private int count;
-	
-	//private ChatColor gray = ChatColor.GRAY;
-	private ChatColor gold = ChatColor.GOLD;
-	private ChatColor green = ChatColor.GREEN;
-	private ChatColor aqua = ChatColor.AQUA;
-	private ChatColor red = ChatColor.RED;
-	private ChatColor blue = ChatColor.BLUE;
-	private ChatColor yellow = ChatColor.YELLOW;
-	private ChatColor gray = ChatColor.GRAY;
 	
 	public MatchManager(Paintball pl) {
 		plugin = pl;
@@ -54,7 +44,7 @@ public class MatchManager{
 					//lobby
 					Lobby.getTeam(p).setWaiting(p);
 					//clear inventory
-					clearInv(p);
+					plugin.clearInv(p);
 					//noch im match:
 					if(match.isSurvivor(p)){
 						//teleport is survivor:
@@ -71,15 +61,15 @@ public class MatchManager{
 			matches.remove(match);	
 		}
 		//messages:
-		plugin.nf.status(ChatColor.LIGHT_PURPLE+"All players kicked from their matches.");
+		plugin.nf.status(plugin.light_purple+"All players kicked from their matches.");
 		//stop countdown:
 		if(countdownStarted) {
 			plugin.getServer().getScheduler().cancelTask(taskID);
 	    	countdownStarted = false;
 		}
 		// Kick all from Lobby:
-		plugin.nf.status(ChatColor.LIGHT_PURPLE+"All players kicked from the paintball lobby.");
-		plugin.nf.status(ChatColor.LIGHT_PURPLE+"Reloading the paintball plugin..");
+		plugin.nf.status(plugin.light_purple+"All players kicked from the paintball lobby.");
+		plugin.nf.status(plugin.light_purple+"Reloading the paintball plugin..");
 		ArrayList<Player> list = new ArrayList<Player>();
 		for(Player p : Lobby.LOBBY.getMembers()) {
 			list.add(p);
@@ -104,7 +94,7 @@ public class MatchManager{
 	
 	public void gameStart() {
 		int players = Lobby.RED.numberWaiting() + Lobby.BLUE.numberWaiting() + Lobby.RANDOM.numberWaiting();
-		String info = gold+"["+red+Lobby.RED.numberWaiting()+gold+"]["+blue+Lobby.BLUE.numberWaiting()+gold+"]["+green+Lobby.RANDOM.numberWaiting()+gold+"]["+yellow+Lobby.SPECTATE.numberWaiting()+gold+"]";
+		String info = plugin.gold+"["+plugin.red+Lobby.RED.numberWaiting()+plugin.gold+"]["+plugin.blue+Lobby.BLUE.numberWaiting()+plugin.gold+"]["+plugin.green+Lobby.RANDOM.numberWaiting()+plugin.gold+"]["+plugin.yellow+Lobby.SPECTATE.numberWaiting()+plugin.gold+"]";
 		
 		for(Player player : Lobby.RANDOM.getMembers()) {
 			Lobby.RANDOM.setPlaying(player);
@@ -122,8 +112,8 @@ public class MatchManager{
 		String arena = plugin.am.getNextArena();
 		plugin.am.resetNext();
 		plugin.am.toggleReady(arena);
-		plugin.nf.status("Match starts! Arena: "+gray+arena);
-		plugin.nf.status(gray+""+players+gold+" players: "+info);
+		plugin.nf.status("Match starts! Arena: "+plugin.gray+arena);
+		plugin.nf.status(plugin.gray+""+players+plugin.gold+" players: "+info);
 		
 		Match match = new Match(plugin, plugin.lives, Lobby.RED.getMembers(), Lobby.BLUE.getMembers(), Lobby.SPECTATE.getMembers(), Lobby.RANDOM.getMembers(), arena);
 		matches.add(match);
@@ -156,7 +146,7 @@ public class MatchManager{
 				//lobby
 				Lobby.getTeam(p).setWaiting(p);
 				//clear inventory
-				clearInv(p);
+				plugin.clearInv(p);
 				//noch im match:
 				if(match.isSurvivor(p)){
 					//teleport is survivor:
@@ -218,19 +208,19 @@ public class MatchManager{
 		plugin.am.saveData();
 		//messages:
 		plugin.nf.status("Match is over!");
-		plugin.nf.text("Team "+Lobby.getTeam(win).color()+win+" ("+winners.size()+" players) "+aqua+"has won against team "+Lobby.getTeam(loose).color()+loose+" ("+loosers.size()+" players)");
-		plugin.nf.text(Lobby.getTeam(win).color()+"Winner"+aqua+" bonus: "+green+plugin.pointsPerWin+aqua+" points and "+green+plugin.cashPerWin+aqua+" cash!");
-		plugin.nf.text("Round bonus for everyone: "+green+plugin.pointsPerRound+aqua+" points and "+green+plugin.cashPerRound+aqua+" cash!");
-		plugin.nf.text(ChatColor.DARK_GREEN+"Some match stats: ");
-		plugin.nf.text(ChatColor.LIGHT_PURPLE+"Shots fired: "+green+shotsAll);
-		plugin.nf.text(ChatColor.LIGHT_PURPLE+"Hits: "+green+hitsAll);
-		plugin.nf.text(ChatColor.LIGHT_PURPLE+"Teamattacks: "+green+teamattacksAll);
-		plugin.nf.text(ChatColor.LIGHT_PURPLE+"Kills: "+green+killsAll);
-		plugin.nf.text(ChatColor.DARK_GREEN+"General stats: ");
-		plugin.nf.text(ChatColor.LIGHT_PURPLE+"Shots fired: "+green+plugin.stats.getShots());
-		plugin.nf.text(ChatColor.LIGHT_PURPLE+"Kills: "+green+plugin.stats.getKills());
-		plugin.nf.text(ChatColor.LIGHT_PURPLE+"Played rounds: "+green+plugin.stats.getRounds());
-		plugin.nf.text(ChatColor.LIGHT_PURPLE+"Money spent in shop: "+green+plugin.stats.getMoney());
+		plugin.nf.text("Team "+Lobby.getTeam(win).color()+win+" ("+winners.size()+" players) "+plugin.aqua+"has won against team "+Lobby.getTeam(loose).color()+loose+" ("+loosers.size()+" players)");
+		plugin.nf.text(Lobby.getTeam(win).color()+"Winner"+plugin.aqua+" bonus: "+plugin.green+plugin.pointsPerWin+plugin.aqua+" points and "+plugin.green+plugin.cashPerWin+plugin.aqua+" cash!");
+		plugin.nf.text("Round bonus for everyone: "+plugin.green+plugin.pointsPerRound+plugin.aqua+" points and "+plugin.green+plugin.cashPerRound+plugin.aqua+" cash!");
+		plugin.nf.text(plugin.dark_green+"Some match stats: ");
+		plugin.nf.text(plugin.light_purple+"Shots fired: "+plugin.green+shotsAll);
+		plugin.nf.text(plugin.light_purple+"Hits: "+plugin.green+hitsAll);
+		plugin.nf.text(plugin.light_purple+"Teamattacks: "+plugin.green+teamattacksAll);
+		plugin.nf.text(plugin.light_purple+"Kills: "+plugin.green+killsAll);
+		plugin.nf.text(plugin.dark_green+"General stats: ");
+		plugin.nf.text(plugin.light_purple+"Shots fired: "+plugin.green+plugin.stats.getShots());
+		plugin.nf.text(plugin.light_purple+"Kills: "+plugin.green+plugin.stats.getKills());
+		plugin.nf.text(plugin.light_purple+"Played rounds: "+plugin.green+plugin.stats.getRounds());
+		plugin.nf.text(plugin.light_purple+"Money spent in shop: "+plugin.green+plugin.stats.getMoney());
 		plugin.nf.text("-------------------------------------------------");
 		
 		//close match
@@ -254,11 +244,6 @@ public class MatchManager{
 			if(m.inMatch(player)) return m;
 		}
 		return null;
-	}
-	
-	public void clearInv(Player p) {
-		p.getInventory().clear();
-		p.getInventory().setArmorContents(null);
 	}
 	
 	public String ready() {

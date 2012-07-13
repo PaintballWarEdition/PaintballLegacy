@@ -5,7 +5,6 @@ import java.util.Collections;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Set;
-import org.bukkit.ChatColor;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
@@ -24,12 +23,6 @@ public class Match {
 	private ArrayList<Player> players;
 	private ArrayList<Player> left;
 	private String arena;
-	
-	private ChatColor aqua = ChatColor.AQUA;
-	private ChatColor green = ChatColor.GREEN;
-	private ChatColor red = ChatColor.RED;
-	private ChatColor blue = ChatColor.BLUE;
-	//private ChatColor white = ChatColor.WHITE;
 	
 	public Match(Paintball plugin, int lives, Set<Player> red, Set<Player> blue, Set<Player> spec, Set<Player> random, String arena) {
 		this.plugin = plugin;
@@ -88,7 +81,7 @@ public class Match {
 			if(plugin.airstrikeAmount > 0 ) p.getInventory().addItem(new ItemStack(Material.STICK, plugin.airstrikeAmount));
 			else if(plugin.airstrikeAmount == -1 ) p.getInventory().addItem(new ItemStack(Material.STICK, 1));
 			//message
-			p.sendMessage(aqua+"You are in Team "+Lobby.getTeam(getTeamName(p)).color()+getTeamName(p));
+			p.sendMessage(plugin.aqua+"You are in Team "+Lobby.getTeam(getTeamName(p)).color()+getTeamName(p));
 		}
 		spawn = 0;
 		for(Player p : this.blueT.keySet()) {
@@ -113,7 +106,7 @@ public class Match {
 			if(plugin.airstrikeAmount > 0 ) p.getInventory().addItem(new ItemStack(Material.STICK, plugin.airstrikeAmount));
 			else if(plugin.airstrikeAmount == -1 ) p.getInventory().addItem(new ItemStack(Material.STICK, 1));
 			//message
-			p.sendMessage(aqua+"You are in Team "+Lobby.getTeam(getTeamName(p)).color()+getTeamName(p));
+			p.sendMessage(plugin.aqua+"You are in Team "+Lobby.getTeam(getTeamName(p)).color()+getTeamName(p));
 		}
 		spawn = 0;
 		for(Player p : this.spec) {
@@ -126,19 +119,19 @@ public class Match {
 			//inv
 			p.getInventory().setHelmet(Lobby.SPECTATE.helmet());
 			//message
-			p.sendMessage(aqua+"You are "+Lobby.getTeam("spec").color()+"spectator!");
+			p.sendMessage(plugin.aqua+"You are "+Lobby.getTeam("spec").color()+"spectator!");
 		}
 		//colorchanges:
 		changeAllColors();
 		//lives + start!:
-		if(lives == 1) plugin.nf.status("Everybody got " +green+1+ " life!"+ChatColor.LIGHT_PURPLE+" And now FIGHT!" );
-		else plugin.nf.status("Everybody got " +green+plugin.lives+ " lives!"+ChatColor.LIGHT_PURPLE+" And now FIGHT!" );
+		if(lives == 1) plugin.nf.status("Everybody got " +plugin.green+1+ " life!"+plugin.light_purple+" And now FIGHT!" );
+		else plugin.nf.status("Everybody got " +plugin.green+plugin.lives+ " lives!"+plugin.light_purple+" And now FIGHT!" );
 	}
 	
 	public void changeAllColors() {
 		for(Player p : redT.keySet()) {
 			//chatnames
-			String n = red+p.getName();
+			String n = plugin.red+p.getName();
 			if(n.length() > 16) n = (String) n.subSequence(0, n.length() - (n.length()-16));
 			/*if(plugin.chatnames) {
 				p.setDisplayName(n+white);
@@ -150,7 +143,7 @@ public class Match {
 		}
 		for(Player p : blueT.keySet()) {
 			//chatnames
-			String n = blue+p.getName();
+			String n = plugin.blue+p.getName();
 			if(n.length() > 16) n = (String) n.subSequence(0, n.length() - (n.length()-16));
 			/*if(plugin.chatnames) {
 				p.setDisplayName(n+white);
@@ -311,15 +304,15 @@ public class Match {
 				if(getTeam(target).get(target) <= 0) {
 					frag(target, shooter);
 				} else {
-					shooter.sendMessage(green+"You hit!");
-					target.sendMessage(red+"You were hit!");
+					shooter.sendMessage(plugin.green+"You hit!");
+					target.sendMessage(plugin.red+"You were hit!");
 				}
 			}
 		} else if(friendly(target, shooter)) {
 			//message
 			//-points
 			teamattacks.put(shooter, (teamattacks.get(shooter)+1));
-			shooter.sendMessage(red+"Teamattack! "+plugin.pointsPerTeamattack + " Points!");
+			shooter.sendMessage(plugin.red+"Teamattack! "+plugin.pointsPerTeamattack + " Points!");
 		}
 	}
 	
@@ -331,10 +324,10 @@ public class Match {
 			@Override
 			public void run() {
 				target.teleport(plugin.transformLocation(plugin.getLobbySpawns().get(0)));
-				plugin.mm.clearInv(target);
+				plugin.clearInv(target);
 				//feed
-				killer.sendMessage(green+"You killed "+target.getName()+" ! +"+plugin.pointsPerKill + " Points and +"+plugin.cashPerKill+" Cash!");
-				target.sendMessage(ChatColor.RED+"You were killed by "+killer.getName()+" !");
+				killer.sendMessage(plugin.green+"You killed "+target.getName()+" ! +"+plugin.pointsPerKill + " Points and +"+plugin.cashPerKill+" Cash!");
+				target.sendMessage(plugin.red+"You were killed by "+killer.getName()+" !");
 				plugin.nf.feed(target, killer, this2);
 				//points+cash+kill+death
 				deaths.put(target, (deaths.get(target)+1));

@@ -5,13 +5,11 @@ import java.util.ArrayList;
 import me.blablubbabc.paintball.commands.CmdAdmin;
 import me.blablubbabc.paintball.commands.CmdArena;
 import me.blablubbabc.paintball.commands.CmdShop;
-import org.bukkit.ChatColor;
 import org.bukkit.GameMode;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
-import org.bukkit.inventory.ItemStack;
 import org.bukkit.potion.PotionEffect;
 
 public class CommandManager implements CommandExecutor{
@@ -20,11 +18,6 @@ public class CommandManager implements CommandExecutor{
 	private CmdAdmin cmdAdmin;
 	private CmdShop cmdShop;
 	
-	private ChatColor gray = ChatColor.GRAY;
-	private ChatColor green = ChatColor.GREEN;
-	private ChatColor aqua = ChatColor.AQUA;
-	private ChatColor yellow = ChatColor.YELLOW;
-	private ChatColor red = ChatColor.RED;
 	
 	public CommandManager(Paintball pl) {
 		plugin = pl;
@@ -37,7 +30,7 @@ public class CommandManager implements CommandExecutor{
 	public boolean onCommand(CommandSender sender, Command cmd, String label, String[] args) {
 		if(label.equalsIgnoreCase("pb")) {
 			if(!sender.isOp() && !sender.hasPermission("paintball.general")) {
-				sender.sendMessage(red+"No permission.");
+				sender.sendMessage(plugin.red+"No permission.");
 				return true;
 			}
 			if(args.length == 0) {
@@ -76,7 +69,7 @@ public class CommandManager implements CommandExecutor{
 				if(args[0].equalsIgnoreCase("lobby")) {
 					if(Lobby.LOBBY.isMember(player)) {
 						if(Lobby.isPlaying(player)) {
-							player.sendMessage(gray + "You can't join the lobby while playing!");
+							player.sendMessage(plugin.gray + "You can't join the lobby while playing!");
 							return true;
 						}
 						/*if(Lobby.isSpectating(player)) {
@@ -85,10 +78,10 @@ public class CommandManager implements CommandExecutor{
 							Lobby.SPECTATE.setWaiting(player);
 							player.getInventory().clear();
 							player.getInventory().setHelmet(null);
-							player.sendMessage(green + "You entered the lobby!");
+							player.sendMessage(plugin.green + "You enteplugin.red the lobby!");
 							return true;
 						}*/
-						player.sendMessage(gray + "You are already in the lobby. /pb leave to leave.");
+						player.sendMessage(plugin.gray + "You are already in the lobby. /pb leave to leave.");
 						return true;
 					} else {
 						joinLobby(player);
@@ -102,25 +95,25 @@ public class CommandManager implements CommandExecutor{
 						}
 					}
 					if(Lobby.isPlaying(player) || Lobby.isSpectating(player)) {
-						player.sendMessage(gray + "You can't change your team while playing or spectating!");
+						player.sendMessage(plugin.gray + "You can't change your team while playing or spectating!");
 						return true;
 					}
 					//Max Players Check:
 					if(!Lobby.inTeam(player)) {
 						int players = Lobby.RED.number() + Lobby.BLUE.number() + Lobby.RANDOM.number();
 						if(players > plugin.maxPlayers) {
-							player.sendMessage(gray + "Maximal number of paintball players is already reached!");
+							player.sendMessage(plugin.gray + "Maximal number of paintball players is already reached!");
 							return true;
 						}
 					}
 					if(Lobby.inTeam(player) || Lobby.SPECTATE.isMember(player)) {
 						Lobby.getTeam(player).removeMember(player);
-						player.sendMessage(gray + "You left your current team.");
+						player.sendMessage(plugin.gray + "You left your current team.");
 					}
 					Lobby.BLUE.addMember(player);
-					player.sendMessage(green + "You joined team "+Lobby.BLUE.color()+"blue!");
+					player.sendMessage(plugin.green + "You joined team "+Lobby.BLUE.color()+"blue!");
 					//players:
-					player.sendMessage(aqua+""+"Waiting players: " + plugin.nf.getPlayers());
+					player.sendMessage(plugin.aqua+""+"Waiting players: " + plugin.nf.getPlayers());
 					if(plugin.mm.ready().equalsIgnoreCase("ready")) {
 						plugin.mm.countdown(plugin.countdown, plugin.countdownInit);
 					} else {
@@ -128,32 +121,32 @@ public class CommandManager implements CommandExecutor{
 					}
 					return true;
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-				} else if(args[0].equalsIgnoreCase("red")) {
+				} else if(args[0].equalsIgnoreCase("plugin.red")) {
 					if(!Lobby.LOBBY.isMember(player)) {
 						if(!joinLobby(player)) {
 							return true;
 						}
 					}
 					if(Lobby.isPlaying(player) || Lobby.isSpectating(player)) {
-						player.sendMessage(gray + "You can't change your team while playing or spectating!");
+						player.sendMessage(plugin.gray + "You can't change your team while playing or spectating!");
 						return true;
 					}
 					//Max Players Check:
 					if(!Lobby.inTeam(player)) {
 						int players = Lobby.RED.number() + Lobby.BLUE.number() + Lobby.RANDOM.number();
 						if(players > plugin.maxPlayers) {
-							player.sendMessage(gray + "Maximal number of paintball players is already reached!");
+							player.sendMessage(plugin.gray + "Maximal number of paintball players is already reached!");
 							return true;
 						}
 					}
 					if(Lobby.inTeam(player) || Lobby.SPECTATE.isMember(player)) {
 						Lobby.getTeam(player).removeMember(player);
-						player.sendMessage(gray + "You left your current team.");
+						player.sendMessage(plugin.gray + "You left your current team.");
 					}
 					Lobby.RED.addMember(player);
-					player.sendMessage(green + "You joined team "+Lobby.RED.color()+"red!");
+					player.sendMessage(plugin.green + "You joined team "+Lobby.RED.color()+"plugin.red!");
 					//players:
-					player.sendMessage(aqua+""+"Waiting players: " + plugin.nf.getPlayers());
+					player.sendMessage(plugin.aqua+""+"Waiting players: " + plugin.nf.getPlayers());
 					if(plugin.mm.ready().equalsIgnoreCase("ready")) {
 						plugin.mm.countdown(plugin.countdown, plugin.countdownInit);
 					} else {
@@ -168,25 +161,25 @@ public class CommandManager implements CommandExecutor{
 						}
 					}
 					if(Lobby.isPlaying(player) || Lobby.isSpectating(player)) {
-						player.sendMessage(gray + "You can't change your team while playing or spectating!");
+						player.sendMessage(plugin.gray + "You can't change your team while playing or spectating!");
 						return true;
 					}
 					//Max Players Check:
 					if(!Lobby.inTeam(player)) {
 						int players = Lobby.RED.number() + Lobby.BLUE.number() + Lobby.RANDOM.number();
 						if(players > plugin.maxPlayers) {
-							player.sendMessage(gray + "Maximal number of paintball players is already reached!");
+							player.sendMessage(plugin.gray + "Maximal number of paintball players is already reached!");
 							return true;
 						}
 					}
 					if(Lobby.inTeam(player) || Lobby.SPECTATE.isMember(player)) {
 						Lobby.getTeam(player).removeMember(player);
-						player.sendMessage(gray + "You left your current team.");
+						player.sendMessage(plugin.gray + "You left your current team.");
 					}
 					Lobby.RANDOM.addMember(player);
-					player.sendMessage(green + "You joined a "+Lobby.RANDOM.color()+"random team!");
+					player.sendMessage(plugin.green + "You joined a "+Lobby.RANDOM.color()+"random team!");
 					//players:
-					player.sendMessage(aqua+""+"Waiting players: " + plugin.nf.getPlayers());
+					player.sendMessage(plugin.aqua+""+"Waiting players: " + plugin.nf.getPlayers());
 					if(plugin.mm.ready().equalsIgnoreCase("ready")) {
 						plugin.mm.countdown(plugin.countdown, plugin.countdownInit);
 					} else {
@@ -201,47 +194,44 @@ public class CommandManager implements CommandExecutor{
 						}
 					}
 					if(Lobby.isPlaying(player) || Lobby.isSpectating(player)) {
-						player.sendMessage(gray + "You can't change your team while playing or spectating!");
+						player.sendMessage(plugin.gray + "You can't change your team while playing or spectating!");
 						return true;
 					}
 					if(Lobby.inTeam(player) || Lobby.SPECTATE.isMember(player)) {
 						Lobby.getTeam(player).removeMember(player);
-						player.sendMessage(gray + "You left your current team.");
+						player.sendMessage(plugin.gray + "You left your current team.");
 					}
 					Lobby.SPECTATE.addMember(player);
-					player.sendMessage(green + "You joined the "+Lobby.SPECTATE.color()+"spectators!");
+					player.sendMessage(plugin.green + "You joined the "+Lobby.SPECTATE.color()+"spectators!");
 					//players:
-					player.sendMessage(aqua+""+"Waiting players: " + plugin.nf.getPlayers());
+					player.sendMessage(plugin.aqua+""+"Waiting players: " + plugin.nf.getPlayers());
 					return true;
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 				} else if(args[0].equalsIgnoreCase("leave")) {
 					if(!Lobby.LOBBY.isMember(player)) {
-						player.sendMessage(gray + "You are not in the paintball lobby.");
+						player.sendMessage(plugin.gray + "You are not in the paintball lobby.");
 						return true;
 					}
 					if(Lobby.inTeam(player) || Lobby.SPECTATE.isMember(player)) {
 						if(Lobby.isPlaying(player) || Lobby.isSpectating(player)) {
-							player.sendMessage(gray + "You can't leave while playing or spectating!");
+							player.sendMessage(plugin.gray + "You can't leave while playing or spectating!");
 							return true;
 						}
 						Lobby.getTeam(player).removeMember(player);
-						player.sendMessage(gray + "You left your team.");
+						player.sendMessage(plugin.gray + "You left your team.");
 						return true;
 					}
-					Lobby.remove(player);
-					sendBack(player);
-					player.sendMessage(gray + "You left the lobby.");
-					plugin.nf.leave(player.getName());
+					plugin.leaveLobby(player);
 					return true;
 					
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 				} else if(args[0].equalsIgnoreCase("toggle")) {
 					if(!Lobby.LOBBY.isMember(player)) {
-						player.sendMessage(gray + "You are not in the paintball lobby.");
+						player.sendMessage(plugin.gray + "You are not in the paintball lobby.");
 						return true;
 					}
 					Lobby.toggleFeed(player);
-					player.sendMessage(gray + "You toggled the paintball news feed.");
+					player.sendMessage(plugin.gray + "You toggled the paintball news feed.");
 					return true;
 					
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -275,101 +265,101 @@ public class CommandManager implements CommandExecutor{
 	}
 	
 	public void pbhelp(CommandSender sender) {
-		sender.sendMessage(aqua+""+ ChatColor.BOLD+"[ "+yellow+""+ ChatColor.BOLD+"Paintball by blablubbabc"+aqua+""+ ChatColor.BOLD+" ]");
-		sender.sendMessage(green+"/pb [help|?] "+aqua+"- Shows this help page.");
-		sender.sendMessage(yellow+"/pb arena "+aqua+"- Arena commands.");
-		sender.sendMessage(yellow+"/pb admin "+aqua+"- Admin commands.");
-		sender.sendMessage(green+"/pb lobby "+aqua+"- Join the lobby.");
-		sender.sendMessage(green+"/pb blue "+aqua+"- Join team blue.");
-		sender.sendMessage(green+"/pb red "+aqua+"- Join team red.");
-		sender.sendMessage(green+"/pb random "+aqua+"- Join random team.");
-		sender.sendMessage(green+"/pb spec "+aqua+"- Join the spectators.");
-		sender.sendMessage(green+"/pb leave "+aqua+"- Leave current team. If not in team: leave lobby.");
-		sender.sendMessage(green+"/pb toggle "+aqua+"- Toggles some paintball messages.");
-		sender.sendMessage(green+"/pb shop [id] "+aqua+"- Paintball-Shop.");
-		sender.sendMessage(green+"/pb stats "+aqua+"- Shows some stats.");
-		sender.sendMessage(green+"/pb rank "+aqua+"- Shows the players rank.");
-		sender.sendMessage(green+"/pb top "+aqua+"- Shows the top 10 fraggers.");
-		sender.sendMessage(green+"/pb cash "+aqua+"- Shows money.");
+		sender.sendMessage(plugin.aqua+""+ plugin.bold+"[ "+plugin.yellow+""+ plugin.bold+"Paintball by blablubbabc"+plugin.aqua+""+ plugin.bold+" ]");
+		sender.sendMessage(plugin.green+"/pb [help|?] "+plugin.aqua+"- Shows this help page.");
+		sender.sendMessage(plugin.yellow+"/pb arena "+plugin.aqua+"- Arena commands.");
+		sender.sendMessage(plugin.yellow+"/pb admin "+plugin.aqua+"- Admin commands.");
+		sender.sendMessage(plugin.green+"/pb lobby "+plugin.aqua+"- Join the lobby.");
+		sender.sendMessage(plugin.green+"/pb blue "+plugin.aqua+"- Join team blue.");
+		sender.sendMessage(plugin.green+"/pb plugin.red "+plugin.aqua+"- Join team plugin.red.");
+		sender.sendMessage(plugin.green+"/pb random "+plugin.aqua+"- Join random team.");
+		sender.sendMessage(plugin.green+"/pb spec "+plugin.aqua+"- Join the spectators.");
+		sender.sendMessage(plugin.green+"/pb leave "+plugin.aqua+"- Leave current team. If not in team: leave lobby.");
+		sender.sendMessage(plugin.green+"/pb toggle "+plugin.aqua+"- Toggles some paintball messages.");
+		sender.sendMessage(plugin.green+"/pb shop [id] "+plugin.aqua+"- Paintball-Shop.");
+		sender.sendMessage(plugin.green+"/pb stats "+plugin.aqua+"- Shows some stats.");
+		sender.sendMessage(plugin.green+"/pb rank "+plugin.aqua+"- Shows the players rank.");
+		sender.sendMessage(plugin.green+"/pb top "+plugin.aqua+"- Shows the top 10 fraggers.");
+		sender.sendMessage(plugin.green+"/pb cash "+plugin.aqua+"- Shows money.");
 	}
 	public void arenahelp(CommandSender sender) {
-		sender.sendMessage(aqua+""+ ChatColor.BOLD+"[ "+yellow+""+ ChatColor.BOLD+"Paintball by blablubbabc"+aqua+""+ ChatColor.BOLD+" ]");
-		sender.sendMessage(yellow+"/pb [help|?] "+aqua+"- Shows help page.");
-		sender.sendMessage(yellow+"/pb arena "+aqua+"- Shows this arena commands.");
-		sender.sendMessage(yellow+"/pb arena list "+aqua+"- Lists all arenas.");
-		sender.sendMessage(yellow+"/pb arena <name> "+aqua+"- Create a new arena.");
-		sender.sendMessage(yellow+"/pb arena <name> info "+aqua+"- Shows arena infos.");
-		sender.sendMessage(yellow+"/pb arena <name> blue "+aqua+"- Adds a blue spawn.");
-		sender.sendMessage(yellow+"/pb arena <name> red "+aqua+"- Adds a red spawn.");
-		sender.sendMessage(yellow+"/pb arena <name> spec "+aqua+"- Adds a spectator spawn.");
-		sender.sendMessage(yellow+"/pb arena <name> remove "+aqua+"- Removes arena.");
-		sender.sendMessage(yellow+"/pb arena <name> delblue "+aqua+"- Deletes blue spawns.");
-		sender.sendMessage(yellow+"/pb arena <name> delred "+aqua+"- Deletes red spawns.");
-		sender.sendMessage(yellow+"/pb arena <name> delspec "+aqua+"- Deletes spectator spawns.");
-		sender.sendMessage(yellow+"/pb arena <name> size <number> "+aqua+"- Specifiy the size-categorie of the arena.");
+		sender.sendMessage(plugin.aqua+""+ plugin.bold+"[ "+plugin.yellow+""+ plugin.bold+"Paintball by blablubbabc"+plugin.aqua+""+ plugin.bold+" ]");
+		sender.sendMessage(plugin.yellow+"/pb [help|?] "+plugin.aqua+"- Shows help page.");
+		sender.sendMessage(plugin.yellow+"/pb arena "+plugin.aqua+"- Shows this arena commands.");
+		sender.sendMessage(plugin.yellow+"/pb arena list "+plugin.aqua+"- Lists all arenas.");
+		sender.sendMessage(plugin.yellow+"/pb arena <name> "+plugin.aqua+"- Create a new arena.");
+		sender.sendMessage(plugin.yellow+"/pb arena <name> info "+plugin.aqua+"- Shows arena infos.");
+		sender.sendMessage(plugin.yellow+"/pb arena <name> blue "+plugin.aqua+"- Adds a blue spawn.");
+		sender.sendMessage(plugin.yellow+"/pb arena <name> plugin.red "+plugin.aqua+"- Adds a plugin.red spawn.");
+		sender.sendMessage(plugin.yellow+"/pb arena <name> spec "+plugin.aqua+"- Adds a spectator spawn.");
+		sender.sendMessage(plugin.yellow+"/pb arena <name> remove "+plugin.aqua+"- Removes arena.");
+		sender.sendMessage(plugin.yellow+"/pb arena <name> delblue "+plugin.aqua+"- Deletes blue spawns.");
+		sender.sendMessage(plugin.yellow+"/pb arena <name> delplugin.red "+plugin.aqua+"- Deletes plugin.red spawns.");
+		sender.sendMessage(plugin.yellow+"/pb arena <name> delspec "+plugin.aqua+"- Deletes spectator spawns.");
+		sender.sendMessage(plugin.yellow+"/pb arena <name> size <number> "+plugin.aqua+"- Specifiy the size-categorie of the arena.");
 	}
 	public void adminhelp(CommandSender sender) {
-		sender.sendMessage(aqua+""+ ChatColor.BOLD+"[ "+yellow+""+ ChatColor.BOLD+"Paintball by blablubbabc"+aqua+""+ ChatColor.BOLD+" ]");
-		sender.sendMessage(yellow+"/pb [help|?] "+aqua+"- Shows help page.");
-		sender.sendMessage(yellow+"/pb arena "+aqua+"- Arena commands.");
-		sender.sendMessage(yellow+"/pb admin "+aqua+"- Shows this admin commands.");
-		sender.sendMessage(yellow+"/pb admin reload "+aqua+"- Reload the plugin, kicking all players out of the lobby.");
-		sender.sendMessage(yellow+"/pb admin softreload "+aqua+"- Reload the plugin, waiting for all matches to finish.");
-		sender.sendMessage(yellow+"/pb admin disable "+aqua+"- Toggles if new paintball matches are allowed or not.");
-		sender.sendMessage(yellow+"/pb admin lobby spawn "+aqua+"- Adds a lobby spawn.");
-		sender.sendMessage(yellow+"/pb admin lobby remove "+aqua+"- Deletes the lobby spawns.");
-		sender.sendMessage(yellow+"/pb admin cash <player> [amount] "+aqua+"- Shows the player's cash or gives him money.");
-		sender.sendMessage(yellow+"/pb admin rank <player> [amount] "+aqua+"- Shows the player's points and rank or gives him points.");
-		sender.sendMessage(yellow+"/pb admin reset <all|player> [value] "+aqua+"- Resets all stats of all or one player or a specified value of the players stats.");
-		sender.sendMessage(yellow+"/pb admin helmet <blue|red|spec> "+aqua+"- Sets the helmet to the item holding in hand.");
-		sender.sendMessage(yellow+"/pb admin next <arena> "+aqua+"- Tries to force the next arena to the specified arena.");
+		sender.sendMessage(plugin.aqua+""+ plugin.bold+"[ "+plugin.yellow+""+ plugin.bold+"Paintball by blablubbabc"+plugin.aqua+""+ plugin.bold+" ]");
+		sender.sendMessage(plugin.yellow+"/pb [help|?] "+plugin.aqua+"- Shows help page.");
+		sender.sendMessage(plugin.yellow+"/pb arena "+plugin.aqua+"- Arena commands.");
+		sender.sendMessage(plugin.yellow+"/pb admin "+plugin.aqua+"- Shows this admin commands.");
+		sender.sendMessage(plugin.yellow+"/pb admin reload "+plugin.aqua+"- Reload the plugin, kicking all players out of the lobby.");
+		sender.sendMessage(plugin.yellow+"/pb admin softreload "+plugin.aqua+"- Reload the plugin, waiting for all matches to finish.");
+		sender.sendMessage(plugin.yellow+"/pb admin disable "+plugin.aqua+"- Toggles if new paintball matches are allowed or not.");
+		sender.sendMessage(plugin.yellow+"/pb admin lobby spawn "+plugin.aqua+"- Adds a lobby spawn.");
+		sender.sendMessage(plugin.yellow+"/pb admin lobby remove "+plugin.aqua+"- Deletes the lobby spawns.");
+		sender.sendMessage(plugin.yellow+"/pb admin cash <player> [amount] "+plugin.aqua+"- Shows the player's cash or gives him money.");
+		sender.sendMessage(plugin.yellow+"/pb admin rank <player> [amount] "+plugin.aqua+"- Shows the player's points and rank or gives him points.");
+		sender.sendMessage(plugin.yellow+"/pb admin reset <all|player> [value] "+plugin.aqua+"- Resets all stats of all or one player or a specified value of the players stats.");
+		sender.sendMessage(plugin.yellow+"/pb admin helmet <blue|plugin.red|spec> "+plugin.aqua+"- Sets the helmet to the item holding in hand.");
+		sender.sendMessage(plugin.yellow+"/pb admin next <arena> "+plugin.aqua+"- Tries to force the next arena to the specified arena.");
 	}
 	private boolean joinLobby(Player player) {
 		//Lobby vorhanden?
 		if(plugin.getLobbySpawns().size() == 0) {
-			player.sendMessage(gray+"No paintball lobby found!");
+			player.sendMessage(plugin.gray+"No paintball lobby found!");
 			return false;
 		}
 		//inventory
-		if(!isEmpty(player) && plugin.checkInventory ) {
-			player.sendMessage(gray+"You have to clear your inventory first to enter the lobby!");
+		if(!plugin.isEmpty(player) && plugin.checkInventory ) {
+			player.sendMessage(plugin.gray+"You have to clear your inventory first to enter the lobby!");
 			return false;
 		}
 		//gamemode an?
 		if(!player.getGameMode().equals(GameMode.SURVIVAL) && plugin.checkGamemode ) {
-			player.sendMessage(gray+"You have to change your gamemode to 'survival' first to enter the lobby!");
+			player.sendMessage(plugin.gray+"You have to change your gamemode to 'survival' first to enter the lobby!");
 			return false;
 		}
 		//flymode an? (built-in fly mode)
 		if( (player.getAllowFlight() || player.isFlying()) && plugin.checkFlymode ) {
-			player.sendMessage(gray+"You have to disable your fly mode / stop flying to enter the lobby!");
+			player.sendMessage(plugin.gray+"You have to disable your fly mode / stop flying to enter the lobby!");
 			return false;
 		}
 		//brennt? fällt? taucht?
 		if( (player.getFireTicks() > 0 || player.getFallDistance() > 0 || player.getRemainingAir() < player.getMaximumAir()) && plugin.checkBurning ) {
-			player.sendMessage(gray+"You can't join the lobby while falling, being on fire or drowning!");
+			player.sendMessage(plugin.gray+"You can't join the lobby while falling, being on fire or drowning!");
 			return false;
 		}
 		//wenig leben
 		if(player.getHealth() < 20  && plugin.checkHealth) {
-			player.sendMessage(gray+"You need full health to enter the lobby!");
+			player.sendMessage(plugin.gray+"You need full health to enter the lobby!");
 			return false;
 		}
 		//hungert
 		if(player.getFoodLevel() < 20  && plugin.checkFood) {
-			player.sendMessage(gray+"You need a full food bar to enter the lobby!");
+			player.sendMessage(plugin.gray+"You need a full food bar to enter the lobby!");
 			return false;
 		}
 		//hat effecte auf sich
 		if(player.getActivePotionEffects().size() > 0  && plugin.checkEffects) {
-			player.sendMessage(gray+"You can't enter the lobby with active potion effects!");
+			player.sendMessage(plugin.gray+"You can't enter the lobby with active potion effects!");
 			return false;
 		}
 		
 		//to be safe..
 		//inventory
 		//if(plugin.saveInventory) plugin.pm.setInventory(player.getInventory());
-		if(!isEmpty(player)) plugin.mm.clearInv(player);
+		if(!plugin.isEmpty(player)) plugin.clearInv(player);
 		//gamemode
 		if(!player.getGameMode().equals(GameMode.SURVIVAL)) player.setGameMode(GameMode.SURVIVAL);
 		//flymode (built-in)
@@ -401,19 +391,4 @@ public class CommandManager implements CommandExecutor{
 		return true;
 	}
 	
-	public void sendBack(Player player) {
-		player.teleport(plugin.pm.getLoc(player));
-	}
-	
-	public static boolean isEmpty(Player p) {
-		for(ItemStack i : p.getInventory()) {
-			if(i == null) continue;
-			if(i.getTypeId() != 0) return false;
-		}
-		for(ItemStack i : p.getInventory().getArmorContents()) {
-			if(i == null) continue;
-			if(i.getTypeId() != 0) return false;
-		}
-		return true;
-	}
 }

@@ -7,8 +7,6 @@ import java.util.SortedSet;
 import java.util.TreeSet;
 import java.util.Map.Entry;
 import me.blablubbabc.BlaDB.Register;
-
-import org.bukkit.ChatColor;
 import org.bukkit.entity.Player;
 
 public class Stats {
@@ -16,12 +14,6 @@ public class Stats {
 	private Paintball plugin;
 	private Register data;
 	
-	private ChatColor red = ChatColor.RED;
-	private ChatColor green = ChatColor.GREEN;
-	private ChatColor aqua = ChatColor.AQUA;
-	private ChatColor yellow = ChatColor.YELLOW;
-	private ChatColor gold = ChatColor.GOLD;
-	private ChatColor gray = ChatColor.GRAY;
 	
 	private LinkedHashMap<String, Integer> points;
 	private LinkedHashMap<String, Integer> kills;
@@ -204,9 +196,9 @@ public class Stats {
 	
 	public void sendTop(Player player) {
 		calculateRanks();
-		player.sendMessage(aqua+""+ ChatColor.BOLD+"["+yellow+""+ ChatColor.BOLD+" ***** Paintball Top 10 Players ***** "+aqua+""+ ChatColor.BOLD+"] ");
+		player.sendMessage(plugin.aqua+""+ plugin.bold+"["+plugin.yellow+""+ plugin.bold+" ***** Paintball Top 10 Players ***** "+plugin.aqua+""+ plugin.bold+"] ");
 		for(int i = 1; i <= 10; i++) {
-			if(i <= topPoints.keySet().toArray().length) player.sendMessage(gold+""+ChatColor.BOLD+ "Rank " + i + " " + aqua + topPoints.keySet().toArray()[i-1] + " ( " + topPoints.values().toArray()[i-1] + " )");
+			if(i <= topPoints.keySet().toArray().length) player.sendMessage(plugin.gold+""+plugin.bold+ "Rank " + i + " " + plugin.aqua + topPoints.keySet().toArray()[i-1] + " ( " + topPoints.values().toArray()[i-1] + " )");
 			else break;
 		}
 	}
@@ -214,45 +206,45 @@ public class Stats {
 	public void sendRank(Player player, String name) {
 		calculateRanks();
 		if(plugin.pm.exists(name)) {
-			player.sendMessage(yellow+""+ ChatColor.BOLD+"Paintball Rank: " + green + getRank(name));
+			player.sendMessage(plugin.yellow+""+ plugin.bold+"Paintball Rank: " + plugin.green + getRank(name));
 		} else {
-			player.sendMessage(gray + "Player " + name + " not found.");
+			player.sendMessage(plugin.gray + "Player " + name + " not found.");
 		}
 	}
 	
 	public void sendCash(Player player, String name) {
 		calculateRanks();
 		if(plugin.pm.exists(name)) {
-			player.sendMessage(green+"Cash "+gray+name+green+": "+topMoney.get(name));
+			player.sendMessage(plugin.green+"Cash "+plugin.gray+name+plugin.green+": "+topMoney.get(name));
 		} else {
-			player.sendMessage(gray + "Player " + name + " not found.");
+			player.sendMessage(plugin.gray + "Player " + name + " not found.");
 		}
 	}
 	
 	public void sendStats(Player player, String name) {
 		calculateRanks();
 		if(plugin.pm.exists(name)) {
-			player.sendMessage(aqua+""+ ChatColor.BOLD+"["+yellow+""+ ChatColor.BOLD+" -------Paintball Stats------- "+aqua+""+ ChatColor.BOLD+"] ");
-			player.sendMessage(red+"__________Stats: "+green+ name +red+"__________");
-			player.sendMessage(green+"Points: "+aqua+topPoints.get(name)+gold+" ( Top: "+ topPoints.values().toArray()[0] + " )");
-			player.sendMessage(green+"Cash: "+aqua+topMoney.get(name)+gold+" ( Top: "+ topMoney.values().toArray()[0] + " )");
-			player.sendMessage(green+"Kills: "+aqua+topKills.get(name)+gold+" ( Top: "+ topKills.values().toArray()[0] + " )");
-			player.sendMessage(green+"Deaths: "+aqua+topDeaths.get(name)+gold+" ( Top: "+ topDeaths.values().toArray()[0] + " )");
-			player.sendMessage(green+"K/D: "+aqua+topKD.get(name)+gold+" ( Top: "+ topKD.values().toArray()[0] + " )");
-			player.sendMessage(green+"Shots: "+aqua+topShots.get(name)+gold+" ( Top: "+ topShots.values().toArray()[0] + " )");
-			player.sendMessage(green+"Hits: "+aqua+topHits.get(name)+gold+" ( Top: "+ topHits.values().toArray()[0] + " )");
-			player.sendMessage(green+"Hitquote: "+aqua+topHitquote.get(name)+gold+" ( Top: "+ topHitquote.values().toArray()[0] + " )");
-			player.sendMessage(green+"Teamattacks: "+aqua+topTeamattacks.get(name)+gold+" ( Top: "+ topTeamattacks.values().toArray()[0] + " )");
-			player.sendMessage(green+"Rounds: "+aqua+topRounds.get(name)+gold+" ( Top: "+ topRounds.values().toArray()[0] + " )");
-			player.sendMessage(green+"Wins: "+aqua+topWins.get(name)+gold+" ( Top: "+ topWins.values().toArray()[0] + " )");
-			player.sendMessage(green+"Looses: "+aqua+topLooses.get(name)+gold+" ( Top: "+ topLooses.values().toArray()[0] + " )");
-			player.sendMessage(red+"__________General Stats__________");
-			player.sendMessage(green+"Fired Shots: "+aqua+getShots());
-			player.sendMessage(green+"Frags: "+aqua+getKills());
-			player.sendMessage(green+"Played Rounds: "+aqua+getRounds());
-			player.sendMessage(green+"Spent Cash: "+aqua+getMoney());
+			player.sendMessage(plugin.aqua+""+ plugin.bold+"["+plugin.yellow+""+ plugin.bold+" -------Paintball Stats------- "+plugin.aqua+""+ plugin.bold+"] ");
+			player.sendMessage(plugin.red+"__________Stats: "+plugin.green+ name +plugin.red+"__________");
+			player.sendMessage(plugin.green+"Points: "+plugin.aqua+topPoints.get(name)+plugin.gold+" ( Top: "+ topPoints.values().toArray()[0] + " )");
+			player.sendMessage(plugin.green+"Cash: "+plugin.aqua+topMoney.get(name)+plugin.gold+" ( Top: "+ topMoney.values().toArray()[0] + " )");
+			player.sendMessage(plugin.green+"Kills: "+plugin.aqua+topKills.get(name)+plugin.gold+" ( Top: "+ topKills.values().toArray()[0] + " )");
+			player.sendMessage(plugin.green+"Deaths: "+plugin.aqua+topDeaths.get(name)+plugin.gold+" ( Top: "+ topDeaths.values().toArray()[0] + " )");
+			player.sendMessage(plugin.green+"K/D: "+plugin.aqua+topKD.get(name)+plugin.gold+" ( Top: "+ topKD.values().toArray()[0] + " )");
+			player.sendMessage(plugin.green+"Shots: "+plugin.aqua+topShots.get(name)+plugin.gold+" ( Top: "+ topShots.values().toArray()[0] + " )");
+			player.sendMessage(plugin.green+"Hits: "+plugin.aqua+topHits.get(name)+plugin.gold+" ( Top: "+ topHits.values().toArray()[0] + " )");
+			player.sendMessage(plugin.green+"Hitquote: "+plugin.aqua+topHitquote.get(name)+plugin.gold+" ( Top: "+ topHitquote.values().toArray()[0] + " )");
+			player.sendMessage(plugin.green+"Teamattacks: "+plugin.aqua+topTeamattacks.get(name)+plugin.gold+" ( Top: "+ topTeamattacks.values().toArray()[0] + " )");
+			player.sendMessage(plugin.green+"Rounds: "+plugin.aqua+topRounds.get(name)+plugin.gold+" ( Top: "+ topRounds.values().toArray()[0] + " )");
+			player.sendMessage(plugin.green+"Wins: "+plugin.aqua+topWins.get(name)+plugin.gold+" ( Top: "+ topWins.values().toArray()[0] + " )");
+			player.sendMessage(plugin.green+"Looses: "+plugin.aqua+topLooses.get(name)+plugin.gold+" ( Top: "+ topLooses.values().toArray()[0] + " )");
+			player.sendMessage(plugin.red+"__________General Stats__________");
+			player.sendMessage(plugin.green+"Fiplugin.red Shots: "+plugin.aqua+getShots());
+			player.sendMessage(plugin.green+"Frags: "+plugin.aqua+getKills());
+			player.sendMessage(plugin.green+"Played Rounds: "+plugin.aqua+getRounds());
+			player.sendMessage(plugin.green+"Spent Cash: "+plugin.aqua+getMoney());
 		} else {
-			player.sendMessage(gray + "Player " + name + " not found.");
+			player.sendMessage(plugin.gray + "Player " + name + " not found.");
 		}	
 	}
 	

@@ -6,8 +6,11 @@ import java.util.LinkedHashMap;
 import me.blablubbabc.BlaDB.BlaDB;
 import me.blablubbabc.paintball.Metrics.Graph;
 
+import org.bukkit.ChatColor;
 import org.bukkit.Location;
 import org.bukkit.command.CommandExecutor;
+import org.bukkit.entity.Player;
+import org.bukkit.inventory.ItemStack;
 import org.bukkit.plugin.java.JavaPlugin;
 
 //This file is part of blablubbabc's paintball-Plugin. Do not redistribute or modify. Use it as it is. Usage on own risk. No warranties. No commercial usage!
@@ -21,6 +24,19 @@ public class Paintball extends JavaPlugin{
 	public Stats stats;
 	public boolean active;
 	public boolean softreload;
+	
+	//ChatColors
+	public ChatColor gray = ChatColor.GRAY;
+	public ChatColor gold = ChatColor.GOLD;
+	public ChatColor green = ChatColor.GREEN;
+	public ChatColor aqua = ChatColor.AQUA;
+	public ChatColor red = ChatColor.RED;
+	public ChatColor blue = ChatColor.BLUE;
+	public ChatColor yellow = ChatColor.YELLOW;
+	public ChatColor light_purple = ChatColor.LIGHT_PURPLE;
+	public ChatColor dark_green = ChatColor.DARK_GREEN;
+	
+	public ChatColor bold = ChatColor.BOLD;
 	
 	//Config:
 	//general:
@@ -340,6 +356,10 @@ public class Paintball extends JavaPlugin{
 		return lobbyspawns;
 	}
 	
+	////////////////////////////////////
+	//UTILS
+	////////////////////////////////////
+	
 	public LinkedHashMap<String, Object> transformLocation(Location loc) {
 		LinkedHashMap<String, Object> map = new LinkedHashMap<String, Object>();
 		map.put("world", loc.getWorld().getName());
@@ -355,6 +375,33 @@ public class Paintball extends JavaPlugin{
 		int z = (Integer) map.get("z");
 		Location loc = new Location(getServer().getWorld(world), x, y, z);
 		return loc;
+	}
+	
+	public void leaveLobby(Player player) {
+		//lobby remove:
+		Lobby.remove(player);
+		//teleport:
+		player.teleport(pm.getLoc(player));
+		//messages:
+		player.sendMessage(gray + "You left the lobby.");
+		nf.leave(player.getName());
+	}
+	
+	public boolean isEmpty(Player p) {
+		for(ItemStack i : p.getInventory()) {
+			if(i == null) continue;
+			if(i.getTypeId() != 0) return false;
+		}
+		for(ItemStack i : p.getInventory().getArmorContents()) {
+			if(i == null) continue;
+			if(i.getTypeId() != 0) return false;
+		}
+		return true;
+	}
+	
+	public void clearInv(Player p) {
+		p.getInventory().clear();
+		p.getInventory().setArmorContents(null);
 	}
 	
 

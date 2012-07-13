@@ -4,6 +4,7 @@ import java.util.HashMap;
 import java.util.HashSet;
 import me.blablubbabc.paintball.extras.Airstrike;
 import me.blablubbabc.paintball.extras.Grenade;
+
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
 import org.bukkit.block.Block;
@@ -41,8 +42,6 @@ import org.bukkit.util.Vector;
 public class EventListener implements Listener{
 	private Paintball plugin;
 	private MatchManager mm;
-
-	private ChatColor gray = ChatColor.GRAY;
 
 	private HashMap<Player, Integer> taskIds;
 	private HashSet<Byte> transparent;
@@ -170,13 +169,13 @@ public class EventListener implements Listener{
 									player.getInventory().setItemInHand(null);
 							}
 						} else {
-							player.sendMessage(gray+"There is already one airstrike going on.");
+							player.sendMessage(plugin.gray+"There is already one airstrike going on.");
 						}
 					}
 				}
 			} else if(player.getItemInHand().getTypeId() == 344) {
 				if(event.getAction().equals(Action.RIGHT_CLICK_AIR) || event.getAction().equals(Action.RIGHT_CLICK_BLOCK)) {
-					player.sendMessage(ChatColor.GREEN +"Fire in the hole!");
+					player.sendMessage(plugin.green +"Fire in the hole!");
 				}
 			}
 		}
@@ -287,7 +286,7 @@ public class EventListener implements Listener{
 	@EventHandler(priority = EventPriority.LOWEST)
 	public void onPlayerCommand(PlayerCommandPreprocessEvent event) {
 		if(Lobby.getTeam(event.getPlayer()) != null && !event.getMessage().startsWith("/pb") && !event.getPlayer().hasPermission("paintball.admin") && !event.getPlayer().isOp() ) {
-			event.getPlayer().sendMessage(gray + "This command is not allowed while playing paintball.");
+			event.getPlayer().sendMessage(plugin.gray + "This command is not allowed while playing paintball.");
 			event.setCancelled(true);
 		}
 	}
@@ -363,7 +362,7 @@ public class EventListener implements Listener{
 			//exit game
 			if(Lobby.isPlaying(player) || Lobby.isSpectating(player)) mm.getMatch(player).left(player);
 			//clear inventory
-			mm.clearInv(player);
+			plugin.clearInv(player);
 			//drops?
 			event.getDrops().removeAll(event.getDrops());
 			//Exit lobby
@@ -394,7 +393,7 @@ public class EventListener implements Listener{
 			//exit game
 			if(Lobby.isPlaying(player) || Lobby.isSpectating(player)) mm.getMatch(player).left(player);
 			//clear inventory
-			mm.clearInv(player);
+			plugin.clearInv(player);
 			//Exit lobby
 			Lobby.remove(player);
 			//Teleport back

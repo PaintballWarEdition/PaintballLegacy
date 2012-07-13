@@ -1,6 +1,5 @@
 package me.blablubbabc.paintball.commands;
 
-import org.bukkit.ChatColor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
@@ -11,13 +10,6 @@ import me.blablubbabc.paintball.Paintball;
 public class CmdAdmin {
 	private Paintball plugin;
 
-	private ChatColor gray = ChatColor.GRAY;
-	private ChatColor green = ChatColor.GREEN;
-	//private ChatColor aqua = ChatColor.AQUA;
-	private ChatColor yellow = ChatColor.YELLOW;
-	private ChatColor red = ChatColor.RED;
-	private ChatColor gold = ChatColor.GOLD;
-	private ChatColor purple = ChatColor.LIGHT_PURPLE;
 
 	public CmdAdmin(Paintball pl) {
 		plugin = pl;
@@ -26,7 +18,7 @@ public class CmdAdmin {
 	public boolean command(CommandSender sender, String[] args) {
 		if(sender instanceof Player) {
 			if(!sender.isOp() && !sender.hasPermission("paintball.admin")) {
-				sender.sendMessage(red+"No permission.");
+				sender.sendMessage(plugin.red+"No permission.");
 				return true;
 			}
 			Player player = (Player) sender;
@@ -36,11 +28,11 @@ public class CmdAdmin {
 				if(args.length == 3) {
 					if(args[2].equalsIgnoreCase("spawn")) {
 						plugin.addLobbySpawn(player.getLocation());
-						player.sendMessage(Lobby.LOBBY.color() + "Lobby"+green+" spawn added.");
+						player.sendMessage(Lobby.LOBBY.color() + "Lobby"+plugin.green+" spawn added.");
 						return true;
 					} else if(args[2].equalsIgnoreCase("remove")) {
 						plugin.deleteLobbySpawns();
-						player.sendMessage(Lobby.LOBBY.color() + "Lobby"+green+" spawns removed.");
+						player.sendMessage(Lobby.LOBBY.color() + "Lobby"+plugin.green+" spawns removed.");
 						return true;
 					}
 				}
@@ -55,7 +47,7 @@ public class CmdAdmin {
 						plugin.pm.addMoney(args[2], money);
 						plugin.pm.saveData();
 					} catch(Exception e) {
-						player.sendMessage(red + "No valid value entered!");
+						player.sendMessage(plugin.red + "No valid value enteplugin.red!");
 					}
 					return true;
 				}
@@ -70,7 +62,7 @@ public class CmdAdmin {
 						plugin.pm.addPoints(args[2], points);
 						plugin.pm.saveData();
 					} catch(Exception e) {
-						player.sendMessage(red + "No valid value entered!");
+						player.sendMessage(plugin.red + "No valid value enteplugin.red!");
 					}
 					return true;
 				}
@@ -82,7 +74,7 @@ public class CmdAdmin {
 						Lobby.BLUE.setHelmet(is.getType(), is.getData().getData());
 						Lobby.BLUE.saveData();
 						return true;
-					} else if(args[2].equalsIgnoreCase("red")) {
+					} else if(args[2].equalsIgnoreCase("plugin.red")) {
 						ItemStack is = player.getItemInHand();
 						Lobby.RED.setHelmet(is.getType(), is.getData().getData());
 						Lobby.RED.saveData();
@@ -100,10 +92,10 @@ public class CmdAdmin {
 					//reload:
 					plugin.active = false;
 					plugin.reload();
-					sender.sendMessage(green+"Reload finished.");
+					sender.sendMessage(plugin.green+"Reload finished.");
 					//playerstats löschen
 					plugin.pm.resetData();
-					sender.sendMessage(red+"All"+green+" stats have been reset!");
+					sender.sendMessage(plugin.red+"All"+plugin.green+" stats have been reset!");
 				} else if(args.length == 3) {
 					if(plugin.pm.exists(args[2])) {
 						String name = args[2];
@@ -116,9 +108,9 @@ public class CmdAdmin {
 						plugin.pm.setPoints(name, 0);
 						plugin.pm.setShots(name, 0);
 						plugin.pm.saveData();
-						sender.sendMessage(green+"Stats of player "+gray+name+green+" have been reset!");
+						sender.sendMessage(plugin.green+"Stats of player "+plugin.gray+name+plugin.green+" have been reset!");
 					} else {
-						sender.sendMessage(gray + "Player " + args[2] + " not found.");
+						sender.sendMessage(plugin.gray + "Player " + args[2] + " not found.");
 					}
 					return true;
 				} else if(args.length == 4) {
@@ -126,7 +118,7 @@ public class CmdAdmin {
 						if(plugin.pm.possibleValues.contains(args[3])) {
 							plugin.pm.setIntValue(args[2], args[3], 0);
 							plugin.pm.saveData();
-							sender.sendMessage(gold+args[3]+green+" of player "+gray+args[2]+green+" have been reset!");
+							sender.sendMessage(plugin.gold+args[3]+plugin.green+" of player "+plugin.gray+args[2]+plugin.green+" have been reset!");
 						} else {
 							String values = "";
 							for(String s : plugin.pm.possibleValues) {
@@ -134,10 +126,10 @@ public class CmdAdmin {
 							}
 							if(values.length() > 1) values.substring(0, (values.length() -1));
 
-							sender.sendMessage(gray + "Value not found. Try: "+values);
+							sender.sendMessage(plugin.gray + "Value not found. Try: "+values);
 						}
 					} else {
-						sender.sendMessage(gray + "Player " + args[2] + " not found.");
+						sender.sendMessage(plugin.gray + "Player " + args[2] + " not found.");
 					}
 					return true;
 				}
@@ -146,15 +138,15 @@ public class CmdAdmin {
 				if(args.length == 3) {
 					String arena = args[2];
 					if(!plugin.am.existing(arena)) {
-						sender.sendMessage(red + "This arena does not exist!");
+						sender.sendMessage(plugin.red + "This arena does not exist!");
 						return true;
 					}
 					if(!plugin.am.inUse(arena) && !plugin.am.isReady(arena)) {
-						sender.sendMessage(red + "This arena is not ready!");
+						sender.sendMessage(plugin.red + "This arena is not ready!");
 						return true;
 					}
 					plugin.am.setNext(arena);
-					plugin.nf.text(plugin.nf.pluginName+purple+"Tries to force next arena to be "+yellow+arena );
+					plugin.nf.text(plugin.nf.pluginName+plugin.light_purple+"Tries to force next arena to be "+plugin.yellow+arena );
 					return true;
 				}
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -167,14 +159,14 @@ public class CmdAdmin {
 					plugin.active = true;
 					status = "activated";
 				}
-				sender.sendMessage(green+"Paintball matches are now " +yellow+ status);
+				sender.sendMessage(plugin.green+"Paintball matches are now " +plugin.yellow+ status);
 				return true;
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 			} else if(args[1].equalsIgnoreCase("reload")) {
 				//neue matches verhindern
 				plugin.active = false;
 				plugin.reload();
-				sender.sendMessage(green+"Reload finished.");
+				sender.sendMessage(plugin.green+"Reload finished.");
 				return true;
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 			} else if(args[1].equalsIgnoreCase("softreload")) {
@@ -182,9 +174,9 @@ public class CmdAdmin {
 				plugin.active = false;
 				plugin.softreload = true;
 				//message:
-				plugin.nf.status(purple + "Paintball plugin is reloaded soon. New matches diabled. You will be kicked from the lobby soon..");
+				plugin.nf.status(plugin.light_purple + "Paintball plugin is reloaded soon. New matches diabled. You will be kicked from the lobby soon..");
 				//check
-				sender.sendMessage(green+"Reload will be done when all matches are over..");
+				sender.sendMessage(plugin.green+"Reload will be done when all matches are over..");
 				plugin.mm.softCheck();
 				return true;
 			}
@@ -195,10 +187,10 @@ public class CmdAdmin {
 				//reload:
 				plugin.active = false;
 				plugin.reload();
-				sender.sendMessage(green+"Reload finished.");
+				sender.sendMessage(plugin.green+"Reload finished.");
 				//playerstats löschen
 				plugin.pm.resetData();
-				sender.sendMessage(red+"All"+green+" stats have been reset!");
+				sender.sendMessage(plugin.red+"All"+plugin.green+" stats have been reset!");
 			} else if(args.length == 3) {
 				if(plugin.pm.exists(args[2])) {
 					String name = args[2];
@@ -211,9 +203,9 @@ public class CmdAdmin {
 					plugin.pm.setPoints(name, 0);
 					plugin.pm.setShots(name, 0);
 					plugin.pm.saveData();
-					sender.sendMessage(green+"Stats of player "+gray+name+green+" have been reset!");
+					sender.sendMessage(plugin.green+"Stats of player "+plugin.gray+name+plugin.green+" have been reset!");
 				} else {
-					sender.sendMessage(gray + "Player " + args[2] + " not found.");
+					sender.sendMessage(plugin.gray + "Player " + args[2] + " not found.");
 				}
 				return true;
 			} else if(args.length == 4) {
@@ -221,7 +213,7 @@ public class CmdAdmin {
 					if(plugin.pm.possibleValues.contains(args[3])) {
 						plugin.pm.setIntValue(args[2], args[3], 0);
 						plugin.pm.saveData();
-						sender.sendMessage(gold+args[3]+green+" of player "+gray+args[2]+green+" have been reset!");
+						sender.sendMessage(plugin.gold+args[3]+plugin.green+" of player "+plugin.gray+args[2]+plugin.green+" have been reset!");
 					} else {
 						String values = "";
 						for(String s : plugin.pm.possibleValues) {
@@ -229,10 +221,10 @@ public class CmdAdmin {
 						}
 						if(values.length() > 1) values.substring(0, (values.length() -1));
 
-						sender.sendMessage(gray + "Value not found. Try: "+values);
+						sender.sendMessage(plugin.gray + "Value not found. Try: "+values);
 					}
 				} else {
-					sender.sendMessage(gray + "Player " + args[2] + " not found.");
+					sender.sendMessage(plugin.gray + "Player " + args[2] + " not found.");
 				}
 				return true;
 			}
@@ -241,15 +233,15 @@ public class CmdAdmin {
 			if(args.length == 3) {
 				String arena = args[2];
 				if(!plugin.am.existing(arena)) {
-					sender.sendMessage(red + "This arena does not exist!");
+					sender.sendMessage(plugin.red + "This arena does not exist!");
 					return true;
 				}
 				if(!plugin.am.inUse(arena) && !plugin.am.isReady(arena)) {
-					sender.sendMessage(red + "This arena is not ready!");
+					sender.sendMessage(plugin.red + "This arena is not ready!");
 					return true;
 				}
 				plugin.am.setNext(arena);
-				plugin.nf.text(plugin.nf.pluginName+purple+"Tries to force next arena to be "+yellow+arena );
+				plugin.nf.text(plugin.nf.pluginName+plugin.light_purple+"Tries to force next arena to be "+plugin.yellow+arena );
 				return true;
 			}
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -262,7 +254,7 @@ public class CmdAdmin {
 				plugin.active = true;
 				status = "activated";
 			}
-			sender.sendMessage(green+"Paintball matches are now " +yellow+ status);
+			sender.sendMessage(plugin.green+"Paintball matches are now " +plugin.yellow+ status);
 			return true;
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -270,7 +262,7 @@ public class CmdAdmin {
 			//neue matches verhindern
 			plugin.active = false;
 			plugin.reload();
-			sender.sendMessage(green+"Reload finished.");
+			sender.sendMessage(plugin.green+"Reload finished.");
 			return true;
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 		} else if(args[1].equalsIgnoreCase("softreload")) {
@@ -278,9 +270,9 @@ public class CmdAdmin {
 			plugin.active = false;
 			plugin.softreload = true;
 			//message:
-			plugin.nf.status(purple + "Paintball plugin is reloaded soon. New matches diabled. You will be kicked from the lobby soon..");
+			plugin.nf.status(plugin.light_purple + "Paintball plugin is reloaded soon. New matches diabled. You will be kicked from the lobby soon..");
 			//check
-			sender.sendMessage(green+"Reload will be done when all matches are over..");
+			sender.sendMessage(plugin.green+"Reload will be done when all matches are over..");
 			plugin.mm.softCheck();
 			return true;
 		} else {

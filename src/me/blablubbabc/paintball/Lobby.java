@@ -13,7 +13,7 @@ public enum Lobby {
 
 	RED			(Material.WOOL, (byte)14, ChatColor.RED),
 	BLUE		(Material.WOOL, (byte)11, ChatColor.BLUE),
-	RANDOM		(Material.AIR, (byte)0, ChatColor.WHITE),
+	RANDOM		(Material.AIR, (byte)0, ChatColor.GREEN),
 	SPECTATE	(Material.AIR, (byte)0, ChatColor.YELLOW),
 	LOBBY		(Material.AIR, (byte)0, ChatColor.WHITE);
 	
