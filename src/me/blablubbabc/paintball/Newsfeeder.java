@@ -6,10 +6,11 @@ import org.bukkit.entity.Player;
 public class Newsfeeder {
 	private Paintball plugin;
 	
-	public String pluginName = plugin.aqua+""+ plugin.bold+"["+plugin.yellow+""+ plugin.bold+"Paintball"+plugin.aqua+""+ plugin.bold+"] ";
+	public String pluginName;
 	
 	public Newsfeeder(Paintball pl) {
 		plugin = pl;
+		pluginName = plugin.aqua+""+ plugin.bold+"["+plugin.yellow+""+ plugin.bold+"Paintball"+plugin.aqua+""+ plugin.bold+"] ";
 	}
 	
 	

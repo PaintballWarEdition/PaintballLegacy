@@ -23,12 +23,14 @@ public class Match {
 	private ArrayList<Player> players;
 	private ArrayList<Player> left;
 	private String arena;
+	private boolean matchOver;
 	
 	public Match(Paintball plugin, int lives, Set<Player> red, Set<Player> blue, Set<Player> spec, Set<Player> random, String arena) {
 		this.plugin = plugin;
 		this.arena = arena;
 		this.players = new ArrayList<Player>();
 		this.left = new ArrayList<Player>();
+		this.matchOver = false;
         
 		//TEAMS
 		for(Player p : red) {
@@ -286,11 +288,13 @@ public class Match {
 	//AKTIONS
 	
 	public void shot(Player player) {
+		if(matchOver) return;
 		//add 1
 		shots.put(player, (shots.get(player)+1));
 	}
 	
 	public void hitSnow(Player target, Player shooter) {
+		if(matchOver) return;
 		//Teams?
 		if(enemys(target, shooter)) {
 			//player not dead already?
@@ -317,6 +321,7 @@ public class Match {
 	}
 	
 	public void frag(final Player target, final Player killer) {
+		if(matchOver) return;
 		//teleport lobby:
 		final Match this2 = this;
 		plugin.getServer().getScheduler().scheduleSyncDelayedTask(plugin, new Runnable() {
