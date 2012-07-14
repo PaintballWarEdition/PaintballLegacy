@@ -335,6 +335,7 @@ public class CommandManager implements CommandExecutor{
 		sender.sendMessage(plugin.yellow+"/pb admin reset <all|player> [value] "+plugin.aqua+"- Resets all stats of all or one player or a specified value of the players stats.");
 		sender.sendMessage(plugin.yellow+"/pb admin helmet <blue|red|spec> "+plugin.aqua+"- Sets the helmet to the item holding in hand.");
 		sender.sendMessage(plugin.yellow+"/pb admin next <arena> "+plugin.aqua+"- Tries to force the next arena to the specified arena.");
+		sender.sendMessage(plugin.yellow+"/pb admin random "+plugin.aqua+"- Toggles 'only random' until next reload.");
 	}
 	private boolean joinLobby(Player player) {
 		//Lobby vorhanden?
