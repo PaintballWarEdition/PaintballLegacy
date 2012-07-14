@@ -184,6 +184,18 @@ public class CmdAdmin {
 			sender.sendMessage(plugin.green+"Reload will be done when all matches are over..");
 			plugin.mm.softCheck();
 			return true;
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+		} else if(args[1].equalsIgnoreCase("random")) {
+			//Toggle only random:
+			if(plugin.onlyRandom) {
+				plugin.onlyRandom = false;
+				sender.sendMessage(plugin.gray+"Deactivated 'only random' !");
+			} else {
+				plugin.onlyRandom = true;
+				sender.sendMessage(plugin.gray+"Activated 'only random' !");
+			}
+			return true;
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 		} else {
 			if(sender instanceof Player) return false;
 			else sender.sendMessage("This command cannot be used in console or is unknown.");
