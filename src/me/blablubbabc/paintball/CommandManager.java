@@ -99,19 +99,30 @@ public class CommandManager implements CommandExecutor{
 						return true;
 					}
 					//Max Players Check:
-					if(!Lobby.inTeam(player)) {
+					if(!Lobby.inTeam(player) || Lobby.SPECTATE.isMember(player)) {
 						int players = Lobby.RED.number() + Lobby.BLUE.number() + Lobby.RANDOM.number();
-						if(players > plugin.maxPlayers) {
+						if(players >= plugin.maxPlayers) {
 							player.sendMessage(plugin.gray + "Maximal number of paintball players is already reached!");
 							return true;
 						}
+					}
+					//only random:
+					if(plugin.onlyRandom) {
+						player.sendMessage(plugin.gray + "You can only join the random team!");
+						if(!plugin.autoRandom) return true;
 					}
 					if(Lobby.inTeam(player) || Lobby.SPECTATE.isMember(player)) {
 						Lobby.getTeam(player).removeMember(player);
 						player.sendMessage(plugin.gray + "You left your current team.");
 					}
-					Lobby.BLUE.addMember(player);
-					player.sendMessage(plugin.green + "You joined team "+Lobby.BLUE.color()+"blue!");
+					//only random + auto random
+					if(plugin.onlyRandom && plugin.autoRandom) {
+						Lobby.RANDOM.addMember(player);
+						player.sendMessage(plugin.green + "You automatically joined a "+Lobby.RANDOM.color()+"random team!");
+					} else {
+						Lobby.BLUE.addMember(player);
+						player.sendMessage(plugin.green + "You joined team "+Lobby.BLUE.color()+"blue!");
+					}
 					//players:
 					player.sendMessage(plugin.aqua+""+"Waiting players: " + plugin.nf.getPlayers());
 					if(plugin.mm.ready().equalsIgnoreCase("ready")) {
@@ -132,19 +143,30 @@ public class CommandManager implements CommandExecutor{
 						return true;
 					}
 					//Max Players Check:
-					if(!Lobby.inTeam(player)) {
+					if(!Lobby.inTeam(player) || Lobby.SPECTATE.isMember(player)) {
 						int players = Lobby.RED.number() + Lobby.BLUE.number() + Lobby.RANDOM.number();
-						if(players > plugin.maxPlayers) {
+						if(players >= plugin.maxPlayers) {
 							player.sendMessage(plugin.gray + "Maximal number of paintball players is already reached!");
 							return true;
 						}
+					}
+					//only random:
+					if(plugin.onlyRandom) {
+						player.sendMessage(plugin.gray + "You can only join the random team!");
+						if(!plugin.autoRandom) return true;
 					}
 					if(Lobby.inTeam(player) || Lobby.SPECTATE.isMember(player)) {
 						Lobby.getTeam(player).removeMember(player);
 						player.sendMessage(plugin.gray + "You left your current team.");
 					}
-					Lobby.RED.addMember(player);
-					player.sendMessage(plugin.green + "You joined team "+Lobby.RED.color()+"red!");
+					//only random + auto random
+					if(plugin.onlyRandom && plugin.autoRandom) {
+						Lobby.RANDOM.addMember(player);
+						player.sendMessage(plugin.green + "You automatically joined a "+Lobby.RANDOM.color()+"random team!");
+					} else {
+						Lobby.RED.addMember(player);
+						player.sendMessage(plugin.green + "You joined team "+Lobby.RED.color()+"red!");
+					}
 					//players:
 					player.sendMessage(plugin.aqua+""+"Waiting players: " + plugin.nf.getPlayers());
 					if(plugin.mm.ready().equalsIgnoreCase("ready")) {
@@ -165,9 +187,9 @@ public class CommandManager implements CommandExecutor{
 						return true;
 					}
 					//Max Players Check:
-					if(!Lobby.inTeam(player)) {
+					if(!Lobby.inTeam(player) || Lobby.SPECTATE.isMember(player)) {
 						int players = Lobby.RED.number() + Lobby.BLUE.number() + Lobby.RANDOM.number();
-						if(players > plugin.maxPlayers) {
+						if(players >= plugin.maxPlayers) {
 							player.sendMessage(plugin.gray + "Maximal number of paintball players is already reached!");
 							return true;
 						}

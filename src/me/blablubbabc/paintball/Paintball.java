@@ -52,6 +52,7 @@ public class Paintball extends JavaPlugin{
 	public ArrayList<String> shopGoods;
 	public boolean saveInventory;
 	public boolean onlyRandom;
+	public boolean autoRandom;
 	
 	//lobby join checks
 	public boolean checkInventory;
@@ -144,6 +145,8 @@ public class Paintball extends JavaPlugin{
 		if(getConfig().get("Paintball.Ball speed multi") == null)getConfig().set("Paintball.Ball speed multi", 1.5);
 		if(getConfig().get("Paintball.Colored listnames") == null)getConfig().set("Paintball.Colored listnames", true);
 		if(getConfig().get("Paintball.Colored chatnames") == null)getConfig().set("Paintball.Colored chatnames", true);
+		if(getConfig().get("Paintball.Only Random") == null)getConfig().set("Paintball.Only Random", false);
+		if(getConfig().get("Paintball.Auto Random") == null)getConfig().set("Paintball.Auto Random", true);
 		//lobby join checks
 		if(getConfig().get("Paintball.Lobby join.Checks.Inventory") == null)getConfig().set("Paintball.Lobby join.Checks.Inventory", true);
 		if(getConfig().get("Paintball.Lobby join.Checks.Inventory Save") == null)getConfig().set("Paintball.Lobby join.Checks.Inventory Save", true);
@@ -202,6 +205,8 @@ public class Paintball extends JavaPlugin{
 		speedmulti = getConfig().getDouble("Paintball.Ball speed multi", 1.5);
 		listnames = getConfig().getBoolean("Paintball.Colored listnames", true);
 		chatnames = getConfig().getBoolean("Paintball.Colored chatnames", true);
+		onlyRandom = getConfig().getBoolean("Paintball.Only Random", false);
+		autoRandom = getConfig().getBoolean("Paintball.Auto Random", true);
 		
 		//shop:
 		shop = getConfig().getBoolean("Paintball.Shop.enabled", true);
