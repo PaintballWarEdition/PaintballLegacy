@@ -314,7 +314,7 @@ public class Paintball extends JavaPlugin{
 					try {
 						int number = 0;
 						for(String name : pm.getData().keySet()) {
-							LinkedHashMap<String, Object> player;
+							LinkedHashMap<String, Object> player = new LinkedHashMap<String, Object>();
 							player = (LinkedHashMap<String, Object>) pm.getData().get(name);
 							if((Integer) player.get("shots") > 0) number++;
 						}
