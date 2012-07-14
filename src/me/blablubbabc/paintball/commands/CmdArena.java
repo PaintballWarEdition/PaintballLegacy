@@ -60,9 +60,9 @@ public class CmdArena {
 					player.sendMessage(plugin.aqua+"Size: "+plugin.yellow+arena.get("size"));
 					player.sendMessage(plugin.aqua+"Played Rounds: "+plugin.yellow+arena.get("rounds"));
 					player.sendMessage(plugin.aqua+"Frags: "+plugin.yellow+arena.get("kills"));
-					player.sendMessage(plugin.aqua+"Fiplugin.red Shots: "+plugin.yellow+arena.get("shots"));
+					player.sendMessage(plugin.aqua+"Fired Shots: "+plugin.yellow+arena.get("shots"));
 					player.sendMessage(plugin.aqua+"Blue Spawns: "+plugin.yellow+am.getBlueSpawnsSize(name));
-					player.sendMessage(plugin.aqua+"plugin.red Spawns: "+plugin.yellow+am.getRedSpawnsSize(name));
+					player.sendMessage(plugin.aqua+"Red Spawns: "+plugin.yellow+am.getRedSpawnsSize(name));
 					player.sendMessage(plugin.aqua+"Spectator Spawns: "+plugin.yellow+am.getSpecSpawnsSize(name));
 					if(!am.isReady(name)) {
 						player.sendMessage(plugin.red+"Needs following to be marked as ready:");

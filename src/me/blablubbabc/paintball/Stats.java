@@ -239,7 +239,7 @@ public class Stats {
 			player.sendMessage(plugin.green+"Wins: "+plugin.aqua+topWins.get(name)+plugin.gold+" ( Top: "+ topWins.values().toArray()[0] + " )");
 			player.sendMessage(plugin.green+"Looses: "+plugin.aqua+topLooses.get(name)+plugin.gold+" ( Top: "+ topLooses.values().toArray()[0] + " )");
 			player.sendMessage(plugin.red+"__________General Stats__________");
-			player.sendMessage(plugin.green+"Fiplugin.red Shots: "+plugin.aqua+getShots());
+			player.sendMessage(plugin.green+"Fired Shots: "+plugin.aqua+getShots());
 			player.sendMessage(plugin.green+"Frags: "+plugin.aqua+getKills());
 			player.sendMessage(plugin.green+"Played Rounds: "+plugin.aqua+getRounds());
 			player.sendMessage(plugin.green+"Spent Cash: "+plugin.aqua+getMoney());
