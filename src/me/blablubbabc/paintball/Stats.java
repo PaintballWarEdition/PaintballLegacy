@@ -1,5 +1,6 @@
 package me.blablubbabc.paintball;
 
+import java.text.DecimalFormat;
 import java.util.Comparator;
 import java.util.LinkedHashMap;
 import java.util.Map;
@@ -142,13 +143,13 @@ public class Stats {
 			deaths.put(name, (Integer) player.get("deaths"));
 			shots.put(name, (Integer) player.get("shots"));
 			hits.put(name, (Integer) player.get("hits"));
-			if(shots.get(name) > 0) hitquote.put(name, ( (Integer) player.get("hits") / (Integer) player.get("shots") ));
+			if(shots.get(name) > 0) hitquote.put(name, ( ((Integer) player.get("hits")*100) / (Integer) player.get("shots") ));
 			else hitquote.put(name, 0);
 			teamattacks.put(name, (Integer) player.get("teamattacks"));
 			wins.put(name, (Integer) player.get("wins"));
 			looses.put(name, (Integer) player.get("looses"));
 			money.put(name, (Integer) player.get("money"));
-			if(deaths.get(name) > 0) kd.put(name, ( (Integer)player.get("kills") / (Integer) player.get("deaths") ));
+			if(deaths.get(name) > 0) kd.put(name, ( ((Integer)player.get("kills")*100) / (Integer) player.get("deaths") ));
 			else kd.put(name, ( (Integer)player.get("kills") / 1 ));
 			rounds.put(name, ( (Integer)player.get("wins") + (Integer)player.get("looses") ));
 		}
@@ -224,16 +225,26 @@ public class Stats {
 	public void sendStats(Player player, String name) {
 		calculateRanks();
 		if(plugin.pm.exists(name)) {
+			float kdF = (float)topKD.get(name) / 100;
+			float hitquoteF = (float)topHitquote.get(name) / 100;
+			//TOP
+			int kdT = (Integer) topKD.values().toArray()[0];
+			int hitquoteT = (Integer) topKD.values().toArray()[0];
+			float kdFT = (float)kdT / 100;
+			float hitquoteFT = (float)hitquoteT / 100;
+			
+			DecimalFormat dec = new DecimalFormat("###.##");
+			
 			player.sendMessage(plugin.aqua+""+ plugin.bold+"["+plugin.yellow+""+ plugin.bold+" -------Paintball Stats------- "+plugin.aqua+""+ plugin.bold+"] ");
 			player.sendMessage(plugin.red+"__________Stats: "+plugin.green+ name +plugin.red+"__________");
 			player.sendMessage(plugin.green+"Points: "+plugin.aqua+topPoints.get(name)+plugin.gold+" ( Top: "+ topPoints.values().toArray()[0] + " )");
 			player.sendMessage(plugin.green+"Cash: "+plugin.aqua+topMoney.get(name)+plugin.gold+" ( Top: "+ topMoney.values().toArray()[0] + " )");
 			player.sendMessage(plugin.green+"Kills: "+plugin.aqua+topKills.get(name)+plugin.gold+" ( Top: "+ topKills.values().toArray()[0] + " )");
 			player.sendMessage(plugin.green+"Deaths: "+plugin.aqua+topDeaths.get(name)+plugin.gold+" ( Top: "+ topDeaths.values().toArray()[0] + " )");
-			player.sendMessage(plugin.green+"K/D: "+plugin.aqua+topKD.get(name)+plugin.gold+" ( Top: "+ topKD.values().toArray()[0] + " )");
+			player.sendMessage(plugin.green+"K/D: "+plugin.aqua+dec.format(kdF)+plugin.gold+" ( Top: "+ dec.format(kdFT) + " )");
 			player.sendMessage(plugin.green+"Shots: "+plugin.aqua+topShots.get(name)+plugin.gold+" ( Top: "+ topShots.values().toArray()[0] + " )");
 			player.sendMessage(plugin.green+"Hits: "+plugin.aqua+topHits.get(name)+plugin.gold+" ( Top: "+ topHits.values().toArray()[0] + " )");
-			player.sendMessage(plugin.green+"Hitquote: "+plugin.aqua+topHitquote.get(name)+plugin.gold+" ( Top: "+ topHitquote.values().toArray()[0] + " )");
+			player.sendMessage(plugin.green+"Hitquote: "+plugin.aqua+dec.format(hitquoteF)+plugin.gold+" ( Top: "+ dec.format(hitquoteFT) + " )");
 			player.sendMessage(plugin.green+"Teamattacks: "+plugin.aqua+topTeamattacks.get(name)+plugin.gold+" ( Top: "+ topTeamattacks.values().toArray()[0] + " )");
 			player.sendMessage(plugin.green+"Rounds: "+plugin.aqua+topRounds.get(name)+plugin.gold+" ( Top: "+ topRounds.values().toArray()[0] + " )");
 			player.sendMessage(plugin.green+"Wins: "+plugin.aqua+topWins.get(name)+plugin.gold+" ( Top: "+ topWins.values().toArray()[0] + " )");
