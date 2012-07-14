@@ -229,7 +229,7 @@ public class Stats {
 			float hitquoteF = (float)topHitquote.get(name) / 100;
 			//TOP
 			int kdT = (Integer) topKD.values().toArray()[0];
-			int hitquoteT = (Integer) topKD.values().toArray()[0];
+			int hitquoteT = (Integer) topHitquote.values().toArray()[0];
 			float kdFT = (float)kdT / 100;
 			float hitquoteFT = (float)hitquoteT / 100;
 			
