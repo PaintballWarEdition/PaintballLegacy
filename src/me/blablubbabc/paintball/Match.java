@@ -77,11 +77,11 @@ public class Match {
 			//inventory
 			p.getInventory().setHelmet(Lobby.RED.helmet());
 			if(plugin.balls > 0 ) p.getInventory().addItem(new ItemStack(Material.SNOW_BALL, plugin.balls));
-			else if(plugin.balls == -1 ) p.getInventory().addItem(new ItemStack(Material.SNOW_BALL, 1));
+			else if(plugin.balls == -1 ) p.getInventory().addItem(new ItemStack(Material.SNOW_BALL, 10));
 			if(plugin.grenadeAmount > 0 ) p.getInventory().addItem(new ItemStack(Material.EGG, plugin.grenadeAmount));
-			else if(plugin.grenadeAmount == -1 ) p.getInventory().addItem(new ItemStack(Material.EGG, 1));
+			else if(plugin.grenadeAmount == -1 ) p.getInventory().addItem(new ItemStack(Material.EGG, 10));
 			if(plugin.airstrikeAmount > 0 ) p.getInventory().addItem(new ItemStack(Material.STICK, plugin.airstrikeAmount));
-			else if(plugin.airstrikeAmount == -1 ) p.getInventory().addItem(new ItemStack(Material.STICK, 1));
+			else if(plugin.airstrikeAmount == -1 ) p.getInventory().addItem(new ItemStack(Material.STICK, 10));
 			//message
 			p.sendMessage(plugin.aqua+"You are in Team "+Lobby.getTeam(getTeamName(p)).color()+getTeamName(p));
 		}
@@ -102,11 +102,11 @@ public class Match {
 			//inventory:
 			p.getInventory().setHelmet(Lobby.BLUE.helmet());
 			if(plugin.balls > 0 ) p.getInventory().addItem(new ItemStack(Material.SNOW_BALL, plugin.balls));
-			else if(plugin.balls == -1 ) p.getInventory().addItem(new ItemStack(Material.SNOW_BALL, 1));
+			else if(plugin.balls == -1 ) p.getInventory().addItem(new ItemStack(Material.SNOW_BALL, 10));
 			if(plugin.grenadeAmount > 0 ) p.getInventory().addItem(new ItemStack(Material.EGG, plugin.grenadeAmount));
-			else if(plugin.grenadeAmount == -1 ) p.getInventory().addItem(new ItemStack(Material.EGG, 1));
+			else if(plugin.grenadeAmount == -1 ) p.getInventory().addItem(new ItemStack(Material.EGG, 10));
 			if(plugin.airstrikeAmount > 0 ) p.getInventory().addItem(new ItemStack(Material.STICK, plugin.airstrikeAmount));
-			else if(plugin.airstrikeAmount == -1 ) p.getInventory().addItem(new ItemStack(Material.STICK, 1));
+			else if(plugin.airstrikeAmount == -1 ) p.getInventory().addItem(new ItemStack(Material.STICK, 10));
 			//message
 			p.sendMessage(plugin.aqua+"You are in Team "+Lobby.getTeam(getTeamName(p)).color()+getTeamName(p));
 		}
