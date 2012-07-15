@@ -328,6 +328,7 @@ public class Paintball extends JavaPlugin{
 
 			metrics.start();
 		} catch (IOException e) {
+			Lobby.resetMaxPlayers();
 			// Failed to submit the stats :-(
 		}
 				
