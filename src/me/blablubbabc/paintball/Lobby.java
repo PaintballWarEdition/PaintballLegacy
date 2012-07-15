@@ -29,6 +29,7 @@ public enum Lobby {
 		this.helmet = new ItemStack(mat, 1, Short.parseShort("0"), data);
 		this.color = color;
 		this.players = new LinkedHashMap<Player, Boolean>();
+		this.maxPlayers = 0;
 		this.data = new Register();
 		this.updateData();
 		this.loadData();

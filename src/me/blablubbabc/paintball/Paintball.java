@@ -291,9 +291,11 @@ public class Paintball extends JavaPlugin{
 				@Override
 				public int getValue() {
 					try {
+						//get max:
+						int max = Lobby.LOBBY.maxNumber();
 						//reset max:
 						Lobby.resetMaxPlayers();
-						return Lobby.LOBBY.maxNumber();
+						return max;
 					} catch (Exception e) {
 						// Failed to get the value :(
 						//reset max:
