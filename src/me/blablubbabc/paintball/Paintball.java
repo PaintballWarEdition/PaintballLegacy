@@ -20,6 +20,7 @@ public class Paintball extends JavaPlugin{
 	public EventListener listener;
 	public Newsfeeder nf;
 	public ArenaManager am;
+	public Translator t;
 	public Stats stats;
 	public boolean active;
 	public boolean softreload;
@@ -39,6 +40,7 @@ public class Paintball extends JavaPlugin{
 	
 	//Config:
 	//general:
+	public String local;
 	public int countdown;
 	public int countdownInit;
 	public int minPlayers;
@@ -133,6 +135,7 @@ public class Paintball extends JavaPlugin{
 		goodsDef.add("1-Airstrike-100");
 		
 		getConfig().options().header("Use a value of -1 to give the players infinite balls or extras.");
+		if(getConfig().get("Paintball.Language") == null)getConfig().set("Paintball.Language", "enUS");
 		if(getConfig().get("Paintball.Points per Kill") == null)getConfig().set("Paintball.Points per Kill", 2);
 		if(getConfig().get("Paintball.Points per Hit") == null)getConfig().set("Paintball.Points per Hit", 1);
 		if(getConfig().get("Paintball.Points per Team-Attack") == null)getConfig().set("Paintball.Points per Team-Attack", -1);
@@ -188,6 +191,8 @@ public class Paintball extends JavaPlugin{
 		cashPerRound = getConfig().getInt("Paintball.Cash per Round", 0);
 		
 		//gerneral:
+		local = getConfig().getString("Paintball.Language", "enUS");
+		
 		lives = getConfig().getInt("Paintball.Match.Lives", 1);
 		if(lives < 1) lives = 1;
 		balls = getConfig().getInt("Paintball.Match.Balls", 50);
@@ -243,6 +248,8 @@ public class Paintball extends JavaPlugin{
 		//DB
 		data = new BlaDB("paintball", this.getDataFolder().toString());
 		loadDB();
+		//TRANSLATOR
+		t = new Translator(this, local);
 		//WAKE TEAM-ENUMS
 		Lobby.values();
 		//PLAYERMANAGER

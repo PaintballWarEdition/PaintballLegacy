@@ -8,6 +8,7 @@ import java.io.OutputStream;
 import java.util.HashMap;
 import java.util.Scanner;
 
+import org.bukkit.ChatColor;
 import org.bukkit.plugin.java.JavaPlugin;
 
 public class Translator {
@@ -73,10 +74,30 @@ public class Translator {
 	
 	//GETTER:
 	public String getString(String key) {
-		String value = translation.get(key);
+		String value = translation.get(key.toUpperCase());
 		if(value == null) {
-			return "TRANSLATION_IS_MISSING";
-		} else return value;
+			return "ERROR:translation_is_missing!";
+		} else {
+			//colors
+			value = ChatColor.translateAlternateColorCodes('&', value);
+			//.replaceAll("(&([a-f0-9]))", "\u00A7$2")
+			return value;
+		}
+	}
+	public String getString(String key, HashMap<String, String> vars) {
+		String value = translation.get(key.toUpperCase());
+		if(value == null) {
+			return "ERROR:translation_is_missing!";
+		} else {
+			//vars
+			for(String v : vars.keySet()) {
+				value = value.replaceAll("{"+v+"}", vars.get(v));
+			}
+			//colors
+			value = ChatColor.translateAlternateColorCodes('&', value);
+			//.replaceAll("(&([a-f0-9]))", "\u00A7$2")
+			return value;
+		}
 	}
 	
 	public HashMap<String, String> getTranslations() {
