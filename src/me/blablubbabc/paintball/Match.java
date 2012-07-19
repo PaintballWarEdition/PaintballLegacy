@@ -125,11 +125,23 @@ public class Match {
 		}
 		//colorchanges:
 		changeAllColors();
+		//TEST
+		makeAllVisible();
+		//TEST
 		//lives + start!:
 		if(lives == 1) plugin.nf.status("Everybody got " +plugin.green+1+ " life!"+plugin.light_purple+" And now FIGHT!" );
 		else plugin.nf.status("Everybody got " +plugin.green+plugin.lives+ " lives!"+plugin.light_purple+" And now FIGHT!" );
 	}
 	
+	//TESTING
+	public void makeAllVisible() {
+		for(Player pl : getAllPlayers()) {
+			for(Player p : getAllPlayers()) {
+				if(!p.equals(pl)) pl.showPlayer(p);
+			}
+		}
+	}
+	//TESTING
 	public void changeAllColors() {
 		for(Player p : redT.keySet()) {
 			//chatnames
