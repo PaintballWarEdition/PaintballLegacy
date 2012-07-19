@@ -145,9 +145,13 @@ COMMAND_ADMIN_RESET = "&e/pb admin reset <all|player> [value] &b- Resets all sta
 COMMAND_ADMIN_HELMET = "&e/pb admin helmet <blue|red|spec> &b- Sets the helmet to the item holding in hand."
 COMMAND_ADMIN_NEXT = "&e/pb admin next <arena> &b- Tries to force the next arena to the specified arena."
 COMMAND_ADMIN_RANDOM = "&e/pb admin random &b- Toggles 'only random' until next reload."
-
-
-
+ARENA_LIST_HEADER = "&b&l[&e&lPaintball Arenas: &7{arenas}&b&l]"
+ARENA_STATUS_READY = "&a|ready|"
+ARENA_STATUS_NOT_READY = "&c|not ready|"
+ARENA_STATUS = "&7- {arena} {status}"
+ARENA_CREATED = "&aNew arena created: &e{arena}"
+ARENA_NOT_FOUND = "&cArena not found: &e{arena}"
+ARENA_ALREADY_EXISTS = "&aArena &e{arena} &aalready exists!"
 
 
 

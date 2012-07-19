@@ -29,9 +29,9 @@ public class CmdArena {
 				player.sendMessage(plugin.aqua+""+ plugin.bold+"["+plugin.yellow+""+ plugin.bold+"Paintball Arenas: "+plugin.gray+arenas.size() +plugin.aqua+""+ plugin.bold+"] ");
 				for(String name : arenas.keySet()) {
 					String ready = "";
-					if(am.isReady(name)) ready = plugin.green+" |ready|";
-					else ready = plugin.red+" |not ready|";
-					player.sendMessage(plugin.gray+"- "+name+ready);
+					if(am.isReady(name)) ready = plugin.green+"|ready|";
+					else ready = plugin.red+"|not ready|";
+					player.sendMessage(plugin.gray+"- "+name+" "+ready);
 				}
 				return true;
 			} else {
