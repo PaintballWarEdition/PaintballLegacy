@@ -95,7 +95,7 @@ public class MatchManager{
 	
 	public void gameStart() {
 		int players = Lobby.RED.numberWaiting() + Lobby.BLUE.numberWaiting() + Lobby.RANDOM.numberWaiting();
-		String info = plugin.gold+"["+plugin.red+Lobby.RED.numberWaiting()+plugin.gold+"]["+plugin.blue+Lobby.BLUE.numberWaiting()+plugin.gold+"]["+plugin.green+Lobby.RANDOM.numberWaiting()+plugin.gold+"]["+plugin.yellow+Lobby.SPECTATE.numberWaiting()+plugin.gold+"]";
+		String info = plugin.nf.getPlayersOverview();
 		
 		for(Player player : Lobby.RANDOM.getMembers()) {
 			Lobby.RANDOM.setPlaying(player);

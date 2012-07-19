@@ -207,7 +207,7 @@ public class Stats {
 	public void sendRank(Player player, String name) {
 		calculateRanks();
 		if(plugin.pm.exists(name)) {
-			player.sendMessage(plugin.yellow+""+ plugin.bold+"Paintball Rank: " + plugin.green + getRank(name));
+			player.sendMessage(plugin.yellow+""+ plugin.bold+"Paintball Rank "+plugin.gray+name+plugin.yellow+""+plugin.bold+": " + plugin.green + getRank(name));
 		} else {
 			player.sendMessage(plugin.gray + "Player " + name + " not found.");
 		}

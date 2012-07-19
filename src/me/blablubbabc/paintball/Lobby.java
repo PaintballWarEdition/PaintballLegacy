@@ -11,21 +11,23 @@ import org.bukkit.inventory.ItemStack;
 
 public enum Lobby {
 
-	RED			(Material.WOOL, (byte)14, ChatColor.RED),
-	BLUE		(Material.WOOL, (byte)11, ChatColor.BLUE),
-	RANDOM		(Material.AIR, (byte)0, ChatColor.GREEN),
-	SPECTATE	(Material.AIR, (byte)0, ChatColor.YELLOW),
-	LOBBY		(Material.AIR, (byte)0, ChatColor.WHITE);
+	RED			("red", Material.WOOL, (byte)14, ChatColor.RED),
+	BLUE		("red", Material.WOOL, (byte)11, ChatColor.BLUE),
+	RANDOM		("random", Material.AIR, (byte)0, ChatColor.GREEN),
+	SPECTATE	("spectator", Material.AIR, (byte)0, ChatColor.YELLOW),
+	LOBBY		("lobby", Material.AIR, (byte)0, ChatColor.WHITE);
 	
 	private Paintball plugin;
 	private LinkedHashMap<Player, Boolean> players;	//members of a team: true: playing, false: waiting; Lobby: true/false toggle messages
 	private int maxPlayers;
+	private String name;
 	private ItemStack helmet;
 	private ChatColor color;
 	private Register data;
 	
-	private Lobby(Material mat, byte data, ChatColor color) {
+	private Lobby(String name, Material mat, byte data, ChatColor color) {
 		this.plugin = (Paintball) Bukkit.getServer().getPluginManager().getPlugin("Paintball");
+		this.name = name;
 		this.helmet = new ItemStack(mat, 1, Short.parseShort("0"), data);
 		this.color = color;
 		this.players = new LinkedHashMap<Player, Boolean>();
@@ -103,6 +105,9 @@ public enum Lobby {
 	public int maxNumber() {
 		return maxPlayers;
 	}
+	public String getName() {
+		return name;
+	}
 	public ItemStack helmet() {
 		return helmet;
 	}
@@ -113,7 +118,7 @@ public enum Lobby {
 	//GETTER
 	public static Lobby getTeam(String team) {
 		for(Lobby t : Lobby.values()) {
-			if(t.toString().toLowerCase().contains(team.toLowerCase())) return t;
+			if(t.getName().toLowerCase().contains(team.toLowerCase())) return t;
 		}
 		return null;
 	}
