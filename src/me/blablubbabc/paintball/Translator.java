@@ -72,6 +72,13 @@ public class Translator {
 				log("ERROR: Couldn't load the specified language file!");
 				log("Using the default language now: "+def_file.getName());
 				use_def = true;
+			} else {
+				//length check
+				if(translation.size() != def_language.size()) {
+					log("ERROR: Size-Missmatch between the keys of the loaded and the default language file detected! (translation-default: "+translation.size()+"-"+def_language.size()+" )");
+					log("Using the default language now: "+def_file.getName());
+					use_def = true;
+				}
 			}
 		}
 		this.success = true;
