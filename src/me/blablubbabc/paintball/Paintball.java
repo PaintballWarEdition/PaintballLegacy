@@ -251,7 +251,7 @@ public class Paintball extends JavaPlugin{
 		//TRANSLATOR
 		t = new Translator(this, local);
 		if(!t.success) {
-			log("ERROR: Couldn't find/load at least the default language file. Contact the author about this. Disables now..");
+			log("ERROR: Couldn't find/load the default language file. Disables now..");
 			getServer().getPluginManager().disablePlugin(this);
 			return;
 		}
