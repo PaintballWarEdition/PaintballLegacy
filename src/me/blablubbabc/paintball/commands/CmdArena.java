@@ -54,9 +54,9 @@ public class CmdArena {
 				if(args[2].equalsIgnoreCase("info")) {
 					LinkedHashMap<String, Object> arena = am.getArena(name);
 					String ready = "";
-					if(am.isReady(name)) ready = plugin.green+" |ready|";
-					else ready = plugin.red+" |not ready|";
-					player.sendMessage(plugin.aqua+""+ plugin.bold+"["+plugin.yellow+""+ plugin.bold+"Paintball Arena: "+plugin.green+name+ready+plugin.aqua+""+ plugin.bold+"] ");
+					if(am.isReady(name)) ready = plugin.green+"|ready|";
+					else ready = plugin.red+"|not ready|";
+					player.sendMessage(plugin.aqua+""+ plugin.bold+"["+plugin.yellow+""+ plugin.bold+"Paintball Arena: "+plugin.green+name+" "+ready+plugin.aqua+""+ plugin.bold+"] ");
 					player.sendMessage(plugin.aqua+"Size: "+plugin.yellow+arena.get("size"));
 					player.sendMessage(plugin.aqua+"Played Rounds: "+plugin.yellow+arena.get("rounds"));
 					player.sendMessage(plugin.aqua+"Frags: "+plugin.yellow+arena.get("kills"));
@@ -68,7 +68,7 @@ public class CmdArena {
 						player.sendMessage(plugin.red+"Needs following to be marked as ready:");
 						if(am.inUse(name)) player.sendMessage(plugin.gray+"- finish current match at this arena");
 						if(!am.pvpEnabled(name)) player.sendMessage(plugin.gray+"- enable PvP in all worlds where spawns can be found");
-						if(am.getRedSpawnsSize(name) == 0) player.sendMessage(plugin.gray+"- 1 plugin.red spawn");
+						if(am.getRedSpawnsSize(name) == 0) player.sendMessage(plugin.gray+"- 1 red spawn");
 						if(am.getBlueSpawnsSize(name) == 0) player.sendMessage(plugin.gray+"- 1 blue spawn");
 						if(am.getSpecSpawnsSize(name) == 0) player.sendMessage(plugin.gray+"- 1 spectator spawn");
 					}

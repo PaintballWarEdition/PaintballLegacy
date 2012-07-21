@@ -47,7 +47,7 @@ public class CmdAdmin {
 						plugin.pm.addMoney(args[2], money);
 						plugin.pm.saveData();
 					} catch(Exception e) {
-						player.sendMessage(plugin.red + "No valid value enteplugin.red!");
+						player.sendMessage(plugin.red + "Invalid number.");
 					}
 					return true;
 				}
@@ -62,7 +62,7 @@ public class CmdAdmin {
 						plugin.pm.addPoints(args[2], points);
 						plugin.pm.saveData();
 					} catch(Exception e) {
-						player.sendMessage(plugin.red + "No valid value enteplugin.red!");
+						player.sendMessage(plugin.red + "Invalid number.");
 					}
 					return true;
 				}
@@ -73,16 +73,19 @@ public class CmdAdmin {
 						ItemStack is = player.getItemInHand();
 						Lobby.BLUE.setHelmet(is.getType(), is.getData().getData());
 						Lobby.BLUE.saveData();
+						player.sendMessage(plugin.green+"Helmet successfull set.");
 						return true;
 					} else if(args[2].equalsIgnoreCase("red")) {
 						ItemStack is = player.getItemInHand();
 						Lobby.RED.setHelmet(is.getType(), is.getData().getData());
 						Lobby.RED.saveData();
+						player.sendMessage(plugin.green+"Helmet successfull set.");
 						return true;
 					} else if(args[2].equalsIgnoreCase("spec") || args[2].equalsIgnoreCase("spectator")) {
 						ItemStack is = player.getItemInHand();
 						Lobby.SPECTATE.setHelmet(is.getType(), is.getData().getData());
 						Lobby.SPECTATE.saveData();
+						player.sendMessage(plugin.green+"Helmet successfull set.");
 						return true;
 					}
 				}
@@ -142,7 +145,7 @@ public class CmdAdmin {
 			if(args.length == 3) {
 				String arena = args[2];
 				if(!plugin.am.existing(arena)) {
-					sender.sendMessage(plugin.red + "This arena does not exist!");
+					sender.sendMessage(plugin.red + "Arena not found: "+plugin.yellow+arena);
 					return true;
 				}
 				if(!plugin.am.inUse(arena) && !plugin.am.isReady(arena)) {
@@ -150,7 +153,7 @@ public class CmdAdmin {
 					return true;
 				}
 				plugin.am.setNext(arena);
-				plugin.nf.text(plugin.nf.pluginName+plugin.light_purple+"Tries to force next arena to be "+plugin.yellow+arena );
+				plugin.nf.text(plugin.nf.pluginName+plugin.light_purple+" Tries to force next arena to be "+plugin.yellow+arena);
 				return true;
 			}
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
