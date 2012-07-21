@@ -7,7 +7,6 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.util.HashMap;
 import java.util.Scanner;
-
 import org.bukkit.ChatColor;
 import org.bukkit.plugin.java.JavaPlugin;
 
@@ -19,11 +18,15 @@ public class Translator {
 	private File localisationFile;
 	private File def_file;
 	private HashMap<String, String> translation;
+	private HashMap<String, String> def_language;
+	private boolean use_def;
 	
 	public Translator(JavaPlugin plugin, String filename) {
-		this.success = true;
+		this.use_def = false;
+		this.success = false;
 		this.plugin = plugin;
 		this.translation = new HashMap<String, String>();
+		this.def_language = new HashMap<String, String>();
 		
 		path = new File(plugin.getDataFolder().toString()+"/languages/");
 		if(!path.exists()) path.mkdirs();
@@ -44,37 +47,44 @@ public class Translator {
 	    	}catch(Exception e) {
 	    		log("ERROR: Couldn't write the default language file!");
 	    		e.printStackTrace();
-		    	success = false;
 		    	return;
 	    	}
 	    } else {
 	    	log("ERROR: Couldn't load the default language file from jar!");
-	    	success = false;
 	    	return;
 	    }
-		
-	    //loading language file:
+		//get default language:
+	    def_language = loadLanguage(def_file);
+	    if(def_language == null) {
+	    	return;
+	    }
+	    
+	    //get translation:
 		localisationFile = new File(path + filename + ".txt");
 		if(!localisationFile.exists()) {
 			log("ERROR: Couldn't find the specified language file.");
-			log("Loading the default language now: "+def_file.getName());
-			loadLanguage(def_file);
+			log("Using the default language now: "+def_file.getName());
+			use_def = true;
 		} else {
 			log("Loading the specified language now: "+localisationFile.getName());
-			loadLanguage(localisationFile);
+			translation = loadLanguage(localisationFile);
+			if(translation == null) {
+				log("ERROR: Couldn't load the specified language file!");
+				log("Using the default language now: "+def_file.getName());
+				use_def = true;
+			}
 		}
-		if(success) {
-			log("Language file successfull loaded.");
-		} else {
-			log("ERROR: " +
-					"Could not load the language file.");
-		}
-		
+		this.success = true;
 	}
 	
 	//GETTER:
 	public String getString(String key) {
-		String value = translation.get(key.toUpperCase());
+		if(!success) {
+			return "ERROR:could_not_load_language!";
+		}
+		String value;
+		if(use_def) value = def_language.get(key.toUpperCase());
+		else value = translation.get(key.toUpperCase());
 		if(value == null) {
 			return "ERROR:translation_is_missing!";
 		} else {
@@ -85,7 +95,12 @@ public class Translator {
 		}
 	}
 	public String getString(String key, HashMap<String, String> vars) {
-		String value = translation.get(key.toUpperCase());
+		if(!success) {
+			return "ERROR:couldn't load language!";
+		}
+		String value;
+		if(use_def) value = def_language.get(key.toUpperCase());
+		else value = translation.get(key.toUpperCase());
 		if(value == null) {
 			return "ERROR:translation_is_missing!";
 		} else {
@@ -101,10 +116,12 @@ public class Translator {
 	}
 	
 	public HashMap<String, String> getTranslations() {
-		return translation;
+		if(use_def) return def_language;
+		else return translation;
 	}
 	
-	private void loadLanguage(File file) {
+	private HashMap<String, String> loadLanguage(File file) {
+		HashMap<String, String> language = new HashMap<String, String>();
 		try {
 			Scanner scanner = new Scanner(file);
 			int line = 0;
@@ -115,8 +132,7 @@ public class Translator {
 				int delimeter = text.indexOf('=');
 				if(delimeter == -1) {
 					log("ERROR: No '=' found in line "+line);
-					success = false;
-					break;
+					return null;
 				}
 				String key = text.substring(0, delimeter).replaceAll(" ", "").toUpperCase();
 				String value = text.substring(delimeter);
@@ -124,60 +140,34 @@ public class Translator {
 				int start = value.indexOf('"');
 				if(start == -1) {
 					log("ERROR: No '\"' found in line "+line);
-					success = false;
-					break;
+					return null;
 				}
 				int end = value.lastIndexOf('"');
 				if(end == start) {
 					log("ERROR: No second '\"' found in line "+line);
-					success = false;
-					break;
+					return null;
 				}
 				value = value.substring(start+1, end);
 				//checks
 				if(key.isEmpty()) {
 					log("ERROR: No key found in line "+line);
-					success = false;
 					break;
 				}
 				if(value.isEmpty()) {
 					log("ERROR: No value found in line "+line);
-					success = false;
-					break;
+					return null;
 				}
 				//Add to translation map:
-				translation.put(key, value);
-				success = true;
+				language.put(key, value);
 			}
-			
+			return language;
 		} catch (FileNotFoundException e) {
 			log("ERROR: Couldn't load the specified language file.");
 			e.printStackTrace();
-			success = false;
+			return null;
 		}
 		
 	}
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
 	private void log(String message) {
 		System.out.println("["+plugin.toString()+"]"+message);
 	}

@@ -250,6 +250,11 @@ public class Paintball extends JavaPlugin{
 		loadDB();
 		//TRANSLATOR
 		t = new Translator(this, local);
+		if(!t.success) {
+			log("ERROR: Couldn't find/load at least the default language file. Contact the author about this. Disables now..");
+			getServer().getPluginManager().disablePlugin(this);
+			return;
+		}
 		//WAKE TEAM-ENUMS
 		Lobby.values();
 		//PLAYERMANAGER
@@ -342,18 +347,18 @@ public class Paintball extends JavaPlugin{
 		}
 				
 				
-		log("["+this.toString()+"]" + " by blablubbabc enabled.");
-		log("["+this.toString()+"]" + " Do not redistribute or modify. Use it as it is and not for commercial purposes! Usage on own risk. No warranties.");
-		log("["+this.toString()+"]" + " If you like this, give feedback and donate at wir-sind-wir.de/lukas");
+		log("By blablubbabc enabled.");
+		log("Do not redistribute or modify. Use it as it is and not for commercial purposes! Usage on own risk. No warranties.");
+		log("If you like this, give feedback and donate at wir-sind-wir.de/lukas");
 	}
 
 	public void onDisable(){
-		mm.forceReload();
-		log(this.toString() + " disabled!");
+		if(mm != null) mm.forceReload();
+		log("Disabled!");
 	}
 	
 	public void log(String message) {
-		System.out.println(message);
+		System.out.println("["+this.toString()+"] "+message);
 	}
 	
 	public void reload() {
