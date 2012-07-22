@@ -66,30 +66,42 @@ public class Translator {
 			log("Using the default language now: "+def_file.getName());
 			use_def = true;
 		} else {
-			log("Loading the specified language now: "+localisationFile.getName());
-			translation = loadLanguage(localisationFile);
-			if(translation == null) {
-				log("ERROR: Couldn't load the specified language file!");
-				log("Do you use the right translation-version?");
-				log("Using the default language now: "+def_file.getName());
-				use_def = true;
-			} else {
-				//length check
-				if(translation.size() != def_language.size()) {
-					log("ERROR: Size-Missmatch between the keys of the loaded and the default language file detected! (translation-default: "+translation.size()+"-"+def_language.size()+" )");
+			if (!localisationFile.equals(def_file)) {
+				log("Loading the specified language now: "
+						+ localisationFile.getName());
+				translation = loadLanguage(localisationFile);
+				if (translation == null) {
+					log("ERROR: Couldn't load the specified language file!");
 					log("Do you use the right translation-version?");
-					log("Using the default language now: "+def_file.getName());
+					log("Using the default language now: " + def_file.getName());
 					use_def = true;
-				}else {
-					for(String s : def_language.keySet()) {
-						if(!translation.containsKey(s)) {
-							log("ERROR: Key missing in the loaded language-file: "+s);
-							log("Do you use the right translation-version?");
-							log("Using the default language now: "+def_file.getName());
-							use_def = true;
+				} else {
+					//length check
+					if (translation.size() != def_language.size()) {
+						log("ERROR: Size-Missmatch between the keys of the loaded and the default language file detected! (translation-default: "
+								+ translation.size()
+								+ "-"
+								+ def_language.size() + " )");
+						log("Do you use the right translation-version?");
+						log("Using the default language now: "
+								+ def_file.getName());
+						use_def = true;
+					} else {
+						for (String s : def_language.keySet()) {
+							if (!translation.containsKey(s)) {
+								log("ERROR: Key missing in the loaded language-file: "
+										+ s);
+								log("Do you use the right translation-version?");
+								log("Using the default language now: "
+										+ def_file.getName());
+								use_def = true;
+							}
 						}
 					}
 				}
+			} else {
+				log("Using the default language now: "+ def_file.getName());
+				use_def = true;
 			}
 		}
 		this.success = true;
