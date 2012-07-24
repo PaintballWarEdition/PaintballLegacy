@@ -19,7 +19,7 @@ public class CmdArena {
 	public boolean command(CommandSender sender, String[] args) {
 		if(sender instanceof Player) {
 			if(!sender.isOp() && !sender.hasPermission("paintball.arena")) {
-				sender.sendMessage(plugin.red+"No permission.");
+				sender.sendMessage(plugin.t.getString("NO_PERMISSION"));
 				return true;
 			}
 			Player player = (Player) sender;

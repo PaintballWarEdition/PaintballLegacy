@@ -240,13 +240,13 @@ public class CommandManager implements CommandExecutor{
 		if(rb && plugin.onlyRandom && plugin.autoRandom) {
 			Lobby.RANDOM.addMember(player);
 			HashMap<String, String> vars = new HashMap<String, String>();
-			vars.put("{color_random}", Lobby.RANDOM.color().toString());
+			vars.put("color_random", Lobby.RANDOM.color().toString());
 			player.sendMessage(plugin.t.getString("AUTO_JOIN_RANDOM", vars));
 		} else {
 			team.addMember(player);
 			HashMap<String, String> vars = new HashMap<String, String>();
-			vars.put("{color_team}", team.color().toString());
-			vars.put("{team}", team.getName());
+			vars.put("color_team", team.color().toString());
+			vars.put("team", team.getName());
 			if(rb) player.sendMessage(plugin.t.getString("YOU_JOINED_TEAM", vars));
 			else if(team.equals(Lobby.RANDOM)) player.sendMessage(plugin.t.getString("YOU_JOINED_RANDOM", vars));
 			else if(spec) player.sendMessage(plugin.t.getString("YOU_JOINED_SPECTATORS", vars));
