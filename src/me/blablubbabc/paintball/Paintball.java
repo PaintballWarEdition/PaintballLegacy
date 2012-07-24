@@ -430,14 +430,12 @@ public class Paintball extends JavaPlugin{
 			player.getInventory().setContents(pm.getInvContent(player));
 			player.getInventory().setArmorContents(pm.getInvArmor(player));
 			player.sendMessage(t.getString("INVENTORY_RESTORED"));
-			//player.sendMessage(gray+"Inventory restored.");
 		}
 		//teleport:
 		if(teleport) player.teleport(pm.getLoc(player));
 		if (messages) {
 			//messages:
 			player.sendMessage(t.getString("YOU_LEFT_LOBBY"));
-			//player.sendMessage(gray + "You left the lobby.");
 			nf.leave(player.getName());
 		}
 	}
