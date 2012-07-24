@@ -249,7 +249,7 @@ public class EventListener implements Listener{
 	}
 	
 	@EventHandler(priority = EventPriority.NORMAL)
-	public void onPlayerBreak(BlockPlaceEvent event) {
+	public void onPlayerPlace(BlockPlaceEvent event) {
 		Player player = event.getPlayer();
 		if(Lobby.getTeam(player) != null) {
 			if(!player.isOp() && !player.hasPermission("paintball.admin")) event.setCancelled(true);
