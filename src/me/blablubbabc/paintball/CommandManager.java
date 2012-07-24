@@ -1,6 +1,7 @@
 package me.blablubbabc.paintball;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 
 import me.blablubbabc.paintball.commands.CmdAdmin;
 import me.blablubbabc.paintball.commands.CmdArena;
@@ -30,18 +31,10 @@ public class CommandManager implements CommandExecutor{
 	public boolean onCommand(CommandSender sender, Command cmd, String label, String[] args) {
 		if(label.equalsIgnoreCase("pb")) {
 			if(!sender.isOp() && !sender.hasPermission("paintball.general")) {
-				sender.sendMessage(plugin.red+"No permission.");
+				sender.sendMessage(plugin.t.getString("NO_PERMISSION"));
 				return true;
 			}
 			if(args.length == 0) {
-				//TESTINGS
-				/*if(sender.getName().equals("blablubbabc")) {
-					plugin.mm.getMatch((Player) sender).hitSnow(plugin.getServer().getPlayer("AlphaX96"), plugin.getServer().getPlayer("blablubbabc"));
-					plugin.mm.getMatch((Player) sender).hitSnow(plugin.getServer().getPlayer("blablubbabc"), plugin.getServer().getPlayer("AlphaX96"));
-					plugin.getServer().broadcastMessage("WAZZUUUUP! BLABLUBB HERE!");
-					return true;
-				}*/
-				//TESTINGS
 				pbhelp(sender);
 				return true;
 			} else if(args[0].equalsIgnoreCase("help") || args[0].equalsIgnoreCase("?")) {
@@ -69,7 +62,7 @@ public class CommandManager implements CommandExecutor{
 				if(args[0].equalsIgnoreCase("lobby")) {
 					if(Lobby.LOBBY.isMember(player)) {
 						if(Lobby.isPlaying(player)) {
-							player.sendMessage(plugin.gray + "You can't join the lobby while playing!");
+							player.sendMessage(plugin.t.getString("CANNOT_JOIN_LOBBY_PLAYING"));
 							return true;
 						}
 						/*if(Lobby.isSpectating(player)) {
@@ -81,7 +74,7 @@ public class CommandManager implements CommandExecutor{
 							player.sendMessage(plugin.green + "You enteplugin.red the lobby!");
 							return true;
 						}*/
-						player.sendMessage(plugin.gray + "You are already in the lobby. /pb leave to leave.");
+						player.sendMessage(plugin.t.getString("ALREADY_IN_LOBBY"));
 						return true;
 					} else {
 						joinLobby(player);
@@ -89,158 +82,29 @@ public class CommandManager implements CommandExecutor{
 					}
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////			
 				} else if(args[0].equalsIgnoreCase("blue")) {
-					if(!Lobby.LOBBY.isMember(player)) {
-						if(!joinLobby(player)) {
-							return true;
-						}
-					}
-					if(Lobby.isPlaying(player) || Lobby.isSpectating(player)) {
-						player.sendMessage(plugin.gray + "You can't change your team while playing or spectating!");
-						return true;
-					}
-					//Max Players Check:
-					if(!Lobby.inTeam(player) || Lobby.SPECTATE.isMember(player)) {
-						int players = Lobby.RED.number() + Lobby.BLUE.number() + Lobby.RANDOM.number();
-						if(players >= plugin.maxPlayers) {
-							player.sendMessage(plugin.gray + "Maximal number of paintball players is already reached!");
-							return true;
-						}
-					}
-					//only random:
-					if(plugin.onlyRandom) {
-						player.sendMessage(plugin.gray + "You can only join the random team!");
-						if(!plugin.autoRandom) return true;
-					}
-					if(Lobby.inTeam(player) || Lobby.SPECTATE.isMember(player)) {
-						Lobby.getTeam(player).removeMember(player);
-						player.sendMessage(plugin.gray + "You left your current team.");
-					}
-					//only random + auto random
-					if(plugin.onlyRandom && plugin.autoRandom) {
-						Lobby.RANDOM.addMember(player);
-						player.sendMessage(plugin.green + "You automatically joined a "+Lobby.RANDOM.color()+"random team!");
-					} else {
-						Lobby.BLUE.addMember(player);
-						player.sendMessage(plugin.green + "You joined team "+Lobby.BLUE.color()+"blue!");
-					}
-					//players:
-					player.sendMessage(plugin.aqua+""+"Waiting players: " + plugin.nf.getPlayers());
-					if(plugin.mm.ready().equalsIgnoreCase("ready")) {
-						plugin.mm.countdown(plugin.countdown, plugin.countdownInit);
-					} else {
-						plugin.nf.status(plugin.mm.ready());
-					}
-					return true;
+					return joinTeam(player, Lobby.BLUE);
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 				} else if(args[0].equalsIgnoreCase("red")) {
-					if(!Lobby.LOBBY.isMember(player)) {
-						if(!joinLobby(player)) {
-							return true;
-						}
-					}
-					if(Lobby.isPlaying(player) || Lobby.isSpectating(player)) {
-						player.sendMessage(plugin.gray + "You can't change your team while playing or spectating!");
-						return true;
-					}
-					//Max Players Check:
-					if(!Lobby.inTeam(player) || Lobby.SPECTATE.isMember(player)) {
-						int players = Lobby.RED.number() + Lobby.BLUE.number() + Lobby.RANDOM.number();
-						if(players >= plugin.maxPlayers) {
-							player.sendMessage(plugin.gray + "Maximal number of paintball players is already reached!");
-							return true;
-						}
-					}
-					//only random:
-					if(plugin.onlyRandom) {
-						player.sendMessage(plugin.gray + "You can only join the random team!");
-						if(!plugin.autoRandom) return true;
-					}
-					if(Lobby.inTeam(player) || Lobby.SPECTATE.isMember(player)) {
-						Lobby.getTeam(player).removeMember(player);
-						player.sendMessage(plugin.gray + "You left your current team.");
-					}
-					//only random + auto random
-					if(plugin.onlyRandom && plugin.autoRandom) {
-						Lobby.RANDOM.addMember(player);
-						player.sendMessage(plugin.green + "You automatically joined a "+Lobby.RANDOM.color()+"random team!");
-					} else {
-						Lobby.RED.addMember(player);
-						player.sendMessage(plugin.green + "You joined team "+Lobby.RED.color()+"red!");
-					}
-					//players:
-					player.sendMessage(plugin.aqua+""+"Waiting players: " + plugin.nf.getPlayers());
-					if(plugin.mm.ready().equalsIgnoreCase("ready")) {
-						plugin.mm.countdown(plugin.countdown, plugin.countdownInit);
-					} else {
-						plugin.nf.status(plugin.mm.ready());
-					}
-					return true;
+					return joinTeam(player, Lobby.RED);
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 				} else if(args[0].equalsIgnoreCase("random")) {
-					if(!Lobby.LOBBY.isMember(player)) {
-						if(!joinLobby(player)) {
-							return true;
-						}
-					}
-					if(Lobby.isPlaying(player) || Lobby.isSpectating(player)) {
-						player.sendMessage(plugin.gray + "You can't change your team while playing or spectating!");
-						return true;
-					}
-					//Max Players Check:
-					if(!Lobby.inTeam(player) || Lobby.SPECTATE.isMember(player)) {
-						int players = Lobby.RED.number() + Lobby.BLUE.number() + Lobby.RANDOM.number();
-						if(players >= plugin.maxPlayers) {
-							player.sendMessage(plugin.gray + "Maximal number of paintball players is already reached!");
-							return true;
-						}
-					}
-					if(Lobby.inTeam(player) || Lobby.SPECTATE.isMember(player)) {
-						Lobby.getTeam(player).removeMember(player);
-						player.sendMessage(plugin.gray + "You left your current team.");
-					}
-					Lobby.RANDOM.addMember(player);
-					player.sendMessage(plugin.green + "You joined a "+Lobby.RANDOM.color()+"random team!");
-					//players:
-					player.sendMessage(plugin.aqua+""+"Waiting players: " + plugin.nf.getPlayers());
-					if(plugin.mm.ready().equalsIgnoreCase("ready")) {
-						plugin.mm.countdown(plugin.countdown, plugin.countdownInit);
-					} else {
-						plugin.nf.status(plugin.mm.ready());
-					}
-					return true;
+					return joinTeam(player, Lobby.RANDOM);
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 				} else if(args[0].equalsIgnoreCase("spec")) {
-					if(!Lobby.LOBBY.isMember(player)) {
-						if(!joinLobby(player)) {
-							return true;
-						}
-					}
-					if(Lobby.isPlaying(player) || Lobby.isSpectating(player)) {
-						player.sendMessage(plugin.gray + "You can't change your team while playing or spectating!");
-						return true;
-					}
-					if(Lobby.inTeam(player) || Lobby.SPECTATE.isMember(player)) {
-						Lobby.getTeam(player).removeMember(player);
-						player.sendMessage(plugin.gray + "You left your current team.");
-					}
-					Lobby.SPECTATE.addMember(player);
-					player.sendMessage(plugin.green + "You joined the "+Lobby.SPECTATE.color()+"spectators!");
-					//players:
-					player.sendMessage(plugin.aqua+""+"Waiting players: " + plugin.nf.getPlayers());
-					return true;
+					return joinTeam(player, Lobby.SPECTATE);
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 				} else if(args[0].equalsIgnoreCase("leave")) {
 					if(!Lobby.LOBBY.isMember(player)) {
-						player.sendMessage(plugin.gray + "You are not in the paintball lobby.");
+						player.sendMessage(plugin.t.getString("NOT_IN_LOBBY"));
 						return true;
 					}
 					if(Lobby.inTeam(player) || Lobby.SPECTATE.isMember(player)) {
 						if(Lobby.isPlaying(player) || Lobby.isSpectating(player)) {
-							player.sendMessage(plugin.gray + "You can't leave while playing or spectating!");
+							player.sendMessage(plugin.t.getString("CANNOT_LEAVE_LOBBY_PLAYING"));
 							return true;
 						}
 						Lobby.getTeam(player).removeMember(player);
-						player.sendMessage(plugin.gray + "You left your team.");
+						player.sendMessage(plugin.t.getString("YOU_LEFT_TEAM"));
 						return true;
 					}
 					plugin.leaveLobby(player, true, true, true);
@@ -249,11 +113,11 @@ public class CommandManager implements CommandExecutor{
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 				} else if(args[0].equalsIgnoreCase("toggle")) {
 					if(!Lobby.LOBBY.isMember(player)) {
-						player.sendMessage(plugin.gray + "You are not in the paintball lobby.");
+						player.sendMessage(plugin.t.getString("NOT_IN_LOBBY"));
 						return true;
 					}
 					Lobby.toggleFeed(player);
-					player.sendMessage(plugin.gray + "You toggled the paintball news feed.");
+					player.sendMessage(plugin.t.getString("OGGLED_FEED"));
 					return true;
 					
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -279,7 +143,7 @@ public class CommandManager implements CommandExecutor{
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 				}
 			} else {
-				plugin.log("This command cannot be used in console.");
+				plugin.log(plugin.t.getString("COMMAND_NOT_AS_CONSOLE"));
 				return true;
 			}
 		}
@@ -337,6 +201,68 @@ public class CommandManager implements CommandExecutor{
 		sender.sendMessage(plugin.yellow+"/pb admin next <arena> "+plugin.aqua+"- Tries to force the next arena to the specified arena.");
 		sender.sendMessage(plugin.yellow+"/pb admin random "+plugin.aqua+"- Toggles 'only random' until next reload.");
 	}
+	
+	private boolean joinTeam(Player player, Lobby team) {
+		boolean rb = false;
+		boolean spec = false;
+		if(team.equals(Lobby.RED) || team.equals(Lobby.BLUE)) rb = true;
+		else if(team.equals(Lobby.SPECTATE)) spec = true;
+		
+		if(!Lobby.LOBBY.isMember(player)) {
+			if(!joinLobby(player)) {
+				return true;
+			}
+		}
+		if(Lobby.isPlaying(player) || Lobby.isSpectating(player)) {
+			player.sendMessage(plugin.t.getString("CANNOT_CHANGE_TEAM_PLAYING"));
+			return true;
+		}
+		//Max Players Check:
+		if(!spec) {
+			if(!Lobby.inTeam(player) || Lobby.SPECTATE.isMember(player)) {
+				int players = Lobby.RED.number() + Lobby.BLUE.number() + Lobby.RANDOM.number();
+				if(players >= plugin.maxPlayers) {
+					player.sendMessage(plugin.t.getString("CANNOT_JOIN_TEAM_FULL"));
+					return true;
+				}
+			}
+			if(rb && plugin.onlyRandom) {
+				player.sendMessage(plugin.t.getString("ONLY_RANDOM"));
+				if (!plugin.autoRandom)
+					return true;
+			}
+		}
+		if(Lobby.inTeam(player) || Lobby.SPECTATE.isMember(player)) {
+			Lobby.getTeam(player).removeMember(player);
+			player.sendMessage(plugin.t.getString("YOU_LEFT_CURRENT_TEAM"));
+		}
+		//only random + auto random
+		if(rb && plugin.onlyRandom && plugin.autoRandom) {
+			Lobby.RANDOM.addMember(player);
+			HashMap<String, String> vars = new HashMap<String, String>();
+			vars.put("{color_random}", Lobby.RANDOM.color().toString());
+			player.sendMessage(plugin.t.getString("AUTO_JOIN_RANDOM", vars));
+		} else {
+			team.addMember(player);
+			HashMap<String, String> vars = new HashMap<String, String>();
+			vars.put("{color_team}", team.color().toString());
+			vars.put("{team}", team.getName());
+			if(rb) player.sendMessage(plugin.t.getString("YOU_JOINED_TEAM", vars));
+			else if(team.equals(Lobby.RANDOM)) player.sendMessage(plugin.t.getString("YOU_JOINED_RANDOM", vars));
+			else if(spec) player.sendMessage(plugin.t.getString("YOU_JOINED_SPECTATORS", vars));
+		}
+		if(!spec) {
+			if (plugin.mm.ready().equalsIgnoreCase(plugin.t.getString("READY"))) {
+				plugin.mm.countdown(plugin.countdown, plugin.countdownInit);
+			} else {
+				plugin.nf.status(plugin.mm.ready());
+			}
+		}
+		//players:
+		plugin.nf.players(player);
+		return true;
+	}
+	
 	private boolean joinLobby(Player player) {
 		//Lobby vorhanden?
 		if(plugin.getLobbySpawns().size() == 0) {

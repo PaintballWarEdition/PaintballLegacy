@@ -55,6 +55,9 @@ public class Newsfeeder {
 			if(!Lobby.toggledFeed(player)) player.sendMessage(plugin.aqua+""+"Waiting players: " + getPlayers());
 		}
 	}
+	public void players(Player player) {
+		player.sendMessage(plugin.aqua+""+"Waiting players: " + getPlayers());
+	}
 	public String getPlayersOverview() {
 		String overview = plugin.gold+"["+Lobby.RED.color()+Lobby.RED.numberWaiting()+plugin.gold+"]["+Lobby.BLUE.color()+Lobby.BLUE.numberWaiting()+plugin.gold+"]["+Lobby.RANDOM.color()+Lobby.RANDOM.numberWaiting()+plugin.gold+"]["+Lobby.SPECTATE.color()+Lobby.SPECTATE.numberWaiting()+plugin.gold+"]";
 		return overview;

@@ -358,7 +358,7 @@ public class Paintball extends JavaPlugin{
 	}
 	
 	public void log(String message) {
-		System.out.println("["+this.toString()+"] "+message);
+		System.out.println("["+this.getName()+"] "+message);
 	}
 	
 	public void reload() {
@@ -429,13 +429,15 @@ public class Paintball extends JavaPlugin{
 			//PlayerInventory
 			player.getInventory().setContents(pm.getInvContent(player));
 			player.getInventory().setArmorContents(pm.getInvArmor(player));
-			player.sendMessage(gray+"Inventory restored.");
+			player.sendMessage(t.getString("INVENTORY_RESTORED"));
+			//player.sendMessage(gray+"Inventory restored.");
 		}
 		//teleport:
 		if(teleport) player.teleport(pm.getLoc(player));
 		if (messages) {
 			//messages:
-			player.sendMessage(gray + "You left the lobby.");
+			player.sendMessage(t.getString("YOU_LEFT_LOBBY"));
+			//player.sendMessage(gray + "You left the lobby.");
 			nf.leave(player.getName());
 		}
 	}

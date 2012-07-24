@@ -84,6 +84,7 @@ STATS_GENERAL_ROUNDS = "&aPlayed Rounds: &b{rounds}"
 STATS_GENERAL_MONEY = "&aSpent Cash: &b{money}"
 NO_PERMISSION = "&cNo permission."
 CANNOT_JOIN_LOBBY_PLAYING = "&7You can't join the lobby while playing!"
+CANNOT_LEAVE_LOBBY_PLAYING = "&7You can't leave while playing or spectating!"
 ALREADY_IN_LOBBY = "&7You are already in the lobby. /pb leave to leave."
 CANNOT_CHANGE_TEAM_PLAYING = "&7You can't change your team while playing or spectating!"
 CANNOT_JOIN_TEAM_FULL = "&7Maximal number of paintball players is already reached!"
@@ -92,8 +93,8 @@ AUTO_JOIN_RANDOM = "&aYou automatically joined a {color_random}random &ateam!"
 YOU_LEFT_CURRENT_TEAM = "&7You left your current team."
 YOU_LEFT_TEAM = "&7You left your team."
 YOU_JOINED_TEAM = "&aYou joined team {color_team}{team}!"
-YOU_JOINED_RANDOM = "&aYou joined a {color_random}random &ateam!"
-YOU_JOINED_SPECTATORS = "&aYou joined the {color_spec}spectators!"
+YOU_JOINED_RANDOM = "&aYou joined a {color_team}random &ateam!"
+YOU_JOINED_SPECTATORS = "&aYou joined the {color_team}spectators!"
 NOT_IN_LOBBY = "&7You are not in the paintball lobby."
 TOGGLED_FEED = "&7You toggled the paintball news feed."
 COMMAND_NOT_AS_CONSOLE = "This command cannot be used in console."
@@ -208,17 +209,3 @@ NOT_ENOUGH_MONEY = "&7"$ Not enough cash $ :(""
 INVENTORY_FULL = "&7Your inventory is full!"
 YOU_BOUGHT = "&aYou bought {amount} {good} for {price} $"
 INVALID_ID = "&cInvalid ID"
-
-
-
-
-
-
-
-
-
-
-
-
-
-

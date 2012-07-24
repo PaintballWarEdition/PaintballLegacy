@@ -12,7 +12,7 @@ import org.bukkit.inventory.ItemStack;
 public enum Lobby {
 
 	RED			("red", Material.WOOL, (byte)14, ChatColor.RED),
-	BLUE		("red", Material.WOOL, (byte)11, ChatColor.BLUE),
+	BLUE		("blue", Material.WOOL, (byte)11, ChatColor.BLUE),
 	RANDOM		("random", Material.AIR, (byte)0, ChatColor.GREEN),
 	SPECTATE	("spectator", Material.AIR, (byte)0, ChatColor.YELLOW),
 	LOBBY		("lobby", Material.AIR, (byte)0, ChatColor.WHITE);
@@ -27,7 +27,7 @@ public enum Lobby {
 	
 	private Lobby(String name, Material mat, byte data, ChatColor color) {
 		this.plugin = (Paintball) Bukkit.getServer().getPluginManager().getPlugin("Paintball");
-		this.name = name;
+		this.name = plugin.t.getString(name);
 		this.helmet = new ItemStack(mat, 1, Short.parseShort("0"), data);
 		this.color = color;
 		this.players = new LinkedHashMap<Player, Boolean>();

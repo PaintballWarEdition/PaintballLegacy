@@ -34,7 +34,7 @@ public class Translator {
 		//write default language file:
 		//Default language:
 		InputStream in = plugin.getResource("enUS.txt");
-		def_file = new File(path+"enUS.txt");
+		def_file = new File(path+"/enUS.txt");
 	    if (in != null) {
 	    	try {
 		    	OutputStream out = new FileOutputStream(def_file);
@@ -60,7 +60,7 @@ public class Translator {
 	    }
 	    
 	    //get translation:
-		localisationFile = new File(path + filename + ".txt");
+		localisationFile = new File(path +"/"+ filename + ".txt");
 		if(!localisationFile.exists()) {
 			log("ERROR: Couldn't find the specified language file.");
 			log("Using the default language now: "+def_file.getName());
@@ -199,6 +199,6 @@ public class Translator {
 		
 	}
 	private void log(String message) {
-		System.out.println("["+plugin.toString()+"]"+message);
+		System.out.println("["+plugin.getName()+"] "+message);
 	}
 }
