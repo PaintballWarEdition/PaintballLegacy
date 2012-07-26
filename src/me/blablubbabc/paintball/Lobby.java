@@ -118,7 +118,7 @@ public enum Lobby {
 	//GETTER
 	public static Lobby getTeam(String team) {
 		for(Lobby t : Lobby.values()) {
-			if(t.getName().toLowerCase().contains(team.toLowerCase())) return t;
+			if(t.getName().equalsIgnoreCase(team)) return t;
 		}
 		return null;
 	}

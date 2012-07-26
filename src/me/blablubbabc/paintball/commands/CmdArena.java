@@ -1,5 +1,6 @@
 package me.blablubbabc.paintball.commands;
 
+import java.util.HashMap;
 import java.util.LinkedHashMap;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
@@ -26,27 +27,34 @@ public class CmdArena {
 			if(args[1].equalsIgnoreCase("list")) {
 				//list
 				LinkedHashMap<String, Object> arenas = am.getArenaData();
-				player.sendMessage(plugin.aqua+""+ plugin.bold+"["+plugin.yellow+""+ plugin.bold+"Paintball Arenas: "+plugin.gray+arenas.size() +plugin.aqua+""+ plugin.bold+"] ");
+				HashMap<String, String> vars = new HashMap<String, String>();
+				vars.put("arenas", String.valueOf(arenas.size()));
+				player.sendMessage(plugin.t.getString("ARENA_LIST_HEADER", vars));
 				for(String name : arenas.keySet()) {
 					String ready = "";
-					if(am.isReady(name)) ready = plugin.green+"|ready|";
-					else ready = plugin.red+"|not ready|";
-					player.sendMessage(plugin.gray+"- "+name+" "+ready);
+					if(am.isReady(name)) ready = plugin.t.getString("ARENA_STATUS_READY");
+					else ready = plugin.t.getString("ARENA_STATUS_NOT_READY");
+					HashMap<String, String> vars2 = new HashMap<String, String>();
+					vars2.put("arena", name);
+					vars2.put("status", ready);
+					player.sendMessage(plugin.t.getString("ARENA_LIST_ENTRY", vars2));
 				}
 				return true;
 			} else {
 				String name = args[1];
+				HashMap<String, String> vars = new HashMap<String, String>();
+				vars.put("arena", name);
 				if(!am.existing(name)) {
 					if(args.length == 2) {
 						am.addArena(name);
-						player.sendMessage(plugin.green + "New arena created: " + plugin.yellow + name);
+						player.sendMessage(plugin.t.getString("ARENA_CREATED", vars));
 						return true;
 					} else {
-						player.sendMessage(plugin.red + "Arena not found: " + plugin.yellow + name);
+						player.sendMessage(plugin.t.getString("ARENA_NOT_FOUND", vars));
 						return true;
 					}
 				} else if(args.length == 2) {
-					player.sendMessage(plugin.green + "Arena "+ plugin.yellow + name +plugin.green+" already exists!");
+					player.sendMessage(plugin.t.getString("ARENA_ALREADY_EXISTS", vars));
 					return true;
 				}
 				//Existing:
@@ -54,23 +62,40 @@ public class CmdArena {
 				if(args[2].equalsIgnoreCase("info")) {
 					LinkedHashMap<String, Object> arena = am.getArena(name);
 					String ready = "";
-					if(am.isReady(name)) ready = plugin.green+"|ready|";
-					else ready = plugin.red+"|not ready|";
-					player.sendMessage(plugin.aqua+""+ plugin.bold+"["+plugin.yellow+""+ plugin.bold+"Paintball Arena: "+plugin.green+name+" "+ready+plugin.aqua+""+ plugin.bold+"] ");
-					player.sendMessage(plugin.aqua+"Size: "+plugin.yellow+arena.get("size"));
-					player.sendMessage(plugin.aqua+"Played Rounds: "+plugin.yellow+arena.get("rounds"));
-					player.sendMessage(plugin.aqua+"Frags: "+plugin.yellow+arena.get("kills"));
-					player.sendMessage(plugin.aqua+"Fired Shots: "+plugin.yellow+arena.get("shots"));
-					player.sendMessage(plugin.aqua+"Blue Spawns: "+plugin.yellow+am.getBlueSpawnsSize(name));
-					player.sendMessage(plugin.aqua+"Red Spawns: "+plugin.yellow+am.getRedSpawnsSize(name));
-					player.sendMessage(plugin.aqua+"Spectator Spawns: "+plugin.yellow+am.getSpecSpawnsSize(name));
+					if(am.isReady(name)) ready = plugin.t.getString("ARENA_STATUS_READY");
+					else ready = plugin.t.getString("ARENA_STATUS_NOT_READY");
+					vars.put("status", ready);
+					vars.put("size", String.valueOf(arena.get("size")));
+					vars.put("rounds", String.valueOf(arena.get("rounds")));
+					vars.put("kills", String.valueOf(arena.get("kills")));
+					vars.put("shots", String.valueOf(arena.get("shots")));
+					vars.put("blue_spawns", String.valueOf(am.getBlueSpawnsSize(name)));
+					vars.put("red_spawns", String.valueOf(am.getRedSpawnsSize(name)));
+					vars.put("spec_spawns", String.valueOf(am.getSpecSpawnsSize(name)));
+					player.sendMessage(plugin.t.getString("ARENA_INFO_HEADER", vars));
+					player.sendMessage(plugin.t.getString("ARENA_INFO_SIZE", vars));
+					player.sendMessage(plugin.t.getString("ARENA_INFO_ROUNDS", vars));
+					player.sendMessage(plugin.t.getString("ARENA_INFO_KILLS", vars));
+					player.sendMessage(plugin.t.getString("ARENA_INFO_SHOTS", vars));
+					player.sendMessage(plugin.t.getString("ARENA_INFO_BLUE_SPAWNS", vars));
+					player.sendMessage(plugin.t.getString("ARENA_INFO_RED_SPAWNS", vars));
+					player.sendMessage(plugin.t.getString("ARENA_INFO_SPEC_SPAWNS", vars));
 					if(!am.isReady(name)) {
-						player.sendMessage(plugin.red+"Needs following to be marked as ready:");
-						if(am.inUse(name)) player.sendMessage(plugin.gray+"- finish current match at this arena");
-						if(!am.pvpEnabled(name)) player.sendMessage(plugin.gray+"- enable PvP in all worlds where spawns can be found");
-						if(am.getRedSpawnsSize(name) == 0) player.sendMessage(plugin.gray+"- 1 red spawn");
-						if(am.getBlueSpawnsSize(name) == 0) player.sendMessage(plugin.gray+"- 1 blue spawn");
-						if(am.getSpecSpawnsSize(name) == 0) player.sendMessage(plugin.gray+"- 1 spectator spawn");
+						player.sendMessage(plugin.t.getString("ARENA_INFO_NEEDS_HEADER"));
+						if(am.inUse(name)) player.sendMessage(plugin.t.getString("ARENA_INFO_NEEDS_NO_USE"));
+						if(!am.pvpEnabled(name)) player.sendMessage(plugin.t.getString("ARENA_INFO_NEEDS_PVP"));
+						if(am.getRedSpawnsSize(name) == 0) {
+							vars.put("team", Lobby.RED.getName());
+							player.sendMessage(plugin.t.getString("ARENA_INFO_NEEDS_SPAWN", vars));
+						}
+						if(am.getBlueSpawnsSize(name) == 0) {
+							vars.put("team", Lobby.BLUE.getName());
+							player.sendMessage(plugin.t.getString("ARENA_INFO_NEEDS_SPAWN", vars));
+						}
+						if(am.getSpecSpawnsSize(name) == 0) {
+							vars.put("team", Lobby.SPECTATE.getName());
+							player.sendMessage(plugin.t.getString("ARENA_INFO_NEEDS_SPAWN", vars));
+						}
 					}
 
 					return true;
@@ -78,46 +103,60 @@ public class CmdArena {
 				} else if(args[2].equalsIgnoreCase("blue")) {
 					am.addBlueSpawn(name, player.getLocation());
 					am.saveData();
-					player.sendMessage(Lobby.BLUE.color()+"Blue"+plugin.green+" spawn added. Number of blue spawns now: "+Lobby.BLUE.color()+am.getBlueSpawnsSize(name));
+					vars.put("team_color", Lobby.BLUE.color().toString());
+					vars.put("team", Lobby.BLUE.getName());
+					vars.put("team_spawns", String.valueOf(am.getBlueSpawnsSize(name)));
+					player.sendMessage(plugin.t.getString("ARENA_SPAWN_ADDED", vars));
 					return true;
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 				} else if(args[2].equalsIgnoreCase("red")) {
-					am.addRedSpawn(name, player.getLocation());
-					am.saveData();
-					player.sendMessage(Lobby.RED.color()+"Red"+plugin.green+" spawn added. Number of red spawns now: "+Lobby.RED.color()+am.getRedSpawnsSize(name));
+					vars.put("team_color", Lobby.RED.color().toString());
+					vars.put("team", Lobby.RED.getName());
+					vars.put("team_spawns", String.valueOf(am.getRedSpawnsSize(name)));
+					player.sendMessage(plugin.t.getString("ARENA_SPAWN_ADDED", vars));
 					return true;
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 				} else if(args[2].equalsIgnoreCase("spec")) {
-					am.addSpecSpawn(name, player.getLocation());
-					am.saveData();
-					player.sendMessage(Lobby.SPECTATE.color()+"Spectator"+plugin.green+" spawn added. Number of spactator spawns now: "+Lobby.SPECTATE.color()+am.getSpecSpawnsSize(name));
+					vars.put("team_color", Lobby.SPECTATE.color().toString());
+					vars.put("team", Lobby.SPECTATE.getName());
+					vars.put("team_spawns", String.valueOf(am.getSpecSpawnsSize(name)));
+					player.sendMessage(plugin.t.getString("ARENA_SPAWN_ADDED", vars));
 					return true;
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 				} else if(args[2].equalsIgnoreCase("remove")) {
 					am.remove(name);
 					am.saveData();
-					player.sendMessage(plugin.green+"Arena "+plugin.gray+name+plugin.green+" removed.");
+					player.sendMessage(plugin.t.getString("ARENA_REMOVED", vars));
 					return true;
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 				} else if(args[2].equalsIgnoreCase("delblue")) {
 					int num = am.getBlueSpawnsSize(name);
 					am.removeBlueSpawns(name);
 					am.saveData();
-					player.sendMessage(plugin.gold+""+num+Lobby.BLUE.color()+" blue "+plugin.green+"spawns removed in arena "+plugin.gray+name);
+					vars.put("team_color", Lobby.BLUE.color().toString());
+					vars.put("team", Lobby.BLUE.getName());
+					vars.put("team_spawns", String.valueOf(num));
+					player.sendMessage(plugin.t.getString("ARENA_SPAWNS_REMOVED", vars));
 					return true;
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 				} else if(args[2].equalsIgnoreCase("delred")) {
 					int num = am.getRedSpawnsSize(name);
 					am.removeRedSpawns(name);
 					am.saveData();
-					player.sendMessage(plugin.gold+""+num+Lobby.RED.color()+" red "+plugin.green+"spawns removed in arena "+plugin.gray+name);
+					vars.put("team_color", Lobby.RED.color().toString());
+					vars.put("team", Lobby.RED.getName());
+					vars.put("team_spawns", String.valueOf(num));
+					player.sendMessage(plugin.t.getString("ARENA_SPAWNS_REMOVED", vars));
 					return true;
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 				} else if(args[2].equalsIgnoreCase("delspec")) {
 					int num = am.getSpecSpawnsSize(name);
 					am.removeSpecSpawns(name);
 					am.saveData();
-					player.sendMessage(plugin.gold+""+num+Lobby.SPECTATE.color()+" spactator "+plugin.green+"spawns removed in arena "+plugin.gray+name);
+					vars.put("team_color", Lobby.SPECTATE.color().toString());
+					vars.put("team", Lobby.SPECTATE.getName());
+					vars.put("team_spawns", String.valueOf(num));
+					player.sendMessage(plugin.t.getString("ARENA_SPAWNS_REMOVED", vars));
 					return true;
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 				} else if(args[2].equalsIgnoreCase("size")) {
@@ -126,7 +165,7 @@ public class CmdArena {
 							int size = Integer.parseInt(args[3]);
 							am.setSize(name, size);
 						}catch(Exception e) {
-							player.sendMessage(plugin.red+"Invalid number.");
+							player.sendMessage(plugin.t.getString("INVALID_NUMBER"));
 							return true;
 						}
 					}
@@ -135,7 +174,7 @@ public class CmdArena {
 			}
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 		} else {
-			plugin.log("This command cannot be used in console.");
+			plugin.log(plugin.t.getString("COMMAND_NOT_AS_CONSOLE"));
 			return true;
 		}
 		return false;

@@ -282,7 +282,7 @@ public class EventListener implements Listener{
 		}
 	}
 
-	@EventHandler(priority = EventPriority.LOWEST)
+	@EventHandler(priority = EventPriority.HIGHEST)
 	public void onPlayerCommand(PlayerCommandPreprocessEvent event) {
 		if(Lobby.getTeam(event.getPlayer()) != null && !event.getMessage().startsWith("/pb") && !event.getPlayer().hasPermission("paintball.admin") && !event.getPlayer().isOp() ) {
 			event.getPlayer().sendMessage(plugin.gray + "This command is not allowed while playing paintball.");

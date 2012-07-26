@@ -2,6 +2,7 @@ package me.blablubbabc.paintball;
 
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Set;
@@ -35,9 +36,11 @@ public class Match {
 		//TEAMS
 		for(Player p : red) {
 			this.redT.put(p, lives);
+			players.add(p);
 		}
 		for(Player p : blue) {
 			this.blueT.put(p, lives);
+			players.add(p);
 		}
 		this.spec = spec;
 		//randoms:
@@ -49,9 +52,11 @@ public class Match {
 		for(Player p : rand) {
 			if(this.blueT.size() < this.redT.size()){
 				this.blueT.put(p, lives);
+				players.add(p);
 			}
 			else if(this.redT.size() <= this.blueT.size()){
 				this.redT.put(p, lives);
+				players.add(p);
 			}
 		}
 		//TELEPORTS
@@ -60,74 +65,62 @@ public class Match {
 		ArrayList<LinkedHashMap<String, Object>> specspawns = plugin.am.getSpecSpawns(arena);
 
 		//teleports+inv+messages:
-		int spawn = 0;
-		for(Player p : this.redT.keySet()) {
-			//list
-			players.add(p);
-			//stats
+		HashMap<String, String> vars = new HashMap<String, String>();
+		
+		for(Player p : players) {
+			//STATS
 			this.shots.put(p, 0);
 			this.kills.put(p, 0);
 			this.hits.put(p, 0);
 			this.teamattacks.put(p, 0);
 			this.deaths.put(p, 0);
-			//teleport
+			//INVENTORY
+			p.getInventory().setHelmet(Lobby.getTeam(p).helmet());
+			if(plugin.balls > 0 ) p.getInventory().addItem(new ItemStack(Material.SNOW_BALL, plugin.balls));
+			else if(plugin.balls == -1 ) p.getInventory().addItem(new ItemStack(Material.SNOW_BALL, 10));
+			if(plugin.grenadeAmount > 0 ) p.getInventory().addItem(new ItemStack(Material.EGG, plugin.grenadeAmount));
+			else if(plugin.grenadeAmount == -1 ) p.getInventory().addItem(new ItemStack(Material.EGG, 10));
+			if(plugin.airstrikeAmount > 0 ) p.getInventory().addItem(new ItemStack(Material.STICK, plugin.airstrikeAmount));
+			else if(plugin.airstrikeAmount == -1 ) p.getInventory().addItem(new ItemStack(Material.STICK, 10));
+			//MESSAGE
+			vars.put("team_color", Lobby.getTeam(p).color().toString());
+			vars.put("team", Lobby.getTeam(p).getName());
+			p.sendMessage(plugin.t.getString("BE_IN_TEAM", vars));
+		}
+		
+		int spawn = 0;
+		for(Player p : this.redT.keySet()) {
+			//TELEPORT
 			if(spawn > (redspawns.size()-1)) spawn = 0;
 			p.teleport(plugin.transformLocation(redspawns.get(spawn)));
 			spawn++;
-			//inventory
-			p.getInventory().setHelmet(Lobby.RED.helmet());
-			if(plugin.balls > 0 ) p.getInventory().addItem(new ItemStack(Material.SNOW_BALL, plugin.balls));
-			else if(plugin.balls == -1 ) p.getInventory().addItem(new ItemStack(Material.SNOW_BALL, 10));
-			if(plugin.grenadeAmount > 0 ) p.getInventory().addItem(new ItemStack(Material.EGG, plugin.grenadeAmount));
-			else if(plugin.grenadeAmount == -1 ) p.getInventory().addItem(new ItemStack(Material.EGG, 10));
-			if(plugin.airstrikeAmount > 0 ) p.getInventory().addItem(new ItemStack(Material.STICK, plugin.airstrikeAmount));
-			else if(plugin.airstrikeAmount == -1 ) p.getInventory().addItem(new ItemStack(Material.STICK, 10));
-			//message
-			p.sendMessage(plugin.aqua+"You are in Team "+Lobby.getTeam(getTeamName(p)).color()+getTeamName(p));
 		}
 		spawn = 0;
 		for(Player p : this.blueT.keySet()) {
-			//list
-			players.add(p);
-			//stats
-			this.shots.put(p, 0);
-			this.kills.put(p, 0);
-			this.hits.put(p, 0);
-			this.teamattacks.put(p, 0);
-			this.deaths.put(p, 0);
-			//teleport
+			//TELEPORT
 			if(spawn > (bluespawns.size()-1)) spawn = 0;
 			p.teleport(plugin.transformLocation(bluespawns.get(spawn)));
 			spawn++;
-			//inventory:
-			p.getInventory().setHelmet(Lobby.BLUE.helmet());
-			if(plugin.balls > 0 ) p.getInventory().addItem(new ItemStack(Material.SNOW_BALL, plugin.balls));
-			else if(plugin.balls == -1 ) p.getInventory().addItem(new ItemStack(Material.SNOW_BALL, 10));
-			if(plugin.grenadeAmount > 0 ) p.getInventory().addItem(new ItemStack(Material.EGG, plugin.grenadeAmount));
-			else if(plugin.grenadeAmount == -1 ) p.getInventory().addItem(new ItemStack(Material.EGG, 10));
-			if(plugin.airstrikeAmount > 0 ) p.getInventory().addItem(new ItemStack(Material.STICK, plugin.airstrikeAmount));
-			else if(plugin.airstrikeAmount == -1 ) p.getInventory().addItem(new ItemStack(Material.STICK, 10));
-			//message
-			p.sendMessage(plugin.aqua+"You are in Team "+Lobby.getTeam(getTeamName(p)).color()+getTeamName(p));
 		}
 		spawn = 0;
 		for(Player p : this.spec) {
-			//list
-			players.add(p);
-			//teleport
+			//TELEPORT
 			if(spawn > (specspawns.size()-1)) spawn = 0;
 			p.teleport(plugin.transformLocation(specspawns.get(spawn)));
 			spawn++;
-			//inv
+			//INVENTORY
 			p.getInventory().setHelmet(Lobby.SPECTATE.helmet());
-			//message
-			p.sendMessage(plugin.aqua+"You are "+Lobby.getTeam("spec").color()+"spectator!");
+			//MESSAGE
+			vars.put("team_color", Lobby.getTeam(p).color().toString());
+			vars.put("team", Lobby.getTeam(p).getName());
+			p.sendMessage(plugin.t.getString("BE_SPECTATOR", vars));
 		}
 		//colorchanges:
 		changeAllColors();
 		//lives + start!:
-		if(lives == 1) plugin.nf.status("Everybody got " +plugin.green+1+ " life!"+plugin.light_purple+" And now FIGHT!" );
-		else plugin.nf.status("Everybody got " +plugin.green+plugin.lives+ " lives!"+plugin.light_purple+" And now FIGHT!" );
+		vars.put("lives", String.valueOf(plugin.lives));
+		if(lives == 1) plugin.nf.status(plugin.t.getString("MATCH_START_ONE_LIFE", vars));
+		else plugin.nf.status(plugin.t.getString("MATCH_START_MORE_LIVES", vars));
 	}
 	
 	public void changeAllColors() {
@@ -202,13 +195,13 @@ public class Match {
 	}
 	
 	public String getTeamName(Player player) {
-		if(redT.keySet().contains(player)) return "red";
-		if(blueT.keySet().contains(player)) return "blue";
+		if(redT.keySet().contains(player)) return Lobby.RED.getName();
+		if(blueT.keySet().contains(player)) return Lobby.BLUE.getName();
 		return null;
 	}
 	public String getEnemyTeamName(Player player) {
-		if(redT.keySet().contains(player)) return "blue";
-		if(blueT.keySet().contains(player)) return "red";
+		if(redT.keySet().contains(player)) return Lobby.BLUE.getName();
+		if(blueT.keySet().contains(player)) return Lobby.RED.getName();
 		return null;
 	}
 	
@@ -274,7 +267,19 @@ public class Match {
 		} else if(spec.contains(player)) spec.remove(player);
 	}
 	
-	public ArrayList<Player> getAllPlayers() {
+	public ArrayList<Player> getAllPlayer() {
+		return players;
+	}
+	
+	public ArrayList<Player> getAllSpec() {
+		ArrayList<Player> list = new ArrayList<Player>();
+		for(Player p : spec) {
+			list.add(p);
+		}
+		return list;
+	}
+	
+	public ArrayList<Player> getAll() {
 		//return players;
 		ArrayList<Player> list = new ArrayList<Player>();
 		Set<Player> players = shots.keySet();
@@ -311,15 +316,17 @@ public class Match {
 				if(getTeam(target).get(target) <= 0) {
 					frag(target, shooter);
 				} else {
-					shooter.sendMessage(plugin.green+"You hit!");
-					target.sendMessage(plugin.red+"You were hit!");
+					shooter.sendMessage(plugin.t.getString("YOU_HIT"));
+					target.sendMessage(plugin.t.getString("YOU_WERE_HIT"));
 				}
 			}
 		} else if(friendly(target, shooter)) {
 			//message
 			//-points
 			teamattacks.put(shooter, (teamattacks.get(shooter)+1));
-			shooter.sendMessage(plugin.red+"Teamattack! "+plugin.pointsPerTeamattack + " Points!");
+			HashMap<String,String> vars = new HashMap<String, String>();
+			vars.put("points", String.valueOf(plugin.pointsPerTeamattack));
+			shooter.sendMessage(plugin.t.getString("YOU_HIT_MATE", vars));
 		}
 	}
 	
@@ -333,8 +340,13 @@ public class Match {
 				target.teleport(plugin.transformLocation(plugin.getLobbySpawns().get(0)));
 				plugin.clearInv(target);
 				//feed
-				killer.sendMessage(plugin.green+"You killed "+target.getName()+" ! +"+plugin.pointsPerKill + " Points and +"+plugin.cashPerKill+" Cash!");
-				target.sendMessage(plugin.red+"You were killed by "+killer.getName()+" !");
+				HashMap<String, String> vars = new HashMap<String, String>();
+				vars.put("target", target.getName());
+				vars.put("killer", killer.getName());
+				vars.put("points", String.valueOf(plugin.pointsPerKill));
+				vars.put("cash", String.valueOf(plugin.cashPerKill));
+				killer.sendMessage(plugin.t.getString("YOU_KILLED", vars));
+				target.sendMessage(plugin.t.getString("YOU_WERE_KILLED", vars));
 				plugin.nf.feed(target, killer, this2);
 				//points+cash+kill+death
 				deaths.put(target, (deaths.get(target)+1));
@@ -344,7 +356,7 @@ public class Match {
 					//unhideAll();
 					matchOver = true;
 					undoAllColors();
-					plugin.mm.gameEnd(this2, getTeam(killer).keySet(), getTeamName(killer), getTeam(target).keySet(), getTeamName(target), spec, shots, hits, deaths, kills, teamattacks);
+					plugin.mm.gameEnd(this2, getTeam(killer).keySet(), Lobby.getTeam(killer).getName(), getTeam(target).keySet(), Lobby.getTeam(target).getName(), spec, shots, hits, deaths, kills, teamattacks);
 				}
 				
 			}

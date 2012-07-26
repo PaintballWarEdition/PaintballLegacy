@@ -2,6 +2,7 @@ package me.blablubbabc.paintball;
 
 import java.text.DecimalFormat;
 import java.util.Comparator;
+import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.SortedSet;
@@ -197,65 +198,150 @@ public class Stats {
 	
 	public void sendTop(Player player) {
 		calculateRanks();
-		player.sendMessage(plugin.aqua+""+ plugin.bold+"["+plugin.yellow+""+ plugin.bold+" ***** Paintball Top 10 Players ***** "+plugin.aqua+""+ plugin.bold+"] ");
+		player.sendMessage(plugin.t.getString("TOP_TEN"));
+		HashMap<String, String> vars = new HashMap<String, String>();
 		for(int i = 1; i <= 10; i++) {
-			if(i <= topPoints.keySet().toArray().length) player.sendMessage(plugin.gold+""+plugin.bold+ "Rank " + i + " " + plugin.aqua + topPoints.keySet().toArray()[i-1] + " ( " + topPoints.values().toArray()[i-1] + " )");
+			if(i <= topPoints.keySet().toArray().length) {
+				vars.put("rank", String.valueOf(i));
+				vars.put("player", (String)topPoints.keySet().toArray()[i-1]);
+				vars.put("points", String.valueOf((Integer)topPoints.values().toArray()[i-1]));
+				player.sendMessage(plugin.t.getString("TOP_TEN_ENTRY", vars));
+			}
 			else break;
 		}
 	}
 	
 	public void sendRank(Player player, String name) {
 		calculateRanks();
+		HashMap<String, String> vars = new HashMap<String, String>();
+		vars.put("player", name);
 		if(plugin.pm.exists(name)) {
-			player.sendMessage(plugin.yellow+""+ plugin.bold+"Paintball Rank "+plugin.gray+name+plugin.yellow+""+plugin.bold+": " + plugin.green + getRank(name));
+			vars.put("rank", String.valueOf(getRank(name)));
+			player.sendMessage(plugin.t.getString("RANK_PLAYER", vars));
 		} else {
-			player.sendMessage(plugin.gray + "Player " + name + " not found.");
+			player.sendMessage(plugin.t.getString("PLAYER_NOT_FOUND", vars));
 		}
 	}
 	
 	public void sendCash(Player player, String name) {
 		calculateRanks();
+		HashMap<String, String> vars = new HashMap<String, String>();
+		vars.put("player", name);
 		if(plugin.pm.exists(name)) {
-			player.sendMessage(plugin.green+"Cash "+plugin.gray+name+plugin.green+": "+topMoney.get(name));
+			vars.put("cash", String.valueOf(topMoney.get(name)));
+			player.sendMessage(plugin.t.getString("CASH_PLAYER", vars));
 		} else {
-			player.sendMessage(plugin.gray + "Player " + name + " not found.");
+			player.sendMessage(plugin.t.getString("PLAYER_NOT_FOUND", vars));
 		}
 	}
 	
 	public void sendStats(Player player, String name) {
 		calculateRanks();
+		HashMap<String, String> vars = new HashMap<String, String>();
+		vars.put("player", name);
 		if(plugin.pm.exists(name)) {
+			
+			//TOP PLAYERS
+			String player_points_top = (String)topPoints.keySet().toArray()[0];
+			String player_cash_top = (String)topMoney.keySet().toArray()[0];
+			String player_kills_top = (String)topKills.keySet().toArray()[0];
+			String player_deaths_top = (String)topDeaths.keySet().toArray()[0];
+			String player_kd_top = (String)topKD.keySet().toArray()[0];
+			String player_shots_top = (String)topShots.keySet().toArray()[0];
+			String player_hits_top = (String)topHits.keySet().toArray()[0];
+			String player_hitquote_top = (String)topHitquote.keySet().toArray()[0];
+			String player_teamattacks_top = (String)topTeamattacks.keySet().toArray()[0];
+			String player_rounds_top = (String)topRounds.keySet().toArray()[0];
+			String player_wins_top = (String)topWins.keySet().toArray()[0];
+			String player_looses_top = (String)topLooses.keySet().toArray()[0];
+			
+			//KD + HITQUOTE
 			float kdF = (float)topKD.get(name) / 100;
 			float hitquoteF = (float)topHitquote.get(name) / 100;
 			//TOP
-			int kdT = (Integer) topKD.values().toArray()[0];
-			int hitquoteT = (Integer) topHitquote.values().toArray()[0];
+			int kdT = (Integer) topKD.get(player_kd_top);
+			int hitquoteT = (Integer) topHitquote.get(player_hitquote_top);
 			float kdFT = (float)kdT / 100;
 			float hitquoteFT = (float)hitquoteT / 100;
 			
 			DecimalFormat dec = new DecimalFormat("###.##");
 			
-			player.sendMessage(plugin.aqua+""+ plugin.bold+"["+plugin.yellow+""+ plugin.bold+" -------Paintball Stats------- "+plugin.aqua+""+ plugin.bold+"] ");
-			player.sendMessage(plugin.red+"__________Stats: "+plugin.green+ name +plugin.red+"__________");
-			player.sendMessage(plugin.green+"Points: "+plugin.aqua+topPoints.get(name)+plugin.gold+" ( Top: "+ topPoints.values().toArray()[0] + " )");
-			player.sendMessage(plugin.green+"Cash: "+plugin.aqua+topMoney.get(name)+plugin.gold+" ( Top: "+ topMoney.values().toArray()[0] + " )");
-			player.sendMessage(plugin.green+"Kills: "+plugin.aqua+topKills.get(name)+plugin.gold+" ( Top: "+ topKills.values().toArray()[0] + " )");
-			player.sendMessage(plugin.green+"Deaths: "+plugin.aqua+topDeaths.get(name)+plugin.gold+" ( Top: "+ topDeaths.values().toArray()[0] + " )");
-			player.sendMessage(plugin.green+"K/D: "+plugin.aqua+dec.format(kdF)+plugin.gold+" ( Top: "+ dec.format(kdFT) + " )");
-			player.sendMessage(plugin.green+"Shots: "+plugin.aqua+topShots.get(name)+plugin.gold+" ( Top: "+ topShots.values().toArray()[0] + " )");
-			player.sendMessage(plugin.green+"Hits: "+plugin.aqua+topHits.get(name)+plugin.gold+" ( Top: "+ topHits.values().toArray()[0] + " )");
-			player.sendMessage(plugin.green+"Hitquote: "+plugin.aqua+dec.format(hitquoteF)+plugin.gold+" ( Top: "+ dec.format(hitquoteFT) + " )");
-			player.sendMessage(plugin.green+"Teamattacks: "+plugin.aqua+topTeamattacks.get(name)+plugin.gold+" ( Top: "+ topTeamattacks.values().toArray()[0] + " )");
-			player.sendMessage(plugin.green+"Rounds: "+plugin.aqua+topRounds.get(name)+plugin.gold+" ( Top: "+ topRounds.values().toArray()[0] + " )");
-			player.sendMessage(plugin.green+"Wins: "+plugin.aqua+topWins.get(name)+plugin.gold+" ( Top: "+ topWins.values().toArray()[0] + " )");
-			player.sendMessage(plugin.green+"Looses: "+plugin.aqua+topLooses.get(name)+plugin.gold+" ( Top: "+ topLooses.values().toArray()[0] + " )");
-			player.sendMessage(plugin.red+"__________General Stats__________");
-			player.sendMessage(plugin.green+"Fired Shots: "+plugin.aqua+getShots());
-			player.sendMessage(plugin.green+"Frags: "+plugin.aqua+getKills());
-			player.sendMessage(plugin.green+"Played Rounds: "+plugin.aqua+getRounds());
-			player.sendMessage(plugin.green+"Spent Cash: "+plugin.aqua+getMoney());
+			
+			vars.put("points", String.valueOf(topPoints.get(name)));
+			vars.put("player_points_top", player_points_top);
+			vars.put("points_top", String.valueOf(topPoints.get(player_points_top)));
+			
+			vars.put("cash", String.valueOf(topMoney.get(name)));
+			vars.put("player_cash_top", player_cash_top);
+			vars.put("cash_top", String.valueOf(topMoney.get(player_cash_top)));
+			
+			vars.put("kills", String.valueOf(topKills.get(name)));
+			vars.put("player_kills_top", player_kills_top);
+			vars.put("kills_top", String.valueOf(topKills.get(player_kills_top)));
+			
+			vars.put("deaths", String.valueOf(topDeaths.get(name)));
+			vars.put("player_deaths_top", player_deaths_top);
+			vars.put("deaths_top", String.valueOf(topDeaths.get(player_deaths_top)));
+			
+			vars.put("kd", dec.format(kdF));
+			vars.put("player_kd_top", player_kd_top);
+			vars.put("kd_top", dec.format(kdFT));
+			
+			vars.put("shots", String.valueOf(topShots.get(name)));
+			vars.put("player_shots_top", player_shots_top);
+			vars.put("shots_top", String.valueOf(topShots.get(player_shots_top)));
+			
+			vars.put("hits", String.valueOf(topHits.get(name)));
+			vars.put("player_hits_top", player_hits_top);
+			vars.put("hits_top", String.valueOf(topHits.get(player_hits_top)));
+			
+			vars.put("hitquote", dec.format(hitquoteF));
+			vars.put("player_hitquote_top", player_hitquote_top);
+			vars.put("hitquote_top", dec.format(hitquoteFT));
+			
+			vars.put("teamattacks", String.valueOf(topTeamattacks.get(name)));
+			vars.put("player_teamattacks_top", player_teamattacks_top);
+			vars.put("teamattacks_top", String.valueOf(topTeamattacks.get(player_teamattacks_top)));
+			
+			vars.put("rounds", String.valueOf(topRounds.get(name)));
+			vars.put("player_rounds_top", player_rounds_top);
+			vars.put("rounds_top", String.valueOf(topRounds.get(player_rounds_top)));
+			
+			vars.put("wins", String.valueOf(topWins.get(name)));
+			vars.put("player_wins_top", player_wins_top);
+			vars.put("wins_top", String.valueOf(topWins.get(player_wins_top)));
+			
+			vars.put("looses", String.valueOf(topLooses.get(name)));
+			vars.put("player_looses_top", player_looses_top);
+			vars.put("looses_top", String.valueOf(topLooses.get(player_looses_top)));
+			
+			
+			player.sendMessage(plugin.t.getString("STATS_HEADER"));
+			player.sendMessage(plugin.t.getString("STATS_PLAYER", vars));
+			player.sendMessage(plugin.t.getString("STATS_POINTS", vars));
+			player.sendMessage(plugin.t.getString("STATS_CASH", vars));
+			player.sendMessage(plugin.t.getString("STATS_KILLS", vars));
+			player.sendMessage(plugin.t.getString("STATS_DEATHS", vars));
+			player.sendMessage(plugin.t.getString("STATS_KD", vars));
+			player.sendMessage(plugin.t.getString("STATS_SHOTS", vars));
+			player.sendMessage(plugin.t.getString("STATS_HITS", vars));
+			player.sendMessage(plugin.t.getString("STATS_HITQUOTE", vars));
+			player.sendMessage(plugin.t.getString("STATS_TEAMATTACKS", vars));
+			player.sendMessage(plugin.t.getString("STATS_ROUNDS", vars));
+			player.sendMessage(plugin.t.getString("STATS_WINS", vars));
+			player.sendMessage(plugin.t.getString("STATS_LOOSES", vars));
+			
+			player.sendMessage(plugin.t.getString("STATS_GENERAL"));
+			vars.put("shots", String.valueOf(getShots()));
+			vars.put("kills", String.valueOf(getKills()));
+			vars.put("rounds", String.valueOf(getRounds()));
+			vars.put("cash", String.valueOf(getMoney()));
+			player.sendMessage(plugin.t.getString("STATS_GENERAL_SHOTS", vars));
+			player.sendMessage(plugin.t.getString("STATS_GENERAL_KILLS", vars));
+			player.sendMessage(plugin.t.getString("STATS_GENERAL_ROUNDS", vars));
+			player.sendMessage(plugin.t.getString("STATS_GENERAL_MONEY", vars));
 		} else {
-			player.sendMessage(plugin.gray + "Player " + name + " not found.");
+			player.sendMessage(plugin.t.getString("PLAYER_NOT_FOUND", vars));
 		}	
 	}
 	

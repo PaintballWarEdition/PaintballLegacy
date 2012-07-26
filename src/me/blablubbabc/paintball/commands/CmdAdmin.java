@@ -181,12 +181,14 @@ public class CmdAdmin {
 			String status = "";
 			if(plugin.active) {
 				plugin.active = false;
-				status = "disabled";
+				status = plugin.t.getString("OFF");
 			} else {
 				plugin.active = true;
-				status = "activated";
+				status = plugin.t.getString("ON");
 			}
-			sender.sendMessage(plugin.green+"Paintball matches are now " +plugin.yellow+ status);
+			HashMap<String, String> vars = new HashMap<String, String>();
+			vars.put("status", status);
+			sender.sendMessage(plugin.t.getString("MATCH_STATUS", vars));
 			return true;
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -194,7 +196,7 @@ public class CmdAdmin {
 			//neue matches verhindern
 			plugin.active = false;
 			plugin.reload();
-			sender.sendMessage(plugin.green+"Reload finished.");
+			sender.sendMessage(plugin.t.getString("REALOAD_FINISHED"));
 			return true;
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 		} else if(args[1].equalsIgnoreCase("softreload")) {
@@ -202,9 +204,9 @@ public class CmdAdmin {
 			plugin.active = false;
 			plugin.softreload = true;
 			//message:
-			plugin.nf.status(plugin.light_purple + "Paintball plugin is reloading soon. New matches diabled. You will be kicked from the lobby soon..");
+			plugin.nf.status(plugin.t.getString("SOFTRELOAD"));
 			//check
-			sender.sendMessage(plugin.green+"Reload will be done when all matches are over..");
+			sender.sendMessage(plugin.t.getString("RELOAD_SOON"));
 			plugin.mm.softCheck();
 			return true;
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -212,16 +214,16 @@ public class CmdAdmin {
 			//Toggle only random:
 			if(plugin.onlyRandom) {
 				plugin.onlyRandom = false;
-				sender.sendMessage(plugin.gray+"Deactivated 'only random' !");
+				sender.sendMessage(plugin.t.getString("ONLY_RANDOM_OFF"));
 			} else {
 				plugin.onlyRandom = true;
-				sender.sendMessage(plugin.gray+"Activated 'only random' !");
+				sender.sendMessage(plugin.t.getString("ONLY_RANDOM_ON"));
 			}
 			return true;
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 		} else {
 			if(sender instanceof Player) return false;
-			else sender.sendMessage("This command cannot be used in console or is unknown.");
+			else sender.sendMessage(plugin.t.getString("COMMAND_UNKNOWN_OR_NOT_CONSOLE"));
 			return true;
 		}
 		return false;
