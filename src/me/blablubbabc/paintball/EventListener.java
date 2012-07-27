@@ -168,13 +168,13 @@ public class EventListener implements Listener{
 									player.getInventory().setItemInHand(null);
 							}
 						} else {
-							player.sendMessage(plugin.gray+"There is already one airstrike going on.");
+							player.sendMessage(plugin.t.getString("ALREADY_AIRSTRIKE"));
 						}
 					}
 				}
 			} else if(player.getItemInHand().getTypeId() == 344) {
 				if(event.getAction().equals(Action.RIGHT_CLICK_AIR) || event.getAction().equals(Action.RIGHT_CLICK_BLOCK)) {
-					player.sendMessage(plugin.green +"Fire in the hole!");
+					player.sendMessage(plugin.t.getString("GRENADE_THROW"));
 				}
 			}
 		}
@@ -285,7 +285,7 @@ public class EventListener implements Listener{
 	@EventHandler(priority = EventPriority.HIGHEST)
 	public void onPlayerCommand(PlayerCommandPreprocessEvent event) {
 		if(Lobby.getTeam(event.getPlayer()) != null && !event.getMessage().startsWith("/pb") && !event.getPlayer().hasPermission("paintball.admin") && !event.getPlayer().isOp() ) {
-			event.getPlayer().sendMessage(plugin.gray + "This command is not allowed while playing paintball.");
+			event.getPlayer().sendMessage(plugin.t.getString("COMMAND_NOT_ALLOWED"));
 			event.setCancelled(true);
 		}
 	}
@@ -294,7 +294,7 @@ public class EventListener implements Listener{
 		Player player = event.getPlayer();
 		if(Lobby.getTeam(player) != null) {
 			if(plugin.chatnames) {
-				String message = "3zpaintball3z"+event.getMessage()+"3zpaintball3z";
+				String message = ChatColor.stripColor(event.getMessage());
 				chatMessages.put(player, message);
 			}
 		}
@@ -307,9 +307,6 @@ public class EventListener implements Listener{
 				if (chatMessages.containsKey(player)) {
 					String message = chatMessages.get(player);
 					chatMessages.remove(player);
-					//filter "3zpaintball3z" raus
-					String[] split = message.split("3zpaintball3z");
-					message = split[1];
 					
 					if (plugin.mm.getMatch(player) != null) {
 						//noch im match?
@@ -323,29 +320,6 @@ public class EventListener implements Listener{
 							else if(plugin.mm.getMatch(player).isSpec(player)) farbe = Lobby.SPECTATE.color();
 							
 							event.setMessage(farbe + message);
-							
-							/*String team = plugin.mm.getMatch(player).getTeamName(player);
-							if (team.equalsIgnoreCase("red")) {
-
-								farbe = ChatColor.RED;
-
-								/*String n = ChatColor.RED + player.getName();
-								if (n.length() > 16)
-									n = (String) n.subSequence(0,
-											n.length() - (n.length() - 16));
-
-								event.setMessage(n + ": " + message);
-							} else if (team.equalsIgnoreCase("blue")) {
-
-								farbe = ChatColor.BLUE;
-
-								/*String n = ChatColor.BLUE + player.getName();
-								if (n.length() > 16)
-									n = (String) n.subSequence(0,
-											n.length() - (n.length() - 16));
-
-								event.setMessage(n + ": " + message);
-							}*/
 							
 						}
 					}

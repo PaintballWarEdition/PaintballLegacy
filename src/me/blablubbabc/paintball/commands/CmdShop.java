@@ -111,7 +111,7 @@ public class CmdShop {
 			}
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 		} else {
-			plugin.log("This command cannot be used in console.");
+			plugin.log(plugin.t.getString("COMMAND_NOT_AS_CONSOLE"));
 			return true;
 		}
 		return false;
