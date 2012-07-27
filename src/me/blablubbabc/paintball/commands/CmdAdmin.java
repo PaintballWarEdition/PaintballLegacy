@@ -1,5 +1,7 @@
 package me.blablubbabc.paintball.commands;
 
+import java.util.HashMap;
+
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
@@ -18,7 +20,7 @@ public class CmdAdmin {
 	public boolean command(CommandSender sender, String[] args) {
 		if(sender instanceof Player) {
 			if(!sender.isOp() && !sender.hasPermission("paintball.admin")) {
-				sender.sendMessage(plugin.red+"No permission.");
+				sender.sendMessage(plugin.t.getString("NO_PERMISSION"));
 				return true;
 			}
 			Player player = (Player) sender;
@@ -28,11 +30,15 @@ public class CmdAdmin {
 				if(args.length == 3) {
 					if(args[2].equalsIgnoreCase("spawn")) {
 						plugin.addLobbySpawn(player.getLocation());
-						player.sendMessage(Lobby.LOBBY.color() + "Lobby"+plugin.green+" spawn added.");
+						HashMap<String, String> vars = new HashMap<String, String>();
+						vars.put("lobby_color", Lobby.LOBBY.color().toString());
+						player.sendMessage(plugin.t.getString("LOBBY_NEW_SPAWN", vars));
 						return true;
 					} else if(args[2].equalsIgnoreCase("remove")) {
 						plugin.deleteLobbySpawns();
-						player.sendMessage(Lobby.LOBBY.color() + "Lobby"+plugin.green+" spawns removed.");
+						HashMap<String, String> vars = new HashMap<String, String>();
+						vars.put("lobby_color", Lobby.LOBBY.color().toString());
+						player.sendMessage(plugin.t.getString("LOBBY_SPAWNS_REMOVED", vars));
 						return true;
 					}
 				}
@@ -47,7 +53,7 @@ public class CmdAdmin {
 						plugin.pm.addMoney(args[2], money);
 						plugin.pm.saveData();
 					} catch(Exception e) {
-						player.sendMessage(plugin.red + "No valid value enteplugin.red!");
+						player.sendMessage(plugin.t.getString("INVALID_NUMBER"));
 					}
 					return true;
 				}
@@ -62,7 +68,7 @@ public class CmdAdmin {
 						plugin.pm.addPoints(args[2], points);
 						plugin.pm.saveData();
 					} catch(Exception e) {
-						player.sendMessage(plugin.red + "No valid value enteplugin.red!");
+						player.sendMessage(plugin.t.getString("INVALID_NUMBER"));
 					}
 					return true;
 				}
@@ -73,16 +79,19 @@ public class CmdAdmin {
 						ItemStack is = player.getItemInHand();
 						Lobby.BLUE.setHelmet(is.getType(), is.getData().getData());
 						Lobby.BLUE.saveData();
+						player.sendMessage(plugin.t.getString("HELMET_SET"));
 						return true;
 					} else if(args[2].equalsIgnoreCase("red")) {
 						ItemStack is = player.getItemInHand();
 						Lobby.RED.setHelmet(is.getType(), is.getData().getData());
 						Lobby.RED.saveData();
+						player.sendMessage(plugin.t.getString("HELMET_SET"));
 						return true;
 					} else if(args[2].equalsIgnoreCase("spec") || args[2].equalsIgnoreCase("spectator")) {
 						ItemStack is = player.getItemInHand();
 						Lobby.SPECTATE.setHelmet(is.getType(), is.getData().getData());
 						Lobby.SPECTATE.saveData();
+						player.sendMessage(plugin.t.getString("HELMET_SET"));
 						return true;
 					}
 				}
@@ -96,10 +105,10 @@ public class CmdAdmin {
 				//reload:
 				plugin.active = false;
 				plugin.reload();
-				sender.sendMessage(plugin.green+"Reload finished.");
+				sender.sendMessage(plugin.t.getString("REALOAD_FINISHED"));
 				//playerstats löschen
 				plugin.pm.resetData();
-				sender.sendMessage(plugin.red+"All"+plugin.green+" stats have been reset!");
+				sender.sendMessage(plugin.t.getString("ALL_STATS_RESET"));
 			} else if(args.length == 3) {
 				if(plugin.pm.exists(args[2])) {
 					String name = args[2];
@@ -112,9 +121,13 @@ public class CmdAdmin {
 					plugin.pm.setPoints(name, 0);
 					plugin.pm.setShots(name, 0);
 					plugin.pm.saveData();
-					sender.sendMessage(plugin.green+"Stats of player "+plugin.gray+name+plugin.green+" have been reset!");
+					HashMap<String, String> vars = new HashMap<String, String>();
+					vars.put("player", name);
+					sender.sendMessage(plugin.t.getString("PLAYER_ALL_STATS_RESET", vars));
 				} else {
-					sender.sendMessage(plugin.gray + "Player " + args[2] + " not found.");
+					HashMap<String, String> vars = new HashMap<String, String>();
+					vars.put("player", args[2]);
+					sender.sendMessage(plugin.t.getString("PLAYER_NOT_FOUND", vars));
 				}
 				return true;
 			} else if(args.length == 4) {
@@ -122,18 +135,24 @@ public class CmdAdmin {
 					if(plugin.pm.possibleValues.contains(args[3])) {
 						plugin.pm.setIntValue(args[2], args[3], 0);
 						plugin.pm.saveData();
-						sender.sendMessage(plugin.gold+args[3]+plugin.green+" of player "+plugin.gray+args[2]+plugin.green+" have been reset!");
+						HashMap<String, String> vars = new HashMap<String, String>();
+						vars.put("player", args[2]);
+						vars.put("stat", args[3]);
+						sender.sendMessage(plugin.t.getString("PLAYER_STAT_RESET", vars));
 					} else {
 						String values = "";
 						for(String s : plugin.pm.possibleValues) {
 							values += s + ",";
 						}
 						if(values.length() > 1) values.substring(0, (values.length() -1));
-
-						sender.sendMessage(plugin.gray + "Value not found. Try: "+values);
+						HashMap<String, String> vars = new HashMap<String, String>();
+						vars.put("values", values);
+						sender.sendMessage(plugin.t.getString("VALUE_NOT_FOUND", vars));
 					}
 				} else {
-					sender.sendMessage(plugin.gray + "Player " + args[2] + " not found.");
+					HashMap<String, String> vars = new HashMap<String, String>();
+					vars.put("player", args[2]);
+					sender.sendMessage(plugin.t.getString("PLAYER_NOT_FOUND", vars));
 				}
 				return true;
 			}
@@ -142,15 +161,19 @@ public class CmdAdmin {
 			if(args.length == 3) {
 				String arena = args[2];
 				if(!plugin.am.existing(arena)) {
-					sender.sendMessage(plugin.red + "This arena does not exist!");
+					HashMap<String, String> vars = new HashMap<String, String>();
+					vars.put("arena", arena);
+					sender.sendMessage(plugin.t.getString("ARENA_NOT_FOUND", vars));
 					return true;
 				}
 				if(!plugin.am.inUse(arena) && !plugin.am.isReady(arena)) {
-					sender.sendMessage(plugin.red + "This arena is not ready!");
+					sender.sendMessage(plugin.t.getString("ARENA_NOT_READY"));
 					return true;
 				}
 				plugin.am.setNext(arena);
-				plugin.nf.text(plugin.nf.pluginName+plugin.light_purple+"Tries to force next arena to be "+plugin.yellow+arena );
+				HashMap<String, String> vars = new HashMap<String, String>();
+				vars.put("plugin", plugin.nf.pluginName);
+				plugin.nf.text(plugin.t.getString("NEXT_ARENA_SET", vars));
 				return true;
 			}
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -158,12 +181,14 @@ public class CmdAdmin {
 			String status = "";
 			if(plugin.active) {
 				plugin.active = false;
-				status = "disabled";
+				status = plugin.t.getString("OFF");
 			} else {
 				plugin.active = true;
-				status = "activated";
+				status = plugin.t.getString("ON");
 			}
-			sender.sendMessage(plugin.green+"Paintball matches are now " +plugin.yellow+ status);
+			HashMap<String, String> vars = new HashMap<String, String>();
+			vars.put("status", status);
+			sender.sendMessage(plugin.t.getString("MATCH_STATUS", vars));
 			return true;
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -171,7 +196,7 @@ public class CmdAdmin {
 			//neue matches verhindern
 			plugin.active = false;
 			plugin.reload();
-			sender.sendMessage(plugin.green+"Reload finished.");
+			sender.sendMessage(plugin.t.getString("REALOAD_FINISHED"));
 			return true;
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 		} else if(args[1].equalsIgnoreCase("softreload")) {
@@ -179,9 +204,9 @@ public class CmdAdmin {
 			plugin.active = false;
 			plugin.softreload = true;
 			//message:
-			plugin.nf.status(plugin.light_purple + "Paintball plugin is reloading soon. New matches diabled. You will be kicked from the lobby soon..");
+			plugin.nf.status(plugin.t.getString("SOFTRELOAD"));
 			//check
-			sender.sendMessage(plugin.green+"Reload will be done when all matches are over..");
+			sender.sendMessage(plugin.t.getString("RELOAD_SOON"));
 			plugin.mm.softCheck();
 			return true;
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -189,16 +214,16 @@ public class CmdAdmin {
 			//Toggle only random:
 			if(plugin.onlyRandom) {
 				plugin.onlyRandom = false;
-				sender.sendMessage(plugin.gray+"Deactivated 'only random' !");
+				sender.sendMessage(plugin.t.getString("ONLY_RANDOM_OFF"));
 			} else {
 				plugin.onlyRandom = true;
-				sender.sendMessage(plugin.gray+"Activated 'only random' !");
+				sender.sendMessage(plugin.t.getString("ONLY_RANDOM_ON"));
 			}
 			return true;
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 		} else {
 			if(sender instanceof Player) return false;
-			else sender.sendMessage("This command cannot be used in console or is unknown.");
+			else sender.sendMessage(plugin.t.getString("COMMAND_UNKNOWN_OR_NOT_CONSOLE"));
 			return true;
 		}
 		return false;

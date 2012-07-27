@@ -1,5 +1,7 @@
 package me.blablubbabc.paintball.commands;
 
+import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.LinkedList;
 import org.bukkit.Material;
 import org.bukkit.command.CommandSender;
@@ -9,12 +11,28 @@ import me.blablubbabc.paintball.Paintball;
 
 public class CmdShop {
 	private Paintball plugin;
-	
 	private LinkedList<String> goods;
+	private String empty = "empty";
+	//ITEMS:
+	ArrayList<String> ball;
+	ArrayList<String> grenade;
+	ArrayList<String> airstrike;
+	
 	
 	public CmdShop(Paintball pl) {
 		plugin = pl;
 		goods = new LinkedList<String>();
+		empty = plugin.t.getString("SHOP_EMPTY");
+		//ITEMS:
+		ArrayList<String> ball = new ArrayList<String>();
+		ball.add("ball");ball.add("balls");ball.add(plugin.t.getString("BALL"));ball.add(plugin.t.getString("BALLS"));
+		
+		ArrayList<String> grenade = new ArrayList<String>();
+		grenade.add("grenade");grenade.add("grenades");grenade.add(plugin.t.getString("GRENADE"));grenade.add(plugin.t.getString("GRENADES"));
+		
+		ArrayList<String> airstrike = new ArrayList<String>();
+		airstrike.add("airstrike");airstrike.add("airstrikes");airstrike.add(plugin.t.getString("AIRSTRIKE"));airstrike.add(plugin.t.getString("AIRSTRIKES"));
+		
 		for(String s : plugin.shopGoods) {
 			goods.add(s);
 		}
@@ -23,37 +41,40 @@ public class CmdShop {
 	public boolean command(CommandSender sender, String[] args) {
 		if(sender instanceof Player) {
 			if(!sender.isOp() && !sender.hasPermission("paintball.admin") && !sender.hasPermission("paintball.general")) {
-				sender.sendMessage(plugin.red+"No permission.");
+				sender.sendMessage(plugin.t.getString("NO_PERMISSION"));
 				return true;
 			}
 			Player player = (Player) sender;
 			if(!plugin.shop) {
-				player.sendMessage(plugin.gray + "Shop is inactive right now. :( See you later, alligator!");
+				player.sendMessage(plugin.t.getString("SHOP_INACTIVE"));
 				return true;
 			}
 			if(args.length == 1) {
 				//Goods-List
-				player.sendMessage(plugin.dark_green+"$$$$$"+plugin.yellow+""+ plugin.bold+" Paintball-Shop "+plugin.dark_green+"$$$$$");
+				player.sendMessage(plugin.t.getString("SHOP_HEADER"));
 				player.sendMessage("");
 				int i = 1;
+				HashMap<String, String> vars = new HashMap<String, String>();
 				for(String s : goods) {
-					String msg = plugin.gold+String.valueOf(i)+plugin.gray+" : "+transformGood(s);
+					vars.put("id", String.valueOf(i));
+					vars.put("good", transformGood(s));
+					String msg = plugin.t.getString("SHOP_ENTRY", vars);
 					if(player.hasPermission("paintball.shop.not"+String.valueOf(i)) && !player.isOp() && !player.hasPermission("paintball.admin")) msg = msg.concat(" "+plugin.red+"X");
 					player.sendMessage(msg);
 					i++;
 				}
 				player.sendMessage("");
-				player.sendMessage(plugin.gold+"Buy with /pb shop [id]");
+				player.sendMessage(plugin.t.getString("SHOP_BUY"));
 				return true;
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 			} else if(args.length == 2) {
 				if(plugin.mm.getMatch(player) == null) {
-					player.sendMessage(plugin.gray+"The paintball-shop is only available while playing.");
+					player.sendMessage(plugin.t.getString("SHOP_ONLY_WHILE_PLAYING"));
 					return true;
 				}
 				if(isNumber(args[1]) != null && isNumber(args[1]) > 0 && isNumber(args[1]) <= goods.size()) {
-					if(transformGood(goods.get(isNumber(args[1])-1)).equalsIgnoreCase("empty") || (player.hasPermission("paintball.shop.not"+String.valueOf(isNumber(args[1]))) && !player.isOp() && !player.hasPermission("paintball.admin")) ) {
-						player.sendMessage(plugin.gray+"This good is not available.");
+					if(transformGood(goods.get(isNumber(args[1])-1)).equalsIgnoreCase(empty) || (player.hasPermission("paintball.shop.not"+String.valueOf(isNumber(args[1]))) && !player.isOp() && !player.hasPermission("paintball.admin")) ) {
+						player.sendMessage(plugin.t.getString("GOOD_NOT_AVAILABLE"));
 						return true;
 					}
 					String[] split = goods.get(isNumber(args[1])-1).split("-");
@@ -61,32 +82,36 @@ public class CmdShop {
 					int amount = Integer.parseInt(split[0]);
 					int cash = (Integer) plugin.pm.getStats(player.getName()).get("money");
 					if(cash < price) {
-						player.sendMessage(plugin.gray+"$ Not enough cash $ :(");
+						player.sendMessage(plugin.t.getString("NOT_ENOUGH_MONEY"));
 						return true;
 					}
 					if(player.getInventory().firstEmpty() == -1) {
-						player.sendMessage(plugin.gray+"Your inventory is full!");
+						player.sendMessage(plugin.t.getString("INVENTORY_FULL"));
 						return true;
 					}
 					//money
 					plugin.pm.addMoney(player.getName(), -price);
 					plugin.stats.addMoney(price);
 					//items
-					if(split[1].equalsIgnoreCase("ball") || split[1].equalsIgnoreCase("balls")) player.getInventory().addItem(new ItemStack(Material.SNOW_BALL, amount));
-					if(split[1].equalsIgnoreCase("grenade") || split[1].equalsIgnoreCase("grenades")) player.getInventory().addItem(new ItemStack(Material.EGG, amount));
-					if(split[1].equalsIgnoreCase("airstrike") || split[1].equalsIgnoreCase("airstrikes")) player.getInventory().addItem(new ItemStack(Material.STICK, amount));
+					if(isItem(split[1], "ball")) player.getInventory().addItem(new ItemStack(Material.SNOW_BALL, amount));
+					if(isItem(split[1], "grenade")) player.getInventory().addItem(new ItemStack(Material.EGG, amount));
+					if(isItem(split[1], "airstrike")) player.getInventory().addItem(new ItemStack(Material.STICK, amount));
 					
-					player.sendMessage(plugin.green+"You bought "+amount+" "+split[1]+" for "+price+" $");
+					HashMap<String, String> vars = new HashMap<String, String>();
+					vars.put("amount", String.valueOf(amount));
+					vars.put("good", split[1]);
+					vars.put("price", String.valueOf(price));
+					player.sendMessage(plugin.t.getString("YOU_BOUGHT", vars));
 					
 					return true;
 				} else {
-					player.sendMessage(plugin.red+"Invalid ID");
+					player.sendMessage(plugin.t.getString("INVALID_ID"));
 					return true;
 				}
 			}
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 		} else {
-			plugin.log("This command cannot be used in console.");
+			plugin.log(plugin.t.getString("COMMAND_NOT_AS_CONSOLE"));
 			return true;
 		}
 		return false;
@@ -94,51 +119,71 @@ public class CmdShop {
 	
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 	
+	private boolean isItem(String source, String item) {
+		if(item.equalsIgnoreCase("ball")) {
+			for(String s : ball) {
+				if(source.equalsIgnoreCase(s)) return true;
+			}
+		}else if(item.equalsIgnoreCase("grenade")) {
+			for(String s : grenade) {
+				if(source.equalsIgnoreCase(s)) return true;
+			}
+		}else if(item.equalsIgnoreCase("airstrike")) {
+			for(String s : airstrike) {
+				if(source.equalsIgnoreCase(s)) return true;
+			}
+		}
+		return false;
+	}
+	
 	private String transformGood(String s) {
-		String good = "";
+		HashMap<String, String> vars = new HashMap<String, String>();
+		String slot = "";
 		String[] split = s.split("-");
 		if(split.length != 3) {
-			return "empty";
+			return empty;
 		}
 		if(isNumber(split[0]) == null || isNumber(split[2]) == null) {
-			return "empty";
+			return empty;
 		}
 		if(isNumber(split[0]) < 0 || isNumber(split[2]) < 0) {
-			return "empty";
+			return empty;
 		}
 		
-		good += plugin.yellow+split[0]+" ";
+		vars.put("amount", split[0]);
 		
-		if(split[1].equalsIgnoreCase("ball") || split[1].equalsIgnoreCase("balls")) {
+		String good = "";
+		if(isItem(split[1], "ball")) {
 			if(isNumber(split[0]) == 1) {
-				good += "Ball";
+				good = plugin.t.getString("BALL");
 			} else {
-				good += "Balls";
+				good = plugin.t.getString("BALLS");
 			}
-		} else if(split[1].equalsIgnoreCase("grenade") || split[1].equalsIgnoreCase("grenades")) {
+		} else if(isItem(split[1], "grenade")) {
 			if(isNumber(split[0]) == 1) {
-				good +="Grenade";
+				good = plugin.t.getString("GRENADE");
 			} else {
-				good += "Grenades";
+				good = plugin.t.getString("GRENADES");
 			}
 			if(!plugin.grenades) {
-				return "empty";
+				return empty;
 			}
-		} else if(split[1].equalsIgnoreCase("airstrike") || split[1].equalsIgnoreCase("airstrikes")) {
+		} else if(isItem(split[1], "airstrike")) {
 			if(isNumber(split[0]) == 1) {
-				good += "Airstrike";
+				good = plugin.t.getString("AIRSTRIKE");
 			} else {
-				good += "Airstrikes";
+				good = plugin.t.getString("AIRSTRIKES");
 			}
 			if(!plugin.airstrike) {
-				return "empty";
+				return empty;
 			}
 		} else {
-			return "empty";
+			return empty;
 		}
-		
-		good += ": " +plugin.dark_green+ split[2] + "$";
-		return good;
+		vars.put("good", good);
+		vars.put("price", split[2]);
+		slot = plugin.t.getString("SHOP_GOOD", vars);
+		return slot;
 	}
 	
 	private Integer isNumber(String s) {

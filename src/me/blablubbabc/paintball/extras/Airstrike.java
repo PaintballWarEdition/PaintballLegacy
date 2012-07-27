@@ -3,7 +3,6 @@ package me.blablubbabc.paintball.extras;
 import java.util.HashMap;
 import java.util.LinkedList;
 import me.blablubbabc.paintball.Paintball;
-import org.bukkit.ChatColor;
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.block.Block;
@@ -42,7 +41,7 @@ public class Airstrike{
 			for(int i = 1; i <= plugin.airstrikeBombs; i++) {
 				bombs.add(b1.clone().add(bpr.clone().multiply((bombDiff*i))));
 			}
-			player.sendMessage(ChatColor.GREEN +"Let it rain BOMBS! UGAGAGA ");
+			player.sendMessage(plugin.t.getString("AIRSTRKE_CALLED"));
 			//chicken
 			Location lc = new Location(player.getWorld(), bombs.getFirst().getX(), bombs.getFirst().getY(), bombs.getFirst().getZ(), 0, getLookAtYaw(bpr));
 			final LivingEntity chick = player.getWorld().spawnCreature(lc.add(new Vector(0,5,0)), EntityType.CHICKEN);

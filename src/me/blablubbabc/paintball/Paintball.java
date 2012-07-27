@@ -20,6 +20,7 @@ public class Paintball extends JavaPlugin{
 	public EventListener listener;
 	public Newsfeeder nf;
 	public ArenaManager am;
+	public Translator t;
 	public Stats stats;
 	public boolean active;
 	public boolean softreload;
@@ -39,6 +40,7 @@ public class Paintball extends JavaPlugin{
 	
 	//Config:
 	//general:
+	public String local;
 	public int countdown;
 	public int countdownInit;
 	public int minPlayers;
@@ -133,6 +135,7 @@ public class Paintball extends JavaPlugin{
 		goodsDef.add("1-Airstrike-100");
 		
 		getConfig().options().header("Use a value of -1 to give the players infinite balls or extras.");
+		if(getConfig().get("Paintball.Language") == null)getConfig().set("Paintball.Language", "enUS");
 		if(getConfig().get("Paintball.Points per Kill") == null)getConfig().set("Paintball.Points per Kill", 2);
 		if(getConfig().get("Paintball.Points per Hit") == null)getConfig().set("Paintball.Points per Hit", 1);
 		if(getConfig().get("Paintball.Points per Team-Attack") == null)getConfig().set("Paintball.Points per Team-Attack", -1);
@@ -188,6 +191,8 @@ public class Paintball extends JavaPlugin{
 		cashPerRound = getConfig().getInt("Paintball.Cash per Round", 0);
 		
 		//gerneral:
+		local = getConfig().getString("Paintball.Language", "enUS");
+		
 		lives = getConfig().getInt("Paintball.Match.Lives", 1);
 		if(lives < 1) lives = 1;
 		balls = getConfig().getInt("Paintball.Match.Balls", 50);
@@ -243,6 +248,13 @@ public class Paintball extends JavaPlugin{
 		//DB
 		data = new BlaDB("paintball", this.getDataFolder().toString());
 		loadDB();
+		//TRANSLATOR
+		t = new Translator(this, local);
+		if(!t.success) {
+			log("ERROR: Couldn't find/load the default language file. Disables now..");
+			getServer().getPluginManager().disablePlugin(this);
+			return;
+		}
 		//WAKE TEAM-ENUMS
 		Lobby.values();
 		//PLAYERMANAGER
@@ -335,18 +347,18 @@ public class Paintball extends JavaPlugin{
 		}
 				
 				
-		log("["+this.toString()+"]" + " by blablubbabc enabled.");
-		log("["+this.toString()+"]" + " Do not redistribute or modify. Use it as it is and not for commercial purposes! Usage on own risk. No warranties.");
-		log("["+this.toString()+"]" + " If you like this, give feedback and donate at wir-sind-wir.de/lukas");
+		log("By blablubbabc enabled.");
+		log("Do not redistribute or modify. Use it as it is and not for commercial purposes! Usage on own risk. No warranties.");
+		log("If you like this, give feedback and donate at wir-sind-wir.de/lukas");
 	}
 
 	public void onDisable(){
-		mm.forceReload();
-		log(this.toString() + " disabled!");
+		if(mm != null) mm.forceReload();
+		log("Disabled!");
 	}
 	
 	public void log(String message) {
-		System.out.println(message);
+		System.out.println("["+this.getName()+"] "+message);
 	}
 	
 	public void reload() {
@@ -417,13 +429,13 @@ public class Paintball extends JavaPlugin{
 			//PlayerInventory
 			player.getInventory().setContents(pm.getInvContent(player));
 			player.getInventory().setArmorContents(pm.getInvArmor(player));
-			player.sendMessage(gray+"Inventory restored.");
+			player.sendMessage(t.getString("INVENTORY_RESTORED"));
 		}
 		//teleport:
 		if(teleport) player.teleport(pm.getLoc(player));
 		if (messages) {
 			//messages:
-			player.sendMessage(gray + "You left the lobby.");
+			player.sendMessage(t.getString("YOU_LEFT_LOBBY"));
 			nf.leave(player.getName());
 		}
 	}

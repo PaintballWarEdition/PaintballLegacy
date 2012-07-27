@@ -2,6 +2,7 @@ package me.blablubbabc.paintball;
 
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.Map.Entry;
 import java.util.Set;
@@ -38,7 +39,7 @@ public class MatchManager{
 			match.undoAllColors();
 			//Teleport all remaining players back to lobby:
 			int spawn = 0;
-			for(Player p : match.getAllPlayers()) {
+			for(Player p : match.getAll()) {
 				//ist nicht aus minecraft raus:
 				if(!match.hasLeft(p)){
 					//lobby
@@ -61,15 +62,15 @@ public class MatchManager{
 			matches.remove(match);	
 		}
 		//messages:
-		plugin.nf.status(plugin.light_purple+"All players kicked from their matches.");
+		plugin.nf.status(plugin.t.getString("ALL_KICKED_FROM_MATCHES"));
 		//stop countdown:
 		if(countdownStarted) {
 			plugin.getServer().getScheduler().cancelTask(taskID);
 	    	countdownStarted = false;
 		}
 		// Kick all from Lobby:
-		plugin.nf.status(plugin.light_purple+"All players kicked from the paintball lobby.");
-		plugin.nf.status(plugin.light_purple+"Reloading the paintball plugin..");
+		plugin.nf.status(plugin.t.getString("ALL_KICKED_FROM_LOBBY"));
+		plugin.nf.status(plugin.t.getString("RELOADING_PAINTBALL"));
 		ArrayList<Player> list = new ArrayList<Player>();
 		for(Player p : Lobby.LOBBY.getMembers()) {
 			list.add(p);
@@ -95,7 +96,7 @@ public class MatchManager{
 	
 	public void gameStart() {
 		int players = Lobby.RED.numberWaiting() + Lobby.BLUE.numberWaiting() + Lobby.RANDOM.numberWaiting();
-		String info = plugin.gold+"["+plugin.red+Lobby.RED.numberWaiting()+plugin.gold+"]["+plugin.blue+Lobby.BLUE.numberWaiting()+plugin.gold+"]["+plugin.green+Lobby.RANDOM.numberWaiting()+plugin.gold+"]["+plugin.yellow+Lobby.SPECTATE.numberWaiting()+plugin.gold+"]";
+		String info = plugin.nf.getPlayersOverview();
 		
 		for(Player player : Lobby.RANDOM.getMembers()) {
 			Lobby.RANDOM.setPlaying(player);
@@ -113,8 +114,12 @@ public class MatchManager{
 		String arena = plugin.am.getNextArena();
 		plugin.am.resetNext();
 		plugin.am.toggleReady(arena);
-		plugin.nf.status("Match starts! Arena: "+plugin.gray+arena);
-		plugin.nf.status(plugin.gray+""+players+plugin.gold+" players: "+info);
+		HashMap<String, String> vars = new HashMap<String, String>();
+		vars.put("arena", arena);
+		plugin.nf.status(plugin.t.getString("MATCH_START_ARENA", vars));
+		vars.put("players", String.valueOf(players));
+		vars.put("players_overview", info);
+		plugin.nf.status(plugin.t.getString("MATCH_START_PLAYERS_OVERVIEW", vars));
 		
 		Match match = new Match(plugin, plugin.lives, Lobby.RED.getMembers(), Lobby.BLUE.getMembers(), Lobby.SPECTATE.getMembers(), Lobby.RANDOM.getMembers(), arena);
 		matches.add(match);
@@ -141,7 +146,7 @@ public class MatchManager{
 		}
 		//Teleport all remaining players back to lobby:
 		int spawn = 0;
-		for(Player p : match.getAllPlayers()) {
+		for(Player p : match.getAll()) {
 			//if is a remaining player:
 			if(!match.hasLeft(p)){
 				//lobby
@@ -157,7 +162,7 @@ public class MatchManager{
 				}
 			}
 		}
-		
+		// Das ist eine Änderung, die du bestimmt später noch finden wirst, oder?
 		//shots
 		int shotsAll = 0;
 		for(Entry<Player, Integer> e : shots.entrySet()) {
@@ -209,31 +214,44 @@ public class MatchManager{
 		plugin.am.saveData();
 		//messages:
 		plugin.nf.status("Match is over!");
-		plugin.nf.text("Team "+Lobby.getTeam(win).color()+win+" ("+winners.size()+" players) "+plugin.aqua+"has won against team "+Lobby.getTeam(loose).color()+loose+" ("+loosers.size()+" players)");
-		plugin.nf.text(Lobby.getTeam(win).color()+"Winner"+plugin.aqua+" bonus: "+plugin.green+plugin.pointsPerWin+plugin.aqua+" points and "+plugin.green+plugin.cashPerWin+plugin.aqua+" cash!");
-		plugin.nf.text("Round bonus for everyone: "+plugin.green+plugin.pointsPerRound+plugin.aqua+" points and "+plugin.green+plugin.cashPerRound+plugin.aqua+" cash!");
-		plugin.nf.text(plugin.dark_green+"Some match stats: ");
-		plugin.nf.text(plugin.light_purple+"Shots fired: "+plugin.green+shotsAll);
-		plugin.nf.text(plugin.light_purple+"Hits: "+plugin.green+hitsAll);
-		plugin.nf.text(plugin.light_purple+"Teamattacks: "+plugin.green+teamattacksAll);
-		plugin.nf.text(plugin.light_purple+"Kills: "+plugin.green+killsAll);
-		plugin.nf.text(plugin.dark_green+"General stats: ");
-		plugin.nf.text(plugin.light_purple+"Shots fired: "+plugin.green+plugin.stats.getShots());
-		plugin.nf.text(plugin.light_purple+"Kills: "+plugin.green+plugin.stats.getKills());
-		plugin.nf.text(plugin.light_purple+"Played rounds: "+plugin.green+plugin.stats.getRounds());
-		plugin.nf.text(plugin.light_purple+"Money spent in shop: "+plugin.green+plugin.stats.getMoney());
+		HashMap<String, String> vars = new HashMap<String, String>();
+		vars.put("winner_color", Lobby.getTeam(win).color().toString());
+		vars.put("winner", win);
+		vars.put("winner_size", String.valueOf(winners.size()));
+		vars.put("looser_color", Lobby.getTeam(loose).color().toString());
+		vars.put("looser", loose);
+		vars.put("looser_size", String.valueOf(loosers.size()));
+		plugin.nf.text(plugin.t.getString("WINNER_TEAM", vars));
+		
+		vars.put("points", String.valueOf(plugin.pointsPerWin));
+		vars.put("cash", String.valueOf(plugin.cashPerWin));
+		plugin.nf.text(plugin.t.getString("WINNER_BONUS", vars));
+		
+		vars.put("points", String.valueOf(plugin.pointsPerRound));
+		vars.put("cash", String.valueOf(plugin.cashPerRound));
+		plugin.nf.text(plugin.t.getString("ROUND_BONUS", vars));
+		
+		plugin.nf.text(plugin.t.getString("MATCH_STATS"));
+		vars.put("shots", String.valueOf(shotsAll));
+		vars.put("hits", String.valueOf(hitsAll));
+		vars.put("teamattacks", String.valueOf(teamattacksAll));
+		vars.put("kills", String.valueOf(killsAll));
+		plugin.nf.text(plugin.t.getString("MATCH_SHOTS", vars));
+		plugin.nf.text(plugin.t.getString("MATCH_HITS", vars));
+		plugin.nf.text(plugin.t.getString("MATCH_TEAMATTACKS", vars));
+		plugin.nf.text(plugin.t.getString("MATCH_KILLS", vars));
 		plugin.nf.text("-------------------------------------------------");
 		
 		//close match
 		plugin.am.toggleReady(match.getArena());
 		matches.remove(match);
 		//ready? countdown?
-		plugin.nf.status("Choose you team now!");
+		plugin.nf.status(plugin.t.getString("CHOOSE_TEAM"));
 		
 		//players:
 		plugin.nf.players();
 		
-		if(ready().equalsIgnoreCase("ready")) {
+		if(ready().equalsIgnoreCase(plugin.t.getString("READY"))) {
 			countdown(plugin.countdown, plugin.countdownInit);
 		} else {
 			plugin.nf.status(ready());
@@ -251,21 +269,21 @@ public class MatchManager{
 		//softreload-check:
 		softCheck();
 		//activated?
-		if(!plugin.active) return "new matches disabled";
+		if(!plugin.active) return plugin.t.getString("NEW_MATCHES_DISABLED");
 		//no game active
-		if(matches.size() > 0) return "active game";
+		if(matches.size() > 0) return plugin.t.getString("ACTIVE_MATCH");
 		//1 player in each team waiting for game or 2 randoms (or mix) 
 		int players = Lobby.RED.numberWaiting() + Lobby.BLUE.numberWaiting() + Lobby.RANDOM.numberWaiting();
 		if(players >= plugin.minPlayers && ( (Lobby.BLUE.numberWaiting()>=1 && Lobby.RED.numberWaiting()>=1) || (Lobby.RANDOM.numberWaiting() >= 2) || (Lobby.RANDOM.numberWaiting()>=1 && Lobby.RED.numberWaiting()>=1) || (Lobby.RANDOM.numberWaiting()>=1 && Lobby.BLUE.numberWaiting()>=1) )) {
-			if(!plugin.am.isReady()) return "no arena ready";
+			if(!plugin.am.isReady()) return plugin.t.getString("NO_ARENA_READY");
 			//ready=>
-			return "ready";
-		} else return "not enough waiting players";
+			return plugin.t.getString("READY");
+		} else return plugin.t.getString("NOT_ENOUGH_PLAYERS");
 	}
 	
 	public void countdown(int number, int initial) {
 		if(!plugin.mm.countdownStarted && plugin.active) {
-			plugin.nf.status("A new match starts soon!");
+			plugin.nf.status(plugin.t.getString("NEW_MATCH_STARTS_SOON"));
 			countdownStarted = true;
 			count = number;
 			taskID = plugin.getServer().getScheduler().scheduleSyncRepeatingTask(plugin, new Runnable(){
