@@ -43,36 +43,6 @@ public class CmdAdmin {
 					}
 				}
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-			} else if(args[1].equalsIgnoreCase("cash")) {
-				if(args.length == 3) {
-					plugin.stats.sendCash(player, args[2]);
-					return true;
-				} else if(args.length == 4) {
-					try {
-						int money = Integer.parseInt(args[3]);
-						plugin.pm.addMoney(args[2], money);
-						plugin.pm.saveData();
-					} catch(Exception e) {
-						player.sendMessage(plugin.t.getString("INVALID_NUMBER"));
-					}
-					return true;
-				}
-////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-			} else if(args[1].equalsIgnoreCase("rank")) {
-				if(args.length == 3) {
-					plugin.stats.sendRank(player, args[2]);
-					return true;
-				} else if(args.length == 4) {
-					try {
-						int points = Integer.parseInt(args[3]);
-						plugin.pm.addPoints(args[2], points);
-						plugin.pm.saveData();
-					} catch(Exception e) {
-						player.sendMessage(plugin.t.getString("INVALID_NUMBER"));
-					}
-					return true;
-				}
-////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 			} else if(args[1].equalsIgnoreCase("helmet")) {
 				if(args.length == 3) {
 					if(args[2].equalsIgnoreCase("blue")) {
@@ -153,6 +123,44 @@ public class CmdAdmin {
 					HashMap<String, String> vars = new HashMap<String, String>();
 					vars.put("player", args[2]);
 					sender.sendMessage(plugin.t.getString("PLAYER_NOT_FOUND", vars));
+				}
+				return true;
+			}
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+		} else if(args[1].equalsIgnoreCase("cash")) {
+			if(args.length == 3) {
+				plugin.stats.sendCash(sender, args[2]);
+				return true;
+			} else if(args.length == 4) {
+				try {
+					int money = Integer.parseInt(args[3]);
+					plugin.pm.addMoney(args[2], money);
+					plugin.pm.saveData();
+					HashMap<String,String> vars = new HashMap<String, String>();
+					vars.put("player", args[2]);
+					vars.put("value", String.valueOf(money));
+					sender.sendMessage(plugin.t.getString("PLAYER_RECEIVED_VALUE", vars));
+				} catch(Exception e) {
+					sender.sendMessage(plugin.t.getString("INVALID_NUMBER"));
+				}
+				return true;
+			}
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+		} else if(args[1].equalsIgnoreCase("rank")) {
+			if(args.length == 3) {
+				plugin.stats.sendRank(sender, args[2]);
+				return true;
+			} else if(args.length == 4) {
+				try {
+					int points = Integer.parseInt(args[3]);
+					plugin.pm.addPoints(args[2], points);
+					plugin.pm.saveData();
+					HashMap<String,String> vars = new HashMap<String, String>();
+					vars.put("player", args[2]);
+					vars.put("value", String.valueOf(points));
+					sender.sendMessage(plugin.t.getString("PLAYER_RECEIVED_VALUE", vars));
+				} catch(Exception e) {
+					sender.sendMessage(plugin.t.getString("INVALID_NUMBER"));
 				}
 				return true;
 			}

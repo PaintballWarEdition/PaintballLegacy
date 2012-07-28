@@ -9,7 +9,7 @@ import java.util.SortedSet;
 import java.util.TreeSet;
 import java.util.Map.Entry;
 import me.blablubbabc.BlaDB.Register;
-import org.bukkit.entity.Player;
+import org.bukkit.command.CommandSender;
 
 public class Stats {
 
@@ -196,46 +196,46 @@ public class Stats {
 		return rank;
 	}
 	
-	public void sendTop(Player player) {
+	public void sendTop(CommandSender sender) {
 		calculateRanks();
-		player.sendMessage(plugin.t.getString("TOP_TEN"));
+		sender.sendMessage(plugin.t.getString("TOP_TEN"));
 		HashMap<String, String> vars = new HashMap<String, String>();
 		for(int i = 1; i <= 10; i++) {
 			if(i <= topPoints.keySet().toArray().length) {
 				vars.put("rank", String.valueOf(i));
 				vars.put("player", (String)topPoints.keySet().toArray()[i-1]);
 				vars.put("points", String.valueOf((Integer)topPoints.values().toArray()[i-1]));
-				player.sendMessage(plugin.t.getString("TOP_TEN_ENTRY", vars));
+				sender.sendMessage(plugin.t.getString("TOP_TEN_ENTRY", vars));
 			}
 			else break;
 		}
 	}
 	
-	public void sendRank(Player player, String name) {
+	public void sendRank(CommandSender sender, String name) {
 		calculateRanks();
 		HashMap<String, String> vars = new HashMap<String, String>();
 		vars.put("player", name);
 		if(plugin.pm.exists(name)) {
 			vars.put("rank", String.valueOf(getRank(name)));
-			player.sendMessage(plugin.t.getString("RANK_PLAYER", vars));
+			sender.sendMessage(plugin.t.getString("RANK_PLAYER", vars));
 		} else {
-			player.sendMessage(plugin.t.getString("PLAYER_NOT_FOUND", vars));
+			sender.sendMessage(plugin.t.getString("PLAYER_NOT_FOUND", vars));
 		}
 	}
 	
-	public void sendCash(Player player, String name) {
+	public void sendCash(CommandSender sender, String name) {
 		calculateRanks();
 		HashMap<String, String> vars = new HashMap<String, String>();
 		vars.put("player", name);
 		if(plugin.pm.exists(name)) {
 			vars.put("cash", String.valueOf(topMoney.get(name)));
-			player.sendMessage(plugin.t.getString("CASH_PLAYER", vars));
+			sender.sendMessage(plugin.t.getString("CASH_PLAYER", vars));
 		} else {
-			player.sendMessage(plugin.t.getString("PLAYER_NOT_FOUND", vars));
+			sender.sendMessage(plugin.t.getString("PLAYER_NOT_FOUND", vars));
 		}
 	}
 	
-	public void sendStats(Player player, String name) {
+	public void sendStats(CommandSender sender, String name) {
 		calculateRanks();
 		HashMap<String, String> vars = new HashMap<String, String>();
 		vars.put("player", name);
@@ -316,32 +316,32 @@ public class Stats {
 			vars.put("looses_top", String.valueOf(topLooses.get(player_looses_top)));
 			
 			
-			player.sendMessage(plugin.t.getString("STATS_HEADER"));
-			player.sendMessage(plugin.t.getString("STATS_PLAYER", vars));
-			player.sendMessage(plugin.t.getString("STATS_POINTS", vars));
-			player.sendMessage(plugin.t.getString("STATS_CASH", vars));
-			player.sendMessage(plugin.t.getString("STATS_KILLS", vars));
-			player.sendMessage(plugin.t.getString("STATS_DEATHS", vars));
-			player.sendMessage(plugin.t.getString("STATS_KD", vars));
-			player.sendMessage(plugin.t.getString("STATS_SHOTS", vars));
-			player.sendMessage(plugin.t.getString("STATS_HITS", vars));
-			player.sendMessage(plugin.t.getString("STATS_HITQUOTE", vars));
-			player.sendMessage(plugin.t.getString("STATS_TEAMATTACKS", vars));
-			player.sendMessage(plugin.t.getString("STATS_ROUNDS", vars));
-			player.sendMessage(plugin.t.getString("STATS_WINS", vars));
-			player.sendMessage(plugin.t.getString("STATS_LOOSES", vars));
+			sender.sendMessage(plugin.t.getString("STATS_HEADER"));
+			sender.sendMessage(plugin.t.getString("STATS_PLAYER", vars));
+			sender.sendMessage(plugin.t.getString("STATS_POINTS", vars));
+			sender.sendMessage(plugin.t.getString("STATS_CASH", vars));
+			sender.sendMessage(plugin.t.getString("STATS_KILLS", vars));
+			sender.sendMessage(plugin.t.getString("STATS_DEATHS", vars));
+			sender.sendMessage(plugin.t.getString("STATS_KD", vars));
+			sender.sendMessage(plugin.t.getString("STATS_SHOTS", vars));
+			sender.sendMessage(plugin.t.getString("STATS_HITS", vars));
+			sender.sendMessage(plugin.t.getString("STATS_HITQUOTE", vars));
+			sender.sendMessage(plugin.t.getString("STATS_TEAMATTACKS", vars));
+			sender.sendMessage(plugin.t.getString("STATS_ROUNDS", vars));
+			sender.sendMessage(plugin.t.getString("STATS_WINS", vars));
+			sender.sendMessage(plugin.t.getString("STATS_LOOSES", vars));
 			
-			player.sendMessage(plugin.t.getString("STATS_GENERAL"));
+			sender.sendMessage(plugin.t.getString("STATS_GENERAL"));
 			vars.put("shots", String.valueOf(getShots()));
 			vars.put("kills", String.valueOf(getKills()));
 			vars.put("rounds", String.valueOf(getRounds()));
 			vars.put("cash", String.valueOf(getMoney()));
-			player.sendMessage(plugin.t.getString("STATS_GENERAL_SHOTS", vars));
-			player.sendMessage(plugin.t.getString("STATS_GENERAL_KILLS", vars));
-			player.sendMessage(plugin.t.getString("STATS_GENERAL_ROUNDS", vars));
-			player.sendMessage(plugin.t.getString("STATS_GENERAL_MONEY", vars));
+			sender.sendMessage(plugin.t.getString("STATS_GENERAL_SHOTS", vars));
+			sender.sendMessage(plugin.t.getString("STATS_GENERAL_KILLS", vars));
+			sender.sendMessage(plugin.t.getString("STATS_GENERAL_ROUNDS", vars));
+			sender.sendMessage(plugin.t.getString("STATS_GENERAL_MONEY", vars));
 		} else {
-			player.sendMessage(plugin.t.getString("PLAYER_NOT_FOUND", vars));
+			sender.sendMessage(plugin.t.getString("PLAYER_NOT_FOUND", vars));
 		}	
 	}
 	
