@@ -111,7 +111,9 @@ public class Paintball extends JavaPlugin{
 	//- config-header-beschreibung
 	//- infinite eggs bug! (/)
 	//- count nades and airstrike seperate!
-	//- infinite mode
+	//- infinite mode (/)
+	//- invisible bug
+	//- admin cash und rank kommando überprüfen, ob ein spieler mit namen args existiert
 	
 	
 	//Permissions:
