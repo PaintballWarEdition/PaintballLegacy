@@ -319,7 +319,7 @@ public class EventListener implements Listener{
 							else if(plugin.mm.getMatch(player).isBlue(player)) farbe = Lobby.BLUE.color();
 							else if(plugin.mm.getMatch(player).isSpec(player)) farbe = Lobby.SPECTATE.color();
 							
-							event.setMessage(farbe + message);
+							event.setMessage(event.getMessage().replaceAll(message, farbe + message));
 							
 						}
 					}
