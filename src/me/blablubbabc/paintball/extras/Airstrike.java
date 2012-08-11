@@ -8,8 +8,8 @@ import org.bukkit.Material;
 import org.bukkit.block.Block;
 import org.bukkit.block.BlockFace;
 import org.bukkit.entity.Egg;
+import org.bukkit.entity.Entity;
 import org.bukkit.entity.EntityType;
-import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
 import org.bukkit.util.Vector;
 
@@ -44,7 +44,7 @@ public class Airstrike{
 			player.sendMessage(plugin.t.getString("AIRSTRKE_CALLED"));
 			//chicken
 			Location lc = new Location(player.getWorld(), bombs.getFirst().getX(), bombs.getFirst().getY(), bombs.getFirst().getZ(), 0, getLookAtYaw(bpr));
-			final LivingEntity chick = player.getWorld().spawnCreature(lc.add(new Vector(0,5,0)), EntityType.CHICKEN);
+			final Entity chick = player.getWorld().spawnEntity(lc.add(new Vector(0,5,0)), EntityType.CHICKEN);
 			task = plugin.getServer().getScheduler().scheduleSyncRepeatingTask(plugin, new Runnable() {
 				int i = 0;
 				@Override

@@ -136,7 +136,7 @@ public class Translator {
 		} else {
 			//vars
 			for(String v : vars.keySet()) {
-				value = value.replaceAll("{"+v+"}", vars.get(v));
+				value = value.replaceAll("\\{"+v+"\\}", vars.get(v));
 			}
 			//colors
 			value = ChatColor.translateAlternateColorCodes('&', value);

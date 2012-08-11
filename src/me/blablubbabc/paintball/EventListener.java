@@ -25,7 +25,7 @@ import org.bukkit.event.entity.ProjectileHitEvent;
 import org.bukkit.event.entity.ProjectileLaunchEvent;
 import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.event.inventory.InventoryType.SlotType;
-import org.bukkit.event.player.PlayerChatEvent;
+import org.bukkit.event.player.AsyncPlayerChatEvent;
 import org.bukkit.event.player.PlayerCommandPreprocessEvent;
 import org.bukkit.event.player.PlayerDropItemEvent;
 import org.bukkit.event.player.PlayerEggThrowEvent;
@@ -290,7 +290,7 @@ public class EventListener implements Listener{
 		}
 	}
 	@EventHandler(priority = EventPriority.LOWEST)
-	public void onPlayerChat1(PlayerChatEvent event) {
+	public void onPlayerChat1(AsyncPlayerChatEvent event) {
 		Player player = event.getPlayer();
 		if(Lobby.getTeam(player) != null) {
 			if(plugin.chatnames) {
@@ -300,7 +300,7 @@ public class EventListener implements Listener{
 		}
 	}
 	@EventHandler(priority = EventPriority.HIGHEST)
-	public void onPlayerChat2(PlayerChatEvent event) {
+	public void onPlayerChat2(AsyncPlayerChatEvent event) {
 		Player player = event.getPlayer();
 		if(Lobby.getTeam(player) != null) {
 			if(plugin.chatnames) {
