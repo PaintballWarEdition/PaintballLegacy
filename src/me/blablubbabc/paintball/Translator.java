@@ -185,10 +185,19 @@ public class Translator {
 				if(start == -1) {
 					log("ERROR: No '\"' found in line "+line);
 					return null;
-				}
+				}	
 				int end = value.lastIndexOf('"');
 				if(end == start) {
 					log("ERROR: No second '\"' found in line "+line);
+					return null;
+				}
+				//too many '"'?
+				int gaense = 0;
+				for (int i = 0; i < value.length(); i++) {
+					if(value.charAt(i) == '"') gaense++;
+				}
+				if(gaense > 2) {
+					log("ERROR: Too many '\"' found in line "+line);
 					return null;
 				}
 				value = value.substring(start+1, end);
