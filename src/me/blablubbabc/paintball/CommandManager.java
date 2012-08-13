@@ -161,8 +161,15 @@ public class CommandManager implements CommandExecutor{
 		sender.sendMessage(plugin.t.getString("COMMAND_GENERAL_ARENA"));
 		sender.sendMessage(plugin.t.getString("COMMAND_GENERAL_ADMIN"));
 		sender.sendMessage(plugin.t.getString("COMMAND_GENERAL_LOBBY"));
-		sender.sendMessage(plugin.t.getString("COMMAND_GENERAL_BLUE"));
-		sender.sendMessage(plugin.t.getString("COMMAND_GENERAL_RED"));
+		
+		HashMap<String, String> vars = new HashMap<String, String>();
+		vars.put("color_red", Lobby.RED.color().toString());
+		vars.put("red", Lobby.RED.getName());
+		vars.put("color_blue", Lobby.BLUE.color().toString());
+		vars.put("blue", Lobby.BLUE.getName());
+		
+		sender.sendMessage(plugin.t.getString("COMMAND_GENERAL_BLUE", vars));
+		sender.sendMessage(plugin.t.getString("COMMAND_GENERAL_RED", vars));
 		sender.sendMessage(plugin.t.getString("COMMAND_GENERAL_RANDOM"));
 		sender.sendMessage(plugin.t.getString("COMMAND_GENERAL_SPEC"));
 		sender.sendMessage(plugin.t.getString("COMMAND_GENERAL_LEAVE"));
@@ -180,13 +187,22 @@ public class CommandManager implements CommandExecutor{
 		sender.sendMessage(plugin.t.getString("COMMAND_ARENA_LIST"));
 		sender.sendMessage(plugin.t.getString("COMMAND_ARENA_CREATE"));
 		sender.sendMessage(plugin.t.getString("COMMAND_ARENA_INFO"));
-		sender.sendMessage(plugin.t.getString("COMMAND_ARENA_BLUE"));
-		sender.sendMessage(plugin.t.getString("COMMAND_ARENA_RED"));
-		sender.sendMessage(plugin.t.getString("COMMAND_ARENA_SPEC"));
+		
+		HashMap<String, String> vars = new HashMap<String, String>();
+		vars.put("color_red", Lobby.RED.color().toString());
+		vars.put("red", Lobby.RED.getName());
+		vars.put("color_blue", Lobby.BLUE.color().toString());
+		vars.put("blue", Lobby.BLUE.getName());
+		vars.put("color_spec", Lobby.SPECTATE.color().toString());
+		vars.put("spec", Lobby.SPECTATE.getName());
+		
+		sender.sendMessage(plugin.t.getString("COMMAND_ARENA_BLUE", vars));
+		sender.sendMessage(plugin.t.getString("COMMAND_ARENA_RED", vars));
+		sender.sendMessage(plugin.t.getString("COMMAND_ARENA_SPEC", vars));
 		sender.sendMessage(plugin.t.getString("COMMAND_ARENA_REMOVE"));
-		sender.sendMessage(plugin.t.getString("COMMAND_ARENA_DELBLUE"));
-		sender.sendMessage(plugin.t.getString("COMMAND_ARENA_DELRED"));
-		sender.sendMessage(plugin.t.getString("COMMAND_ARENA_DELSPEC"));
+		sender.sendMessage(plugin.t.getString("COMMAND_ARENA_DELBLUE", vars));
+		sender.sendMessage(plugin.t.getString("COMMAND_ARENA_DELRED", vars));
+		sender.sendMessage(plugin.t.getString("COMMAND_ARENA_DELSPEC", vars));
 		sender.sendMessage(plugin.t.getString("COMMAND_ARENA_SIZE"));
 	}
 	public void adminhelp(CommandSender sender) {

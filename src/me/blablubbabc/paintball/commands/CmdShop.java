@@ -12,7 +12,7 @@ import me.blablubbabc.paintball.Paintball;
 public class CmdShop {
 	private Paintball plugin;
 	private LinkedList<String> goods;
-	private String empty = "empty";
+	private String empty;
 	//ITEMS:
 	ArrayList<String> ball;
 	ArrayList<String> grenade;
@@ -24,15 +24,14 @@ public class CmdShop {
 		goods = new LinkedList<String>();
 		empty = plugin.t.getString("SHOP_EMPTY");
 		//ITEMS:
-		ArrayList<String> ball = new ArrayList<String>();
+		ball = new ArrayList<String>();
 		ball.add("ball");ball.add("balls");ball.add(plugin.t.getString("BALL"));ball.add(plugin.t.getString("BALLS"));
 		
-		ArrayList<String> grenade = new ArrayList<String>();
+		grenade = new ArrayList<String>();
 		grenade.add("grenade");grenade.add("grenades");grenade.add(plugin.t.getString("GRENADE"));grenade.add(plugin.t.getString("GRENADES"));
 		
-		ArrayList<String> airstrike = new ArrayList<String>();
+		airstrike = new ArrayList<String>();
 		airstrike.add("airstrike");airstrike.add("airstrikes");airstrike.add(plugin.t.getString("AIRSTRIKE"));airstrike.add(plugin.t.getString("AIRSTRIKES"));
-		
 		for(String s : plugin.shopGoods) {
 			goods.add(s);
 		}
@@ -120,7 +119,7 @@ public class CmdShop {
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 	
 	private boolean isItem(String source, String item) {
-		if(item.equalsIgnoreCase("ball")) {
+		if(item.equalsIgnoreCase("ball")) {	
 			for(String s : ball) {
 				if(source.equalsIgnoreCase(s)) return true;
 			}

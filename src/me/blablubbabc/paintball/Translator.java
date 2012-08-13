@@ -72,31 +72,32 @@ public class Translator {
 				translation = loadLanguage(localisationFile);
 				if (translation == null) {
 					log("ERROR: Couldn't load the specified language file!");
-					log("Do you use the right translation-version?");
+					log("Do you use the right translation?");
 					log("Using the default language now: " + def_file.getName());
 					use_def = true;
 				} else {
 					//length check
 					if (translation.size() != def_language.size()) {
-						log("ERROR: Size-Missmatch between the keys of the loaded and the default language file detected! (translation-default: "
+						log("WARNING: Size-Missmatch between the keys of the loaded and the default language file detected! (translation-default: "
 								+ translation.size()
 								+ "-"
 								+ def_language.size() + " )");
+						log("Do you use the right translation?");
+					}
+					//keys missing?
+					boolean key_missing = false;
+					for (String s : def_language.keySet()) {
+						if (!translation.containsKey(s)) {
+							log("ERROR: Key missing: "+ s);
+							key_missing = true;
+						}
+					}
+					if(key_missing) {
+						log("ERROR: There are keys missing in the loaded language-file!");
 						log("Do you use the right translation-version?");
 						log("Using the default language now: "
 								+ def_file.getName());
 						use_def = true;
-					} else {
-						for (String s : def_language.keySet()) {
-							if (!translation.containsKey(s)) {
-								log("ERROR: Key missing in the loaded language-file: "
-										+ s);
-								log("Do you use the right translation-version?");
-								log("Using the default language now: "
-										+ def_file.getName());
-								use_def = true;
-							}
-						}
 					}
 				}
 			} else {
@@ -136,7 +137,7 @@ public class Translator {
 		} else {
 			//vars
 			for(String v : vars.keySet()) {
-				value = value.replaceAll("\\{"+v+"\\}", vars.get(v));
+				value = value.replace("{"+v+"}", vars.get(v));
 			}
 			//colors
 			value = ChatColor.translateAlternateColorCodes('&', value);
@@ -157,8 +158,21 @@ public class Translator {
 			int line = 0;
 			while(scanner.hasNextLine()) {
 				line++;
-				//get key and value
 				String text = scanner.nextLine();
+				//Spaces am anfang entfernen:
+				while(text.startsWith(" ")) {
+					text = text.substring(1);
+				}
+				//Leerzeile?
+				if(text.isEmpty()) {
+					continue;
+				}
+				//comment-zeile?
+				if(text.startsWith("#")) {
+					continue;
+				}
+				
+				//get key and value
 				int delimeter = text.indexOf('=');
 				if(delimeter == -1) {
 					log("ERROR: No '=' found in line "+line);
@@ -186,6 +200,10 @@ public class Translator {
 				if(value.isEmpty()) {
 					log("ERROR: No value found in line "+line);
 					return null;
+				}
+				//already existing?
+				if(language.containsKey(key)) {
+					log("WARNING: Duplicate key: "+key);
 				}
 				//Add to translation map:
 				language.put(key, value);

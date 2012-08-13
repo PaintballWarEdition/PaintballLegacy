@@ -69,17 +69,24 @@ public class CmdArena {
 					vars.put("rounds", String.valueOf(arena.get("rounds")));
 					vars.put("kills", String.valueOf(arena.get("kills")));
 					vars.put("shots", String.valueOf(arena.get("shots")));
-					vars.put("blue_spawns", String.valueOf(am.getBlueSpawnsSize(name)));
-					vars.put("red_spawns", String.valueOf(am.getRedSpawnsSize(name)));
-					vars.put("spec_spawns", String.valueOf(am.getSpecSpawnsSize(name)));
 					player.sendMessage(plugin.t.getString("ARENA_INFO_HEADER", vars));
 					player.sendMessage(plugin.t.getString("ARENA_INFO_SIZE", vars));
 					player.sendMessage(plugin.t.getString("ARENA_INFO_ROUNDS", vars));
 					player.sendMessage(plugin.t.getString("ARENA_INFO_KILLS", vars));
 					player.sendMessage(plugin.t.getString("ARENA_INFO_SHOTS", vars));
-					player.sendMessage(plugin.t.getString("ARENA_INFO_BLUE_SPAWNS", vars));
-					player.sendMessage(plugin.t.getString("ARENA_INFO_RED_SPAWNS", vars));
-					player.sendMessage(plugin.t.getString("ARENA_INFO_SPEC_SPAWNS", vars));
+					
+					vars.put("team", String.valueOf(Lobby.BLUE.getName()));
+					vars.put("spawns", String.valueOf(am.getBlueSpawnsSize(name)));
+					player.sendMessage(plugin.t.getString("ARENA_INFO_SPAWNS", vars));
+					
+					vars.put("team", String.valueOf(Lobby.RED.getName()));
+					vars.put("spawns", String.valueOf(am.getRedSpawnsSize(name)));
+					player.sendMessage(plugin.t.getString("ARENA_INFO_SPAWNS", vars));
+					
+					vars.put("team", String.valueOf(Lobby.SPECTATE.getName()));
+					vars.put("spawns", String.valueOf(am.getSpecSpawnsSize(name)));
+					player.sendMessage(plugin.t.getString("ARENA_INFO_SPAWNS", vars));
+					
 					if(!am.isReady(name)) {
 						player.sendMessage(plugin.t.getString("ARENA_INFO_NEEDS_HEADER"));
 						if(am.inUse(name)) player.sendMessage(plugin.t.getString("ARENA_INFO_NEEDS_NO_USE"));
@@ -110,6 +117,8 @@ public class CmdArena {
 					return true;
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 				} else if(args[2].equalsIgnoreCase("red")) {
+					am.addRedSpawn(name, player.getLocation());
+					am.saveData();
 					vars.put("team_color", Lobby.RED.color().toString());
 					vars.put("team", Lobby.RED.getName());
 					vars.put("team_spawns", String.valueOf(am.getRedSpawnsSize(name)));
@@ -117,6 +126,8 @@ public class CmdArena {
 					return true;
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 				} else if(args[2].equalsIgnoreCase("spec")) {
+					am.addSpecSpawn(name, player.getLocation());
+					am.saveData();
 					vars.put("team_color", Lobby.SPECTATE.color().toString());
 					vars.put("team", Lobby.SPECTATE.getName());
 					vars.put("team_spawns", String.valueOf(am.getSpecSpawnsSize(name)));

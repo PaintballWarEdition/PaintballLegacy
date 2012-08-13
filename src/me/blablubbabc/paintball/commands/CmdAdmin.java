@@ -196,7 +196,7 @@ public class CmdAdmin {
 			}
 			HashMap<String, String> vars = new HashMap<String, String>();
 			vars.put("status", status);
-			sender.sendMessage(plugin.t.getString("MATCH_STATUS", vars));
+			sender.sendMessage(plugin.t.getString("PLUGIN_STATUS", vars));
 			return true;
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
