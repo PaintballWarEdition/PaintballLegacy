@@ -19,6 +19,7 @@ public class CmdAdmin {
 
 	public boolean command(CommandSender sender, String[] args) {
 		if(sender instanceof Player) {
+			//PERMISSION CHECK
 			if(!sender.isOp() && !sender.hasPermission("paintball.admin")) {
 				sender.sendMessage(plugin.t.getString("NO_PERMISSION"));
 				return true;

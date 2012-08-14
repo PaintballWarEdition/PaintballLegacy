@@ -55,6 +55,7 @@ public class Paintball extends JavaPlugin{
 	public boolean saveInventory;
 	public boolean onlyRandom;
 	public boolean autoRandom;
+	public boolean noPerms;
 	
 	//lobby join checks
 	public boolean checkInventory;
@@ -138,6 +139,7 @@ public class Paintball extends JavaPlugin{
 		
 		getConfig().options().header("Use a value of -1 to give the players infinite balls or extras.");
 		if(getConfig().get("Paintball.Language") == null)getConfig().set("Paintball.Language", "enUS");
+		if(getConfig().get("Paintball.No Permissions") == null)getConfig().set("Paintball.No Permissions", false);
 		if(getConfig().get("Paintball.Points per Kill") == null)getConfig().set("Paintball.Points per Kill", 2);
 		if(getConfig().get("Paintball.Points per Hit") == null)getConfig().set("Paintball.Points per Hit", 1);
 		if(getConfig().get("Paintball.Points per Team-Attack") == null)getConfig().set("Paintball.Points per Team-Attack", -1);
@@ -194,6 +196,7 @@ public class Paintball extends JavaPlugin{
 		
 		//gerneral:
 		local = getConfig().getString("Paintball.Language", "enUS");
+		noPerms = getConfig().getBoolean("Paintball.No Permissions", false);
 		
 		lives = getConfig().getInt("Paintball.Match.Lives", 1);
 		if(lives < 1) lives = 1;

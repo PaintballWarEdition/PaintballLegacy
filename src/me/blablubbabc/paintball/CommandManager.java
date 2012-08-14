@@ -30,10 +30,16 @@ public class CommandManager implements CommandExecutor{
 	@Override
 	public boolean onCommand(CommandSender sender, Command cmd, String label, String[] args) {
 		if(label.equalsIgnoreCase("pb")) {
-			if(!sender.isOp() && !sender.hasPermission("paintball.general")) {
-				sender.sendMessage(plugin.t.getString("NO_PERMISSION"));
-				return true;
+			//PERMISSION CHECK
+			if(!plugin.noPerms) {
+				if (!sender.isOp()
+						&& !sender.hasPermission("paintball.general")) {
+					sender.sendMessage(plugin.t.getString("NO_PERMISSION"));
+					return true;
+				}
 			}
+			// else anyone is allowed..
+			
 			if(args.length == 0) {
 				pbhelp(sender);
 				return true;

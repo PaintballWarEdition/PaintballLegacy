@@ -39,10 +39,15 @@ public class CmdShop {
 	
 	public boolean command(CommandSender sender, String[] args) {
 		if(sender instanceof Player) {
-			if(!sender.isOp() && !sender.hasPermission("paintball.admin") && !sender.hasPermission("paintball.general")) {
-				sender.sendMessage(plugin.t.getString("NO_PERMISSION"));
-				return true;
+			//PERMISSION CHECK
+			if(!plugin.noPerms) {
+				if(!sender.isOp() && !sender.hasPermission("paintball.admin") && !sender.hasPermission("paintball.general")) {
+					sender.sendMessage(plugin.t.getString("NO_PERMISSION"));
+					return true;
+				}
 			}
+			// else anyone is allowed..
+			
 			Player player = (Player) sender;
 			if(!plugin.shop) {
 				player.sendMessage(plugin.t.getString("SHOP_INACTIVE"));
