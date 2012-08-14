@@ -349,7 +349,7 @@ public class Match {
 			
 			@Override
 			public void run() {
-				target.teleport(plugin.transformLocation(plugin.getLobbySpawns().get(0)));
+				target.teleport(plugin.transformLocation(plugin.getLobbySpawns().get(plugin.getNextLobbySpawn())));
 				plugin.clearInv(target);
 				//feed
 				HashMap<String, String> vars = new HashMap<String, String>();

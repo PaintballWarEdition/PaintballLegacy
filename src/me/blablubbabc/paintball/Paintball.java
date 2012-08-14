@@ -24,6 +24,7 @@ public class Paintball extends JavaPlugin{
 	public Stats stats;
 	public boolean active;
 	public boolean softreload;
+	public int lobbyspawn;
 	
 	//ChatColors
 	public ChatColor gray = ChatColor.GRAY;
@@ -56,6 +57,7 @@ public class Paintball extends JavaPlugin{
 	public boolean onlyRandom;
 	public boolean autoRandom;
 	public boolean noPerms;
+	public boolean damage;
 	
 	//lobby join checks
 	public boolean checkInventory;
@@ -129,6 +131,7 @@ public class Paintball extends JavaPlugin{
 	
 	@SuppressWarnings("unchecked")
 	public void onEnable(){	
+		
 		//CONFIG
 		ArrayList<String> goodsDef = new ArrayList<String>();
 		goodsDef.add("10-Balls-15");
@@ -164,6 +167,7 @@ public class Paintball extends JavaPlugin{
 		if(getConfig().get("Paintball.Lobby join.Checks.FoodLevel") == null)getConfig().set("Paintball.Lobby join.Checks.FoodLevel", true);
 		if(getConfig().get("Paintball.Lobby join.Checks.Effects") == null)getConfig().set("Paintball.Lobby join.Checks.Effects", true);
 		
+		if(getConfig().get("Paintball.Match.Damage") == null)getConfig().set("Paintball.Match.Damage", false);
 		if(getConfig().get("Paintball.Match.Lives") == null)getConfig().set("Paintball.Match.Lives", 1);
 		if(getConfig().get("Paintball.Match.Balls") == null)getConfig().set("Paintball.Match.Balls", 50);
 		if(getConfig().get("Paintball.Match.Minimum players") == null)getConfig().set("Paintball.Match.Minimum players", 2);
@@ -195,6 +199,7 @@ public class Paintball extends JavaPlugin{
 		cashPerRound = getConfig().getInt("Paintball.Cash per Round", 0);
 		
 		//gerneral:
+		damage = getConfig().getBoolean("Paintball.Match.Damage", false);
 		local = getConfig().getString("Paintball.Language", "enUS");
 		noPerms = getConfig().getBoolean("Paintball.No Permissions", false);
 		
@@ -280,6 +285,7 @@ public class Paintball extends JavaPlugin{
 		
 		active = true;
 		softreload = false;
+		lobbyspawn = 0;
 		
 		//METRICS
 		try {
@@ -421,6 +427,12 @@ public class Paintball extends JavaPlugin{
 		int z = (Integer) map.get("z");
 		Location loc = new Location(getServer().getWorld(world), x, y, z);
 		return loc;
+	}
+	
+	public int getNextLobbySpawn() {
+		lobbyspawn++;
+		if(lobbyspawn > (getLobbySpawns().size()-1)) lobbyspawn = 0;
+		return lobbyspawn;
 	}
 	
 	public void leaveLobby(Player player, boolean messages, boolean teleport, boolean restoreInventory) {

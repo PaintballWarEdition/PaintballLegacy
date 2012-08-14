@@ -363,7 +363,7 @@ public class CommandManager implements CommandExecutor{
 		//save Location
 		plugin.pm.setLoc(player, player.getLocation());
 		//Lobbyteleport
-		player.teleport(plugin.transformLocation(plugin.getLobbySpawns().get(0)));
+		player.teleport(plugin.transformLocation(plugin.getLobbySpawns().get(plugin.getNextLobbySpawn())));
 		//lobby add
 		Lobby.LOBBY.addMember(player);
 		plugin.nf.join(player.getName());
