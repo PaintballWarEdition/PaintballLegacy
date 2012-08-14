@@ -294,7 +294,7 @@ public class MatchManager{
 				    	plugin.getServer().getScheduler().cancelTask(taskID);
 				    	countdownStarted = false;
 				    	String status = ready();
-				    	if(status.equalsIgnoreCase("ready")) {
+				    	if(status.equalsIgnoreCase(plugin.t.getString("READY"))) {
 				    		//start match
 				    		gameStart();
 				    	} else {
