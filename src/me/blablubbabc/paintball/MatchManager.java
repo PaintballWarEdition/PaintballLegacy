@@ -32,13 +32,10 @@ public class MatchManager{
 		}
 		for(Match match : mlist) {
 			//match.unhideAll();
-			//teleport Lobby:
-			ArrayList<LinkedHashMap<String, Object>> lobbyspawns = plugin.getLobbySpawns();
 			
 			//colors
 			match.undoAllColors();
 			//Teleport all remaining players back to lobby:
-			int spawn = 0;
 			for(Player p : match.getAll()) {
 				//ist nicht aus minecraft raus:
 				if(!match.hasLeft(p)){
@@ -49,9 +46,7 @@ public class MatchManager{
 					//noch im match:
 					if(match.isSurvivor(p)){
 						//teleport is survivor:
-						if (spawn > (lobbyspawns.size() - 1)) spawn = 0;
-						p.teleport(plugin.transformLocation(lobbyspawns.get(spawn)));
-						spawn++;
+						plugin.joinLobby(p);
 					}
 				}
 				//no stats saving here
@@ -127,8 +122,6 @@ public class MatchManager{
 	
 	public void gameEnd(Match match, Set<Player> winners, String win, Set<Player> loosers, String loose, Set<Player> specs, LinkedHashMap<Player, Integer> shots,
 			LinkedHashMap<Player, Integer> hits, LinkedHashMap<Player, Integer> deaths, LinkedHashMap<Player, Integer> kills, LinkedHashMap<Player, Integer> teamattacks) {
-		//teleport Lobby:
-		ArrayList<LinkedHashMap<String, Object>> lobbyspawns = plugin.getLobbySpawns();
 		//stats etc
 		for(Player p : winners) {
 			//stats
@@ -145,20 +138,15 @@ public class MatchManager{
 			
 		}
 		//Teleport all remaining players back to lobby:
-		int spawn = 0;
 		for(Player p : match.getAll()) {
 			//if is a remaining player:
 			if(!match.hasLeft(p)){
 				//lobby
 				Lobby.getTeam(p).setWaiting(p);
-				//clear inventory
-				plugin.clearInv(p);
 				//noch im match:
 				if(match.isSurvivor(p)){
 					//teleport is survivor:
-					if (spawn > (lobbyspawns.size() - 1)) spawn = 0;
-					p.teleport(plugin.transformLocation(lobbyspawns.get(spawn)));
-					spawn++;
+					plugin.joinLobby(p);
 				}
 			}
 		}

@@ -6,11 +6,13 @@ import java.util.LinkedHashMap;
 import me.blablubbabc.BlaDB.BlaDB;
 import me.blablubbabc.paintball.Metrics.Graph;
 import org.bukkit.ChatColor;
+import org.bukkit.GameMode;
 import org.bukkit.Location;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.plugin.java.JavaPlugin;
+import org.bukkit.potion.PotionEffect;
 
 //This file is part of blablubbabc's paintball-Plugin. Do not redistribute or modify. Use it as it is. Usage on own risk. No warranties. No commercial usage!
 
@@ -433,6 +435,32 @@ public class Paintball extends JavaPlugin{
 		lobbyspawn++;
 		if(lobbyspawn > (getLobbySpawns().size()-1)) lobbyspawn = 0;
 		return lobbyspawn;
+	}
+	
+	public void joinLobby(Player player) {
+		if(!isEmpty(player)) clearInv(player);
+		//gamemode
+		if(!player.getGameMode().equals(GameMode.SURVIVAL)) player.setGameMode(GameMode.SURVIVAL);
+		//flymode (built-in)
+		if(player.getAllowFlight()) player.setAllowFlight(false);
+		if(player.isFlying()) player.setFlying(false);
+		//feuer
+		if(player.getFireTicks() > 0) player.setFireTicks(0);
+		//Health + Food
+		if(player.getHealth() < 20) player.setHealth(20);
+		if(player.getFoodLevel() < 20) player.setFoodLevel(20);
+		//effekte entfernen
+		if(player.getActivePotionEffects().size() > 0) {
+			ArrayList<PotionEffect> effects = new ArrayList<PotionEffect>();
+			for(PotionEffect eff : player.getActivePotionEffects()) {
+				effects.add(eff);
+			}
+			for(PotionEffect eff :effects) {
+				player.removePotionEffect(eff.getType());
+			}	
+		}
+		//Lobbyteleport
+		player.teleport(transformLocation(getLobbySpawns().get(getNextLobbySpawn())));
 	}
 	
 	public void leaveLobby(Player player, boolean messages, boolean teleport, boolean restoreInventory) {

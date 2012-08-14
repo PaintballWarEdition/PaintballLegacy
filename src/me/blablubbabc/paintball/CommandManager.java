@@ -1,8 +1,6 @@
 package me.blablubbabc.paintball;
 
-import java.util.ArrayList;
 import java.util.HashMap;
-
 import me.blablubbabc.paintball.commands.CmdAdmin;
 import me.blablubbabc.paintball.commands.CmdArena;
 import me.blablubbabc.paintball.commands.CmdShop;
@@ -11,7 +9,6 @@ import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
-import org.bukkit.potion.PotionEffect;
 
 public class CommandManager implements CommandExecutor{
 	private Paintball plugin;
@@ -83,7 +80,7 @@ public class CommandManager implements CommandExecutor{
 						player.sendMessage(plugin.t.getString("ALREADY_IN_LOBBY"));
 						return true;
 					} else {
-						joinLobby(player);
+						joinLobbyPre(player);
 						return true;
 					}
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////			
@@ -236,7 +233,7 @@ public class CommandManager implements CommandExecutor{
 		else if(team.equals(Lobby.SPECTATE)) spec = true;
 		
 		if(!Lobby.LOBBY.isMember(player)) {
-			if(!joinLobby(player)) {
+			if(!joinLobbyPre(player)) {
 				return true;
 			}
 		}
@@ -290,7 +287,7 @@ public class CommandManager implements CommandExecutor{
 		return true;
 	}
 	
-	private boolean joinLobby(Player player) {
+	private boolean joinLobbyPre(Player player) {
 		//Lobby vorhanden?
 		if(plugin.getLobbySpawns().size() == 0) {
 			player.sendMessage(plugin.t.getString("NO_LOBBY_FOUND"));
@@ -338,35 +335,14 @@ public class CommandManager implements CommandExecutor{
 			plugin.pm.setInv(player, player.getInventory());
 			player.sendMessage(plugin.t.getString("INVENTORY_SAVED"));
 		}
-		if(!plugin.isEmpty(player)) plugin.clearInv(player);
-		//gamemode
-		if(!player.getGameMode().equals(GameMode.SURVIVAL)) player.setGameMode(GameMode.SURVIVAL);
-		//flymode (built-in)
-		if(player.getAllowFlight()) player.setAllowFlight(false);
-		if(player.isFlying()) player.setFlying(false);
-		//feuer
-		if(player.getFireTicks() > 0) player.setFireTicks(0);
-		//Health + Food
-		if(player.getHealth() < 20) player.setHealth(20);
-		if(player.getFoodLevel() < 20) player.setFoodLevel(20);
-		//effekte entfernen
-		if(player.getActivePotionEffects().size() > 0) {
-			ArrayList<PotionEffect> effects = new ArrayList<PotionEffect>();
-			for(PotionEffect eff : player.getActivePotionEffects()) {
-				effects.add(eff);
-			}
-			for(PotionEffect eff :effects) {
-				player.removePotionEffect(eff.getType());
-			}	
-		}
-		
 		//save Location
 		plugin.pm.setLoc(player, player.getLocation());
-		//Lobbyteleport
-		player.teleport(plugin.transformLocation(plugin.getLobbySpawns().get(plugin.getNextLobbySpawn())));
 		//lobby add
 		Lobby.LOBBY.addMember(player);
 		plugin.nf.join(player.getName());
+		
+		plugin.joinLobby(player);
+		
 		return true;
 	}
 	

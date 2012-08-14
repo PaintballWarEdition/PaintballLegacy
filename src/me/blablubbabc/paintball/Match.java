@@ -349,8 +349,9 @@ public class Match {
 			
 			@Override
 			public void run() {
-				target.teleport(plugin.transformLocation(plugin.getLobbySpawns().get(plugin.getNextLobbySpawn())));
-				plugin.clearInv(target);
+				plugin.joinLobby(target);
+				//target.teleport(plugin.transformLocation(plugin.getLobbySpawns().get(plugin.getNextLobbySpawn())));
+				//plugin.clearInv(target);
 				//feed
 				HashMap<String, String> vars = new HashMap<String, String>();
 				vars.put("target", target.getName());
@@ -359,7 +360,7 @@ public class Match {
 				vars.put("cash", String.valueOf(plugin.cashPerKill));
 				killer.sendMessage(plugin.t.getString("YOU_KILLED", vars));
 				target.sendMessage(plugin.t.getString("YOU_WERE_KILLED", vars));
-				plugin.nf.feed(target, killer, this2);
+				plugin.nf.feed(target, killer);
 				//points+cash+kill+death
 				deaths.put(target, (deaths.get(target)+1));
 				kills.put(killer, (kills.get(killer)+1));
@@ -376,6 +377,25 @@ public class Match {
 
 	}
 	
-	
-	
+	public void death(final Player target) {
+		plugin.joinLobby(target);
+		//feed
+		target.sendMessage(plugin.t.getString("YOU_DIED"));
+		plugin.nf.death(target);
+		//points+cash+kill+death
+		deaths.put(target, (deaths.get(target)+1));
+		//survivors?->endGame
+		//0 leben aka tot
+		getTeam(target).put(target, 0);
+		//survivors?->endGame
+		if(survivors(getTeam(target)) == 0) {
+			matchOver = true;
+			//unhideAll();
+			undoAllColors();
+			plugin.mm.gameEnd(this, getEnemyTeam(target).keySet(), getEnemyTeamName(target), getTeam(target).keySet(), getTeamName(target), spec, shots, hits, deaths, kills, teamattacks);
+		}
+	}
+
+
+
 }

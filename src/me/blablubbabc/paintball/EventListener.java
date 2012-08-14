@@ -234,9 +234,14 @@ public class EventListener implements Listener{
 		if(event.getEntity() instanceof Player) {
 			Player target = (Player) event.getEntity();
 			if(Lobby.getTeam(target) != null) {
-				if(plugin.mm.getMatch(target) == null || !plugin.damage) {
+				if(plugin.mm.getMatch(target) == null || !plugin.damage || Lobby.getTeam(target).equals(Lobby.SPECTATE)) {
 					event.setDamage(0);
 					event.setCancelled(true);
+				} else {
+					if(target.getHealth() <= 0) {
+						target.setHealth(1);
+						plugin.mm.getMatch(target).death(target);
+					}
 				}
 			}
 		}
