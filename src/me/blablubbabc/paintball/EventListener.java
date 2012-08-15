@@ -237,11 +237,6 @@ public class EventListener implements Listener{
 				if(plugin.mm.getMatch(target) == null || !plugin.damage || Lobby.getTeam(target).equals(Lobby.SPECTATE)) {
 					event.setDamage(0);
 					event.setCancelled(true);
-				} else {
-					if(target.getHealth() <= 0) {
-						target.setHealth(1);
-						plugin.mm.getMatch(target).death(target);
-					}
 				}
 			}
 		}
@@ -338,10 +333,15 @@ public class EventListener implements Listener{
 	public void onPlayerDead(PlayerDeathEvent event) {
 		Player player = (Player) event.getEntity();
 		if(Lobby.getTeam(player) != null) {
-			//plugin.nf.leave(player.getName());
-			//exit game
-			if(Lobby.isPlaying(player) || Lobby.isSpectating(player)) mm.getMatch(player).left(player);
-			plugin.leaveLobby(player, true, false, false);
+			if(plugin.mm.getMatch(player) != null && plugin.damage && !Lobby.getTeam(player).equals(Lobby.SPECTATE)) {
+				event.setDeathMessage("");
+				event.setDroppedExp(0);
+				event.setKeepLevel(true);
+				plugin.mm.getMatch(player).death(player);
+			} else {
+				if(Lobby.isPlaying(player) || Lobby.isSpectating(player)) mm.getMatch(player).left(player);
+				plugin.leaveLobby(player, true, false, false);
+			}
 			//drops?
 			event.getDrops().removeAll(event.getDrops());
 		}

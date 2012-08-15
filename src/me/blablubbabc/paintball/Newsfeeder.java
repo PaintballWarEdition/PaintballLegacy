@@ -105,22 +105,22 @@ public class Newsfeeder {
 		return info;
 	}
 	
-	public void feed(Player target, Player killer) {
+	public void feed(Player target, Player killer, Match match) {
 		HashMap<String, String> vars = new HashMap<String, String>();
 		vars.put("plugin", pluginName);
-		vars.put("killer_color", Lobby.getTeam(killer).color().toString());
+		vars.put("killer_color", Lobby.getTeam(match.getTeamName(killer)).color().toString());
 		vars.put("killer", killer.getName());
-		vars.put("target_color", Lobby.getTeam(target).color().toString());
+		vars.put("target_color", Lobby.getTeam(match.getTeamName(target)).color().toString());
 		vars.put("target", target.getName());
 		for(Player player : Lobby.LOBBY.getMembers()) {
 			if(!Lobby.toggledFeed(player)) player.sendMessage(plugin.t.getString("KILL_FEED", vars));
 		}
 	}
 	
-	public void death(Player target) {
+	public void death(Player target, Match match) {
 		HashMap<String, String> vars = new HashMap<String, String>();
 		vars.put("plugin", pluginName);
-		vars.put("target_color", Lobby.getTeam(target).color().toString());
+		vars.put("target_color", Lobby.getTeam(match.getTeamName(target)).color().toString());
 		vars.put("target", target.getName());
 		for(Player player : Lobby.LOBBY.getMembers()) {
 			if(!Lobby.toggledFeed(player)) player.sendMessage(plugin.t.getString("PLAYER_DIED", vars));

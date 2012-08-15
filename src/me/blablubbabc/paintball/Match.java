@@ -83,8 +83,8 @@ public class Match {
 			if(plugin.airstrikeAmount > 0 ) p.getInventory().addItem(new ItemStack(Material.STICK, plugin.airstrikeAmount));
 			else if(plugin.airstrikeAmount == -1 ) p.getInventory().addItem(new ItemStack(Material.STICK, 10));
 			//MESSAGE
-			vars.put("team_color", Lobby.getTeam(p).color().toString());
-			vars.put("team", Lobby.getTeam(p).getName());
+			vars.put("team_color", Lobby.getTeam(getTeamName(p)).color().toString());
+			vars.put("team", getTeamName(p));
 			p.sendMessage(plugin.t.getString("BE_IN_TEAM", vars));
 		}
 		
@@ -360,7 +360,7 @@ public class Match {
 				vars.put("cash", String.valueOf(plugin.cashPerKill));
 				killer.sendMessage(plugin.t.getString("YOU_KILLED", vars));
 				target.sendMessage(plugin.t.getString("YOU_WERE_KILLED", vars));
-				plugin.nf.feed(target, killer);
+				plugin.nf.feed(target, killer, this2);
 				//points+cash+kill+death
 				deaths.put(target, (deaths.get(target)+1));
 				kills.put(killer, (kills.get(killer)+1));
@@ -369,7 +369,7 @@ public class Match {
 					//unhideAll();
 					matchOver = true;
 					undoAllColors();
-					plugin.mm.gameEnd(this2, getTeam(killer).keySet(), Lobby.getTeam(killer).getName(), getTeam(target).keySet(), Lobby.getTeam(target).getName(), spec, shots, hits, deaths, kills, teamattacks);
+					plugin.mm.gameEnd(this2, getTeam(killer).keySet(), getTeamName(killer), getTeam(target).keySet(), getTeamName(target), spec, shots, hits, deaths, kills, teamattacks);
 				}
 				
 			}
@@ -381,7 +381,7 @@ public class Match {
 		plugin.joinLobby(target);
 		//feed
 		target.sendMessage(plugin.t.getString("YOU_DIED"));
-		plugin.nf.death(target);
+		plugin.nf.death(target, this);
 		//points+cash+kill+death
 		deaths.put(target, (deaths.get(target)+1));
 		//survivors?->endGame
