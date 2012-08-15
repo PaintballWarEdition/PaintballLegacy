@@ -135,6 +135,7 @@ public class EventListener implements Listener{
 			}
 		}
 	}
+	
 
 	@EventHandler(priority = EventPriority.NORMAL)
 	public void onPlayerInventory(InventoryClickEvent event) {
