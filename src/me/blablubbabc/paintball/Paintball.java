@@ -459,6 +459,8 @@ public class Paintball extends JavaPlugin{
 				player.removePotionEffect(eff.getType());
 			}	
 		}
+		//Vehicle
+		if(player.isInsideVehicle()) player.leaveVehicle();
 		//Lobbyteleport
 		player.teleport(transformLocation(getLobbySpawns().get(getNextLobbySpawn())));
 	}
