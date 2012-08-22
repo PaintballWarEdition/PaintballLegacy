@@ -75,7 +75,7 @@ public class Match {
 			this.teamattacks.put(p, 0);
 			this.deaths.put(p, 0);
 			//INVENTORY
-			p.getInventory().setHelmet(Lobby.getTeam(p).helmet());
+			p.getInventory().setHelmet(Lobby.getTeam(getTeamName(p)).helmet());
 			if(plugin.balls > 0 ) p.getInventory().addItem(new ItemStack(Material.SNOW_BALL, plugin.balls));
 			else if(plugin.balls == -1 ) p.getInventory().addItem(new ItemStack(Material.SNOW_BALL, 10));
 			if(plugin.grenadeAmount > 0 ) p.getInventory().addItem(new ItemStack(Material.EGG, plugin.grenadeAmount));
