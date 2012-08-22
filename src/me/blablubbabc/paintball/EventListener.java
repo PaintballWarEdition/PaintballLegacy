@@ -348,10 +348,33 @@ public class EventListener implements Listener{
 		}
 	}
 	
-	@EventHandler(priority = EventPriority.NORMAL)
+	@EventHandler(priority = EventPriority.MONITOR)
 	public void onPlayerJoin(PlayerJoinEvent event) {
-		plugin.pm.addPlayer(event.getPlayer().getName());
+		Player player = (Player) event.getPlayer();
+		plugin.pm.addPlayer(player.getName());
+		
+		if(plugin.autoLobby) {
+			//Lobby vorhanden?
+			if(plugin.getLobbySpawns().size() == 0) {
+				player.sendMessage(plugin.t.getString("NO_LOBBY_FOUND"));
+				return;
+			}
+			
+			//inventory
+			if(plugin.saveInventory) {
+				plugin.pm.setInv(player, player.getInventory());
+				player.sendMessage(plugin.t.getString("INVENTORY_SAVED"));
+			}
+			//save Location
+			plugin.pm.setLoc(player, player.getLocation());
+			//lobby add
+			Lobby.LOBBY.addMember(player);
+			plugin.nf.join(player.getName());
+			
+			plugin.joinLobby(player);
+		}
 	}
+	
 	@EventHandler(priority = EventPriority.NORMAL)
 	public void onPlayerQuit(PlayerQuitEvent event) {
 		this.onPlayerDisconnect(event.getPlayer());

@@ -257,25 +257,6 @@ public class Match {
 		return false;
 	}
 	
-	public void left(Player player) {
-		//left
-		left.add(player);
-		//listname
-		if(plugin.listnames) player.setPlayerListName(null);
-		//team?
-		if(getTeam(player) != null) {
-			//0 leben aka tot
-			getTeam(player).put(player, 0);
-			//survivors?->endGame
-			if(survivors(getTeam(player)) == 0) {
-				matchOver = true;
-				//unhideAll();
-				undoAllColors();
-				plugin.mm.gameEnd(this, getEnemyTeam(player).keySet(), getEnemyTeamName(player), getTeam(player).keySet(), getTeamName(player), spec, shots, hits, deaths, kills, teamattacks);
-			}
-		} else if(spec.contains(player)) spec.remove(player);
-	}
-	
 	public ArrayList<Player> getAllPlayer() {
 		return players;
 	}
@@ -300,7 +281,27 @@ public class Match {
 		}
 		return list;
 	}
+	
 	//AKTIONS
+	
+	public void left(Player player) {
+		//left
+		left.add(player);
+		//listname
+		if(plugin.listnames) player.setPlayerListName(null);
+		//team?
+		if(getTeam(player) != null) {
+			//0 leben aka tot
+			getTeam(player).put(player, 0);
+			//survivors?->endGame
+			if(survivors(getTeam(player)) == 0) {
+				matchOver = true;
+				//unhideAll();
+				undoAllColors();
+				plugin.mm.gameEnd(this, getEnemyTeam(player).keySet(), getEnemyTeamName(player), getTeam(player).keySet(), getTeamName(player), spec, shots, hits, deaths, kills, teamattacks);
+			}
+		} else if(spec.contains(player)) spec.remove(player);
+	}
 	
 	public void shot(Player player) {
 		//add 1

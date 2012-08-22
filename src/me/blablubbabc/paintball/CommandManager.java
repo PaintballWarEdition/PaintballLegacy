@@ -109,6 +109,9 @@ public class CommandManager implements CommandExecutor{
 						Lobby.getTeam(player).removeMember(player);
 						player.sendMessage(plugin.t.getString("YOU_LEFT_TEAM"));
 						return true;
+					} else if(plugin.autoLobby) {
+						player.sendMessage(plugin.t.getString("CANNOT_LEAVE_LOBBY"));
+						return true;
 					}
 					plugin.leaveLobby(player, true, true, true);
 					return true;
