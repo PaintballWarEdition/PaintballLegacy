@@ -293,6 +293,30 @@ public class Paintball extends JavaPlugin{
 		softreload = false;
 		lobbyspawn = 0;
 		
+		//autoLobby
+		if(autoLobby) {
+			for(Player player : getServer().getOnlinePlayers()) {
+				//Lobby vorhanden?
+				if(getLobbySpawns().size() == 0) {
+					player.sendMessage(t.getString("NO_LOBBY_FOUND"));
+					continue;
+				}
+				
+				//inventory
+				if(saveInventory) {
+					pm.setInv(player, player.getInventory());
+					player.sendMessage(t.getString("INVENTORY_SAVED"));
+				}
+				//save Location
+				pm.setLoc(player, player.getLocation());
+				//lobby add
+				Lobby.LOBBY.addMember(player);
+				nf.join(player.getName());
+				
+				joinLobby(player);
+			}
+		}
+		
 		//METRICS
 		try {
 			Metrics metrics = new Metrics(this);
