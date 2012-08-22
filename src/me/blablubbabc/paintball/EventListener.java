@@ -66,7 +66,7 @@ public class EventListener implements Listener{
 
 	///////////////////////////////////////////
 	//EVENTS
-
+	
 	@EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = false)
 	public void onPlayerHit(EntityDamageByEntityEvent event) {
 		if(event.getDamager() instanceof Projectile) {
@@ -89,7 +89,7 @@ public class EventListener implements Listener{
 			}
 		}
 	}
-
+	
 	@EventHandler(priority = EventPriority.NORMAL)
 	public void onPlayerShoot(ProjectileLaunchEvent event) {
 		if(event.getEntity().getShooter() instanceof Player) {
@@ -369,6 +369,7 @@ public class EventListener implements Listener{
 			//exit game
 			if(Lobby.isPlaying(player) || Lobby.isSpectating(player)) mm.getMatch(player).left(player);
 			plugin.leaveLobby(player, true, true, true);
+			//player.kickPlayer("You disconnected already.");
 			
 			/*//clear inventory
 			plugin.clearInv(player);

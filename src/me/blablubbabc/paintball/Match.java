@@ -117,24 +117,21 @@ public class Match {
 		}
 		//colorchanges:
 		changeAllColors();
-		//TEST
 		makeAllVisible();
-		//TEST
 		//lives + start!:
 		vars.put("lives", String.valueOf(plugin.lives));
 		if(lives == 1) plugin.nf.status(plugin.t.getString("MATCH_START_ONE_LIFE", vars));
 		else plugin.nf.status(plugin.t.getString("MATCH_START_MORE_LIVES", vars));
 	}
 	
-	//TESTING
 	public void makeAllVisible() {
 		for(Player pl : getAll()) {
 			for(Player p : getAll()) {
 				if(!p.equals(pl)) pl.showPlayer(p);
-			}
+			}	
 		}
 	}
-	//TESTING
+	
 	public void changeAllColors() {
 		for(Player p : redT.keySet()) {
 			//chatnames
