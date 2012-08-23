@@ -350,29 +350,37 @@ public class EventListener implements Listener{
 	
 	@EventHandler(priority = EventPriority.MONITOR)
 	public void onPlayerJoin(PlayerJoinEvent event) {
-		Player player = (Player) event.getPlayer();
-		plugin.pm.addPlayer(player.getName());
+		final Player player = (Player) event.getPlayer();
 		
-		if(plugin.autoLobby) {
-			//Lobby vorhanden?
-			if(plugin.getLobbySpawns().size() == 0) {
-				player.sendMessage(plugin.t.getString("NO_LOBBY_FOUND"));
-				return;
-			}
+		plugin.getServer().getScheduler().scheduleAsyncDelayedTask(plugin, new Runnable() {
 			
-			//inventory
-			if(plugin.saveInventory) {
-				plugin.pm.setInv(player, player.getInventory());
-				player.sendMessage(plugin.t.getString("INVENTORY_SAVED"));
+			@Override
+			public void run() {
+				plugin.pm.addPlayer(player.getName());
+				
+				if(plugin.autoLobby) {
+					//Lobby vorhanden?
+					if(plugin.getLobbySpawns().size() == 0) {
+						player.sendMessage(plugin.t.getString("NO_LOBBY_FOUND"));
+						return;
+					}
+					
+					//inventory
+					if(plugin.saveInventory) {
+						plugin.pm.setInv(player, player.getInventory());
+						player.sendMessage(plugin.t.getString("INVENTORY_SAVED"));
+					}
+					//save Location
+					plugin.pm.setLoc(player, player.getLocation());
+					//lobby add
+					Lobby.LOBBY.addMember(player);
+					plugin.nf.join(player.getName());
+					
+					plugin.joinLobby(player);
+				}
+				
 			}
-			//save Location
-			plugin.pm.setLoc(player, player.getLocation());
-			//lobby add
-			Lobby.LOBBY.addMember(player);
-			plugin.nf.join(player.getName());
-			
-			plugin.joinLobby(player);
-		}
+		}, 1L);
 	}
 	
 	@EventHandler(priority = EventPriority.NORMAL)
