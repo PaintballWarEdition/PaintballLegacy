@@ -78,10 +78,12 @@ public class EventListener implements Listener{
 					if(mm.getMatch(shooter) != null && mm.getMatch(target) != null) {
 						if(mm.getMatch(shooter).equals(mm.getMatch(target))) {
 							Match match = mm.getMatch(shooter);
-							//Geschoss?
-							if(shot instanceof Snowball) {
-								//hit by snowball
-								match.hitSnow(target, shooter);
+							if(!match.isSpec(shooter) && !match.isSpec(target)) {
+								//Geschoss?
+								if (shot instanceof Snowball) {
+									//hit by snowball
+									match.hitSnow(target, shooter);
+								}
 							}
 						}
 					}
@@ -100,7 +102,7 @@ public class EventListener implements Listener{
 				//Geschoss?
 				if(shot instanceof Snowball) {
 					//zählen wenn in-match
-					if(mm.getMatch(player) != null) {
+					if(mm.getMatch(player) != null && Lobby.isPlaying(player)) {
 						mm.getMatch(player).shot(player);
 					}
 					if(plugin.balls == -1) {
