@@ -85,9 +85,11 @@ public class ArenaManager {
 		return arenas;
 	}
 	//SETTER
-	public void toggleReady(String arena) {
-		if(active.get(arena)) active.put(arena, false);
-		else active.put(arena, true);
+	public void setNotActive(String arena) {
+		active.put(arena, false);
+	}
+	public void setActive(String arena) {
+		active.put(arena, true);
 	}
 	
 	

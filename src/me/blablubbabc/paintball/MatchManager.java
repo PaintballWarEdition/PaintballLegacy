@@ -53,7 +53,7 @@ public class MatchManager{
 			}
 			
 			//close match
-			plugin.am.toggleReady(match.getArena());
+			plugin.am.setNotActive(match.getArena());
 			matches.remove(match);	
 		}
 		//messages:
@@ -108,7 +108,7 @@ public class MatchManager{
 		//Arena:
 		String arena = plugin.am.getNextArena();
 		plugin.am.resetNext();
-		plugin.am.toggleReady(arena);
+		plugin.am.setActive(arena);
 		HashMap<String, String> vars = new HashMap<String, String>();
 		vars.put("arena", arena);
 		plugin.nf.status(plugin.t.getString("MATCH_START_ARENA", vars));
@@ -231,7 +231,7 @@ public class MatchManager{
 		plugin.nf.text("-------------------------------------------------");
 		
 		//close match
-		plugin.am.toggleReady(match.getArena());
+		plugin.am.setNotActive(match.getArena());
 		matches.remove(match);
 		//ready? countdown?
 		plugin.nf.status(plugin.t.getString("CHOOSE_TEAM"));
