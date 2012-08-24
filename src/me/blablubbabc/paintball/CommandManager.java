@@ -223,6 +223,7 @@ public class CommandManager implements CommandExecutor{
 		sender.sendMessage(plugin.t.getString("COMMAND_ADMIN_LOBBY_REMOVE"));
 		sender.sendMessage(plugin.t.getString("COMMAND_ADMIN_CASH"));
 		sender.sendMessage(plugin.t.getString("COMMAND_ADMIN_RANK"));
+		sender.sendMessage(plugin.t.getString("COMMAND_ADMIN_STATS"));
 		sender.sendMessage(plugin.t.getString("COMMAND_ADMIN_RESET"));
 		sender.sendMessage(plugin.t.getString("COMMAND_ADMIN_HELMET"));
 		sender.sendMessage(plugin.t.getString("COMMAND_ADMIN_NEXT"));
