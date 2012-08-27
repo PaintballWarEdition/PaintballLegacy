@@ -41,7 +41,7 @@ public class Paintball extends JavaPlugin{
 	
 	public ChatColor bold = ChatColor.BOLD;
 	
-	//Config:
+	//CONFIG:
 	//general:
 	public String local;
 	public int countdown;
@@ -55,6 +55,7 @@ public class Paintball extends JavaPlugin{
 	public boolean chatnames;
 	public boolean shop;
 	public ArrayList<String> shopGoods;
+	public ArrayList<String> allowedCommands;
 	public boolean saveInventory;
 	public boolean onlyRandom;
 	public boolean autoRandom;
@@ -119,7 +120,7 @@ public class Paintball extends JavaPlugin{
 	//- count nades and airstrike seperate!
 	//- infinite mode (/)
 	//- invisible bug
-	//- arena not ready bug
+	//- arena not ready bug (/)
 	//- admin cash und rank kommando überprüfen, ob ein spieler mit namen args existiert
 	
 	
@@ -144,6 +145,9 @@ public class Paintball extends JavaPlugin{
 		goodsDef.add("1-Grenade-20");
 		goodsDef.add("1-Airstrike-100");
 		
+		allowedCommands = new ArrayList<String>();
+		
+		
 		getConfig().options().header("Use a value of -1 to give the players infinite balls or extras.");
 		if(getConfig().get("Paintball.Language") == null)getConfig().set("Paintball.Language", "enUS");
 		if(getConfig().get("Paintball.No Permissions") == null)getConfig().set("Paintball.No Permissions", false);
@@ -162,6 +166,7 @@ public class Paintball extends JavaPlugin{
 		if(getConfig().get("Paintball.Colored chatnames") == null)getConfig().set("Paintball.Colored chatnames", true);
 		if(getConfig().get("Paintball.Only Random") == null)getConfig().set("Paintball.Only Random", false);
 		if(getConfig().get("Paintball.Auto Random") == null)getConfig().set("Paintball.Auto Random", true);
+		if(getConfig().get("Paintball.Allowed Commands") == null)getConfig().set("Paintball.Allowed Commands", allowedCommands);
 		//lobby join checks
 		if(getConfig().get("Paintball.Lobby join.Checks.Inventory") == null)getConfig().set("Paintball.Lobby join.Checks.Inventory", true);
 		if(getConfig().get("Paintball.Lobby join.Checks.Inventory Save") == null)getConfig().set("Paintball.Lobby join.Checks.Inventory Save", true);
@@ -208,6 +213,7 @@ public class Paintball extends JavaPlugin{
 		local = getConfig().getString("Paintball.Language", "enUS");
 		noPerms = getConfig().getBoolean("Paintball.No Permissions", false);
 		autoLobby = getConfig().getBoolean("Paintball.Auto Lobby", false);
+		allowedCommands = (ArrayList<String>) getConfig().getList("Paintball.Allowed Commands", allowedCommands);
 		
 		lives = getConfig().getInt("Paintball.Match.Lives", 1);
 		if(lives < 1) lives = 1;

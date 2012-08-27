@@ -289,9 +289,11 @@ public class EventListener implements Listener{
 
 	@EventHandler(priority = EventPriority.HIGHEST)
 	public void onPlayerCommand(PlayerCommandPreprocessEvent event) {
-		if(Lobby.getTeam(event.getPlayer()) != null && !event.getMessage().startsWith("/pb") && !event.getPlayer().hasPermission("paintball.admin") && !event.getPlayer().isOp() ) {
-			event.getPlayer().sendMessage(plugin.t.getString("COMMAND_NOT_ALLOWED"));
-			event.setCancelled(true);
+		if(Lobby.getTeam(event.getPlayer()) != null && !event.getMessage().startsWith("/pb") && !plugin.allowedCommands.contains(event.getMessage())) {
+			if(!event.getPlayer().hasPermission("paintball.admin") && !event.getPlayer().isOp()) {
+				event.getPlayer().sendMessage(plugin.t.getString("COMMAND_NOT_ALLOWED"));
+				event.setCancelled(true);
+			}
 		}
 	}
 	@EventHandler(priority = EventPriority.LOWEST)
@@ -324,7 +326,7 @@ public class EventListener implements Listener{
 							else if(plugin.mm.getMatch(player).isBlue(player)) farbe = Lobby.BLUE.color();
 							else if(plugin.mm.getMatch(player).isSpec(player)) farbe = Lobby.SPECTATE.color();
 							
-							event.setMessage(event.getMessage().replaceAll(message, farbe + message));
+							event.setMessage(event.getMessage().replace(message, farbe + message));
 							
 						}
 					}
