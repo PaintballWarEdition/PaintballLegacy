@@ -25,13 +25,17 @@ public class Match {
 	private ArrayList<Player> left;
 	private String arena;
 	private boolean matchOver;
+	private int taskId;
+	private int count;
+	public boolean started;
 	
-	public Match(Paintball plugin, int lives, Set<Player> red, Set<Player> blue, Set<Player> spec, Set<Player> random, String arena) {
+	public Match(final Paintball plugin, final int lives, Set<Player> red, Set<Player> blue, Set<Player> spec, Set<Player> random, String arena) {
 		this.plugin = plugin;
 		this.arena = arena;
 		this.players = new ArrayList<Player>();
 		this.left = new ArrayList<Player>();
 		this.matchOver = false;
+		this.started = false;
         
 		//TEAMS
 		for(Player p : red) {
@@ -118,10 +122,45 @@ public class Match {
 		//colorchanges:
 		changeAllColors();
 		makeAllVisible();
-		//lives + start!:
-		vars.put("lives", String.valueOf(plugin.lives));
-		if(lives == 1) plugin.nf.status(plugin.t.getString("MATCH_START_ONE_LIFE", vars));
-		else plugin.nf.status(plugin.t.getString("MATCH_START_MORE_LIVES", vars));
+		
+		//WAITING TIMER:
+		count = 5;
+		taskId = plugin.getServer().getScheduler().scheduleAsyncRepeatingTask(plugin, new Runnable() {
+			
+			@Override
+			public void run() {
+				if(( count % 10 ) == 0 && count > 10 )
+			    {
+			        //if above 10 and divisable by 10 message here
+					sendCountdown(count);
+			    }
+			 
+			    if( count < 10 && count > 0)
+			    {
+			        //if below 10 message here (regardless of divisibility)
+			    	sendCountdown(count);
+			    }
+			    count--;
+			    if( count < 1) {
+			    	plugin.getServer().getScheduler().cancelTask(taskId);
+			    	//START:
+			    	started = true;
+			    	//lives + start!:
+			    	HashMap<String, String> vars = new HashMap<String, String>();
+					vars.put("lives", String.valueOf(plugin.lives));
+					if(lives == 1) plugin.nf.status(plugin.t.getString("MATCH_START_ONE_LIFE", vars));
+					else plugin.nf.status(plugin.t.getString("MATCH_START_MORE_LIVES", vars));
+			    }
+			}
+		}, 20L, 20L);
+	}
+	
+	private void sendCountdown(int counter) {
+		HashMap<String, String> vars = new HashMap<String, String>();
+		vars.put("seconds", String.valueOf(counter));
+		for(Player player : getAll()) {
+			player.sendMessage(plugin.t.getString("COUNTDOWN", vars));
+		}
 	}
 	
 	public void makeAllVisible() {

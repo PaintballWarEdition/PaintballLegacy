@@ -33,6 +33,7 @@ import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.event.player.PlayerItemHeldEvent;
 import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.event.player.PlayerKickEvent;
+import org.bukkit.event.player.PlayerMoveEvent;
 import org.bukkit.event.player.PlayerPickupItemEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
 import org.bukkit.inventory.ItemStack;
@@ -66,6 +67,15 @@ public class EventListener implements Listener{
 
 	///////////////////////////////////////////
 	//EVENTS
+	
+	@EventHandler
+	public void onPlayerMove(PlayerMoveEvent event) {
+		Player player = event.getPlayer();
+		if(mm.getMatch(player) != null) {
+			Match match = mm.getMatch(player);
+			if(!match.started) event.setCancelled(true);
+		}
+	}
 	
 	@EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = false)
 	public void onPlayerHit(EntityDamageByEntityEvent event) {
