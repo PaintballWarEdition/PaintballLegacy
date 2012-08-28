@@ -74,12 +74,13 @@ public class CmdAdmin {
 		if(args[1].equalsIgnoreCase("reset")) {
 			if(args.length == 3 && args[2].equalsIgnoreCase("all")) {
 				//reload:
-				plugin.active = false;
-				plugin.reload();
-				sender.sendMessage(plugin.t.getString("REALOAD_FINISHED"));
+				//plugin.active = false;
+				//plugin.reload();
+				//sender.sendMessage(plugin.t.getString("REALOAD_FINISHED"));
 				//playerstats löschen
 				plugin.pm.resetData();
 				sender.sendMessage(plugin.t.getString("ALL_STATS_RESET"));
+				return true;
 			} else if(args.length == 3) {
 				if(plugin.pm.exists(args[2])) {
 					String name = args[2];
