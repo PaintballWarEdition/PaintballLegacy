@@ -365,12 +365,12 @@ public class EventListener implements Listener{
 	@EventHandler(priority = EventPriority.MONITOR)
 	public void onPlayerJoin(PlayerJoinEvent event) {
 		final Player player = (Player) event.getPlayer();
+		plugin.pm.addPlayer(player.getName());
 		
 		plugin.getServer().getScheduler().scheduleAsyncDelayedTask(plugin, new Runnable() {
 			
 			@Override
 			public void run() {
-				plugin.pm.addPlayer(player.getName());
 				
 				if(plugin.autoLobby) {
 					//Lobby vorhanden?
