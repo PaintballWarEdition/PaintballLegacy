@@ -73,7 +73,11 @@ public class EventListener implements Listener{
 		Player player = event.getPlayer();
 		if(mm.getMatch(player) != null) {
 			Match match = mm.getMatch(player);
-			if(!match.started) event.setCancelled(true);
+			if(!match.started) {
+				if(event.getFrom().getX() != event.getTo().getX() || event.getFrom().getZ() != event.getTo().getZ()) {
+					event.setCancelled(true);
+				}
+			}
 		}
 	}
 	
@@ -313,6 +317,7 @@ public class EventListener implements Listener{
 			if(plugin.chatnames) {
 				String message = ChatColor.stripColor(event.getMessage());
 				chatMessages.put(player, message);
+				event.setMessage("pb1x2y3"+message+"pb1x2y3");
 			}
 		}
 	}
@@ -335,8 +340,7 @@ public class EventListener implements Listener{
 							if(plugin.mm.getMatch(player).isRed(player)) farbe = Lobby.RED.color();
 							else if(plugin.mm.getMatch(player).isBlue(player)) farbe = Lobby.BLUE.color();
 							else if(plugin.mm.getMatch(player).isSpec(player)) farbe = Lobby.SPECTATE.color();
-							
-							event.setMessage(event.getMessage().replace(message, farbe + message));
+							event.setMessage(event.getMessage().replace("pb1x2y3"+message+"pb1x2y3", farbe + message));
 							
 						}
 					}

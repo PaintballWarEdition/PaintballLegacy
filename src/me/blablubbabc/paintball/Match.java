@@ -5,7 +5,9 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Map.Entry;
 import java.util.Set;
+import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
@@ -25,9 +27,10 @@ public class Match {
 	private ArrayList<Player> left;
 	private String arena;
 	private boolean matchOver;
-	private int taskId;
-	private int count;
+	//private int taskId;
+	//private int count;
 	public boolean started;
+	private LinkedHashMap<String, Location> teleportList = new LinkedHashMap<String, Location>();
 	
 	public Match(final Paintball plugin, final int lives, Set<Player> red, Set<Player> blue, Set<Player> spec, Set<Player> random, String arena) {
 		this.plugin = plugin;
@@ -96,21 +99,24 @@ public class Match {
 		for(Player p : this.redT.keySet()) {
 			//TELEPORT
 			if(spawn > (redspawns.size()-1)) spawn = 0;
-			p.teleport(plugin.transformLocation(redspawns.get(spawn)));
+			teleportList.put(p.getName(), plugin.transformLocation(redspawns.get(spawn)));
+			//p.teleport(plugin.transformLocation(redspawns.get(spawn)));
 			spawn++;
 		}
 		spawn = 0;
 		for(Player p : this.blueT.keySet()) {
 			//TELEPORT
 			if(spawn > (bluespawns.size()-1)) spawn = 0;
-			p.teleport(plugin.transformLocation(bluespawns.get(spawn)));
+			teleportList.put(p.getName(), plugin.transformLocation(redspawns.get(spawn)));
+			//p.teleport(plugin.transformLocation(bluespawns.get(spawn)));
 			spawn++;
 		}
 		spawn = 0;
 		for(Player p : this.spec) {
 			//TELEPORT
 			if(spawn > (specspawns.size()-1)) spawn = 0;
-			p.teleport(plugin.transformLocation(specspawns.get(spawn)));
+			//p.teleport(plugin.transformLocation(specspawns.get(spawn)));
+			teleportList.put(p.getName(), plugin.transformLocation(redspawns.get(spawn)));
 			spawn++;
 			//INVENTORY
 			p.getInventory().setHelmet(Lobby.SPECTATE.helmet());
@@ -119,12 +125,15 @@ public class Match {
 			vars.put("team", Lobby.getTeam(p).getName());
 			p.sendMessage(plugin.t.getString("BE_SPECTATOR", vars));
 		}
+		//TELEPORT THREAD
+		runTeleportTask();
 		//colorchanges:
 		changeAllColors();
 		makeAllVisible();
+		started = true;
 		
 		//WAITING TIMER:
-		count = 5;
+		/*count = 5;
 		taskId = plugin.getServer().getScheduler().scheduleAsyncRepeatingTask(plugin, new Runnable() {
 			
 			@Override
@@ -152,16 +161,16 @@ public class Match {
 					else plugin.nf.status(plugin.t.getString("MATCH_START_MORE_LIVES", vars));
 			    }
 			}
-		}, 20L, 20L);
+		}, 20L, 20L);*/
 	}
 	
-	private void sendCountdown(int counter) {
+	/*private void sendCountdown(int counter) {
 		HashMap<String, String> vars = new HashMap<String, String>();
 		vars.put("seconds", String.valueOf(counter));
 		for(Player player : getAll()) {
 			player.sendMessage(plugin.t.getString("COUNTDOWN", vars));
 		}
-	}
+	}*/
 	
 	public void makeAllVisible() {
 		for(Player pl : getAll()) {
@@ -434,5 +443,24 @@ public class Match {
 	}
 
 
+	private void runTeleportTask() {
+		plugin.getServer().getScheduler().scheduleSyncDelayedTask(plugin, new Runnable() {
+            public void run() {
+            	if(teleportList.size() > 0) {
+            		@SuppressWarnings("unchecked")
+					Entry<String, Location> entry = (Entry<String, Location>) teleportList.entrySet().toArray()[0];
+            		
+					Player p = plugin.getServer().getPlayer(entry.getKey());
+					if (p != null) {
+						p.teleport(entry.getValue());
+					}
+					teleportList.remove(entry.getKey());
+					if (teleportList.size() > 0){
+						runTeleportTask();
+					}
+				}
+            }
+        }, 1L);
+	}
 
 }
