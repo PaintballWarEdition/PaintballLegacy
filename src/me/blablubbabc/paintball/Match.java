@@ -107,7 +107,7 @@ public class Match {
 		for(Player p : this.blueT.keySet()) {
 			//TELEPORT
 			if(spawn > (bluespawns.size()-1)) spawn = 0;
-			teleportList.put(p.getName(), plugin.transformLocation(redspawns.get(spawn)));
+			teleportList.put(p.getName(), plugin.transformLocation(bluespawns.get(spawn)));
 			//p.teleport(plugin.transformLocation(bluespawns.get(spawn)));
 			spawn++;
 		}
@@ -116,7 +116,7 @@ public class Match {
 			//TELEPORT
 			if(spawn > (specspawns.size()-1)) spawn = 0;
 			//p.teleport(plugin.transformLocation(specspawns.get(spawn)));
-			teleportList.put(p.getName(), plugin.transformLocation(redspawns.get(spawn)));
+			teleportList.put(p.getName(), plugin.transformLocation(specspawns.get(spawn)));
 			spawn++;
 			//INVENTORY
 			p.getInventory().setHelmet(Lobby.SPECTATE.helmet());
@@ -130,6 +130,7 @@ public class Match {
 		//colorchanges:
 		changeAllColors();
 		makeAllVisible();
+		
 		started = true;
 		
 		//WAITING TIMER:

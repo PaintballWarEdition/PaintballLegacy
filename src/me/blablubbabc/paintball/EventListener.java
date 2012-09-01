@@ -23,6 +23,7 @@ import org.bukkit.event.entity.FoodLevelChangeEvent;
 import org.bukkit.event.entity.PlayerDeathEvent;
 import org.bukkit.event.entity.ProjectileHitEvent;
 import org.bukkit.event.entity.ProjectileLaunchEvent;
+import org.bukkit.event.entity.EntityDamageEvent.DamageCause;
 import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.event.inventory.InventoryType.SlotType;
 import org.bukkit.event.player.AsyncPlayerChatEvent;
@@ -75,7 +76,7 @@ public class EventListener implements Listener{
 			Match match = mm.getMatch(player);
 			if(!match.started) {
 				if(event.getFrom().getX() != event.getTo().getX() || event.getFrom().getZ() != event.getTo().getZ()) {
-					event.setCancelled(true);
+					player.teleport(event.getFrom());
 				}
 			}
 		}
@@ -92,11 +93,29 @@ public class EventListener implements Listener{
 					if(mm.getMatch(shooter) != null && mm.getMatch(target) != null) {
 						if(mm.getMatch(shooter).equals(mm.getMatch(target))) {
 							Match match = mm.getMatch(shooter);
-							if(!match.isSpec(shooter) && !match.isSpec(target)) {
+							if(!match.isSpec(shooter) && !match.isSpec(target) && match.isSurvivor(shooter) && match.isSurvivor(target) && match.started) {
 								//Geschoss?
 								if (shot instanceof Snowball) {
 									//hit by snowball
 									match.hitSnow(target, shooter);
+								}
+							}
+						}
+					}
+				}
+			}
+		}else if(event.getDamager() instanceof Player && event.getEntity() instanceof Player && event.getCause().equals(DamageCause.ENTITY_ATTACK)){
+			Player attacker = (Player) event.getDamager();
+			Player target = (Player) event.getEntity();
+			if(!attacker.equals(target)) {
+				if(mm.getMatch(attacker) != null && mm.getMatch(target) != null) {
+					if(mm.getMatch(attacker).equals(mm.getMatch(target))) {
+						Match match = mm.getMatch(attacker);
+						if(!match.isSpec(attacker) && !match.isSpec(target) && match.isSurvivor(attacker) && match.isSurvivor(target) && match.started) {
+							if(plugin.allowMelee) {
+								if(target.getHealth() > plugin.meleeDamage) target.setHealth(target.getHealth()-plugin.meleeDamage);
+								else {
+									plugin.mm.getMatch(target).death(target);
 								}
 							}
 						}
@@ -251,7 +270,13 @@ public class EventListener implements Listener{
 		if(event.getEntity() instanceof Player) {
 			Player target = (Player) event.getEntity();
 			if(Lobby.getTeam(target) != null) {
-				if(plugin.mm.getMatch(target) == null || !plugin.damage || Lobby.getTeam(target).equals(Lobby.SPECTATE)) {
+				if(plugin.mm.getMatch(target) != null && plugin.damage && !Lobby.getTeam(target).equals(Lobby.SPECTATE) && !plugin.mm.getMatch(target).isSurvivor(target)) {
+					if(target.getHealth() < event.getDamage()) {
+						event.setDamage(0);
+						event.setCancelled(true);
+						plugin.mm.getMatch(target).death(target);
+					}
+				} else {
 					event.setDamage(0);
 					event.setCancelled(true);
 				}
@@ -329,21 +354,20 @@ public class EventListener implements Listener{
 				if (chatMessages.containsKey(player)) {
 					String message = chatMessages.get(player);
 					chatMessages.remove(player);
+					//Color:
+					ChatColor farbe = Lobby.LOBBY.color();
 					
 					if (plugin.mm.getMatch(player) != null) {
 						//noch im match?
 						if (!plugin.mm.getMatch(player).hasLeft(player)) {
 							
-							//nur textfarbe:
-							ChatColor farbe = Lobby.LOBBY.color();
-							
+							//Color:
 							if(plugin.mm.getMatch(player).isRed(player)) farbe = Lobby.RED.color();
 							else if(plugin.mm.getMatch(player).isBlue(player)) farbe = Lobby.BLUE.color();
 							else if(plugin.mm.getMatch(player).isSpec(player)) farbe = Lobby.SPECTATE.color();
-							event.setMessage(event.getMessage().replace("pb1x2y3"+message+"pb1x2y3", farbe + message));
-							
 						}
 					}
+					event.setMessage(event.getMessage().replace("pb1x2y3"+message+"pb1x2y3", farbe + message));
 				}
 			}
 		}
@@ -351,8 +375,8 @@ public class EventListener implements Listener{
 	@EventHandler(priority = EventPriority.MONITOR)
 	public void onPlayerDead(PlayerDeathEvent event) {
 		Player player = (Player) event.getEntity();
-		if(Lobby.getTeam(player) != null) {
-			if(plugin.mm.getMatch(player) != null && plugin.damage && !Lobby.getTeam(player).equals(Lobby.SPECTATE)) {
+		/*if(Lobby.getTeam(player) != null) {
+			if(plugin.mm.getMatch(player) != null && (plugin.damage || plugin.allowMelee) && !Lobby.getTeam(player).equals(Lobby.SPECTATE)) {
 				event.setDeathMessage("");
 				event.setDroppedExp(0);
 				event.setKeepLevel(true);
@@ -362,6 +386,14 @@ public class EventListener implements Listener{
 				plugin.leaveLobby(player, true, false, false);
 			}
 			//drops?
+			event.getDrops().removeAll(event.getDrops());
+		}*/
+		if(Lobby.getTeam(player) != null) {
+			if(Lobby.isPlaying(player) || Lobby.isSpectating(player)) mm.getMatch(player).left(player);
+			plugin.leaveLobby(player, true, false, false);
+			//drops?
+			event.setDroppedExp(0);
+			event.setKeepLevel(true);
 			event.getDrops().removeAll(event.getDrops());
 		}
 	}

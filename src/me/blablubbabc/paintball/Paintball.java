@@ -61,6 +61,8 @@ public class Paintball extends JavaPlugin{
 	public boolean autoRandom;
 	public boolean noPerms;
 	public boolean damage;
+	public boolean allowMelee;
+	public int meleeDamage;
 	public boolean autoLobby;
 	
 	//lobby join checks
@@ -178,6 +180,8 @@ public class Paintball extends JavaPlugin{
 		if(getConfig().get("Paintball.Lobby join.Checks.Effects") == null)getConfig().set("Paintball.Lobby join.Checks.Effects", true);
 		
 		if(getConfig().get("Paintball.Match.Damage") == null)getConfig().set("Paintball.Match.Damage", false);
+		if(getConfig().get("Paintball.Match.Allow Melee") == null)getConfig().set("Paintball.Match.Allow Melee", true);
+		if(getConfig().get("Paintball.Match.Melee Damage") == null)getConfig().set("Paintball.Match.Melee Damage", 1);
 		if(getConfig().get("Paintball.Match.Lives") == null)getConfig().set("Paintball.Match.Lives", 1);
 		if(getConfig().get("Paintball.Match.Balls") == null)getConfig().set("Paintball.Match.Balls", 50);
 		if(getConfig().get("Paintball.Match.Minimum players") == null)getConfig().set("Paintball.Match.Minimum players", 2);
@@ -210,6 +214,9 @@ public class Paintball extends JavaPlugin{
 		
 		//gerneral:
 		damage = getConfig().getBoolean("Paintball.Match.Damage", false);
+		allowMelee = getConfig().getBoolean("Paintball.Match.Allow Melee", true);
+		meleeDamage = getConfig().getInt("Paintball.Match.Melee Damage", 1);
+		if(meleeDamage < 1) meleeDamage = 1;
 		local = getConfig().getString("Paintball.Language", "enUS");
 		noPerms = getConfig().getBoolean("Paintball.No Permissions", false);
 		autoLobby = getConfig().getBoolean("Paintball.Auto Lobby", false);
