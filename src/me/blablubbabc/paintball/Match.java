@@ -133,6 +133,8 @@ public class Match {
 		
 		//WAITING TIMER:
 		count = 5;
+		sendCountdown(count);
+		count--; // timer geht erst nach 1 Sekunde los;
 		taskId = plugin.getServer().getScheduler().scheduleAsyncRepeatingTask(plugin, new Runnable() {
 			
 			@Override
