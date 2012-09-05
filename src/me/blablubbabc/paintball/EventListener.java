@@ -63,12 +63,12 @@ public class EventListener implements Listener{
 		transparent.add((byte) 119);
 		transparent.add((byte) 321);
 		transparent.add((byte) 85);
-		
+
 	}
 
 	///////////////////////////////////////////
 	//EVENTS
-	
+
 	@EventHandler
 	public void onPlayerMove(PlayerMoveEvent event) {
 		Player player = event.getPlayer();
@@ -81,7 +81,7 @@ public class EventListener implements Listener{
 			}
 		}
 	}
-	
+
 	@EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = false)
 	public void onPlayerHit(EntityDamageByEntityEvent event) {
 		if(event.getDamager() instanceof Projectile) {
@@ -124,37 +124,40 @@ public class EventListener implements Listener{
 			}
 		}
 	}
-	
+
 	@EventHandler(priority = EventPriority.NORMAL)
 	public void onPlayerShoot(ProjectileLaunchEvent event) {
 		if(event.getEntity().getShooter() instanceof Player) {
 			Player player = (Player) event.getEntity().getShooter();
 			if(Lobby.getTeam(player) != null) {
-				Projectile shot = (Projectile) event.getEntity();
-				Vector v = shot.getVelocity();
-				//Geschoss?
-				if(shot instanceof Snowball) {
-					//zählen wenn in-match
-					if(mm.getMatch(player) != null && Lobby.isPlaying(player)) {
-						mm.getMatch(player).shot(player);
-					}
-					if(plugin.balls == -1) {
-						//+1 ball
-						player.getInventory().addItem(new ItemStack(Material.SNOW_BALL, 1));
-					}
-					//Vector v = player.getLocation().getDirection();
-					//boosting:
-					shot.setVelocity(v.multiply(plugin.speedmulti));
-				} else if(shot instanceof Egg) {
-					if(plugin.grenades) {
-						Grenade.eggThrow(player, (Egg) shot);
-						if(plugin.grenadeAmount == -1) {
-							//+1grenade
-							player.getInventory().addItem(new ItemStack(Material.EGG, 1));
+				if(mm.getMatch(player) != null && Lobby.isPlaying(player) && mm.getMatch(player).isSurvivor(player)) {
+					if(mm.getMatch(player).started) {
+						Projectile shot = (Projectile) event.getEntity();
+						Vector v = shot.getVelocity();
+						//Geschoss?
+						if(shot instanceof Snowball) {
+							//zählen
+							mm.getMatch(player).shot(player);
+							if(plugin.balls == -1) {
+								//+1 ball
+								player.getInventory().addItem(new ItemStack(Material.SNOW_BALL, 1));
+							}
+							//boosting:
+							shot.setVelocity(v.multiply(plugin.speedmulti));
+						} else if(shot instanceof Egg) {
+							if(plugin.grenades) {
+								Grenade.eggThrow(player, (Egg) shot);
+								if(plugin.grenadeAmount == -1) {
+									//+1grenade
+									player.getInventory().addItem(new ItemStack(Material.EGG, 1));
+								}
+								//boosting:
+								shot.setVelocity(v.multiply(plugin.grenadeSpeed));
+							}
 						}
-						//Vector v = player.getLocation().getDirection();
-						//boosting:
-						shot.setVelocity(v.multiply(plugin.grenadeSpeed));
+					} else {
+						event.setCancelled(true);
+						return;
 					}
 				}
 			}
@@ -170,7 +173,7 @@ public class EventListener implements Listener{
 			}
 		}
 	}
-	
+
 
 	@EventHandler(priority = EventPriority.NORMAL)
 	public void onPlayerInventory(InventoryClickEvent event) {
@@ -188,30 +191,35 @@ public class EventListener implements Listener{
 	public void onPlayerInteract(PlayerInteractEvent event) {
 		Player player = (Player) event.getPlayer();
 		if(Lobby.getTeam(player) != null) {
-			if(player.getItemInHand().getTypeId() == 280) {
-				if(event.getAction().equals(Action.LEFT_CLICK_AIR) || event.getAction().equals(Action.RIGHT_CLICK_AIR)) {
-					if(Airstrike.marked(player)) {
-						if(!Airstrike.active) {
-							Airstrike.call(plugin, player);
-							//remove stick if not infinite
-							if(plugin.airstrikeAmount != -1) {
-								int amount = (player.getInventory().getItemInHand()
-										.getAmount() - 1);
-								if (amount > 0)
-									player.getInventory().setItemInHand(
-											new ItemStack(280, amount));
-								else
-									player.getInventory().setItemInHand(null);
+			if(mm.getMatch(player) != null && Lobby.isPlaying(player) && mm.getMatch(player).started && mm.getMatch(player).isSurvivor(player)) {
+				if(player.getItemInHand().getTypeId() == 280) {
+					if(event.getAction().equals(Action.LEFT_CLICK_AIR) || event.getAction().equals(Action.RIGHT_CLICK_AIR)) {
+						if(Airstrike.marked(player)) {
+							if(!Airstrike.active) {
+								Airstrike.call(plugin, player);
+								//remove stick if not infinite
+								if(plugin.airstrikeAmount != -1) {
+									int amount = (player.getInventory().getItemInHand()
+											.getAmount() - 1);
+									if (amount > 0)
+										player.getInventory().setItemInHand(
+												new ItemStack(280, amount));
+									else
+										player.getInventory().setItemInHand(null);
+								}
+							} else {
+								player.sendMessage(plugin.t.getString("ALREADY_AIRSTRIKE"));
 							}
-						} else {
-							player.sendMessage(plugin.t.getString("ALREADY_AIRSTRIKE"));
 						}
 					}
+				} else if(player.getItemInHand().getTypeId() == 344) {
+					if(event.getAction().equals(Action.RIGHT_CLICK_AIR) || event.getAction().equals(Action.RIGHT_CLICK_BLOCK)) {
+						player.sendMessage(plugin.t.getString("GRENADE_THROW"));
+					}
 				}
-			} else if(player.getItemInHand().getTypeId() == 344) {
-				if(event.getAction().equals(Action.RIGHT_CLICK_AIR) || event.getAction().equals(Action.RIGHT_CLICK_BLOCK)) {
-					player.sendMessage(plugin.t.getString("GRENADE_THROW"));
-				}
+			} else {
+				event.setCancelled(true);
+				return;
 			}
 		}
 	}
@@ -270,7 +278,9 @@ public class EventListener implements Listener{
 		if(event.getEntity() instanceof Player) {
 			Player target = (Player) event.getEntity();
 			if(Lobby.getTeam(target) != null) {
-				if(plugin.mm.getMatch(target) != null && plugin.damage && !Lobby.getTeam(target).equals(Lobby.SPECTATE) && plugin.mm.getMatch(target).isSurvivor(target) && !event.getCause().equals(DamageCause.ENTITY_ATTACK)) {
+				if(plugin.mm.getMatch(target) != null && plugin.damage && !Lobby.getTeam(target).equals(Lobby.SPECTATE) 
+						&& plugin.mm.getMatch(target).isSurvivor(target) && !event.getCause().equals(DamageCause.ENTITY_ATTACK) 
+						&& plugin.mm.getMatch(target).started) {
 					if(target.getHealth() < event.getDamage()) {
 						event.setDamage(0);
 						event.setCancelled(true);
@@ -291,7 +301,7 @@ public class EventListener implements Listener{
 			if(!player.isOp() && !player.hasPermission("paintball.admin")) event.setCancelled(true);
 		}
 	}
-	
+
 	@EventHandler(priority = EventPriority.NORMAL)
 	public void onPlayerPlace(BlockPlaceEvent event) {
 		Player player = event.getPlayer();
@@ -299,7 +309,7 @@ public class EventListener implements Listener{
 			if(!player.isOp() && !player.hasPermission("paintball.admin")) event.setCancelled(true);
 		}
 	}
-	
+
 	@EventHandler(priority = EventPriority.NORMAL)
 	public void onPlayerHunger(FoodLevelChangeEvent event) {
 		if(event.getEntity() instanceof Player) {
@@ -356,11 +366,11 @@ public class EventListener implements Listener{
 					chatMessages.remove(player);
 					//Color:
 					ChatColor farbe = Lobby.LOBBY.color();
-					
+
 					if (plugin.mm.getMatch(player) != null) {
 						//noch im match?
 						if (!plugin.mm.getMatch(player).hasLeft(player)) {
-							
+
 							//Color:
 							if(plugin.mm.getMatch(player).isRed(player)) farbe = Lobby.RED.color();
 							else if(plugin.mm.getMatch(player).isBlue(player)) farbe = Lobby.BLUE.color();
@@ -375,19 +385,6 @@ public class EventListener implements Listener{
 	@EventHandler(priority = EventPriority.MONITOR)
 	public void onPlayerDead(PlayerDeathEvent event) {
 		Player player = (Player) event.getEntity();
-		/*if(Lobby.getTeam(player) != null) {
-			if(plugin.mm.getMatch(player) != null && (plugin.damage || plugin.allowMelee) && !Lobby.getTeam(player).equals(Lobby.SPECTATE)) {
-				event.setDeathMessage("");
-				event.setDroppedExp(0);
-				event.setKeepLevel(true);
-				plugin.mm.getMatch(player).death(player);
-			} else {
-				if(Lobby.isPlaying(player) || Lobby.isSpectating(player)) mm.getMatch(player).left(player);
-				plugin.leaveLobby(player, true, false, false);
-			}
-			//drops?
-			event.getDrops().removeAll(event.getDrops());
-		}*/
 		if(Lobby.getTeam(player) != null) {
 			if(Lobby.isPlaying(player) || Lobby.isSpectating(player)) mm.getMatch(player).left(player);
 			plugin.leaveLobby(player, true, false, false);
@@ -397,24 +394,24 @@ public class EventListener implements Listener{
 			event.getDrops().removeAll(event.getDrops());
 		}
 	}
-	
+
 	@EventHandler(priority = EventPriority.MONITOR)
 	public void onPlayerJoin(PlayerJoinEvent event) {
 		final Player player = (Player) event.getPlayer();
 		plugin.pm.addPlayer(player.getName());
-		
+
 		plugin.getServer().getScheduler().scheduleAsyncDelayedTask(plugin, new Runnable() {
-			
+
 			@Override
 			public void run() {
-				
+
 				if(plugin.autoLobby) {
 					//Lobby vorhanden?
 					if(plugin.getLobbySpawns().size() == 0) {
 						player.sendMessage(plugin.t.getString("NO_LOBBY_FOUND"));
 						return;
 					}
-					
+
 					//inventory
 					if(plugin.saveInventory) {
 						plugin.pm.setInv(player, player.getInventory());
@@ -425,14 +422,14 @@ public class EventListener implements Listener{
 					//lobby add
 					Lobby.LOBBY.addMember(player);
 					plugin.nf.join(player.getName());
-					
+
 					plugin.joinLobby(player);
 				}
-				
+
 			}
 		}, 1L);
 	}
-	
+
 	@EventHandler(priority = EventPriority.NORMAL)
 	public void onPlayerQuit(PlayerQuitEvent event) {
 		this.onPlayerDisconnect(event.getPlayer());
@@ -451,15 +448,15 @@ public class EventListener implements Listener{
 			if(Lobby.isPlaying(player) || Lobby.isSpectating(player)) mm.getMatch(player).left(player);
 			plugin.leaveLobby(player, true, true, true);
 			//player.kickPlayer("You disconnected already.");
-			
+
 			/*//clear inventory
 			plugin.clearInv(player);
 			//Exit lobby
 			Lobby.remove(player);
 			//Teleport back
 			player.teleport(plugin.pm.getLoc(player));*/
-			
-			
+
+
 		}
 
 	}
