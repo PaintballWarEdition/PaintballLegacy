@@ -27,8 +27,8 @@ public class Match {
 	private ArrayList<Player> left;
 	private String arena;
 	private boolean matchOver;
-	//private int taskId;
-	//private int count;
+	private int taskId;
+	private int count;
 	public boolean started;
 	private LinkedHashMap<String, Location> teleportList = new LinkedHashMap<String, Location>();
 	
@@ -131,23 +131,21 @@ public class Match {
 		changeAllColors();
 		makeAllVisible();
 		
-		started = true;
-		
 		//WAITING TIMER:
-		/*count = 5;
+		count = 5;
 		taskId = plugin.getServer().getScheduler().scheduleAsyncRepeatingTask(plugin, new Runnable() {
 			
 			@Override
 			public void run() {
-				if(( count % 10 ) == 0 && count > 10 )
+				if(( count % 10 ) == 0 && count > 3 )
 			    {
-			        //if above 10 and divisable by 10 message here
+			        //if above 3 and divisable by 10 message here
 					sendCountdown(count);
 			    }
 			 
-			    if( count < 10 && count > 0)
+			    if( count < 4 && count > 0)
 			    {
-			        //if below 10 message here (regardless of divisibility)
+			        //if below 4 message here (regardless of divisibility)
 			    	sendCountdown(count);
 			    }
 			    count--;
@@ -162,16 +160,16 @@ public class Match {
 					else plugin.nf.status(plugin.t.getString("MATCH_START_MORE_LIVES", vars));
 			    }
 			}
-		}, 20L, 20L);*/
+		}, 20L, 20L);
 	}
 	
-	/*private void sendCountdown(int counter) {
+	private void sendCountdown(int counter) {
 		HashMap<String, String> vars = new HashMap<String, String>();
 		vars.put("seconds", String.valueOf(counter));
 		for(Player player : getAll()) {
 			player.sendMessage(plugin.t.getString("COUNTDOWN", vars));
 		}
-	}*/
+	}
 	
 	public void makeAllVisible() {
 		for(Player pl : getAll()) {
