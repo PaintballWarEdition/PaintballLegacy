@@ -270,7 +270,7 @@ public class EventListener implements Listener{
 		if(event.getEntity() instanceof Player) {
 			Player target = (Player) event.getEntity();
 			if(Lobby.getTeam(target) != null) {
-				if(plugin.mm.getMatch(target) != null && plugin.damage && !Lobby.getTeam(target).equals(Lobby.SPECTATE) && !plugin.mm.getMatch(target).isSurvivor(target)) {
+				if(plugin.mm.getMatch(target) != null && plugin.damage && !Lobby.getTeam(target).equals(Lobby.SPECTATE) && plugin.mm.getMatch(target).isSurvivor(target) && !event.getCause().equals(DamageCause.ENTITY_ATTACK)) {
 					if(target.getHealth() < event.getDamage()) {
 						event.setDamage(0);
 						event.setCancelled(true);
