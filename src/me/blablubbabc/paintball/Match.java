@@ -29,8 +29,13 @@ public class Match {
 	private boolean matchOver;
 	private int taskId;
 	private int count;
-	public boolean started;
 	private LinkedHashMap<String, Location> teleportList = new LinkedHashMap<String, Location>();
+	private int spawnBlue;
+	private int spawnRed;
+	private int spawnSpec;
+	
+	
+	public boolean started;
 	
 	public Match(final Paintball plugin, final int lives, Set<Player> red, Set<Player> blue, Set<Player> spec, Set<Player> random, String arena) {
 		this.plugin = plugin;
@@ -39,6 +44,10 @@ public class Match {
 		this.left = new ArrayList<Player>();
 		this.matchOver = false;
 		this.started = false;
+		
+		this.spawnBlue = 0;
+		this.spawnRed = 0;
+		this.spawnSpec = 0;
         
 		//TEAMS
 		for(Player p : red) {
@@ -172,6 +181,32 @@ public class Match {
 			player.sendMessage(plugin.t.getString("COUNTDOWN", vars));
 		}
 	}
+	
+	//SPAWNS
+	
+	public void spawnRed(Player player) {
+		ArrayList<LinkedHashMap<String, Object>> redspawns = plugin.am.getRedSpawns(arena);
+		if(spawnRed > (redspawns.size()-1)) spawnRed = 0;
+		teleportList.put(player.getName(), plugin.transformLocation(redspawns.get(spawnRed)));
+		spawnRed++;
+	}
+	public void spawnBlue(Player player) {
+		ArrayList<LinkedHashMap<String, Object>> bluespawns = plugin.am.getBlueSpawns(arena);
+		if(spawnBlue > (bluespawns.size()-1)) spawnBlue = 0;
+		teleportList.put(player.getName(), plugin.transformLocation(bluespawns.get(spawnBlue)));
+		spawnBlue++;
+	}
+	public void spawnSpec(Player player) {
+		ArrayList<LinkedHashMap<String, Object>> specspawns = plugin.am.getSpecSpawns(arena);
+		if(spawnSpec > (specspawns.size()-1)) spawnSpec = 0;
+		teleportList.put(player.getName(), plugin.transformLocation(specspawns.get(spawnSpec)));
+		spawnSpec++;
+	}
+	
+	
+	
+	
+	
 	
 	public void makeAllVisible() {
 		for(Player pl : getAll()) {

@@ -136,12 +136,20 @@ public class CmdArena {
 					return true;
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 				} else if(args[2].equalsIgnoreCase("remove")) {
+					if(am.inUse(name)) {
+						player.sendMessage(plugin.t.getString("ARENA_NO_EDIT_IN_USE"));
+						return true;
+					}
 					am.remove(name);
 					am.saveData();
 					player.sendMessage(plugin.t.getString("ARENA_REMOVED", vars));
 					return true;
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 				} else if(args[2].equalsIgnoreCase("delblue")) {
+					if(am.inUse(name)) {
+						player.sendMessage(plugin.t.getString("ARENA_NO_EDIT_IN_USE"));
+						return true;
+					}
 					int num = am.getBlueSpawnsSize(name);
 					am.removeBlueSpawns(name);
 					am.saveData();
@@ -152,6 +160,10 @@ public class CmdArena {
 					return true;
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 				} else if(args[2].equalsIgnoreCase("delred")) {
+					if(am.inUse(name)) {
+						player.sendMessage(plugin.t.getString("ARENA_NO_EDIT_IN_USE"));
+						return true;
+					}
 					int num = am.getRedSpawnsSize(name);
 					am.removeRedSpawns(name);
 					am.saveData();
@@ -162,6 +174,10 @@ public class CmdArena {
 					return true;
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 				} else if(args[2].equalsIgnoreCase("delspec")) {
+					if(am.inUse(name)) {
+						player.sendMessage(plugin.t.getString("ARENA_NO_EDIT_IN_USE"));
+						return true;
+					}
 					int num = am.getSpecSpawnsSize(name);
 					am.removeSpecSpawns(name);
 					am.saveData();
