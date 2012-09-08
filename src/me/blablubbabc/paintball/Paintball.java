@@ -65,6 +65,7 @@ public class Paintball extends JavaPlugin{
 	public boolean allowMelee;
 	public int meleeDamage;
 	public boolean autoLobby;
+	public boolean teleportFix;
 	
 	//lobby join checks
 	public boolean checkInventory;
@@ -152,6 +153,7 @@ public class Paintball extends JavaPlugin{
 		
 		
 		getConfig().options().header("Use a value of -1 to give the players infinite balls or extras.");
+		if(getConfig().get("Paintball.TeleportFix") == null)getConfig().set("Paintball.TeleportFix", true);
 		if(getConfig().get("Paintball.Language") == null)getConfig().set("Paintball.Language", "enUS");
 		if(getConfig().get("Paintball.No Permissions") == null)getConfig().set("Paintball.No Permissions", false);
 		if(getConfig().get("Paintball.Auto Lobby") == null)getConfig().set("Paintball.Auto Lobby", false);
@@ -223,6 +225,7 @@ public class Paintball extends JavaPlugin{
 		noPerms = getConfig().getBoolean("Paintball.No Permissions", false);
 		autoLobby = getConfig().getBoolean("Paintball.Auto Lobby", false);
 		allowedCommands = (ArrayList<String>) getConfig().getList("Paintball.Allowed Commands", allowedCommands);
+		teleportFix = getConfig().getBoolean("Paintball.TeleportFix", false);
 		
 		lives = getConfig().getInt("Paintball.Match.Lives", 1);
 		if(lives < 1) lives = 1;

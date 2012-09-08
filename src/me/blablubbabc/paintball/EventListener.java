@@ -96,14 +96,19 @@ public class EventListener implements Listener{
 	//TEST
 	@EventHandler
 	public void onPlayerTeleport(PlayerTeleportEvent event) {
-		if(allowedTeleport.containsKey(event.getPlayer().getName()) && allowedTeleport.get(event.getPlayer().getName()).equals(event.getTo())) {
-			allowedTeleport.remove(event.getPlayer().getName());
-		} else {
-			teleportLoc.put(event.getPlayer().getName(), event.getTo());
-			teleportCause.put(event.getPlayer().getName(), event.getCause());
-			event.setCancelled(true);
-			if (!taskRunning)
-				runTeleportTask();
+		if(plugin.teleportFix) {
+			if (allowedTeleport.containsKey(event.getPlayer().getName())
+					&& allowedTeleport.get(event.getPlayer().getName()).equals(
+							event.getTo())) {
+				allowedTeleport.remove(event.getPlayer().getName());
+			} else {
+				teleportLoc.put(event.getPlayer().getName(), event.getTo());
+				teleportCause
+						.put(event.getPlayer().getName(), event.getCause());
+				event.setCancelled(true);
+				if (!taskRunning)
+					runTeleportTask();
+			}
 		}
 	}
 
