@@ -46,6 +46,7 @@ public class Paintball extends JavaPlugin{
 	public String local;
 	public int countdown;
 	public int countdownInit;
+	public int countdownStart;
 	public int minPlayers;
 	public int maxPlayers;
 	public int lives;
@@ -188,6 +189,7 @@ public class Paintball extends JavaPlugin{
 		if(getConfig().get("Paintball.Match.Maximum players") == null)getConfig().set("Paintball.Match.Maximum players", 1000);
 		if(getConfig().get("Paintball.Match.Countdown.Time") == null)getConfig().set("Paintball.Match.Countdown.Time", 20);
 		if(getConfig().get("Paintball.Match.Countdown.Delay") == null)getConfig().set("Paintball.Match.Countdown.Delay", 10);
+		if(getConfig().get("Paintball.Match.CountdownStart.Time") == null)getConfig().set("Paintball.Match.CountdownStart.Time", 5);
 		if(getConfig().get("Paintball.Extras.Grenades.enabled") == null)getConfig().set("Paintball.Extras.Grenades.enabled", true);
 		if(getConfig().get("Paintball.Extras.Grenades.Time-Radius in Ticks (= 1/20 sec)") == null)getConfig().set("Paintball.Extras.Grenades.Time-Radius in Ticks (= 1/20 sec)", 60);
 		if(getConfig().get("Paintball.Extras.Grenades.Speed multi") == null)getConfig().set("Paintball.Extras.Grenades.Speed multi", 1.0);
@@ -235,6 +237,8 @@ public class Paintball extends JavaPlugin{
 		if(countdown < 0) countdown = 0;
 		countdownInit = getConfig().getInt("Paintball.Match.Countdown.Delay", 10);
 		if(countdownInit < 0) countdownInit = 0;
+		countdownStart = getConfig().getInt("Paintball.Match.CountdownStart.Time", 5);
+		if(countdownStart < 0) countdownStart = 0;
 		
 		speedmulti = getConfig().getDouble("Paintball.Ball speed multi", 1.5);
 		listnames = getConfig().getBoolean("Paintball.Colored listnames", true);

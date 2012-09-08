@@ -2,9 +2,11 @@ package me.blablubbabc.paintball;
 
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.Map.Entry;
 import me.blablubbabc.paintball.extras.Airstrike;
 import me.blablubbabc.paintball.extras.Grenade;
 import org.bukkit.ChatColor;
+import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.block.Block;
 import org.bukkit.entity.Egg;
@@ -37,6 +39,8 @@ import org.bukkit.event.player.PlayerKickEvent;
 import org.bukkit.event.player.PlayerMoveEvent;
 import org.bukkit.event.player.PlayerPickupItemEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
+import org.bukkit.event.player.PlayerTeleportEvent;
+import org.bukkit.event.player.PlayerTeleportEvent.TeleportCause;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.util.Vector;
 
@@ -47,12 +51,19 @@ public class EventListener implements Listener{
 	private HashMap<Player, Integer> taskIds;
 	private HashSet<Byte> transparent;
 	private HashMap<Player, String> chatMessages;
+	private HashMap<String, Location> teleportLoc;
+	private HashMap<String, TeleportCause> teleportCause;
+	private boolean taskRunning = false;
+	private HashMap<String, Location> allowedTeleport;
 
 	public EventListener(Paintball pl) {
 		plugin = pl;
 		mm = plugin.mm;
 		taskIds = new HashMap<Player, Integer>();
 		chatMessages = new HashMap<Player, String>();
+		teleportLoc = new HashMap<String, Location>();
+		teleportCause = new HashMap<String, TeleportCause>();
+		allowedTeleport = new HashMap<String, Location>();
 
 		transparent = new HashSet<Byte>();
 		transparent.add((byte) 0);
@@ -69,18 +80,62 @@ public class EventListener implements Listener{
 	///////////////////////////////////////////
 	//EVENTS
 
-	@EventHandler
+	@EventHandler(ignoreCancelled = true)
 	public void onPlayerMove(PlayerMoveEvent event) {
 		Player player = event.getPlayer();
 		if(mm.getMatch(player) != null) {
 			Match match = mm.getMatch(player);
 			if(!match.started) {
 				if(event.getFrom().getX() != event.getTo().getX() || event.getFrom().getZ() != event.getTo().getZ()) {
-					player.teleport(event.getFrom());
+					event.setCancelled(true);
+					//player.teleport(event.getFrom());
 				}
 			}
 		}
 	}
+	//TEST
+	@EventHandler
+	public void onPlayerTeleport(PlayerTeleportEvent event) {
+		if(allowedTeleport.containsKey(event.getPlayer().getName()) && allowedTeleport.get(event.getPlayer().getName()).equals(event.getTo())) {
+			allowedTeleport.remove(event.getPlayer().getName());
+		} else {
+			teleportLoc.put(event.getPlayer().getName(), event.getTo());
+			teleportCause.put(event.getPlayer().getName(), event.getCause());
+			event.setCancelled(true);
+			if (!taskRunning)
+				runTeleportTask();
+		}
+	}
+
+	private void runTeleportTask() {
+		taskRunning = true;
+		plugin.getServer().getScheduler().scheduleSyncDelayedTask(plugin, new Runnable() {
+			public void run() {
+				if(teleportLoc.size() > 0) {
+					@SuppressWarnings("unchecked")
+					Entry<String, Location> entryLoc = (Entry<String, Location>) teleportLoc.entrySet().toArray()[0];
+
+					String name = entryLoc.getKey();
+					Location loc = entryLoc.getValue();
+					TeleportCause cause = teleportCause.get(name);
+					Player p = plugin.getServer().getPlayer(name);
+
+					if(loc != null && cause != null && p != null) {
+						allowedTeleport.put(name, loc);
+						p.teleport(loc, cause);
+					}
+					teleportLoc.remove(name);
+					teleportCause.remove(name);
+					if(teleportLoc.size() > 0){
+						runTeleportTask();
+					}else {
+						taskRunning = false;
+					}
+				}
+			}
+		}, 1L);
+	}
+
 
 	@EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = false)
 	public void onPlayerHit(EntityDamageByEntityEvent event) {

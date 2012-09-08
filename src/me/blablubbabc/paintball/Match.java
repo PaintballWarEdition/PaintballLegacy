@@ -5,9 +5,7 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.List;
-import java.util.Map.Entry;
 import java.util.Set;
-import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
@@ -29,7 +27,7 @@ public class Match {
 	private boolean matchOver;
 	private int taskId;
 	private int count;
-	private LinkedHashMap<String, Location> teleportList = new LinkedHashMap<String, Location>();
+	//private LinkedHashMap<String, Location> teleportList = new LinkedHashMap<String, Location>();
 	private int spawnBlue;
 	private int spawnRed;
 	private int spawnSpec;
@@ -108,24 +106,24 @@ public class Match {
 		for(Player p : this.redT.keySet()) {
 			//TELEPORT
 			if(spawn > (redspawns.size()-1)) spawn = 0;
-			teleportList.put(p.getName(), plugin.transformLocation(redspawns.get(spawn)));
-			//p.teleport(plugin.transformLocation(redspawns.get(spawn)));
+			//teleportList.put(p.getName(), plugin.transformLocation(redspawns.get(spawn)));
+			p.teleport(plugin.transformLocation(redspawns.get(spawn)));
 			spawn++;
 		}
 		spawn = 0;
 		for(Player p : this.blueT.keySet()) {
 			//TELEPORT
 			if(spawn > (bluespawns.size()-1)) spawn = 0;
-			teleportList.put(p.getName(), plugin.transformLocation(bluespawns.get(spawn)));
-			//p.teleport(plugin.transformLocation(bluespawns.get(spawn)));
+			//teleportList.put(p.getName(), plugin.transformLocation(bluespawns.get(spawn)));
+			p.teleport(plugin.transformLocation(bluespawns.get(spawn)));
 			spawn++;
 		}
 		spawn = 0;
 		for(Player p : this.spec) {
 			//TELEPORT
 			if(spawn > (specspawns.size()-1)) spawn = 0;
-			//p.teleport(plugin.transformLocation(specspawns.get(spawn)));
-			teleportList.put(p.getName(), plugin.transformLocation(specspawns.get(spawn)));
+			p.teleport(plugin.transformLocation(specspawns.get(spawn)));
+			//teleportList.put(p.getName(), plugin.transformLocation(specspawns.get(spawn)));
 			spawn++;
 			//INVENTORY
 			p.getInventory().setHelmet(Lobby.SPECTATE.helmet());
@@ -135,19 +133,23 @@ public class Match {
 			p.sendMessage(plugin.t.getString("BE_SPECTATOR", vars));
 		}
 		//TELEPORT THREAD
-		runTeleportTask();
+		//runTeleportTask();
 		//colorchanges:
 		changeAllColors();
 		makeAllVisible();
 		
 		//WAITING TIMER:
-		count = 5;
-		sendCountdown(count);
-		count--; // timer geht erst nach 1 Sekunde los;
+		count = plugin.countdownStart;
+		
 		taskId = plugin.getServer().getScheduler().scheduleAsyncRepeatingTask(plugin, new Runnable() {
 			
 			@Override
 			public void run() {
+				if( count == plugin.countdownStart && count > 0) {
+					sendCountdown(count);
+					count--;
+					return;
+				}
 				if(( count % 10 ) == 0 && count > 3 )
 			    {
 			        //if above 3 and divisable by 10 message here
@@ -171,7 +173,7 @@ public class Match {
 					else plugin.nf.status(plugin.t.getString("MATCH_START_MORE_LIVES", vars));
 			    }
 			}
-		}, 20L, 20L);
+		}, 0L, 20L);
 	}
 	
 	private void sendCountdown(int counter) {
@@ -187,19 +189,22 @@ public class Match {
 	public void spawnRed(Player player) {
 		ArrayList<LinkedHashMap<String, Object>> redspawns = plugin.am.getRedSpawns(arena);
 		if(spawnRed > (redspawns.size()-1)) spawnRed = 0;
-		teleportList.put(player.getName(), plugin.transformLocation(redspawns.get(spawnRed)));
+		player.teleport(plugin.transformLocation(redspawns.get(spawnRed)));
+		//teleportList.put(player.getName(), plugin.transformLocation(redspawns.get(spawnRed)));
 		spawnRed++;
 	}
 	public void spawnBlue(Player player) {
 		ArrayList<LinkedHashMap<String, Object>> bluespawns = plugin.am.getBlueSpawns(arena);
 		if(spawnBlue > (bluespawns.size()-1)) spawnBlue = 0;
-		teleportList.put(player.getName(), plugin.transformLocation(bluespawns.get(spawnBlue)));
+		player.teleport(plugin.transformLocation(bluespawns.get(spawnBlue)));
+		//teleportList.put(player.getName(), plugin.transformLocation(bluespawns.get(spawnBlue)));
 		spawnBlue++;
 	}
 	public void spawnSpec(Player player) {
 		ArrayList<LinkedHashMap<String, Object>> specspawns = plugin.am.getSpecSpawns(arena);
 		if(spawnSpec > (specspawns.size()-1)) spawnSpec = 0;
-		teleportList.put(player.getName(), plugin.transformLocation(specspawns.get(spawnSpec)));
+		player.teleport(plugin.transformLocation(specspawns.get(spawnSpec)));
+		//teleportList.put(player.getName(), plugin.transformLocation(specspawns.get(spawnSpec)));
 		spawnSpec++;
 	}
 	
@@ -479,7 +484,7 @@ public class Match {
 	}
 
 
-	private void runTeleportTask() {
+	/*private void runTeleportTask() {
 		plugin.getServer().getScheduler().scheduleSyncDelayedTask(plugin, new Runnable() {
             public void run() {
             	if(teleportList.size() > 0) {
@@ -497,6 +502,6 @@ public class Match {
 				}
             }
         }, 1L);
-	}
+	}*/
 
 }
