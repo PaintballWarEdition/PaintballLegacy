@@ -408,7 +408,8 @@ public class Match {
 		//left
 		left.add(player);
 		//listname
-		if(plugin.listnames) player.setPlayerListName(null);
+		//duplicated?
+		//if(plugin.listnames) player.setPlayerListName(null);
 		//team?
 		if(getTeam(player) != null) {
 			//0 leben aka tot
@@ -461,8 +462,23 @@ public class Match {
 	}
 	
 	public void frag(final Player target, final Player killer) {
-		//teleport lobby:
 		final Match this2 = this;
+		deaths.put(target, (deaths.get(target)+1));
+		kills.put(killer, (kills.get(killer)+1));
+		//feed
+		HashMap<String, String> vars = new HashMap<String, String>();
+		vars.put("target", target.getName());
+		vars.put("killer", killer.getName());
+		vars.put("points", String.valueOf(plugin.pointsPerKill));
+		vars.put("cash", String.valueOf(plugin.cashPerKill));
+		killer.sendMessage(plugin.t.getString("YOU_KILLED", vars));
+		target.sendMessage(plugin.t.getString("YOU_WERE_KILLED", vars));
+		plugin.nf.feed(target, killer, this2);
+		
+		if(survivors(getTeam(target)) == 0) {
+			matchOver = true;
+		}
+		
 		plugin.getServer().getScheduler().scheduleSyncDelayedTask(plugin, new Runnable() {
 			
 			@Override
@@ -470,18 +486,7 @@ public class Match {
 				plugin.joinLobby(target);
 				//target.teleport(plugin.transformLocation(plugin.getLobbySpawns().get(plugin.getNextLobbySpawn())));
 				//plugin.clearInv(target);
-				//feed
-				HashMap<String, String> vars = new HashMap<String, String>();
-				vars.put("target", target.getName());
-				vars.put("killer", killer.getName());
-				vars.put("points", String.valueOf(plugin.pointsPerKill));
-				vars.put("cash", String.valueOf(plugin.cashPerKill));
-				killer.sendMessage(plugin.t.getString("YOU_KILLED", vars));
-				target.sendMessage(plugin.t.getString("YOU_WERE_KILLED", vars));
-				plugin.nf.feed(target, killer, this2);
 				//points+cash+kill+death
-				deaths.put(target, (deaths.get(target)+1));
-				kills.put(killer, (kills.get(killer)+1));
 				//survivors?->endGame
 				if(survivors(getTeam(target)) == 0) {
 					//unhideAll();
