@@ -485,7 +485,7 @@ public class Paintball extends JavaPlugin{
 		return lobbyspawn;
 	}
 	
-	public void joinLobby(Player player) {
+	public void checks(Player player) {
 		if(!isEmpty(player)) clearInv(player);
 		//gamemode
 		if(!player.getGameMode().equals(GameMode.SURVIVAL)) player.setGameMode(GameMode.SURVIVAL);
@@ -511,6 +511,10 @@ public class Paintball extends JavaPlugin{
 		if(player.isInsideVehicle()) player.leaveVehicle();
 		//listname
 		if(listnames) player.setPlayerListName(null);
+	}
+	
+	public void joinLobby(Player player) {
+		checks(player);
 		//Lobbyteleport
 		player.teleport(transformLocation(getLobbySpawns().get(getNextLobbySpawn())));
 	}
@@ -518,9 +522,7 @@ public class Paintball extends JavaPlugin{
 	public void leaveLobby(Player player, boolean messages, boolean teleport, boolean restoreInventory) {
 		//lobby remove:
 		Lobby.remove(player);
-		//inventory:
-		//clear inventory
-		clearInv(player);
+		checks(player);
 		//restore saved inventory
 		if(restoreInventory && saveInventory) {
 			//PlayerInventory

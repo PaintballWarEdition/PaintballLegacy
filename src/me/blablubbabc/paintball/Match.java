@@ -35,7 +35,7 @@ public class Match {
 	
 	public boolean started;
 	
-	public Match(final Paintball plugin, final int lives, Set<Player> red, Set<Player> blue, Set<Player> spec, Set<Player> random, String arena) {
+	public Match(final Paintball plugin, Set<Player> red, Set<Player> blue, Set<Player> spec, Set<Player> random, String arena) {
 		this.plugin = plugin;
 		this.arena = arena;
 		this.players = new ArrayList<Player>();
@@ -49,11 +49,11 @@ public class Match {
         
 		//TEAMS
 		for(Player p : red) {
-			this.redT.put(p, lives);
+			this.redT.put(p, plugin.lives);
 			players.add(p);
 		}
 		for(Player p : blue) {
-			this.blueT.put(p, lives);
+			this.blueT.put(p, plugin.lives);
 			players.add(p);
 		}
 		this.spec = spec;
@@ -64,22 +64,21 @@ public class Match {
 		}
 		Collections.shuffle(rand);
 		for(Player p : rand) {
+			players.add(p);
 			if(this.blueT.size() < this.redT.size()){
-				this.blueT.put(p, lives);
-				players.add(p);
+				this.blueT.put(p, plugin.lives);
 			}
 			else if(this.redT.size() <= this.blueT.size()){
-				this.redT.put(p, lives);
-				players.add(p);
+				this.redT.put(p, plugin.lives);
 			}
 		}
 		//TELEPORTS
-		ArrayList<LinkedHashMap<String, Object>> bluespawns = plugin.am.getBlueSpawns(arena);
+		/*ArrayList<LinkedHashMap<String, Object>> bluespawns = plugin.am.getBlueSpawns(arena);
 		ArrayList<LinkedHashMap<String, Object>> redspawns = plugin.am.getRedSpawns(arena);
-		ArrayList<LinkedHashMap<String, Object>> specspawns = plugin.am.getSpecSpawns(arena);
+		ArrayList<LinkedHashMap<String, Object>> specspawns = plugin.am.getSpecSpawns(arena);*/
 
 		//teleports+inv+messages:
-		HashMap<String, String> vars = new HashMap<String, String>();
+		//HashMap<String, String> vars = new HashMap<String, String>();
 		
 		for(Player p : players) {
 			//STATS
@@ -88,7 +87,9 @@ public class Match {
 			this.hits.put(p, 0);
 			this.teamattacks.put(p, 0);
 			this.deaths.put(p, 0);
-			//INVENTORY
+			plugin.checks(p);
+			spawnPlayer(p);
+			/*//INVENTORY
 			p.getInventory().setHelmet(Lobby.getTeam(getTeamName(p)).helmet());
 			if(plugin.balls > 0 ) p.getInventory().addItem(new ItemStack(Material.SNOW_BALL, plugin.balls));
 			else if(plugin.balls == -1 ) p.getInventory().addItem(new ItemStack(Material.SNOW_BALL, 10));
@@ -99,10 +100,15 @@ public class Match {
 			//MESSAGE
 			vars.put("team_color", Lobby.getTeam(getTeamName(p)).color().toString());
 			vars.put("team", getTeamName(p));
-			p.sendMessage(plugin.t.getString("BE_IN_TEAM", vars));
+			p.sendMessage(plugin.t.getString("BE_IN_TEAM", vars));*/
 		}
 		
-		int spawn = 0;
+		for(Player p : this.spec) {
+			plugin.checks(p);
+			spawnSpec(p);
+		}
+		
+		/*int spawn = 0;
 		for(Player p : this.redT.keySet()) {
 			//TELEPORT
 			if(spawn > (redspawns.size()-1)) spawn = 0;
@@ -131,7 +137,8 @@ public class Match {
 			vars.put("team_color", Lobby.getTeam(p).color().toString());
 			vars.put("team", Lobby.getTeam(p).getName());
 			p.sendMessage(plugin.t.getString("BE_SPECTATOR", vars));
-		}
+		}*/
+		
 		//TELEPORT THREAD
 		//runTeleportTask();
 		//colorchanges:
@@ -169,7 +176,7 @@ public class Match {
 			    	//lives + start!:
 			    	HashMap<String, String> vars = new HashMap<String, String>();
 					vars.put("lives", String.valueOf(plugin.lives));
-					if(lives == 1) plugin.nf.status(plugin.t.getString("MATCH_START_ONE_LIFE", vars));
+					if(plugin.lives == 1) plugin.nf.status(plugin.t.getString("MATCH_START_ONE_LIFE", vars));
 					else plugin.nf.status(plugin.t.getString("MATCH_START_MORE_LIVES", vars));
 			    }
 			}
@@ -186,26 +193,50 @@ public class Match {
 	
 	//SPAWNS
 	
-	public void spawnRed(Player player) {
-		ArrayList<LinkedHashMap<String, Object>> redspawns = plugin.am.getRedSpawns(arena);
-		if(spawnRed > (redspawns.size()-1)) spawnRed = 0;
-		player.teleport(plugin.transformLocation(redspawns.get(spawnRed)));
-		//teleportList.put(player.getName(), plugin.transformLocation(redspawns.get(spawnRed)));
-		spawnRed++;
+	public void spawnPlayer(Player player) {
+		if(redT.keySet().contains(player)) {
+			ArrayList<LinkedHashMap<String, Object>> redspawns = plugin.am.getRedSpawns(arena);
+			if(spawnRed > (redspawns.size()-1)) spawnRed = 0;
+			player.teleport(plugin.transformLocation(redspawns.get(spawnRed)));
+			//teleportList.put(player.getName(), plugin.transformLocation(redspawns.get(spawnRed)));
+			spawnRed++;
+		} else if(blueT.keySet().contains(player)) {
+			ArrayList<LinkedHashMap<String, Object>> bluespawns = plugin.am.getBlueSpawns(arena);
+			if(spawnBlue > (bluespawns.size()-1)) spawnBlue = 0;
+			player.teleport(plugin.transformLocation(bluespawns.get(spawnBlue)));
+			//teleportList.put(player.getName(), plugin.transformLocation(bluespawns.get(spawnBlue)));
+			spawnBlue++;
+		} else {
+			return;
+		}
+		//INVENTORY
+		player.getInventory().setHelmet(Lobby.getTeam(getTeamName(player)).helmet());
+		if(plugin.balls > 0 ) player.getInventory().addItem(new ItemStack(Material.SNOW_BALL, plugin.balls));
+		else if(plugin.balls == -1 ) player.getInventory().addItem(new ItemStack(Material.SNOW_BALL, 10));
+		if(plugin.grenadeAmount > 0 ) player.getInventory().addItem(new ItemStack(Material.EGG, plugin.grenadeAmount));
+		else if(plugin.grenadeAmount == -1 ) player.getInventory().addItem(new ItemStack(Material.EGG, 10));
+		if(plugin.airstrikeAmount > 0 ) player.getInventory().addItem(new ItemStack(Material.STICK, plugin.airstrikeAmount));
+		else if(plugin.airstrikeAmount == -1 ) player.getInventory().addItem(new ItemStack(Material.STICK, 10));
+		//MESSAGE
+		HashMap<String, String> vars = new HashMap<String, String>();
+		vars.put("team_color", Lobby.getTeam(getTeamName(player)).color().toString());
+		vars.put("team", getTeamName(player));
+		player.sendMessage(plugin.t.getString("BE_IN_TEAM", vars));
 	}
-	public void spawnBlue(Player player) {
-		ArrayList<LinkedHashMap<String, Object>> bluespawns = plugin.am.getBlueSpawns(arena);
-		if(spawnBlue > (bluespawns.size()-1)) spawnBlue = 0;
-		player.teleport(plugin.transformLocation(bluespawns.get(spawnBlue)));
-		//teleportList.put(player.getName(), plugin.transformLocation(bluespawns.get(spawnBlue)));
-		spawnBlue++;
-	}
+	
 	public void spawnSpec(Player player) {
 		ArrayList<LinkedHashMap<String, Object>> specspawns = plugin.am.getSpecSpawns(arena);
 		if(spawnSpec > (specspawns.size()-1)) spawnSpec = 0;
 		player.teleport(plugin.transformLocation(specspawns.get(spawnSpec)));
 		//teleportList.put(player.getName(), plugin.transformLocation(specspawns.get(spawnSpec)));
 		spawnSpec++;
+		//INVENTORY
+		player.getInventory().setHelmet(Lobby.SPECTATE.helmet());
+		//MESSAGE
+		HashMap<String, String> vars = new HashMap<String, String>();
+		vars.put("team_color", Lobby.getTeam(player).color().toString());
+		vars.put("team", Lobby.getTeam(player).getName());
+		player.sendMessage(plugin.t.getString("BE_SPECTATOR", vars));
 	}
 	
 	

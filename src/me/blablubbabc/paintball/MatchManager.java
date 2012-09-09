@@ -116,7 +116,7 @@ public class MatchManager{
 		vars.put("players_overview", info);
 		plugin.nf.status(plugin.t.getString("MATCH_START_PLAYERS_OVERVIEW", vars));
 		
-		Match match = new Match(plugin, plugin.lives, Lobby.RED.getMembers(), Lobby.BLUE.getMembers(), Lobby.SPECTATE.getMembers(), Lobby.RANDOM.getMembers(), arena);
+		Match match = new Match(plugin, Lobby.RED.getMembers(), Lobby.BLUE.getMembers(), Lobby.SPECTATE.getMembers(), Lobby.RANDOM.getMembers(), arena);
 		matches.add(match);
 	}
 	
