@@ -6,6 +6,8 @@ import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Set;
+
+import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
@@ -13,15 +15,16 @@ import org.bukkit.inventory.ItemStack;
 public class Match {
 
 	private Paintball plugin;
-	private LinkedHashMap<Player, Integer> redT = new LinkedHashMap<Player, Integer>();
-	private LinkedHashMap<Player, Integer> blueT = new LinkedHashMap<Player, Integer>();
-	private LinkedHashMap<Player, Integer> shots = new LinkedHashMap<Player, Integer>();
-	private LinkedHashMap<Player, Integer> kills = new LinkedHashMap<Player, Integer>();
-	private LinkedHashMap<Player, Integer> hits = new LinkedHashMap<Player, Integer>();
-	private LinkedHashMap<Player, Integer> teamattacks = new LinkedHashMap<Player, Integer>();
-	private LinkedHashMap<Player, Integer> deaths = new LinkedHashMap<Player, Integer>();
+	private HashMap<Player, Integer> redT = new LinkedHashMap<Player, Integer>();
+	private HashMap<Player, Integer> blueT = new LinkedHashMap<Player, Integer>();
+	private HashMap<Player, Integer> shots = new LinkedHashMap<Player, Integer>();
+	private HashMap<Player, Integer> kills = new LinkedHashMap<Player, Integer>();
+	private HashMap<Player, Integer> hits = new LinkedHashMap<Player, Integer>();
+	private HashMap<Player, Integer> teamattacks = new LinkedHashMap<Player, Integer>();
+	private HashMap<Player, Integer> deaths = new LinkedHashMap<Player, Integer>();
 	private Set<Player> spec;
 	private ArrayList<Player> players;
+	private HashMap<String, Location> playersLoc;
 	private ArrayList<Player> left;
 	private String arena;
 	private boolean matchOver;
@@ -39,6 +42,7 @@ public class Match {
 		this.plugin = plugin;
 		this.arena = arena;
 		this.players = new ArrayList<Player>();
+		this.playersLoc = new HashMap<String, Location>();
 		this.left = new ArrayList<Player>();
 		this.matchOver = false;
 		this.started = false;
@@ -197,15 +201,21 @@ public class Match {
 		if(redT.keySet().contains(player)) {
 			ArrayList<LinkedHashMap<String, Object>> redspawns = plugin.am.getRedSpawns(arena);
 			if(spawnRed > (redspawns.size()-1)) spawnRed = 0;
-			player.teleport(plugin.transformLocation(redspawns.get(spawnRed)));
+			Location loc = plugin.transformLocation(redspawns.get(spawnRed));
+			player.teleport(loc);
 			//teleportList.put(player.getName(), plugin.transformLocation(redspawns.get(spawnRed)));
 			spawnRed++;
+			//afk Location
+			playersLoc.put(player.getName(), loc);
 		} else if(blueT.keySet().contains(player)) {
 			ArrayList<LinkedHashMap<String, Object>> bluespawns = plugin.am.getBlueSpawns(arena);
 			if(spawnBlue > (bluespawns.size()-1)) spawnBlue = 0;
-			player.teleport(plugin.transformLocation(bluespawns.get(spawnBlue)));
+			Location loc = plugin.transformLocation(bluespawns.get(spawnBlue));
+			player.teleport(loc);
 			//teleportList.put(player.getName(), plugin.transformLocation(bluespawns.get(spawnBlue)));
 			spawnBlue++;
+			//afk Location
+			playersLoc.put(player.getName(), loc);
 		} else {
 			return;
 		}
@@ -302,7 +312,7 @@ public class Match {
 		return this.arena;
 	}
 	
-	public int survivors(LinkedHashMap<Player, Integer> team) {
+	public int survivors(HashMap<Player, Integer> team) {
 		int survivors = 0;
 		for(Player p : team.keySet()) {
 			if(team.get(p) > 0) {
@@ -347,12 +357,12 @@ public class Match {
 		else return false;
 	}
 	
-	public LinkedHashMap<Player, Integer> getTeam(Player player) {
+	public HashMap<Player, Integer> getTeam(Player player) {
 		if(redT.keySet().contains(player)) return redT;
 		if(blueT.keySet().contains(player)) return blueT;
 		return null;
 	}
-	public LinkedHashMap<Player, Integer> getEnemyTeam(Player player) {
+	public HashMap<Player, Integer> getEnemyTeam(Player player) {
 		if(redT.keySet().contains(player)) return blueT;
 		if(blueT.keySet().contains(player)) return redT;
 		return null;
@@ -419,7 +429,7 @@ public class Match {
 				matchOver = true;
 				//unhideAll();
 				undoAllColors();
-				plugin.mm.gameEnd(this, getEnemyTeam(player).keySet(), getEnemyTeamName(player), getTeam(player).keySet(), getTeamName(player), spec, shots, hits, deaths, kills, teamattacks);
+				plugin.mm.gameEnd(this, playersLoc, getEnemyTeam(player).keySet(), getEnemyTeamName(player), getTeam(player).keySet(), getTeamName(player), spec, shots, hits, deaths, kills, teamattacks);
 			}
 		} else if(spec.contains(player)) spec.remove(player);
 	}
@@ -479,6 +489,21 @@ public class Match {
 			matchOver = true;
 		}
 		
+		//afk detection on frag
+		if(plugin.afkDetection) {
+			if(target.getLocation().equals(playersLoc.get(target.getName()))) {
+				int afkCount;
+				if(plugin.afkMatchCount.get(target.getName()) != null) {
+					afkCount = plugin.afkMatchCount.get(target.getName());
+				} else {
+					afkCount = 0;
+				}
+				plugin.afkMatchCount.put(target.getName(), afkCount+1);
+			}else {
+				plugin.afkMatchCount.remove(target.getName());
+			}
+		}
+		
 		plugin.getServer().getScheduler().scheduleSyncDelayedTask(plugin, new Runnable() {
 			
 			@Override
@@ -492,7 +517,7 @@ public class Match {
 					//unhideAll();
 					matchOver = true;
 					undoAllColors();
-					plugin.mm.gameEnd(this2, getTeam(killer).keySet(), getTeamName(killer), getTeam(target).keySet(), getTeamName(target), spec, shots, hits, deaths, kills, teamattacks);
+					plugin.mm.gameEnd(this2, playersLoc, getTeam(killer).keySet(), getTeamName(killer), getTeam(target).keySet(), getTeamName(target), spec, shots, hits, deaths, kills, teamattacks);
 				}
 				
 			}
@@ -515,7 +540,7 @@ public class Match {
 			matchOver = true;
 			//unhideAll();
 			undoAllColors();
-			plugin.mm.gameEnd(this, getEnemyTeam(target).keySet(), getEnemyTeamName(target), getTeam(target).keySet(), getTeamName(target), spec, shots, hits, deaths, kills, teamattacks);
+			plugin.mm.gameEnd(this, playersLoc, getEnemyTeam(target).keySet(), getEnemyTeamName(target), getTeam(target).keySet(), getTeamName(target), spec, shots, hits, deaths, kills, teamattacks);
 		}
 	}
 

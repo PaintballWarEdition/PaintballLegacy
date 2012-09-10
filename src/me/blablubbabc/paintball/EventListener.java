@@ -51,9 +51,10 @@ public class EventListener implements Listener{
 	private HashMap<Player, Integer> taskIds;
 	private HashSet<Byte> transparent;
 	private HashMap<Player, String> chatMessages;
+	
 	private HashMap<String, Location> teleportLoc;
 	private HashMap<String, TeleportCause> teleportCause;
-	private boolean taskRunning = false;
+	private boolean teleportTaskRunning = false;
 	private HashMap<String, Location> allowedTeleport;
 
 	public EventListener(Paintball pl) {
@@ -61,6 +62,7 @@ public class EventListener implements Listener{
 		mm = plugin.mm;
 		taskIds = new HashMap<Player, Integer>();
 		chatMessages = new HashMap<Player, String>();
+		
 		teleportLoc = new HashMap<String, Location>();
 		teleportCause = new HashMap<String, TeleportCause>();
 		allowedTeleport = new HashMap<String, Location>();
@@ -76,10 +78,10 @@ public class EventListener implements Listener{
 		transparent.add((byte) 85);
 
 	}
-
+	
 	///////////////////////////////////////////
 	//EVENTS
-
+	
 	@EventHandler(ignoreCancelled = true)
 	public void onPlayerMove(PlayerMoveEvent event) {
 		Player player = event.getPlayer();
@@ -106,14 +108,14 @@ public class EventListener implements Listener{
 				teleportCause
 						.put(event.getPlayer().getName(), event.getCause());
 				event.setCancelled(true);
-				if (!taskRunning)
+				if (!teleportTaskRunning)
 					runTeleportTask();
 			}
 		}
 	}
 
 	private void runTeleportTask() {
-		taskRunning = true;
+		teleportTaskRunning = true;
 		plugin.getServer().getScheduler().scheduleSyncDelayedTask(plugin, new Runnable() {
 			public void run() {
 				if(teleportLoc.size() > 0) {
@@ -134,7 +136,7 @@ public class EventListener implements Listener{
 					if(teleportLoc.size() > 0){
 						runTeleportTask();
 					}else {
-						taskRunning = false;
+						teleportTaskRunning = false;
 					}
 				}
 			}

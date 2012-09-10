@@ -3,27 +3,28 @@ package me.blablubbabc.paintball;
 
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.LinkedHashMap;
 import java.util.Map.Entry;
 import java.util.Set;
+
+import org.bukkit.Location;
 import org.bukkit.entity.Player;
 
 public class MatchManager{
 
 	private Paintball plugin;
-	
+
 	private ArrayList<Match> matches;
 	public boolean countdownStarted;
 	private int taskID;
 	private int count;
-	
+
 	public MatchManager(Paintball pl) {
 		plugin = pl;
 		matches = new ArrayList<Match>();
-		
+
 		countdownStarted = false;
 	}
-	
+
 	public void forceReload() {
 		//closing all matches and kicking all players from lobby:
 		ArrayList<Match> mlist = new ArrayList<Match>();
@@ -32,7 +33,7 @@ public class MatchManager{
 		}
 		for(Match match : mlist) {
 			//match.unhideAll();
-			
+
 			//colors
 			match.undoAllColors();
 			//Teleport all remaining players back to lobby:
@@ -51,7 +52,7 @@ public class MatchManager{
 				}
 				//no stats saving here
 			}
-			
+
 			//close match
 			plugin.am.setNotActive(match.getArena());
 			matches.remove(match);	
@@ -61,7 +62,7 @@ public class MatchManager{
 		//stop countdown:
 		if(countdownStarted) {
 			plugin.getServer().getScheduler().cancelTask(taskID);
-	    	countdownStarted = false;
+			countdownStarted = false;
 		}
 		// Kick all from Lobby:
 		plugin.nf.status(plugin.t.getString("ALL_KICKED_FROM_LOBBY"));
@@ -76,23 +77,23 @@ public class MatchManager{
 			plugin.leaveLobby(p, false, true, true);
 		}
 	}
-	
+
 	public void softCheck() {
 		if(plugin.softreload) {
 			if(countdownStarted) {
 				plugin.getServer().getScheduler().cancelTask(taskID);
-		    	countdownStarted = false;
+				countdownStarted = false;
 			}
 			if(matches.size() <= 0) {
 				plugin.reload();
 			}
 		}
 	}
-	
+
 	public void gameStart() {
 		int players = Lobby.RED.numberWaiting() + Lobby.BLUE.numberWaiting() + Lobby.RANDOM.numberWaiting();
 		String info = plugin.nf.getPlayersOverview();
-		
+
 		for(Player player : Lobby.RANDOM.getMembers()) {
 			Lobby.RANDOM.setPlaying(player);
 		}
@@ -115,27 +116,27 @@ public class MatchManager{
 		vars.put("players", String.valueOf(players));
 		vars.put("players_overview", info);
 		plugin.nf.status(plugin.t.getString("MATCH_START_PLAYERS_OVERVIEW", vars));
-		
+
 		Match match = new Match(plugin, Lobby.RED.getMembers(), Lobby.BLUE.getMembers(), Lobby.SPECTATE.getMembers(), Lobby.RANDOM.getMembers(), arena);
 		matches.add(match);
 	}
-	
-	public void gameEnd(Match match, Set<Player> winners, String win, Set<Player> loosers, String loose, Set<Player> specs, LinkedHashMap<Player, Integer> shots,
-			LinkedHashMap<Player, Integer> hits, LinkedHashMap<Player, Integer> deaths, LinkedHashMap<Player, Integer> kills, LinkedHashMap<Player, Integer> teamattacks) {
+
+	public void gameEnd(Match match, HashMap<String, Location> playersLoc, Set<Player> winners, String win, Set<Player> loosers, String loose, Set<Player> specs, HashMap<Player, Integer> shots,
+			HashMap<Player, Integer> hits, HashMap<Player, Integer> deaths, HashMap<Player, Integer> kills, HashMap<Player, Integer> teamattacks) {
 		//stats etc
 		for(Player p : winners) {
 			//stats
 			plugin.pm.addWins(p.getName(), 1);
 			plugin.pm.addPoints(p.getName(), (plugin.pointsPerRound + plugin.pointsPerWin));
 			plugin.pm.addMoney(p.getName(), (plugin.cashPerRound + plugin.cashPerWin));
-			
+
 		}
 		for(Player p : loosers) {
 			//stats
 			plugin.pm.addLooses(p.getName(), 1);
 			plugin.pm.addPoints(p.getName(), plugin.pointsPerRound);
 			plugin.pm.addMoney(p.getName(), plugin.cashPerRound);
-			
+
 		}
 		//Teleport all remaining players back to lobby:
 		for(Player p : match.getAll()) {
@@ -145,6 +146,33 @@ public class MatchManager{
 				Lobby.getTeam(p).setWaiting(p);
 				//noch im match:
 				if(match.isSurvivor(p)){
+					
+					//afk detection on match end
+					//clearing players from hashmap which didn't play the during the last match
+					for(String afkP : plugin.afkMatchCount.keySet()) {
+						if(plugin.getServer().getPlayer(afkP) != null) {
+							if(!playersLoc.containsKey(afkP)) {
+								plugin.afkMatchCount.remove(afkP);
+							}
+						} else {
+							plugin.afkMatchCount.remove(afkP);
+						}
+					}
+					
+					if(plugin.afkDetection) {
+						if(p.getLocation().equals(playersLoc.get(p))) {
+							int afkCount;
+							if(plugin.afkMatchCount.get(p.getName()) != null) {
+								afkCount = plugin.afkMatchCount.get(p.getName());
+							} else {
+								afkCount = 0;
+							}
+							plugin.afkMatchCount.put(p.getName(), afkCount+1);
+						}else {
+							plugin.afkMatchCount.remove(p.getName());
+						}
+					}
+					
 					//teleport is survivor:
 					plugin.joinLobby(p);
 				}
@@ -186,7 +214,7 @@ public class MatchManager{
 			plugin.pm.addPoints(e.getKey().getName(), ( e.getValue() * plugin.pointsPerTeamattack ));
 			teamattacksAll += e.getValue();
 		}
-		
+
 		//arena stats:
 		plugin.am.addShots(match.getArena(), shotsAll);
 		plugin.am.addRounds(match.getArena(), 1);
@@ -195,7 +223,7 @@ public class MatchManager{
 		plugin.stats.addRounds(1);
 		plugin.stats.addShots(shotsAll);
 		plugin.stats.addKills(killsAll);
-		
+
 		//save:
 		plugin.pm.saveData();
 		plugin.stats.saveData();
@@ -210,15 +238,15 @@ public class MatchManager{
 		vars.put("looser", loose);
 		vars.put("looser_size", String.valueOf(loosers.size()));
 		plugin.nf.text(plugin.t.getString("WINNER_TEAM", vars));
-		
+
 		vars.put("points", String.valueOf(plugin.pointsPerWin));
 		vars.put("cash", String.valueOf(plugin.cashPerWin));
 		plugin.nf.text(plugin.t.getString("WINNER_BONUS", vars));
-		
+
 		vars.put("points", String.valueOf(plugin.pointsPerRound));
 		vars.put("cash", String.valueOf(plugin.cashPerRound));
 		plugin.nf.text(plugin.t.getString("ROUND_BONUS", vars));
-		
+
 		plugin.nf.text(plugin.t.getString("MATCH_STATS"));
 		vars.put("shots", String.valueOf(shotsAll));
 		vars.put("hits", String.valueOf(hitsAll));
@@ -229,30 +257,30 @@ public class MatchManager{
 		plugin.nf.text(plugin.t.getString("MATCH_TEAMATTACKS", vars));
 		plugin.nf.text(plugin.t.getString("MATCH_KILLS", vars));
 		plugin.nf.text("-------------------------------------------------");
-		
+
 		//close match
 		plugin.am.setNotActive(match.getArena());
 		matches.remove(match);
 		//ready? countdown?
 		plugin.nf.status(plugin.t.getString("CHOOSE_TEAM"));
-		
+
 		//players:
 		plugin.nf.players();
-		
+
 		if(ready().equalsIgnoreCase(plugin.t.getString("READY"))) {
 			countdown(plugin.countdown, plugin.countdownInit);
 		} else {
 			plugin.nf.status(ready());
 		}
 	}
-	
+
 	public Match getMatch(Player player) {
 		for(Match m : matches) {
 			if(m.inMatch(player)) return m;
 		}
 		return null;
 	}
-	
+
 	public String ready() {
 		//softreload-check:
 		softCheck();
@@ -268,7 +296,7 @@ public class MatchManager{
 			return plugin.t.getString("READY");
 		} else return plugin.t.getString("NOT_ENOUGH_PLAYERS");
 	}
-	
+
 	public void countdown(int number, int initial) {
 		if(!plugin.mm.countdownStarted && plugin.active) {
 			plugin.nf.status(plugin.t.getString("NEW_MATCH_STARTS_SOON"));
@@ -279,32 +307,32 @@ public class MatchManager{
 				@Override
 				public void run() {
 					if(( count % 10 ) == 0 && count > 10 )
-				    {
-				        //if above 10 and divisable by 10 message here
+					{
+						//if above 10 and divisable by 10 message here
 						plugin.nf.counter(count);
-				    }
-				 
-				    if( count < 10 && count > 0)
-				    {
-				        //if below 10 message here (regardless of divisibility)
-				    	plugin.nf.counter(count);
-				    }
-				    count--;
-				    if( count < 1) {
-				    	plugin.getServer().getScheduler().cancelTask(taskID);
-				    	countdownStarted = false;
-				    	String status = ready();
-				    	if(status.equalsIgnoreCase(plugin.t.getString("READY"))) {
-				    		//start match
-				    		gameStart();
-				    	} else {
-				    		plugin.nf.status(status);
-				    	}
-				    }
+					}
+
+					if( count < 10 && count > 0)
+					{
+						//if below 10 message here (regardless of divisibility)
+						plugin.nf.counter(count);
+					}
+					count--;
+					if( count < 1) {
+						plugin.getServer().getScheduler().cancelTask(taskID);
+						countdownStarted = false;
+						String status = ready();
+						if(status.equalsIgnoreCase(plugin.t.getString("READY"))) {
+							//start match
+							gameStart();
+						} else {
+							plugin.nf.status(status);
+						}
+					}
 				}
-				
+
 			}, (long) (20*initial), 20L);
 		}
 	}
-	
+
 }

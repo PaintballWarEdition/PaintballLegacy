@@ -2,6 +2,7 @@ package me.blablubbabc.paintball;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.LinkedHashMap;
 import me.blablubbabc.BlaDB.BlaDB;
 import me.blablubbabc.paintball.Metrics.Graph;
@@ -27,6 +28,9 @@ public class Paintball extends JavaPlugin{
 	public boolean active;
 	public boolean softreload;
 	public int lobbyspawn;
+	
+	//Public afk detection
+	public HashMap <String, Integer> afkMatchCount;
 	
 	//ChatColors
 	public ChatColor gray = ChatColor.GRAY;
@@ -66,6 +70,11 @@ public class Paintball extends JavaPlugin{
 	public int meleeDamage;
 	public boolean autoLobby;
 	public boolean teleportFix;
+	//unused
+	public boolean autoSpecLobby;
+	public boolean autoSpecDeadPlayers;
+	public int repsawns;
+	public boolean afkDetection;
 	
 	//lobby join checks
 	public boolean checkInventory;
@@ -312,6 +321,7 @@ public class Paintball extends JavaPlugin{
 		active = true;
 		softreload = false;
 		lobbyspawn = 0;
+		afkMatchCount = new HashMap<String, Integer>();
 		
 		//autoLobby
 		if(autoLobby) {
