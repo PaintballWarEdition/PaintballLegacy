@@ -98,7 +98,7 @@ public class EventListener implements Listener{
 	//TEST
 	@EventHandler
 	public void onPlayerTeleport(PlayerTeleportEvent event) {
-		if(plugin.teleportFix) {
+		if(plugin.teleportFix && Lobby.getTeam(event.getPlayer()) != null) {
 			if (allowedTeleport.containsKey(event.getPlayer().getName())
 					&& allowedTeleport.get(event.getPlayer().getName()).equals(
 							event.getTo())) {

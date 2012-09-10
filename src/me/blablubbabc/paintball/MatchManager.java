@@ -148,18 +148,18 @@ public class MatchManager{
 				if(match.isSurvivor(p)){
 					
 					//afk detection on match end
-					//clearing players from hashmap which didn't play the during the last match
-					for(String afkP : plugin.afkMatchCount.keySet()) {
-						if(plugin.getServer().getPlayer(afkP) != null) {
-							if(!playersLoc.containsKey(afkP)) {
+					if(plugin.afkDetection) {
+						//clearing players from hashmap which didn't play the during the last match
+						for(String afkP : plugin.afkMatchCount.keySet()) {
+							if(plugin.getServer().getPlayer(afkP) != null) {
+								if(!playersLoc.containsKey(afkP)) {
+									plugin.afkMatchCount.remove(afkP);
+								}
+							} else {
 								plugin.afkMatchCount.remove(afkP);
 							}
-						} else {
-							plugin.afkMatchCount.remove(afkP);
 						}
-					}
-					
-					if(plugin.afkDetection) {
+						
 						if(p.getLocation().equals(playersLoc.get(p))) {
 							int afkCount;
 							if(plugin.afkMatchCount.get(p.getName()) != null) {
@@ -171,6 +171,7 @@ public class MatchManager{
 						}else {
 							plugin.afkMatchCount.remove(p.getName());
 						}
+						
 					}
 					
 					//teleport is survivor:
