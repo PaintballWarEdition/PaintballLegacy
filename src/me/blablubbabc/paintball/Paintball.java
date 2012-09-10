@@ -4,6 +4,8 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
+import java.util.Map.Entry;
+
 import me.blablubbabc.BlaDB.BlaDB;
 import me.blablubbabc.paintball.Metrics.Graph;
 import org.bukkit.ChatColor;
@@ -11,6 +13,7 @@ import org.bukkit.GameMode;
 import org.bukkit.Location;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.entity.Player;
+import org.bukkit.event.player.PlayerTeleportEvent.TeleportCause;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.bukkit.potion.PotionEffect;
@@ -424,6 +427,26 @@ public class Paintball extends JavaPlugin{
 	}
 
 	public void onDisable(){
+		//Teleports
+		if(teleportFix) {
+			teleportFix = false;
+			for(Entry<String, Location> entryLoc : listener.teleportLoc.entrySet()) {
+				String name = entryLoc.getKey();
+				Location loc = entryLoc.getValue();
+				TeleportCause cause = listener.teleportCause.get(name);
+				Player p = getServer().getPlayer(name);
+
+				if(loc != null && cause != null && p != null) {
+					//listener.allowedTeleport.put(name, loc);
+					p.teleport(loc, cause);
+				}
+				//listener.teleportLoc.remove(name);
+				//listener.teleportCause.remove(name);
+			}
+			listener.teleportLoc.clear();
+			listener.teleportCause.clear();
+		}
+		
 		if(mm != null) mm.forceReload();
 		log("Disabled!");
 	}

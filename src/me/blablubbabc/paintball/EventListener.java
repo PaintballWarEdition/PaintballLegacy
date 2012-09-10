@@ -52,8 +52,8 @@ public class EventListener implements Listener{
 	private HashSet<Byte> transparent;
 	private HashMap<Player, String> chatMessages;
 	
-	private HashMap<String, Location> teleportLoc;
-	private HashMap<String, TeleportCause> teleportCause;
+	public HashMap<String, Location> teleportLoc;
+	public HashMap<String, TeleportCause> teleportCause;
 	private boolean teleportTaskRunning = false;
 	private HashMap<String, Location> allowedTeleport;
 
