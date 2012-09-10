@@ -73,11 +73,12 @@ public class Paintball extends JavaPlugin{
 	public int meleeDamage;
 	public boolean autoLobby;
 	public boolean teleportFix;
+	public boolean afkDetection;
+	public int afkMatchAmount;
 	//unused
 	public boolean autoSpecLobby;
 	public boolean autoSpecDeadPlayers;
 	public int repsawns;
-	public boolean afkDetection;
 	
 	//lobby join checks
 	public boolean checkInventory;
@@ -165,6 +166,8 @@ public class Paintball extends JavaPlugin{
 		
 		
 		getConfig().options().header("Use a value of -1 to give the players infinite balls or extras.");
+		if(getConfig().get("Paintball.AFK Detection.enabled") == null)getConfig().set("Paintball.AFK Detection.enabled", true);
+		if(getConfig().get("Paintball.AFK Detection.Amount of matches") == null)getConfig().set("Paintball.AFK Detection.Amount of matches", 3);
 		if(getConfig().get("Paintball.TeleportFix") == null)getConfig().set("Paintball.TeleportFix", true);
 		if(getConfig().get("Paintball.Language") == null)getConfig().set("Paintball.Language", "enUS");
 		if(getConfig().get("Paintball.No Permissions") == null)getConfig().set("Paintball.No Permissions", false);
@@ -238,6 +241,9 @@ public class Paintball extends JavaPlugin{
 		autoLobby = getConfig().getBoolean("Paintball.Auto Lobby", false);
 		allowedCommands = (ArrayList<String>) getConfig().getList("Paintball.Allowed Commands", allowedCommands);
 		teleportFix = getConfig().getBoolean("Paintball.TeleportFix", false);
+		afkDetection = getConfig().getBoolean("Paintball.AFK Detection.enabled", true);
+		afkMatchAmount = getConfig().getInt("Paintball.AFK Detection.Amount of matches", 3);
+		if(afkMatchAmount < 1) afkMatchAmount = 1;
 		
 		lives = getConfig().getInt("Paintball.Match.Lives", 1);
 		if(lives < 1) lives = 1;

@@ -126,4 +126,14 @@ public class Newsfeeder {
 			if(!Lobby.toggledFeed(player)) player.sendMessage(plugin.t.getString("PLAYER_DIED", vars));
 		}
 	}
+	
+	public void afkLeave(Player target, Match match) {
+		HashMap<String, String> vars = new HashMap<String, String>();
+		vars.put("plugin", pluginName);
+		vars.put("player_color", Lobby.getTeam(match.getTeamName(target)).color().toString());
+		vars.put("player", target.getName());
+		for(Player player : Lobby.LOBBY.getMembers()) {
+			if(!Lobby.toggledFeed(player)) player.sendMessage(plugin.t.getString("PLAYER_AFK", vars));
+		}
+	}
 }

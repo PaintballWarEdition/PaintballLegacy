@@ -138,6 +138,7 @@ public class MatchManager{
 			plugin.pm.addMoney(p.getName(), plugin.cashPerRound);
 
 		}
+
 		//Teleport all remaining players back to lobby:
 		for(Player p : match.getAll()) {
 			//if is a remaining player:
@@ -146,20 +147,9 @@ public class MatchManager{
 				Lobby.getTeam(p).setWaiting(p);
 				//noch im match:
 				if(match.isSurvivor(p)){
-					
-					//afk detection on match end
-					if(plugin.afkDetection) {
-						//clearing players from hashmap which didn't play the during the last match
-						for(String afkP : plugin.afkMatchCount.keySet()) {
-							if(plugin.getServer().getPlayer(afkP) != null) {
-								if(!playersLoc.containsKey(afkP)) {
-									plugin.afkMatchCount.remove(afkP);
-								}
-							} else {
-								plugin.afkMatchCount.remove(afkP);
-							}
-						}
-						
+
+					//afk detection update on match end
+					if(plugin.afkDetection && !match.isSpec(p)) {
 						if(p.getLocation().equals(playersLoc.get(p))) {
 							int afkCount;
 							if(plugin.afkMatchCount.get(p.getName()) != null) {
@@ -171,15 +161,37 @@ public class MatchManager{
 						}else {
 							plugin.afkMatchCount.remove(p.getName());
 						}
-						
+
 					}
-					
+
 					//teleport is survivor:
 					plugin.joinLobby(p);
 				}
 			}
 		}
-		// Das ist eine Änderung, die du bestimmt später noch finden wirst, oder?
+
+		//afk detection clean up and consequences:
+		if(plugin.afkDetection) {
+			//clearing players from hashmap which didn't play the during the last match or can't be found or left the match
+			for(String afkP : plugin.afkMatchCount.keySet()) {
+				Player player = plugin.getServer().getPlayer(afkP);
+				if(player != null && !match.hasLeft(player)) {
+					if(!playersLoc.containsKey(afkP)) {
+						plugin.afkMatchCount.remove(afkP);
+					} else if(plugin.afkMatchCount.get(afkP) >= plugin.afkMatchAmount){
+						//afk detection consequences after being afk:
+						plugin.afkMatchCount.remove(afkP);
+						Lobby.getTeam(player).removeMember(player);
+						plugin.nf.afkLeave(player, match);
+						player.sendMessage(plugin.t.getString("YOU_LEFT_TEAM"));
+					}
+				} else {
+					plugin.afkMatchCount.remove(afkP);
+				}
+			}
+		}
+
+		// Das ist eine Änderung, die du bestimmt später noch finden wirst, oder? <-- hä? woher kommt die?
 		//shots
 		int shotsAll = 0;
 		for(Entry<Player, Integer> e : shots.entrySet()) {
