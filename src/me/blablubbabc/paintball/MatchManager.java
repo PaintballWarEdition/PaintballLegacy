@@ -150,7 +150,7 @@ public class MatchManager{
 
 					//afk detection update on match end
 					if(plugin.afkDetection && !match.isSpec(p)) {
-						if(p.getLocation().equals(playersLoc.get(p))) {
+						if(p.getLocation().getWorld().equals(playersLoc.get(p.getName()).getWorld()) && p.getLocation().distance(playersLoc.get(p.getName())) <= plugin.afkRadius && shots.get(p) == 0 && kills.get(p) == 0) {
 							int afkCount;
 							if(plugin.afkMatchCount.get(p.getName()) != null) {
 								afkCount = plugin.afkMatchCount.get(p.getName());
@@ -161,7 +161,6 @@ public class MatchManager{
 						}else {
 							plugin.afkMatchCount.remove(p.getName());
 						}
-
 					}
 
 					//teleport is survivor:

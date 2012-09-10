@@ -4,8 +4,6 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
-import java.util.Map.Entry;
-
 import me.blablubbabc.BlaDB.BlaDB;
 import me.blablubbabc.paintball.Metrics.Graph;
 import org.bukkit.ChatColor;
@@ -13,7 +11,6 @@ import org.bukkit.GameMode;
 import org.bukkit.Location;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.entity.Player;
-import org.bukkit.event.player.PlayerTeleportEvent.TeleportCause;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.bukkit.potion.PotionEffect;
@@ -74,6 +71,7 @@ public class Paintball extends JavaPlugin{
 	public boolean autoLobby;
 	public boolean teleportFix;
 	public boolean afkDetection;
+	public int afkRadius;
 	public int afkMatchAmount;
 	//unused
 	public boolean autoSpecLobby;
@@ -167,7 +165,8 @@ public class Paintball extends JavaPlugin{
 		
 		getConfig().options().header("Use a value of -1 to give the players infinite balls or extras.");
 		if(getConfig().get("Paintball.AFK Detection.enabled") == null)getConfig().set("Paintball.AFK Detection.enabled", true);
-		if(getConfig().get("Paintball.AFK Detection.Amount of matches") == null)getConfig().set("Paintball.AFK Detection.Amount of matches", 3);
+		if(getConfig().get("Paintball.AFK Detection.Movement Radius around Spawn (keep in mind: knockbacks, pushing, waterflows, falling, etc)") == null)getConfig().set("Paintball.AFK Detection.Movement Radius around Spawn (keep in mind: knockbacks, pushing, waterflows, falling, etc)", 5);
+		if(getConfig().get("Paintball.AFK Detection.Amount of Matches") == null)getConfig().set("Paintball.AFK Detection.Amount of Matches", 3);
 		if(getConfig().get("Paintball.TeleportFix") == null)getConfig().set("Paintball.TeleportFix", true);
 		if(getConfig().get("Paintball.Language") == null)getConfig().set("Paintball.Language", "enUS");
 		if(getConfig().get("Paintball.No Permissions") == null)getConfig().set("Paintball.No Permissions", false);
@@ -242,8 +241,10 @@ public class Paintball extends JavaPlugin{
 		allowedCommands = (ArrayList<String>) getConfig().getList("Paintball.Allowed Commands", allowedCommands);
 		teleportFix = getConfig().getBoolean("Paintball.TeleportFix", false);
 		afkDetection = getConfig().getBoolean("Paintball.AFK Detection.enabled", true);
-		afkMatchAmount = getConfig().getInt("Paintball.AFK Detection.Amount of matches", 3);
+		afkMatchAmount = getConfig().getInt("Paintball.AFK Detection.Amount of Matches", 3);
 		if(afkMatchAmount < 1) afkMatchAmount = 1;
+		afkRadius = getConfig().getInt("Paintball.AFK Detection.Movement Radius around Spawn (keep in mind: knockbacks, pushing, waterflows, falling, etc)", 5);
+		if(afkRadius < 1) afkRadius = 1;
 		
 		lives = getConfig().getInt("Paintball.Match.Lives", 1);
 		if(lives < 1) lives = 1;
@@ -433,8 +434,8 @@ public class Paintball extends JavaPlugin{
 	}
 
 	public void onDisable(){
-		//Teleports
-		if(teleportFix) {
+		//Teleports TEST
+		/*if(teleportFix) {
 			teleportFix = false;
 			for(Entry<String, Location> entryLoc : listener.teleportLoc.entrySet()) {
 				String name = entryLoc.getKey();
@@ -451,7 +452,7 @@ public class Paintball extends JavaPlugin{
 			}
 			listener.teleportLoc.clear();
 			listener.teleportCause.clear();
-		}
+		}*/
 		
 		if(mm != null) mm.forceReload();
 		log("Disabled!");
