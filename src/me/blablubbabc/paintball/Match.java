@@ -491,7 +491,7 @@ public class Match {
 		
 		//afk detection on frag
 		if(plugin.afkDetection) {
-			if(target.getLocation().getWorld().equals(playersLoc.get(target.getName()).getWorld()) && target.getLocation().distance(playersLoc.get(target.getName())) <= plugin.afkRadius) {
+			if(target.getLocation().getWorld().equals(playersLoc.get(target.getName()).getWorld()) && target.getLocation().distance(playersLoc.get(target.getName())) <= plugin.afkRadius && shots.get(target) == 0 && kills.get(target) == 0) {
 				int afkCount;
 				if(plugin.afkMatchCount.get(target.getName()) != null) {
 					afkCount = plugin.afkMatchCount.get(target.getName());

@@ -172,7 +172,8 @@ public class MatchManager{
 		//afk detection clean up and consequences:
 		if(plugin.afkDetection) {
 			//clearing players from hashmap which didn't play the during the last match or can't be found or left the match
-			for(String afkP : plugin.afkMatchCount.keySet()) {
+			Set<String> entries = plugin.afkMatchCount.keySet();
+			for(String afkP : entries) {
 				Player player = plugin.getServer().getPlayer(afkP);
 				if(player != null && !match.hasLeft(player)) {
 					if(!playersLoc.containsKey(afkP)) {
