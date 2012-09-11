@@ -95,7 +95,7 @@ public class EventListener implements Listener{
 			}
 		}
 	}
-	//TEST
+	
 	@EventHandler
 	public void onPlayerTeleport(PlayerTeleportEvent event) {
 		if(plugin.teleportFix && Lobby.getTeam(event.getPlayer()) != null) {

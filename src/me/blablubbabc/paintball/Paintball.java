@@ -73,10 +73,10 @@ public class Paintball extends JavaPlugin{
 	public boolean afkDetection;
 	public int afkRadius;
 	public int afkMatchAmount;
-	//unused
 	public boolean autoSpecLobby;
-	public boolean autoSpecDeadPlayers;
-	public int repsawns;
+	//unused
+	//public boolean autoSpecDeadPlayers;
+	//public int repsawns;
 	
 	//lobby join checks
 	public boolean checkInventory;
@@ -185,6 +185,7 @@ public class Paintball extends JavaPlugin{
 		if(getConfig().get("Paintball.Colored chatnames") == null)getConfig().set("Paintball.Colored chatnames", true);
 		if(getConfig().get("Paintball.Only Random") == null)getConfig().set("Paintball.Only Random", false);
 		if(getConfig().get("Paintball.Auto Random") == null)getConfig().set("Paintball.Auto Random", true);
+		if(getConfig().get("Paintball.Auto Spec Lobby") == null)getConfig().set("Paintball.Auto Spec Lobby", false);
 		if(getConfig().get("Paintball.Allowed Commands") == null)getConfig().set("Paintball.Allowed Commands", allowedCommands);
 		//lobby join checks
 		if(getConfig().get("Paintball.Lobby join.Checks.Inventory") == null)getConfig().set("Paintball.Lobby join.Checks.Inventory", true);
@@ -267,6 +268,7 @@ public class Paintball extends JavaPlugin{
 		chatnames = getConfig().getBoolean("Paintball.Colored chatnames", true);
 		onlyRandom = getConfig().getBoolean("Paintball.Only Random", false);
 		autoRandom = getConfig().getBoolean("Paintball.Auto Random", true);
+		autoSpecLobby = getConfig().getBoolean("Paintball.Auto Spec Lobby", false);
 		
 		//shop:
 		shop = getConfig().getBoolean("Paintball.Shop.enabled", true);

@@ -91,6 +91,17 @@ public class MatchManager{
 	}
 
 	public void gameStart() {
+		//auto spec lobby
+		for(Player player : Lobby.LOBBY.getMembers()) {
+			if(!Lobby.inTeam(player)) {
+				Lobby.SPECTATE.addMember(player);
+				HashMap<String, String> vars = new HashMap<String, String>();
+				vars.put("color_team", Lobby.SPECTATE.color().toString());
+				vars.put("team", Lobby.SPECTATE.getName());
+				player.sendMessage(plugin.t.getString("YOU_JOINED_SPECTATORS", vars));
+			}
+		}
+		
 		int players = Lobby.RED.numberWaiting() + Lobby.BLUE.numberWaiting() + Lobby.RANDOM.numberWaiting();
 		String info = plugin.nf.getPlayersOverview();
 
