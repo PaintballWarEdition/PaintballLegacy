@@ -93,7 +93,7 @@ public class MatchManager{
 	public void gameStart() {
 		//auto spec lobby
 		for(Player player : Lobby.LOBBY.getMembers()) {
-			if(!Lobby.inTeam(player)) {
+			if(Lobby.getTeam(player).equals(Lobby.LOBBY)) {
 				Lobby.SPECTATE.addMember(player);
 				HashMap<String, String> vars = new HashMap<String, String>();
 				vars.put("color_team", Lobby.SPECTATE.color().toString());

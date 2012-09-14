@@ -526,6 +526,21 @@ public class Match {
 	}
 	
 	public void death(final Player target) {
+		//afk detection on frag
+		if(plugin.afkDetection) {
+			if(target.getLocation().getWorld().equals(playersLoc.get(target.getName()).getWorld()) && target.getLocation().distance(playersLoc.get(target.getName())) <= plugin.afkRadius && shots.get(target) == 0 && kills.get(target) == 0) {
+				int afkCount;
+				if(plugin.afkMatchCount.get(target.getName()) != null) {
+					afkCount = plugin.afkMatchCount.get(target.getName());
+				} else {
+					afkCount = 0;
+				}
+				plugin.afkMatchCount.put(target.getName(), afkCount+1);
+			}else {
+				plugin.afkMatchCount.remove(target.getName());
+			}
+		}
+		
 		plugin.joinLobby(target);
 		//feed
 		target.sendMessage(plugin.t.getString("YOU_DIED"));
