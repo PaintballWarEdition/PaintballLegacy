@@ -279,9 +279,11 @@ public class EventListener implements Listener{
 						player.sendMessage(plugin.t.getString("GRENADE_THROW"));
 					}
 				}
-			} else {
-				event.setCancelled(true);
-				return;
+			} else if(event.getClickedBlock() != null && !event.getClickedBlock().getType().equals(Material.NOTE_BLOCK)) {
+				if(!player.isOp() && !player.hasPermission("paintball.admin")) {
+					event.setCancelled(true);
+					return;
+				}
 			}
 		}
 	}
@@ -360,7 +362,9 @@ public class EventListener implements Listener{
 	public void onPlayerBreak(BlockBreakEvent event) {
 		Player player = event.getPlayer();
 		if(Lobby.getTeam(player) != null) {
-			if(!player.isOp() && !player.hasPermission("paintball.admin")) event.setCancelled(true);
+			if(!player.isOp() && !player.hasPermission("paintball.admin")) {
+				event.setCancelled(true);
+			}
 		}
 	}
 
