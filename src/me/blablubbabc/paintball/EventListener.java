@@ -98,24 +98,26 @@ public class EventListener implements Listener{
 	
 	@EventHandler
 	public void onPlayerTeleport(PlayerTeleportEvent event) {
-		if(plugin.teleportFix && Lobby.getTeam(event.getPlayer()) != null) {
-			if (allowedTeleport.containsKey(event.getPlayer().getName())
-					&& allowedTeleport.get(event.getPlayer().getName()).equals(
-							event.getTo())) {
+		if(plugin.teleportFix && (Lobby.getTeam(event.getPlayer()) != null)) {
+			if(allowedTeleport.containsKey(event.getPlayer().getName()) 
+					&& allowedTeleport.get(event.getPlayer().getName()).equals(event.getTo())) {
 				allowedTeleport.remove(event.getPlayer().getName());
 			} else {
 				teleportLoc.put(event.getPlayer().getName(), event.getTo());
 				teleportCause
 						.put(event.getPlayer().getName(), event.getCause());
 				event.setCancelled(true);
-				if (!teleportTaskRunning)
+				
+				if (!teleportTaskRunning) {
+					teleportTaskRunning = true;
 					runTeleportTask();
+				}
 			}
 		}
 	}
+	
 
 	private void runTeleportTask() {
-		teleportTaskRunning = true;
 		plugin.getServer().getScheduler().scheduleSyncDelayedTask(plugin, new Runnable() {
 			public void run() {
 				if(teleportLoc.size() > 0) {
@@ -127,12 +129,13 @@ public class EventListener implements Listener{
 					TeleportCause cause = teleportCause.get(name);
 					Player p = plugin.getServer().getPlayer(name);
 
+					teleportLoc.remove(name);
+					teleportCause.remove(name);
+					
 					if(loc != null && cause != null && p != null) {
 						allowedTeleport.put(name, loc);
 						p.teleport(loc, cause);
 					}
-					teleportLoc.remove(name);
-					teleportCause.remove(name);
 					if(teleportLoc.size() > 0){
 						runTeleportTask();
 					}else {

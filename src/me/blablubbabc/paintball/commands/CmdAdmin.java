@@ -189,6 +189,7 @@ public class CmdAdmin {
 				plugin.am.setNext(arena);
 				HashMap<String, String> vars = new HashMap<String, String>();
 				vars.put("plugin", plugin.nf.pluginName);
+				vars.put("arena", arena);
 				plugin.nf.text(plugin.t.getString("NEXT_ARENA_SET", vars));
 				return true;
 			}
