@@ -1,19 +1,18 @@
 package me.blablubbabc.paintball;
 
 import java.io.File;
-import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.util.HashMap;
 import java.util.Scanner;
 import org.bukkit.ChatColor;
-import org.bukkit.plugin.java.JavaPlugin;
+import org.bukkit.plugin.Plugin;
 
 public class Translator {
 	public boolean success;
 	
-	private JavaPlugin plugin;
+	private Plugin plugin;
 	private File path;
 	private File localisationFile;
 	private File def_file;
@@ -21,7 +20,7 @@ public class Translator {
 	private HashMap<String, String> def_language;
 	private boolean use_def;
 	
-	public Translator(JavaPlugin plugin, String filename) {
+	public Translator(Plugin plugin, String filename) {
 		this.use_def = false;
 		this.success = false;
 		this.plugin = plugin;
@@ -155,6 +154,8 @@ public class Translator {
 		HashMap<String, String> language = new HashMap<String, String>();
 		try {
 			Scanner scanner = new Scanner(file);
+			//TEST
+			int line_skipped = 0;
 			int line = 0;
 			while(scanner.hasNextLine()) {
 				line++;
@@ -165,10 +166,12 @@ public class Translator {
 				}
 				//Leerzeile?
 				if(text.isEmpty()) {
+					line_skipped++;
 					continue;
 				}
 				//comment-zeile?
 				if(text.startsWith("#")) {
+					line_skipped++;
 					continue;
 				}
 				
@@ -217,8 +220,11 @@ public class Translator {
 				//Add to translation map:
 				language.put(key, value);
 			}
+			//TEST
+			System.out.println("Scanned lines: "+line);
+			System.out.println("Skipped lines: "+line_skipped);
 			return language;
-		} catch (FileNotFoundException e) {
+		} catch (Exception e) {
 			log("ERROR: Couldn't load the specified language file.");
 			e.printStackTrace();
 			return null;

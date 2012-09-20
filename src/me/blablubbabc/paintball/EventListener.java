@@ -51,7 +51,7 @@ public class EventListener implements Listener{
 	private HashMap<Player, Integer> taskIds;
 	private HashSet<Byte> transparent;
 	private HashMap<Player, String> chatMessages;
-	
+
 	public HashMap<String, Location> teleportLoc;
 	public HashMap<String, TeleportCause> teleportCause;
 	private boolean teleportTaskRunning = false;
@@ -62,7 +62,7 @@ public class EventListener implements Listener{
 		mm = plugin.mm;
 		taskIds = new HashMap<Player, Integer>();
 		chatMessages = new HashMap<Player, String>();
-		
+
 		teleportLoc = new HashMap<String, Location>();
 		teleportCause = new HashMap<String, TeleportCause>();
 		allowedTeleport = new HashMap<String, Location>();
@@ -78,24 +78,27 @@ public class EventListener implements Listener{
 		transparent.add((byte) 85);
 
 	}
-	
+
 	///////////////////////////////////////////
 	//EVENTS
-	
+
 	@EventHandler(ignoreCancelled = true)
 	public void onPlayerMove(PlayerMoveEvent event) {
 		Player player = event.getPlayer();
 		if(mm.getMatch(player) != null) {
 			Match match = mm.getMatch(player);
 			if(!match.started) {
-				if(event.getFrom().getX() != event.getTo().getX() || event.getFrom().getZ() != event.getTo().getZ()) {
-					event.setCancelled(true);
-					//player.teleport(event.getFrom());
+				//To not cancle the teleport event from players not yet teleported.
+				if(!allowedTeleport.containsKey(event.getPlayer().getName())) {
+					if(event.getFrom().getX() != event.getTo().getX() || event.getFrom().getZ() != event.getTo().getZ()) {
+						event.setCancelled(true);
+						//player.teleport(event.getFrom());
+					}
 				}
 			}
 		}
 	}
-	
+
 	@EventHandler
 	public void onPlayerTeleport(PlayerTeleportEvent event) {
 		if(plugin.teleportFix && (Lobby.getTeam(event.getPlayer()) != null)) {
@@ -105,9 +108,9 @@ public class EventListener implements Listener{
 			} else {
 				teleportLoc.put(event.getPlayer().getName(), event.getTo());
 				teleportCause
-						.put(event.getPlayer().getName(), event.getCause());
+				.put(event.getPlayer().getName(), event.getCause());
 				event.setCancelled(true);
-				
+
 				if (!teleportTaskRunning) {
 					teleportTaskRunning = true;
 					runTeleportTask();
@@ -115,7 +118,7 @@ public class EventListener implements Listener{
 			}
 		}
 	}
-	
+
 
 	private void runTeleportTask() {
 		plugin.getServer().getScheduler().scheduleSyncDelayedTask(plugin, new Runnable() {
@@ -131,7 +134,7 @@ public class EventListener implements Listener{
 
 					teleportLoc.remove(name);
 					teleportCause.remove(name);
-					
+
 					if(loc != null && cause != null && p != null) {
 						allowedTeleport.put(name, loc);
 						p.teleport(loc, cause);

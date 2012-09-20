@@ -14,7 +14,7 @@ public enum Lobby {
 	RED			("red", Material.WOOL, (byte)14, ChatColor.RED),
 	BLUE		("blue", Material.WOOL, (byte)11, ChatColor.BLUE),
 	RANDOM		("random", Material.AIR, (byte)0, ChatColor.GREEN),
-	SPECTATE	("spectator", Material.AIR, (byte)0, ChatColor.YELLOW),
+	SPECTATE	("spectator", Material.WOOL, (byte)4, ChatColor.YELLOW),
 	LOBBY		("lobby", Material.AIR, (byte)0, ChatColor.WHITE);
 	
 	private Paintball plugin;

@@ -45,7 +45,8 @@ public class Match {
 		this.playersLoc = new HashMap<String, Location>();
 		this.left = new ArrayList<Player>();
 		this.matchOver = false;
-		this.started = false;
+		//So first teleport from spawning attempt doesn't get cancelled
+		this.started = true;
 		
 		this.spawnBlue = 0;
 		this.spawnRed = 0;
@@ -150,6 +151,7 @@ public class Match {
 		makeAllVisible();
 		
 		//WAITING TIMER:
+		this.started = false;
 		count = plugin.countdownStart;
 		
 		taskId = plugin.getServer().getScheduler().scheduleAsyncRepeatingTask(plugin, new Runnable() {
