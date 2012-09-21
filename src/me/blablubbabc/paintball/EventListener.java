@@ -89,7 +89,7 @@ public class EventListener implements Listener{
 			Match match = mm.getMatch(player);
 			if(!match.started) {
 				//To not cancle the teleport event from players not yet teleported.
-				if(!allowedTeleport.containsKey(event.getPlayer().getName())) {
+				if(!teleportLoc.containsKey(player.getName()) && !allowedTeleport.containsKey(event.getPlayer().getName())) {
 					if(event.getFrom().getX() != event.getTo().getX() || event.getFrom().getZ() != event.getTo().getZ()) {
 						event.setCancelled(true);
 						//player.teleport(event.getFrom());

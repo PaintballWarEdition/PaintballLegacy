@@ -5,8 +5,8 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
 import me.blablubbabc.BlaDB.BlaDB;
-import me.blablubbabc.insigns.Changer;
-import me.blablubbabc.insigns.InSigns;
+//import me.blablubbabc.insigns.Changer;
+//import me.blablubbabc.insigns.InSigns;
 import me.blablubbabc.paintball.Metrics.Graph;
 import org.bukkit.ChatColor;
 import org.bukkit.GameMode;
@@ -14,7 +14,7 @@ import org.bukkit.Location;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
-import org.bukkit.plugin.Plugin;
+//import org.bukkit.plugin.Plugin;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.bukkit.potion.PotionEffect;
 
@@ -433,7 +433,7 @@ public class Paintball extends JavaPlugin{
 		}
 		
 		//InSigns sign changer:
-		Plugin insignsPlugin = getServer().getPluginManager().getPlugin("InSigns");
+		/*Plugin insignsPlugin = getServer().getPluginManager().getPlugin("InSigns");
 		if(insignsPlugin != null) {
 			InSigns insigns = (InSigns) insignsPlugin;
 			insigns.addChanger(new Changer("[PB POINTS]") {
@@ -444,7 +444,7 @@ public class Paintball extends JavaPlugin{
 				}
 				
 			});
-		}
+		}*/
 				
 				
 		log("By blablubbabc enabled.");
