@@ -8,13 +8,13 @@ import java.util.Map;
 import java.util.SortedSet;
 import java.util.TreeSet;
 import java.util.Map.Entry;
-import me.blablubbabc.BlaDB.Register;
+import me.blablubbabc.BlaDB.BlaDBRegister;
 import org.bukkit.command.CommandSender;
 
 public class Stats {
 
 	private Paintball plugin;
-	private Register data;
+	private BlaDBRegister data;
 	
 	
 	private LinkedHashMap<String, Integer> points;
@@ -46,7 +46,7 @@ public class Stats {
 	
 	public Stats (Paintball pl) {
 		plugin = pl;
-		data = new Register();
+		data = new BlaDBRegister();
 		loadDB();
 		calculateRanks();
 	}

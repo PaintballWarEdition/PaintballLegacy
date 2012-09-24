@@ -305,6 +305,7 @@ public class Paintball extends JavaPlugin{
 
 		//DB
 		data = new BlaDB("paintball", this.getDataFolder().toString());
+		data.autosave(false);
 		loadDB();
 		//TRANSLATOR
 		t = new Translator(this, local);

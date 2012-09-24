@@ -78,8 +78,17 @@ public class CmdAdmin {
 				//plugin.reload();
 				//sender.sendMessage(plugin.t.getString("REALOAD_FINISHED"));
 				//playerstats löschen
+				long time1 = System.currentTimeMillis();
 				plugin.pm.resetData();
-				sender.sendMessage(plugin.t.getString("ALL_STATS_RESET"));
+				long time2 = System.currentTimeMillis();
+				long delta = time2 - time1;
+				
+				int amount = plugin.pm.getData().size();
+				
+				HashMap<String, String> vars = new HashMap<String, String>();
+				vars.put("time", String.valueOf(delta));
+				vars.put("amount", String.valueOf(amount));
+				sender.sendMessage(plugin.t.getString("ALL_STATS_RESET", vars));
 				return true;
 			} else if(args.length == 3) {
 				if(plugin.pm.exists(args[2])) {

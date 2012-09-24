@@ -3,7 +3,7 @@ package me.blablubbabc.paintball;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
-import me.blablubbabc.BlaDB.Register;
+import me.blablubbabc.BlaDB.BlaDBRegister;
 import org.bukkit.Location;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
@@ -11,7 +11,7 @@ import org.bukkit.inventory.PlayerInventory;
 
 public class PlayerManager {
 	private static Paintball plugin;
-	private static  Register data;
+	private static  BlaDBRegister data;
 	private HashMap<Player, Location> locations;
 	private HashMap<Player, ItemStack[]> invContent;
 	private HashMap<Player, ItemStack[]> invArmor;
@@ -20,7 +20,7 @@ public class PlayerManager {
 	
 	public PlayerManager(Paintball pl) {
 		plugin = pl;
-		data = new Register();
+		data = new BlaDBRegister();
 		if(plugin.data.getRegister("players") == null) saveData();
 		else data = plugin.data.getRegister("players");
 		for(Player p : plugin.getServer().getOnlinePlayers()) {
@@ -46,7 +46,6 @@ public class PlayerManager {
 	}
 	public void addPlayer(String name) {
 		LinkedHashMap<String, Object> player = new LinkedHashMap<String, Object>();
-		//LinkedHashMap<String, Object> loc = new LinkedHashMap<String, Object>();
 		if(data.getValue(name) == null) {
 			player.put("points", 0);
 			player.put("shots", 0);
@@ -57,9 +56,6 @@ public class PlayerManager {
 			player.put("wins", 0);
 			player.put("looses", 0);
 			player.put("money", 0);
-			//player.put("location", loc);
-			//UPDATE_CODE 1.0.5->1.0.6
-			if(player.containsKey("location")) player.remove("location");
 			
 			data.setValue(name, player);
 			saveData();
@@ -74,7 +70,6 @@ public class PlayerManager {
 	public void resetData() {
 		for(String name : data.getData().keySet()) {
 			LinkedHashMap<String, Object> player = new LinkedHashMap<String, Object>();
-			//LinkedHashMap<String, Object> loc = new LinkedHashMap<String, Object>();
 			player.put("points", 0);
 			player.put("shots", 0);
 			player.put("hits", 0);
@@ -84,11 +79,11 @@ public class PlayerManager {
 			player.put("wins", 0);
 			player.put("looses", 0);
 			player.put("money", 0);
-			//player.put("location", loc);
 			
 			data.setValue(name, player);
-			saveData();
 		}
+		//SPEED TEST: save outside loop and no autosave.
+		saveData();
 	}
 	
 	public boolean exists(String name) {

@@ -129,14 +129,14 @@ public class BlaDB {
     //ENTRIES
     //////////////////////////////////////////////////////
     
-    public void addRegister(String key, Register value) {
+    public void addRegister(String key, BlaDBRegister value) {
     	this.data.put(key, value.getData());
     	if(autosave) this.save();
     }
     
     @SuppressWarnings("unchecked")
-    public Register getRegister(String key) {
-    	Register r = new Register();
+    public BlaDBRegister getRegister(String key) {
+    	BlaDBRegister r = new BlaDBRegister();
 		LinkedHashMap<String, Object> map = (LinkedHashMap<String, Object>) this.data.get(key);
 		if(map == null) return null;
     	for( Entry<String, Object> e : map.entrySet()) {

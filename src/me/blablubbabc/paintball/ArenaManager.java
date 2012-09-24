@@ -2,19 +2,19 @@ package me.blablubbabc.paintball;
 
 import java.util.ArrayList;
 import java.util.LinkedHashMap;
-import me.blablubbabc.BlaDB.Register;
+import me.blablubbabc.BlaDB.BlaDBRegister;
 import org.bukkit.Location;
 
 public class ArenaManager {
 	private static Paintball plugin;
-	private static Register data;
+	private static BlaDBRegister data;
 	private LinkedHashMap<String, Boolean> active;
 	private int zähler;
 	private String nextArenaForce;
 	
 	public ArenaManager(Paintball pl) {
 		plugin = pl;
-		data = new Register();
+		data = new BlaDBRegister();
 		loadArenas();
 		zähler = 0;
 		nextArenaForce = "";

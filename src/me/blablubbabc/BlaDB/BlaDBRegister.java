@@ -4,10 +4,10 @@ import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.Set;
 
-public class Register {
+public class BlaDBRegister {
 	private LinkedHashMap<String,Object> data;
 	
-	public Register() {
+	public BlaDBRegister() {
 		this.data = new LinkedHashMap<String,Object>();
     }
 	

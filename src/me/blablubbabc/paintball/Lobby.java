@@ -2,7 +2,7 @@ package me.blablubbabc.paintball;
 
 import java.util.LinkedHashMap;
 import java.util.Set;
-import me.blablubbabc.BlaDB.Register;
+import me.blablubbabc.BlaDB.BlaDBRegister;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
@@ -23,7 +23,7 @@ public enum Lobby {
 	private String name;
 	private ItemStack helmet;
 	private ChatColor color;
-	private Register data;
+	private BlaDBRegister data;
 	
 	private Lobby(String name, Material mat, byte data, ChatColor color) {
 		this.plugin = (Paintball) Bukkit.getServer().getPluginManager().getPlugin("Paintball");
@@ -32,7 +32,7 @@ public enum Lobby {
 		this.color = color;
 		this.players = new LinkedHashMap<Player, Boolean>();
 		this.maxPlayers = 0;
-		this.data = new Register();
+		this.data = new BlaDBRegister();
 		this.updateData();
 		this.loadData();
 	}
