@@ -82,7 +82,6 @@ public class PlayerManager {
 			
 			data.setValue(name, player);
 		}
-		//SPEED TEST: save outside loop and no autosave.
 		saveData();
 	}
 	

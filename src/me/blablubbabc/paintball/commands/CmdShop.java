@@ -7,6 +7,8 @@ import org.bukkit.Material;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
+
+import me.blablubbabc.paintball.Match;
 import me.blablubbabc.paintball.Paintball;
 
 public class CmdShop {
@@ -72,44 +74,47 @@ public class CmdShop {
 				return true;
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 			} else if(args.length == 2) {
-				if(plugin.mm.getMatch(player) == null) {
-					player.sendMessage(plugin.t.getString("SHOP_ONLY_WHILE_PLAYING"));
-					return true;
-				}
-				if(isNumber(args[1]) != null && isNumber(args[1]) > 0 && isNumber(args[1]) <= goods.size()) {
-					if(transformGood(goods.get(isNumber(args[1])-1)).equalsIgnoreCase(empty) || (player.hasPermission("paintball.shop.not"+String.valueOf(isNumber(args[1]))) && !player.isOp() && !player.hasPermission("paintball.admin")) ) {
-						player.sendMessage(plugin.t.getString("GOOD_NOT_AVAILABLE"));
+				//Kaufen in der lobby während match aber tot:
+				Match match = plugin.mm.getMatch(player);
+				if(match != null && match.isSurvivor(player)) {
+					if(isNumber(args[1]) != null && isNumber(args[1]) > 0 && isNumber(args[1]) <= goods.size()) {
+						if(transformGood(goods.get(isNumber(args[1])-1)).equalsIgnoreCase(empty) || (player.hasPermission("paintball.shop.not"+String.valueOf(isNumber(args[1]))) && !player.isOp() && !player.hasPermission("paintball.admin")) ) {
+							player.sendMessage(plugin.t.getString("GOOD_NOT_AVAILABLE"));
+							return true;
+						}
+						String[] split = goods.get(isNumber(args[1])-1).split("-");
+						int price = Integer.parseInt(split[2]);
+						int amount = Integer.parseInt(split[0]);
+						int cash = (Integer) plugin.pm.getStats(player.getName()).get("money");
+						if(cash < price) {
+							player.sendMessage(plugin.t.getString("NOT_ENOUGH_MONEY"));
+							return true;
+						}
+						if(player.getInventory().firstEmpty() == -1) {
+							player.sendMessage(plugin.t.getString("INVENTORY_FULL"));
+							return true;
+						}
+						//money
+						plugin.pm.addMoney(player.getName(), -price);
+						plugin.stats.addMoney(price);
+						//items
+						if(isItem(split[1], "ball")) player.getInventory().addItem(new ItemStack(Material.SNOW_BALL, amount));
+						if(isItem(split[1], "grenade")) player.getInventory().addItem(new ItemStack(Material.EGG, amount));
+						if(isItem(split[1], "airstrike")) player.getInventory().addItem(new ItemStack(Material.STICK, amount));
+						
+						HashMap<String, String> vars = new HashMap<String, String>();
+						vars.put("amount", String.valueOf(amount));
+						vars.put("good", split[1]);
+						vars.put("price", String.valueOf(price));
+						player.sendMessage(plugin.t.getString("YOU_BOUGHT", vars));
+						
+						return true;
+					} else {
+						player.sendMessage(plugin.t.getString("INVALID_ID"));
 						return true;
 					}
-					String[] split = goods.get(isNumber(args[1])-1).split("-");
-					int price = Integer.parseInt(split[2]);
-					int amount = Integer.parseInt(split[0]);
-					int cash = (Integer) plugin.pm.getStats(player.getName()).get("money");
-					if(cash < price) {
-						player.sendMessage(plugin.t.getString("NOT_ENOUGH_MONEY"));
-						return true;
-					}
-					if(player.getInventory().firstEmpty() == -1) {
-						player.sendMessage(plugin.t.getString("INVENTORY_FULL"));
-						return true;
-					}
-					//money
-					plugin.pm.addMoney(player.getName(), -price);
-					plugin.stats.addMoney(price);
-					//items
-					if(isItem(split[1], "ball")) player.getInventory().addItem(new ItemStack(Material.SNOW_BALL, amount));
-					if(isItem(split[1], "grenade")) player.getInventory().addItem(new ItemStack(Material.EGG, amount));
-					if(isItem(split[1], "airstrike")) player.getInventory().addItem(new ItemStack(Material.STICK, amount));
-					
-					HashMap<String, String> vars = new HashMap<String, String>();
-					vars.put("amount", String.valueOf(amount));
-					vars.put("good", split[1]);
-					vars.put("price", String.valueOf(price));
-					player.sendMessage(plugin.t.getString("YOU_BOUGHT", vars));
-					
-					return true;
 				} else {
-					player.sendMessage(plugin.t.getString("INVALID_ID"));
+					player.sendMessage(plugin.t.getString("SHOP_ONLY_WHILE_PLAYING"));
 					return true;
 				}
 			}
