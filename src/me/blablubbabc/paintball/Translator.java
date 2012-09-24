@@ -53,6 +53,7 @@ public class Translator {
 	    	return;
 	    }
 		//get default language:
+	    log("Loading the default language: "+ def_file.getName());
 	    def_language = loadLanguage(def_file);
 	    if(def_language == null) {
 	    	return;
@@ -221,8 +222,8 @@ public class Translator {
 				language.put(key, value);
 			}
 			//TEST
-			System.out.println("Scanned lines: "+line);
-			System.out.println("Skipped lines: "+line_skipped);
+			log("Scanned lines: "+line);
+			log("Skipped lines: "+line_skipped);
 			return language;
 		} catch (Exception e) {
 			log("ERROR: Couldn't load the specified language file.");

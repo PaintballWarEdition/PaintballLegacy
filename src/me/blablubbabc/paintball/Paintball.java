@@ -5,8 +5,6 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
 import me.blablubbabc.BlaDB.BlaDB;
-//import me.blablubbabc.insigns.Changer;
-//import me.blablubbabc.insigns.InSigns;
 import me.blablubbabc.paintball.Metrics.Graph;
 import org.bukkit.ChatColor;
 import org.bukkit.GameMode;
@@ -14,7 +12,7 @@ import org.bukkit.Location;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
-//import org.bukkit.plugin.Plugin;
+import org.bukkit.plugin.Plugin;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.bukkit.potion.PotionEffect;
 
@@ -31,10 +29,10 @@ public class Paintball extends JavaPlugin{
 	public boolean active;
 	public boolean softreload;
 	public int lobbyspawn;
-	
+
 	//Public afk detection
 	public HashMap <String, Integer> afkMatchCount;
-	
+
 	//ChatColors
 	public ChatColor gray = ChatColor.GRAY;
 	public ChatColor gold = ChatColor.GOLD;
@@ -45,9 +43,9 @@ public class Paintball extends JavaPlugin{
 	public ChatColor yellow = ChatColor.YELLOW;
 	public ChatColor light_purple = ChatColor.LIGHT_PURPLE;
 	public ChatColor dark_green = ChatColor.DARK_GREEN;
-	
+
 	public ChatColor bold = ChatColor.BOLD;
-	
+
 	//CONFIG:
 	//general:
 	public String local;
@@ -80,7 +78,7 @@ public class Paintball extends JavaPlugin{
 	//unused
 	//public boolean autoSpecDeadPlayers;
 	//public int repsawns;
-	
+
 	//lobby join checks
 	public boolean checkInventory;
 	public boolean checkGamemode;
@@ -89,7 +87,7 @@ public class Paintball extends JavaPlugin{
 	public boolean checkHealth;
 	public boolean checkFood;
 	public boolean checkEffects;
-	
+
 	//points und cash
 	public int pointsPerKill;
 	public int pointsPerHit;
@@ -100,19 +98,19 @@ public class Paintball extends JavaPlugin{
 	public int cashPerHit;
 	public int cashPerWin;
 	public int cashPerRound;
-	
+
 	//Extras:
 	public boolean grenades;
 	public int grenadeTime;
 	public double grenadeSpeed;
 	public int grenadeAmount;
-	
+
 	public boolean airstrike;
 	public int airstrikeRange;
 	public int airstrikeBombs;
 	public int airstrikeAmount;
 	public int airstrikeHeight;
-	
+
 	//TODO
 	//shop-items
 	//Extras: Luftschlag, verschiedene munition, airdrops, punktesystem abhängig von spieler im match, evt. bester spieler der runde, mehr extras :D
@@ -129,7 +127,7 @@ public class Paintball extends JavaPlugin{
 	//mySQL support für online stats
 	//- arena disable/enable
 	//- airstrike finalMark bleibt
-	
+
 	//important:
 	//- map list mit übersicht, ob ready, und warum nicht ready (/)
 	//- admin: next <name> zum arena festlegen. (/)
@@ -140,21 +138,21 @@ public class Paintball extends JavaPlugin{
 	//- invisible bug
 	//- arena not ready bug (/)
 	//- admin cash und rank kommando überprüfen, ob ein spieler mit namen args existiert
-	
-	
+
+
 	//Permissions:
 	//paintball.general
 	//paintball.arena
 	//paintball.admin
 	//paintball.shop.not<id> (starting with 1)
-	
-	
-	
+
+
+
 	public BlaDB data;
-	
+
 	@SuppressWarnings("unchecked")
 	public void onEnable(){	
-		
+
 		//CONFIG
 		ArrayList<String> goodsDef = new ArrayList<String>();
 		goodsDef.add("10-Balls-15");
@@ -162,10 +160,10 @@ public class Paintball extends JavaPlugin{
 		goodsDef.add("100-Balls-120");
 		goodsDef.add("1-Grenade-20");
 		goodsDef.add("1-Airstrike-100");
-		
+
 		allowedCommands = new ArrayList<String>();
-		
-		
+
+
 		getConfig().options().header("Use a value of -1 to give the players infinite balls or extras.");
 		if(getConfig().get("Paintball.AFK Detection.enabled") == null)getConfig().set("Paintball.AFK Detection.enabled", true);
 		if(getConfig().get("Paintball.AFK Detection.Movement Radius around Spawn (keep in mind: knockbacks, pushing, waterflows, falling, etc)") == null)getConfig().set("Paintball.AFK Detection.Movement Radius around Spawn (keep in mind: knockbacks, pushing, waterflows, falling, etc)", 5);
@@ -199,7 +197,7 @@ public class Paintball extends JavaPlugin{
 		if(getConfig().get("Paintball.Lobby join.Checks.Health") == null)getConfig().set("Paintball.Lobby join.Checks.Health", true);
 		if(getConfig().get("Paintball.Lobby join.Checks.FoodLevel") == null)getConfig().set("Paintball.Lobby join.Checks.FoodLevel", true);
 		if(getConfig().get("Paintball.Lobby join.Checks.Effects") == null)getConfig().set("Paintball.Lobby join.Checks.Effects", true);
-		
+
 		if(getConfig().get("Paintball.Match.Damage") == null)getConfig().set("Paintball.Match.Damage", false);
 		if(getConfig().get("Paintball.Match.Allow Melee") == null)getConfig().set("Paintball.Match.Allow Melee", true);
 		if(getConfig().get("Paintball.Match.Melee Damage") == null)getConfig().set("Paintball.Match.Melee Damage", 1);
@@ -222,7 +220,7 @@ public class Paintball extends JavaPlugin{
 		if(getConfig().get("Paintball.Shop.enabled") == null)getConfig().set("Paintball.Shop.enabled", true);
 		if(getConfig().get("Paintball.Shop.Goods") == null)getConfig().set("Paintball.Shop.Goods", goodsDef);
 		saveConfig();
-		
+
 		//points+cash:
 		pointsPerKill = getConfig().getInt("Paintball.Points per Kill", 2);
 		pointsPerHit = getConfig().getInt("Paintball.Points per Hit", 1);
@@ -233,7 +231,7 @@ public class Paintball extends JavaPlugin{
 		cashPerHit = getConfig().getInt("Paintball.Cash per Hit", 0);
 		cashPerWin = getConfig().getInt("Paintball.Cash per Win", 10);
 		cashPerRound = getConfig().getInt("Paintball.Cash per Round", 0);
-		
+
 		//gerneral:
 		damage = getConfig().getBoolean("Paintball.Match.Damage", false);
 		allowMelee = getConfig().getBoolean("Paintball.Match.Allow Melee", true);
@@ -249,7 +247,7 @@ public class Paintball extends JavaPlugin{
 		if(afkMatchAmount < 1) afkMatchAmount = 1;
 		afkRadius = getConfig().getInt("Paintball.AFK Detection.Movement Radius around Spawn (keep in mind: knockbacks, pushing, waterflows, falling, etc)", 5);
 		if(afkRadius < 1) afkRadius = 1;
-		
+
 		lives = getConfig().getInt("Paintball.Match.Lives", 1);
 		if(lives < 1) lives = 1;
 		balls = getConfig().getInt("Paintball.Match.Balls", 50);
@@ -265,18 +263,18 @@ public class Paintball extends JavaPlugin{
 		if(countdownInit < 0) countdownInit = 0;
 		countdownStart = getConfig().getInt("Paintball.Match.Countdown Round Start.Time", 5);
 		if(countdownStart < 0) countdownStart = 0;
-		
+
 		speedmulti = getConfig().getDouble("Paintball.Ball speed multi", 1.5);
 		listnames = getConfig().getBoolean("Paintball.Colored listnames", true);
 		chatnames = getConfig().getBoolean("Paintball.Colored chatnames", true);
 		onlyRandom = getConfig().getBoolean("Paintball.Only Random", false);
 		autoRandom = getConfig().getBoolean("Paintball.Auto Random", true);
 		autoSpecLobby = getConfig().getBoolean("Paintball.Auto Spec Lobby", false);
-		
+
 		//shop:
 		shop = getConfig().getBoolean("Paintball.Shop.enabled", true);
 		shopGoods = (ArrayList<String>) getConfig().getList("Paintball.Shop.Goods", goodsDef);
-		
+
 		//lobby join checks
 		checkInventory = getConfig().getBoolean("Paintball.Lobby join.Checks.Inventory", true);
 		saveInventory = getConfig().getBoolean("Paintball.Lobby join.Checks.Inventory Save", true);
@@ -286,8 +284,8 @@ public class Paintball extends JavaPlugin{
 		checkHealth = getConfig().getBoolean("Paintball.Lobby join.Checks.Health", true);
 		checkFood = getConfig().getBoolean("Paintball.Lobby join.Checks.FoodLevel", true);
 		checkEffects = getConfig().getBoolean("Paintball.Lobby join.Checks.Effects", true);
-		
-		
+
+
 		//Extras
 		grenades = getConfig().getBoolean("Paintball.Extras.Grenades.enabled", true);
 		grenadeTime = getConfig().getInt("Paintball.Extras.Grenades.Time-Radius in Ticks (= 1/20 sec)", 60);
@@ -295,7 +293,7 @@ public class Paintball extends JavaPlugin{
 		grenadeSpeed = getConfig().getDouble("Paintball.Extras.Grenades.Speed multi", 1.0);
 		grenadeAmount = getConfig().getInt("Paintball.Extras.Grenades.Amount", 0);
 		if(grenadeAmount < -1) grenadeAmount = -1;
-		
+
 		airstrike = getConfig().getBoolean("Paintball.Extras.Airstrike.enabled", true);
 		airstrikeHeight = getConfig().getInt("Paintball.Extras.Airstrike.Height", 15);
 		if(airstrikeHeight < 2) airstrikeHeight = 2;
@@ -304,7 +302,7 @@ public class Paintball extends JavaPlugin{
 		if(airstrikeBombs < 0) airstrikeBombs = 0;
 		airstrikeAmount = getConfig().getInt("Paintball.Extras.Airstrike.Amount", 0);
 		if(airstrikeAmount < -1) airstrikeAmount = -1;
-		
+
 		//DB
 		data = new BlaDB("paintball", this.getDataFolder().toString());
 		loadDB();
@@ -332,12 +330,12 @@ public class Paintball extends JavaPlugin{
 		//COMMANDS
 		CommandExecutor cm = new CommandManager(this);
 		getCommand("pb").setExecutor(cm);
-		
+
 		active = true;
 		softreload = false;
 		lobbyspawn = 0;
 		afkMatchCount = new HashMap<String, Integer>();
-		
+
 		//autoLobby
 		if(autoLobby) {
 			for(Player player : getServer().getOnlinePlayers()) {
@@ -346,7 +344,7 @@ public class Paintball extends JavaPlugin{
 					player.sendMessage(t.getString("NO_LOBBY_FOUND"));
 					continue;
 				}
-				
+
 				//inventory
 				if(saveInventory) {
 					pm.setInv(player, player.getInventory());
@@ -357,17 +355,17 @@ public class Paintball extends JavaPlugin{
 				//lobby add
 				Lobby.LOBBY.addMember(player);
 				nf.join(player.getName());
-				
+
 				joinLobby(player);
 			}
 		}
-		
+
 		//METRICS
 		try {
 			Metrics metrics = new Metrics(this);
-			
+
 			//Custom Data:
-			
+
 			//Default graph:
 			//Actual playing players (Lobby)
 			metrics.addCustomData(new Metrics.Plotter("Actual playing (lobby)") {
@@ -382,7 +380,7 @@ public class Paintball extends JavaPlugin{
 					}
 				}
 			});
-			
+
 			//Maximum playing (lobby) since last update
 			metrics.addCustomData(new Metrics.Plotter("Maximum playing (lobby) since last update") {
 
@@ -402,10 +400,10 @@ public class Paintball extends JavaPlugin{
 					}
 				}
 			});
-			
+
 			//Graph 2
 			Graph graph = metrics.createGraph("Players ever played Paintball");
-			
+
 			//Players ever played Paintball Plotter
 			graph.addPlotter(new Metrics.Plotter("Ever played Paintball") {
 
@@ -431,22 +429,19 @@ public class Paintball extends JavaPlugin{
 			Lobby.resetMaxPlayers();
 			// Failed to submit the stats :-(
 		}
-		
-		//InSigns sign changer:
-		/*Plugin insignsPlugin = getServer().getPluginManager().getPlugin("InSigns");
-		if(insignsPlugin != null) {
-			InSigns insigns = (InSigns) insignsPlugin;
-			insigns.addChanger(new Changer("[PB POINTS]") {
 
-				@Override
-				public String getValue() {
-					return ""+pm.getStats(getPlayerName()).get("points");
-				}
-				
-			});
-		}*/
-				
-				
+		//InSigns sign changer:
+		Plugin insignsPlugin = getServer().getPluginManager().getPlugin("InSigns");
+		if((insignsPlugin != null) && insignsPlugin.isEnabled()) {
+			
+			new InSignsFeature(insignsPlugin, this);
+			log("Plugin 'InSigns' found. Using it now.");
+			
+		} else {
+			log("Plugin 'InSigns' not found. Additional sign features disabled.");
+		}
+
+
 		log("By blablubbabc enabled.");
 		log("Do not redistribute or modify. Use it as it is and not for commercial purposes! Usage on own risk. No warranties.");
 		log("If you like this, give feedback and donate at wir-sind-wir.de/lukas");
@@ -472,21 +467,21 @@ public class Paintball extends JavaPlugin{
 			listener.teleportLoc.clear();
 			listener.teleportCause.clear();
 		}*/
-		
+
 		if(mm != null) mm.forceReload();
 		log("Disabled!");
 	}
-	
+
 	public void log(String message) {
 		System.out.println("["+this.getName()+"] "+message);
 	}
-	
+
 	public void reload() {
 		reloadConfig();
 		getServer().getPluginManager().disablePlugin(this);
 		getServer().getPluginManager().enablePlugin(this);
 	}
-	
+
 	//METHODS LOBBYSPAWNS
 	private void loadDB() {
 		ArrayList<LinkedHashMap<String, Object>> lobbyspawns = new ArrayList<LinkedHashMap<String, Object>>();
@@ -494,21 +489,21 @@ public class Paintball extends JavaPlugin{
 
 		data.saveFile();	
 	}
-	
-	
+
+
 	@SuppressWarnings("unchecked")
 	public void addLobbySpawn(Location loc) {
 		LinkedHashMap<String, Object> map = transformLocation(loc);
 		ArrayList<LinkedHashMap<String, Object>> lobbyspawns = (ArrayList<LinkedHashMap<String, Object>>) data.getValue("lobbyspawns");
 		lobbyspawns.add(map);
 		data.setValue("lobbyspawns", lobbyspawns);
-		
+
 		data.saveFile();	
 	}
 	public void deleteLobbySpawns() {
 		ArrayList<LinkedHashMap<String, Object>> lobbyspawns = new ArrayList<LinkedHashMap<String, Object>>();
 		data.setValue("lobbyspawns", lobbyspawns);
-		
+
 		data.saveFile();	
 	}
 	@SuppressWarnings("unchecked")
@@ -516,11 +511,11 @@ public class Paintball extends JavaPlugin{
 		ArrayList<LinkedHashMap<String, Object>> lobbyspawns = (ArrayList<LinkedHashMap<String, Object>>) data.getValue("lobbyspawns");
 		return lobbyspawns;
 	}
-	
+
 	////////////////////////////////////
 	//UTILS
 	////////////////////////////////////
-	
+
 	public LinkedHashMap<String, Object> transformLocation(Location loc) {
 		LinkedHashMap<String, Object> map = new LinkedHashMap<String, Object>();
 		map.put("world", loc.getWorld().getName());
@@ -537,13 +532,13 @@ public class Paintball extends JavaPlugin{
 		Location loc = new Location(getServer().getWorld(world), x, y, z);
 		return loc;
 	}
-	
+
 	public int getNextLobbySpawn() {
 		lobbyspawn++;
 		if(lobbyspawn > (getLobbySpawns().size()-1)) lobbyspawn = 0;
 		return lobbyspawn;
 	}
-	
+
 	public void checks(Player player) {
 		if(!isEmpty(player)) clearInv(player);
 		//gamemode
@@ -571,13 +566,13 @@ public class Paintball extends JavaPlugin{
 		//listname
 		if(listnames) player.setPlayerListName(null);
 	}
-	
+
 	public void joinLobby(Player player) {
 		checks(player);
 		//Lobbyteleport
 		player.teleport(transformLocation(getLobbySpawns().get(getNextLobbySpawn())));
 	}
-	
+
 	public void leaveLobby(Player player, boolean messages, boolean teleport, boolean restoreInventory) {
 		//lobby remove:
 		Lobby.remove(player);
@@ -597,7 +592,7 @@ public class Paintball extends JavaPlugin{
 			nf.leave(player.getName());
 		}
 	}
-	
+
 	public boolean isEmpty(Player p) {
 		for(ItemStack i : p.getInventory()) {
 			if(i == null) continue;
@@ -609,12 +604,12 @@ public class Paintball extends JavaPlugin{
 		}
 		return true;
 	}
-	
+
 	public void clearInv(Player p) {
 		p.getInventory().clear();
 		p.getInventory().setArmorContents(null);
 	}
-	
+
 
 
 
