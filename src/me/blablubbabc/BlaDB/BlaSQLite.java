@@ -3,16 +3,22 @@ package me.blablubbabc.BlaDB;
 import java.io.File;
 import java.io.IOException;
 import java.sql.*;
+import java.util.ArrayList;
+import java.util.HashMap;
+import me.blablubbabc.paintball.Paintball;
 import org.bukkit.Location;
+import org.bukkit.World;
 
 public class BlaSQLite {
 
 	private File databaseFile;
 	private Connection connection;
+	private static Paintball plugin;
 
-	public BlaSQLite(File databaseFile) {
+	public BlaSQLite(File databaseFile, Paintball pl) {
 		this.databaseFile = databaseFile;
 		this.createDefaultDatabase();
+		plugin = pl;
 	}
 
 	public void refreshConnection() {
@@ -84,6 +90,8 @@ public class BlaSQLite {
 	//PAINTBALL SPEZIFISCHER TEIL
 
 	public void createDefaultDatabase() {
+		///////////////
+		//version 1081:
 		//PLAYERDATA
 		this.updateQuery("CREATE TABLE IF NOT EXISTS players(name TEXT, points INTEGER, shots INTEGER, hits INTEGER, teamattacks INTEGER, kills INTEGER, deaths INTEGER, wins INTEGER, looses INTEGER, money INTEGER);");
 		//ARENADATA
@@ -98,24 +106,134 @@ public class BlaSQLite {
 		this.updateQuery("CREATE TABLE IF NOT EXISTS stats(rounds INTEGER, kills INTEGER, shots INTEGER, money INTEGER);");
 	}
 
+	//METHODS
+	//ARENADATA and LOBBYSPAWNS
+	//GET
+	public HashMap<String, Integer> getArenaStats(String arena) {
+		HashMap<String, Integer> data = new HashMap<String, Integer>();
+		ResultSet rs = this.resultQuery("SELECT * FROM arenas WHERE name = '"+arena+"';");
+		try {
+			if(rs != null && rs.first()) {
+				ResultSetMetaData rsmd = rs.getMetaData();
+				int columns = rsmd.getColumnCount();
+				for(int i = 2; i <= columns; i++) {
+					data.put(rs.getMetaData().getColumnName(i), rs.getInt(i));
+				}
+				return data;
+			} else return null;
+		} catch (SQLException e) {
+			e.printStackTrace();
+			return null;
+		}
+	}
+	
+	public ArrayList<Location> getLocations(ArrayList<Integer> ids) {
+		ArrayList<Location> locs = new ArrayList<Location>();
+		if(ids.size() > 0) {
+			String idss = "";
+			for(int id : ids) {
+				idss += "id = "+id+" OR ";
+			}
+			idss = idss.substring(0, idss.length()-4);
+			ResultSet rs = this.resultQuery("SELECT * FROM locations WHERE "+idss+";");
+			if(rs != null) {
+				try {
+					while (rs.next()) {
+						World world = plugin.getServer().getWorld(
+								rs.getString("world"));
+						if (world != null) {
+							Location loc = new Location(world,
+									rs.getDouble("x"), rs.getDouble("y"),
+									rs.getDouble("z"), rs.getFloat("yaw"),
+									rs.getFloat("pitch"));
+							locs.add(loc);
+						}
+					}
+				} catch (SQLException e) {
+					e.printStackTrace();
+					return null;
+				}
+			}
+		}
+		return locs;
+	}
+	
+	public ArrayList<Location> getRedspawns(String arena) {
+		ResultSet rs = this.resultQuery("SELECT location_id FROM redspawns WHERE arena = '"+arena+"';");
+		try {
+			if(rs != null) {
+				ArrayList<Integer> ids = new ArrayList<Integer>();
+				while(rs.next()) {
+					ids.add(rs.getInt(1));
+				}
+				return getLocations(ids);
+			} else return null;
+		} catch (SQLException e) {
+			e.printStackTrace();
+			return null;
+		}
+	}
+	
+	public ArrayList<Location> getBluespawns(String arena) {
+		ResultSet rs = this.resultQuery("SELECT location_id FROM redspawns WHERE arena = '"+arena+"';");
+		try {
+			if(rs != null) {
+				ArrayList<Integer> ids = new ArrayList<Integer>();
+				while(rs.next()) {
+					ids.add(rs.getInt(1));
+				}
+				return getLocations(ids);
+			} else return null;
+		} catch (SQLException e) {
+			e.printStackTrace();
+			return null;
+		}
+	}
+	
+	public ArrayList<Location> getSpecspawns(String arena) {
+		ResultSet rs = this.resultQuery("SELECT location_id FROM redspawns WHERE arena = '"+arena+"';");
+		try {
+			if(rs != null) {
+				ArrayList<Integer> ids = new ArrayList<Integer>();
+				while(rs.next()) {
+					ids.add(rs.getInt(1));
+				}
+				return getLocations(ids);
+			} else return null;
+		} catch (SQLException e) {
+			e.printStackTrace();
+			return null;
+		}
+	}
+	
+	//SET
+	//REMOVE
+	//ADD NEW
 	public int addLocation(Location loc) {
 		return this.updateQuery("INSERT INTO locations(world, x, y, z, yaw, pitch) VALUES('"+loc.getWorld().getName()+"','"+loc.getX()+"','"+loc.getY()+"','"+loc.getZ()+"','"+loc.getYaw()+"','"+loc.getPitch()+"');");
 	}
 	
+	public void addNewArena(String arena) {
+		this.updateQuery("INSERT INTO arenas(name,rounds,kills,shots,size) VALUES('arena',0,0,0,0);");
+	}
+	
 	public void addLobbyspawn(Location loc) {
 		int row = this.addLocation(loc);
-		
+		this.updateQuery("INSERT INTO lobbyspawns(location_id) VALUES('"+row+"');");
 	}
 
 	public void addRedspawn(Location loc, String arena) {
-
+		int row = this.addLocation(loc);
+		this.updateQuery("INSERT INTO redspawns(arena, location_id) VALUES('"+arena+"','"+row+"');");
 	}
 
 	public void addBluespawn(Location loc, String arena) {
-
+		int row = this.addLocation(loc);
+		this.updateQuery("INSERT INTO bluespawns(arena, location_id) VALUES('"+arena+"','"+row+"');");
 	}
 	
 	public void addSpecspawn(Location loc, String arena) {
-
+		int row = this.addLocation(loc);
+		this.updateQuery("INSERT INTO specspawns(arena, location_id) VALUES('"+arena+"','"+row+"');");
 	}
 }

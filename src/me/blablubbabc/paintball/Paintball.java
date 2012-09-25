@@ -305,8 +305,8 @@ public class Paintball extends JavaPlugin{
 		airstrikeAmount = getConfig().getInt("Paintball.Extras.Airstrike.Amount", 0);
 		if(airstrikeAmount < -1) airstrikeAmount = -1;
 
-		//SQLite
-		sql = new BlaSQLite(new File(this.getDataFolder().toString()+"/"+"paintballsql"+".db"));
+		//SQLite with version: 1081
+		sql = new BlaSQLite(new File(this.getDataFolder().toString()+"/"+"pbdata_1081"+".db"), this);
 		//DB
 		data = new BlaDB("paintball", this.getDataFolder().toString());
 		data.autosave(false);
