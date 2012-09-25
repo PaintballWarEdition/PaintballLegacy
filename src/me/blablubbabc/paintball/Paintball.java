@@ -585,7 +585,17 @@ public class Paintball extends JavaPlugin{
 		//restore saved inventory
 		if(restoreInventory && saveInventory) {
 			//PlayerInventory
-			player.getInventory().setContents(pm.getInvContent(player));
+			//null check added:
+			ItemStack[] isc = pm.getInvContent(player);
+			for(int i = 0; i < player.getInventory().getContents().length; i++) {
+				if(i >= isc.length || isc[i] == null) {
+					player.getInventory().setItem(i, null);
+				} else {
+					player.getInventory().setItem(i, isc[i]);
+				}
+			}
+			
+			//player.getInventory().setContents(pm.getInvContent(player));
 			player.getInventory().setArmorContents(pm.getInvArmor(player));
 			player.sendMessage(t.getString("INVENTORY_RESTORED"));
 		}

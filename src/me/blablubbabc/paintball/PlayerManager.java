@@ -231,7 +231,7 @@ public class PlayerManager {
 	
 	public void setInv(Player player, PlayerInventory inv) {
 		//null check
-		ItemStack[] isc = new ItemStack[]{};
+		/*ItemStack[] isc = new ItemStack[]{};
 		ItemStack[] isa = new ItemStack[]{};
 		for(ItemStack is : inv.getContents()) {
 			if(is != null) {
@@ -242,9 +242,9 @@ public class PlayerManager {
 			if(is != null) {
 				isa[isa.length] = is; 
 			}
-		}
-		invContent.put(player, isc);
-		invArmor.put(player, isa);
+		}*/
+		invContent.put(player, inv.getContents());
+		invArmor.put(player, inv.getArmorContents());
 	}
 	
 	
