@@ -2,6 +2,7 @@ package me.blablubbabc.paintball.commands;
 
 import java.util.HashMap;
 
+import org.bukkit.Location;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
@@ -245,6 +246,12 @@ public class CmdAdmin {
 				plugin.onlyRandom = true;
 				sender.sendMessage(plugin.t.getString("ONLY_RANDOM_ON"));
 			}
+			return true;
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+		} else if(args[1].equalsIgnoreCase("test")) {
+			//TEST COMMAND
+			plugin.sql.addLobbyspawn(new Location(plugin.getServer().getWorld("world"), 1.23D, 2.13455D, 3.5D, 13.74F, 0.123F));
+			System.out.println("[PB DEV] TEST COMMAND: Lobbyspawn added to sql database.");
 			return true;
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 		} else {

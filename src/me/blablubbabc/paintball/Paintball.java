@@ -1,10 +1,12 @@
 package me.blablubbabc.paintball;
 
+import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
 import me.blablubbabc.BlaDB.BlaDB;
+import me.blablubbabc.BlaDB.BlaSQLite;
 import me.blablubbabc.paintball.Metrics.Graph;
 import org.bukkit.ChatColor;
 import org.bukkit.GameMode;
@@ -147,7 +149,7 @@ public class Paintball extends JavaPlugin{
 	//paintball.shop.not<id> (starting with 1)
 
 
-
+	public BlaSQLite sql;
 	public BlaDB data;
 
 	@SuppressWarnings("unchecked")
@@ -303,6 +305,8 @@ public class Paintball extends JavaPlugin{
 		airstrikeAmount = getConfig().getInt("Paintball.Extras.Airstrike.Amount", 0);
 		if(airstrikeAmount < -1) airstrikeAmount = -1;
 
+		//SQLite
+		sql = new BlaSQLite(new File(this.getDataFolder().toString()+"/"+"paintballsql"+".db"));
 		//DB
 		data = new BlaDB("paintball", this.getDataFolder().toString());
 		data.autosave(false);
