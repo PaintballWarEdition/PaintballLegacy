@@ -250,18 +250,18 @@ public class CmdAdmin {
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 		} else if(args[1].equalsIgnoreCase("test")) {
 			//TEST COMMAND
-			plugin.sql.addNewArena("test_arena");
+			plugin.sql.sqlArenaLobby.addNewArena("test_arena");
 			System.out.println("[PB DEV] TEST COMMAND: 'test_arena' created.");
 			Location loc1 = new Location(plugin.getServer().getWorld("world"), 1.23D, 2.13455D, 3.5D, 13.74F, 0.123F);
 			Location loc2 = new Location(plugin.getServer().getWorld("world"), 2.56D, 2.13455D, 3.5D, 13.74F, 0.123F);
 			Location loc3 = new Location(plugin.getServer().getWorld("world"), 7.2D, 2.13455D, 3.5D, 13.74F, 0.123F);
-			plugin.sql.addRedspawn(loc1, "test_arena");
+			plugin.sql.sqlArenaLobby.addRedspawn(loc1, "test_arena");
 			System.out.println("[PB DEV] TEST COMMAND: 'loc1' added.");
-			plugin.sql.addRedspawn(loc2, "test_arena");
+			plugin.sql.sqlArenaLobby.addRedspawn(loc2, "test_arena");
 			System.out.println("[PB DEV] TEST COMMAND: 'loc2' added.");
-			plugin.sql.addRedspawn(loc3, "test_arena");
+			plugin.sql.sqlArenaLobby.addRedspawn(loc3, "test_arena");
 			System.out.println("[PB DEV] TEST COMMAND: 'loc3' added.");
-			plugin.sql.getRedspawns("test_arena");
+			plugin.sql.sqlArenaLobby.getRedspawns("test_arena");
 			
 			return true;
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
