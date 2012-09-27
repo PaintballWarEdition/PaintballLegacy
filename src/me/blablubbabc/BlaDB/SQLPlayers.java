@@ -20,4 +20,9 @@ public class SQLPlayers {
 	//REMOVE
 
 	//ADD NEW
+	public void addNewPlayer(String player) {
+		sql.updateQuery("INSERT OR IGNORE INTO players(name,points,shots,hits,teamattacks,kills,deaths,wins,looses,money) VALUES('player',0,0,0,0,0,0,0,0,0);");
+	}
+	
+
 }
