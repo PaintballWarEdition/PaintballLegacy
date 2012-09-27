@@ -578,7 +578,7 @@ public class Paintball extends JavaPlugin{
 		player.teleport(transformLocation(getLobbySpawns().get(getNextLobbySpawn())));
 	}
 
-	public void leaveLobby(Player player, boolean messages, boolean teleport, boolean restoreInventory) {
+	public synchronized void leaveLobby(Player player, boolean messages, boolean teleport, boolean restoreInventory) {
 		//lobby remove:
 		Lobby.remove(player);
 		checks(player);

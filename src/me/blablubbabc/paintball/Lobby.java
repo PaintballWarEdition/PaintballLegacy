@@ -58,14 +58,14 @@ public enum Lobby {
 	}
 	//METHODS
 	//SETTER
-	public void addMember(Player player) {
+	public synchronized void addMember(Player player) {
 		if(!players.containsKey(player)) {
 			players.put(player, false);
 			//max Players since last metrics submit-try
 			if(players.size() > maxPlayers) maxPlayers = players.size();
 		}
 	}
-	public void removeMember(Player player) {
+	public synchronized void removeMember(Player player) {
 		if(players.containsKey(player)) players.remove(player);
 	}
 	public void setHelmet(Material mat, byte data) {
@@ -78,21 +78,21 @@ public enum Lobby {
 		if(players.containsKey(player)) players.put(player, false);
 	}
 	//GETTER
-	public  Set<Player> getMembers() {
+	public Set<Player> getMembers() {
 		return players.keySet();
 	}
 	public boolean isMember(Player player) {
 		if(players.containsKey(player)) return true;
 		return false;
 	}
-	public int numberInGame() {
+	public synchronized int numberInGame() {
 		int number = 0;
 		for(Player player : players.keySet()) {
 			if(players.get(player)) number++;
 		}
 		return number;
 	}
-	public int numberWaiting() {
+	public synchronized int numberWaiting() {
 		int number = 0;
 		for(Player player : players.keySet()) {
 			if(!players.get(player)) number++;
@@ -122,7 +122,7 @@ public enum Lobby {
 		}
 		return null;
 	}
-	public static Lobby getTeam(Player player) {
+	public synchronized static Lobby getTeam(Player player) {
 		for(Lobby team : Lobby.values()) {
 			if(team.isMember(player) && !team.equals(Lobby.LOBBY)) return team;
 		}
@@ -156,14 +156,14 @@ public enum Lobby {
 		return false;
 	}
 	//SETTER
-	public static void remove(Player player) {
+	public synchronized static void remove(Player player) {
 		
 		for(Lobby l : Lobby.values()) {
 			l.removeMember(player);
 		}
 	}
 	
-	public static void resetMaxPlayers() {
+	public synchronized  static void resetMaxPlayers() {
 		for(Lobby l : Lobby.values()) {
 			l.maxPlayers = l.players.size();
 		}
