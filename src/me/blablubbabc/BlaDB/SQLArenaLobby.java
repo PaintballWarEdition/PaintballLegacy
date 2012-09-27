@@ -183,9 +183,20 @@ public class SQLArenaLobby {
 	}
 
 	//SET
+	public void addArenaStats(String arena, int rounds, int kills, int shots) {
+		sql.updateQuery("UPDATE OR IGNORE arenas SET rounds=rounds+"+rounds+",kills=kills+"+kills+",shots=shots+"+shots+" WHERE name='"+arena+"';");
+	}
+	
+	public void setArenaStats(String arena, int rounds, int kills, int shots) {
+		sql.updateQuery("UPDATE OR IGNORE arenas SET rounds="+rounds+",kills="+kills+",shots="+shots+" WHERE name='"+arena+"';");
+	}
+	
+	public void setArenaSize(String arena, int size) {
+		sql.updateQuery("UPDATE OR IGNORE arenas SET size="+size+" WHERE name='"+arena+"';");
+	}
 	//REMOVE
 	public void removeArena(String arena) {
-		sql.updateQuery("DELETE FROM arena WHERE name='"+arena+"';");
+		sql.updateQuery("DELETE FROM arenas WHERE name='"+arena+"';");
 		removeRedspawns(arena);
 		removeBluespawns(arena);
 		removeSpecspawns(arena);
