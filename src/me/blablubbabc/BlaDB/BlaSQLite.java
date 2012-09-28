@@ -3,6 +3,9 @@ package me.blablubbabc.BlaDB;
 import java.io.File;
 import java.io.IOException;
 import java.sql.*;
+import java.util.HashMap;
+import java.util.Map.Entry;
+
 import me.blablubbabc.paintball.Paintball;
 
 public class BlaSQLite {
@@ -10,14 +13,26 @@ public class BlaSQLite {
 	private File databaseFile;
 	private Connection connection;
 	private static Paintball plugin;
-	//ARENA + LOBBY SQL STUFF
+
+	public HashMap<String, HashMap<String, String>> tables;
+
 	public SQLArenaLobby sqlArenaLobby;
+	public SQLPlayers sqlPlayers;
+	public SQLGeneralStats sqlGeneralStats;
 
 	public BlaSQLite(File databaseFile, Paintball pl) {
 		this.databaseFile = databaseFile;
-		this.createDefaultDatabase();
 		plugin = pl;
+		this.tables = new HashMap<String, HashMap<String, String>>();
+
 		sqlArenaLobby = new SQLArenaLobby(this, plugin);
+		sqlPlayers = new SQLPlayers(this, plugin);
+		sqlGeneralStats = new SQLGeneralStats(this, plugin);
+		
+		//CREATE TABLES
+		sqlArenaLobby.createDefaultTables();
+		sqlPlayers.createDefaultTables();
+		sqlGeneralStats.createDefaultTables();
 	}
 
 	public void refreshConnection() {
@@ -40,17 +55,17 @@ public class BlaSQLite {
 			connection = DriverManager.getConnection("jdbc:sqlite:" + this.databaseFile.getAbsolutePath());
 			return true;
 		} catch (SQLException ex) {
-			log("SQL Exception!");
+			log("ERROR: SQL Exception!");
 			ex.printStackTrace();
 		} catch (ClassNotFoundException ex) {
-			log("Could not find SQLite driver class!");
+			log("ERROR: Could not find SQLite driver class!");
 			ex.printStackTrace();
 		}
 		return false;
 	}
 
 	public void log(String msg) {
-		System.out.println("[BlaSQLite ERROR] "+msg);
+		System.out.println("[BlaSQLite] "+msg);
 	}
 
 	public synchronized int updateQuery(String query) {
@@ -88,23 +103,20 @@ public class BlaSQLite {
 	/////////////////////////////
 	//PAINTBALL SPEZIFISCHER TEIL
 
-	public void createDefaultDatabase() {
-		///////////////
-		//version 1081:
-		//PLAYERDATA
-		this.updateQuery("CREATE TABLE IF NOT EXISTS players(name TEXT, points INTEGER, shots INTEGER, hits INTEGER, teamattacks INTEGER, kills INTEGER, deaths INTEGER, wins INTEGER, looses INTEGER, money INTEGER);");
-		this.updateQuery("CREATE UNIQUE INDEX ON players(name);");
-		//ARENADATA
-		this.updateQuery("CREATE TABLE IF NOT EXISTS arenas(name TEXT, rounds INTEGER, kills INTEGER, shots INTEGER, size INTEGER);");
-		this.updateQuery("CREATE UNIQUE INDEX ON arenas(name);");
-		this.updateQuery("CREATE TABLE IF NOT EXISTS locations(id INTEGER PRIMARY KEY, world TEXT, x INTEGER, y INTEGER, z INTEGER, yaw REAL, pitch REAL);");
-		this.updateQuery("CREATE TABLE IF NOT EXISTS bluespawns(arena TEXT, location_id INTEGER);");
-		this.updateQuery("CREATE TABLE IF NOT EXISTS redspawns(arena TEXT, location_id INTEGER);");
-		this.updateQuery("CREATE TABLE IF NOT EXISTS specspawns(arena TEXT, location_id INTEGER);");
-		//LOBBYSPAWNS
-		this.updateQuery("CREATE TABLE IF NOT EXISTS lobbyspawns(location_id INTEGER);");
-		//GENERAL STATS
-		this.updateQuery("CREATE TABLE IF NOT EXISTS stats(rounds INTEGER, kills INTEGER, shots INTEGER, money INTEGER);");
+	public void createDefaultTable(String name, String query) {
+		this.updateQuery("CREATE TABLE IF NOT EXISTS "+name+"("+query+");");
 	}
-	
+
+	public void createDefaultTable(String name, HashMap<String, String> content, String indexOn) {
+		String query = "";
+		for(Entry<String, String> entry : content.entrySet()) {
+			query += entry.getKey()+" "+entry.getValue().toUpperCase()+", ";
+		}
+		if(query.length() > 2) {
+			query = query.substring(0, query.length()-2);
+			this.updateQuery("CREATE TABLE IF NOT EXISTS "+name+"("+query+");");
+			if(indexOn != null) this.updateQuery("CREATE UNIQUE INDEX ON "+name+"("+indexOn+");");
+		}
+	}
+
 }

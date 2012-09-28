@@ -71,17 +71,17 @@ public enum Lobby {
 	public void setHelmet(Material mat, byte data) {
 		helmet = new ItemStack(mat, 1, Short.parseShort("0"), data);
 	}
-	public void setPlaying(Player player) {
+	public synchronized void setPlaying(Player player) {
 		if(players.containsKey(player)) players.put(player, true);
 	}
-	public void setWaiting(Player player) {
+	public synchronized void setWaiting(Player player) {
 		if(players.containsKey(player)) players.put(player, false);
 	}
 	//GETTER
-	public Set<Player> getMembers() {
+	public synchronized Set<Player> getMembers() {
 		return players.keySet();
 	}
-	public boolean isMember(Player player) {
+	public synchronized boolean isMember(Player player) {
 		if(players.containsKey(player)) return true;
 		return false;
 	}
@@ -99,7 +99,7 @@ public enum Lobby {
 		}
 		return number;
 	}
-	public int number() {
+	public synchronized int number() {
 		return players.size();
 	}
 	public int maxNumber() {
@@ -116,7 +116,7 @@ public enum Lobby {
 	}
 	//STATIC
 	//GETTER
-	public static Lobby getTeam(String team) {
+	public synchronized static Lobby getTeam(String team) {
 		for(Lobby t : Lobby.values()) {
 			if(t.getName().equalsIgnoreCase(team)) return t;
 		}
@@ -129,27 +129,27 @@ public enum Lobby {
 		if(Lobby.LOBBY.isMember(player)) return Lobby.LOBBY;
 		return null;
 	}
-	public static boolean toggledFeed(Player player) {
+	public synchronized static boolean toggledFeed(Player player) {
 		if(Lobby.LOBBY.players.get(player)) return true;
 		return false;
 	}
-	public static void toggleFeed(Player player) {
+	public synchronized static void toggleFeed(Player player) {
 		if(toggledFeed(player)) Lobby.LOBBY.players.put(player, false);
 		else Lobby.LOBBY.players.put(player, true);
 	}
-	public static boolean inTeam(Player player) {
+	public synchronized static boolean inTeam(Player player) {
 		if(getTeam(player).equals(Lobby.RED) || getTeam(player).equals(Lobby.BLUE) || getTeam(player).equals(Lobby.RANDOM)) {
 			return true;
 		}
 		return false;
 	}
-	public static boolean isPlaying(Player player) {
+	public synchronized static boolean isPlaying(Player player) {
 		if(getTeam(player).equals(Lobby.RED) || getTeam(player).equals(Lobby.BLUE) || getTeam(player).equals(Lobby.RANDOM)) {
 			if(getTeam(player).players.get(player)) return true;
 		}
 		return false;
 	}
-	public static boolean isSpectating(Player player) {
+	public synchronized static boolean isSpectating(Player player) {
 		if(getTeam(player).equals(Lobby.SPECTATE)) {
 			if(getTeam(player).players.get(player)) return true;
 		}
