@@ -28,10 +28,20 @@ public class SQLGeneralStats {
 	public void createDefaultTables() {
 		//general stats
 		HashMap<String, String> stats = new HashMap<String, String>();
+		String columns = "";
+		String values = "";
 		for(String s : statsList) {
 			stats.put(s, "INTEGER");
+			columns += s+",";
+			values += "0,";
 		}
-		sql.createDefaultTable("general_stats", stats, null);		
+		sql.createDefaultTable("general_stats", stats, null);
+		//DEFAULT VALUES:
+		if(columns.length() > 1) {
+			columns = columns.substring(0, columns.length()-1);
+			values = values.substring(0, values.length()-1);
+			sql.updateQuery("INSERT OR IGNORE INTO general_stats("+columns+") VALUES("+values+");");
+		}
 	}
 	
 	//PLAYERDATA
@@ -39,7 +49,7 @@ public class SQLGeneralStats {
 
 	public HashMap<String, Integer> getStats() {
 		HashMap<String, Integer> data = new HashMap<String, Integer>();
-		ResultSet rs = sql.resultQuery("SELECT * FROM general_stats WHERE rowid=1 LIMIT 1;");
+		ResultSet rs = sql.resultQuery("SELECT * FROM general_stats WHERE row_id='1';");
 		try {
 			if(rs != null && rs.first()) {
 				ResultSetMetaData rsmd = rs.getMetaData();
@@ -54,7 +64,11 @@ public class SQLGeneralStats {
 		return data;
 	}
 	//SET
-	public void addStats(String player, HashMap<String, Integer> stats) {
+	public void matchEnd() {
+		
+	}
+	
+	public void addStats(HashMap<String, Integer> stats) {
 		String query = "";
 		for(Entry<String, Integer> entry : stats.entrySet()) {
 			String key = entry.getKey();
@@ -64,11 +78,11 @@ public class SQLGeneralStats {
 		}
 		if(query.length() > 0) {
 			query = query.substring(0, query.length()-1);
-			sql.updateQuery("UPDATE OR IGNORE general_stats SET "+query+" WHERE name='"+player+"';");
+			sql.updateQuery("UPDATE OR IGNORE general_stats SET "+query+" WHERE row_id='1';");
 		}
 	}
 
-	public void setStats(String player, HashMap<String, Integer> stats) {
+	public void setStats(HashMap<String, Integer> stats) {
 		String query = "";
 		for(Entry<String, Integer> entry : stats.entrySet()) {
 			String key = entry.getKey();
@@ -78,7 +92,7 @@ public class SQLGeneralStats {
 		}
 		if(query.length() > 0) {
 			query = query.substring(0, query.length()-1);
-			sql.updateQuery("UPDATE OR IGNORE general_stats SET "+query+" WHERE name='"+player+"';");
+			sql.updateQuery("UPDATE OR IGNORE general_stats SET "+query+" WHERE row_id='1';");
 		}
 	}
 
