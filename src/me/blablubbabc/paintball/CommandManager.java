@@ -293,7 +293,7 @@ public class CommandManager implements CommandExecutor{
 	
 	private boolean joinLobbyPre(Player player) {
 		//Lobby vorhanden?
-		if(plugin.getLobbySpawns().size() == 0) {
+		if(plugin.getLobbyspawnsCount() == 0) {
 			player.sendMessage(plugin.t.getString("NO_LOBBY_FOUND"));
 			return false;
 		}

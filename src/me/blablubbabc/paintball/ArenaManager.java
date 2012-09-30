@@ -1,41 +1,40 @@
 package me.blablubbabc.paintball;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.LinkedHashMap;
 import me.blablubbabc.BlaDB.BlaDBRegister;
 import org.bukkit.Location;
 
 public class ArenaManager {
 	private static Paintball plugin;
-	private static BlaDBRegister data;
-	private LinkedHashMap<String, Boolean> active;
+	//private static BlaDBRegister data;
+	private HashMap<String, Boolean> active;
 	private int zähler;
 	private String nextArenaForce;
 	
 	public ArenaManager(Paintball pl) {
 		plugin = pl;
-		data = new BlaDBRegister();
+		//data = new BlaDBRegister();
 		loadArenas();
 		zähler = 0;
 		nextArenaForce = "";
 	}
 	//METHODS
 	private void loadArenas() {
-		active = new LinkedHashMap<String, Boolean>();
+		active = new HashMap<String, Boolean>();
 		
-		if(plugin.data.getRegister("arenas") == null) saveData();
-		else data = plugin.data.getRegister("arenas");
+		/*if(plugin.data.getRegister("arenas") == null) saveData();
+		else data = plugin.data.getRegister("arenas");*/
 		
-		for(String name : data.getData().keySet()) {
+		for(String name : plugin.sql.sqlArenaLobby.getAllArenaNames()) {
 			active.put(name, false);
 		}
 	}
 	
-	public boolean existing(String name) {
-		for(String s : data.getData().keySet()) {
-			if(s.equalsIgnoreCase(name)) return true;
-		}
-		return false;
+	public synchronized boolean existing(String name) {
+		return (active.keySet().contains(name) ? true : false);
+		//plugin.sql.sqlArenaLobby.isArenaExisting(arena)
 	}
 	//GETTER
 	public boolean isReady() {

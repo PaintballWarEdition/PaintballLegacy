@@ -5,7 +5,7 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
-import me.blablubbabc.BlaDB.BlaDB;
+import java.util.LinkedList;
 import me.blablubbabc.BlaDB.BlaSQLite;
 import me.blablubbabc.paintball.Metrics.Graph;
 import org.bukkit.ChatColor;
@@ -30,7 +30,10 @@ public class Paintball extends JavaPlugin{
 	public Stats stats;
 	public boolean active;
 	public boolean softreload;
+	
+	//LOBBYSPAWNS
 	public int lobbyspawn;
+	private LinkedList<Location> lobbyspawns;
 
 	//Public afk detection
 	public HashMap <String, Integer> afkMatchCount;
@@ -150,7 +153,7 @@ public class Paintball extends JavaPlugin{
 
 
 	public BlaSQLite sql;
-	public BlaDB data;
+	//public BlaDB data;
 
 	@SuppressWarnings("unchecked")
 	public void onEnable(){	
@@ -308,8 +311,8 @@ public class Paintball extends JavaPlugin{
 		//SQLite with version: 1081
 		sql = new BlaSQLite(new File(this.getDataFolder().toString()+"/"+"pbdata_1081"+".db"), this);
 		//DB
-		data = new BlaDB("paintball", this.getDataFolder().toString());
-		data.autosave(false);
+		//data = new BlaDB("paintball", this.getDataFolder().toString());
+		//data.autosave(false);
 		loadDB();
 		//TRANSLATOR
 		t = new Translator(this, local);
@@ -345,7 +348,7 @@ public class Paintball extends JavaPlugin{
 		if(autoLobby) {
 			for(Player player : getServer().getOnlinePlayers()) {
 				//Lobby vorhanden?
-				if(getLobbySpawns().size() == 0) {
+				if(getLobbyspawnsCount() == 0) {
 					player.sendMessage(t.getString("NO_LOBBY_FOUND"));
 					continue;
 				}
@@ -488,40 +491,57 @@ public class Paintball extends JavaPlugin{
 	}
 
 	//METHODS LOBBYSPAWNS
-	private void loadDB() {
-		ArrayList<LinkedHashMap<String, Object>> lobbyspawns = new ArrayList<LinkedHashMap<String, Object>>();
+	private synchronized void loadDB() {
+		lobbyspawns = new LinkedList<Location>();
+		for(Location loc : sql.sqlArenaLobby.getLobbyspawns()) {
+			lobbyspawns.add(loc);
+		}
+		/*ArrayList<LinkedHashMap<String, Object>> lobbyspawns = new ArrayList<LinkedHashMap<String, Object>>();
 		if(data.getValue("lobbyspawns") == null) data.setValue("lobbyspawns", lobbyspawns);
 
-		data.saveFile();	
+		data.saveFile();	*/
 	}
 
-
-	@SuppressWarnings("unchecked")
-	public void addLobbySpawn(Location loc) {
-		LinkedHashMap<String, Object> map = transformLocation(loc);
+	public synchronized void addLobbySpawn(Location loc) {
+		lobbyspawns.add(loc);
+		sql.sqlArenaLobby.addLobbyspawn(loc);
+		/*LinkedHashMap<String, Object> map = transformLocation(loc);
 		ArrayList<LinkedHashMap<String, Object>> lobbyspawns = (ArrayList<LinkedHashMap<String, Object>>) data.getValue("lobbyspawns");
 		lobbyspawns.add(map);
 		data.setValue("lobbyspawns", lobbyspawns);
 
-		data.saveFile();	
+		data.saveFile();	*/
 	}
-	public void deleteLobbySpawns() {
-		ArrayList<LinkedHashMap<String, Object>> lobbyspawns = new ArrayList<LinkedHashMap<String, Object>>();
+	public synchronized void deleteLobbySpawns() {
+		sql.sqlArenaLobby.removeLobbyspawns();
+		lobbyspawns = new LinkedList<Location>();
+		/*ArrayList<LinkedHashMap<String, Object>> lobbyspawns = new ArrayList<LinkedHashMap<String, Object>>();
 		data.setValue("lobbyspawns", lobbyspawns);
 
-		data.saveFile();	
+		data.saveFile();	*/
 	}
-	@SuppressWarnings("unchecked")
-	public ArrayList<LinkedHashMap<String, Object>> getLobbySpawns() {
-		ArrayList<LinkedHashMap<String, Object>> lobbyspawns = (ArrayList<LinkedHashMap<String, Object>>) data.getValue("lobbyspawns");
-		return lobbyspawns;
+	
+	/*public synchronized ArrayList<Location> getLobbySpawns() {
+		return new ArrayList<Location>(lobbyspawns);;
+		/*ArrayList<LinkedHashMap<String, Object>> lobbyspawns = (ArrayList<LinkedHashMap<String, Object>>) data.getValue("lobbyspawns");
+		return lobbyspawns;*/
+	//}
+	
+	public synchronized int getLobbyspawnsCount() {
+		return lobbyspawns.size();
+	}
+	
+	public synchronized Location getNextLobbySpawn() {
+		lobbyspawn++;
+		if(lobbyspawn > (lobbyspawns.size()-1)) lobbyspawn = 0;
+		return (lobbyspawns.size() > 0 ? lobbyspawns.get(lobbyspawn) : null);
 	}
 
 	////////////////////////////////////
 	//UTILS
 	////////////////////////////////////
 
-	public LinkedHashMap<String, Object> transformLocation(Location loc) {
+	/*public LinkedHashMap<String, Object> transformLocation(Location loc) {
 		LinkedHashMap<String, Object> map = new LinkedHashMap<String, Object>();
 		map.put("world", loc.getWorld().getName());
 		map.put("x", loc.getBlockX());
@@ -536,13 +556,7 @@ public class Paintball extends JavaPlugin{
 		int z = (Integer) map.get("z");
 		Location loc = new Location(getServer().getWorld(world), x, y, z);
 		return loc;
-	}
-
-	public int getNextLobbySpawn() {
-		lobbyspawn++;
-		if(lobbyspawn > (getLobbySpawns().size()-1)) lobbyspawn = 0;
-		return lobbyspawn;
-	}
+	}*/
 
 	public void checks(Player player) {
 		if(!isEmpty(player)) clearInv(player);
@@ -575,10 +589,11 @@ public class Paintball extends JavaPlugin{
 	public void joinLobby(Player player) {
 		checks(player);
 		//Lobbyteleport
-		player.teleport(transformLocation(getLobbySpawns().get(getNextLobbySpawn())));
+		player.teleport(getNextLobbySpawn());
+		//player.teleport(transformLocation(getLobbySpawns().get(getNextLobbySpawn())));
 	}
 
-	public synchronized void leaveLobby(Player player, boolean messages, boolean teleport, boolean restoreInventory) {
+	public void leaveLobby(Player player, boolean messages, boolean teleport, boolean restoreInventory) {
 		//lobby remove:
 		Lobby.remove(player);
 		checks(player);
@@ -587,21 +602,21 @@ public class Paintball extends JavaPlugin{
 			//PlayerInventory
 			//null check added:
 			ItemStack[] isc = pm.getInvContent(player);
-			for(int i = 0; i < player.getInventory().getContents().length; i++) {
-				if(i >= isc.length || isc[i] == null) {
-					player.getInventory().setItem(i, null);
-				} else {
-					player.getInventory().setItem(i, isc[i]);
-				}
+			if(isc != null) {
+				player.getInventory().setContents(isc);
+			}
+			ItemStack[] isa = pm.getInvArmor(player);
+			if(isa != null) {
+				player.getInventory().setArmorContents(isa);
 			}
 			
 			//player.getInventory().setContents(pm.getInvContent(player));
-			player.getInventory().setArmorContents(pm.getInvArmor(player));
+			//player.getInventory().setArmorContents(pm.getInvArmor(player));
 			player.sendMessage(t.getString("INVENTORY_RESTORED"));
 		}
 		//teleport:
 		if(teleport) player.teleport(pm.getLoc(player));
-		if (messages) {
+		if(messages) {
 			//messages:
 			player.sendMessage(t.getString("YOU_LEFT_LOBBY"));
 			nf.leave(player.getName());

@@ -479,7 +479,7 @@ public class EventListener implements Listener{
 
 				if(plugin.autoLobby) {
 					//Lobby vorhanden?
-					if(plugin.getLobbySpawns().size() == 0) {
+					if(plugin.getLobbyspawnsCount() == 0) {
 						player.sendMessage(plugin.t.getString("NO_LOBBY_FOUND"));
 						return;
 					}
