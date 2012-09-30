@@ -27,7 +27,7 @@ public class SQLArenaLobby {
 		statsList.add("rounds"); statsList.add("kills"); statsList.add("shots"); statsList.add("grenades"); statsList.add("airstrikes");
 		
 		settingsList = new ArrayList<String>();
-		settingsList.add("size"); settingsList.add("balls"); settingsList.add("grenades"); settingsList.add("airstrikes"); settingsList.add("lives"); settingsList.add("respawns");
+		settingsList.add("balls"); settingsList.add("grenades"); settingsList.add("airstrikes"); settingsList.add("lives"); settingsList.add("respawns");
 	}
 	
 	public void createDefaultTables() {
@@ -49,16 +49,16 @@ public class SQLArenaLobby {
 		
 		//locations
 		String locationsQuery = "id INTEGER PRIMARY KEY, world TEXT, x INTEGER, y INTEGER, z INTEGER, yaw REAL, pitch REAL";
-		sql.createDefaultTable("locations", locationsQuery);
+		sql.createDefaultTable("locations", locationsQuery, null);
 		
 		//red/blue/spec/lobby spawns
 		String spawnsQuery = "arena TEXT, location_id INTEGER";
-		sql.createDefaultTable("redspawns", spawnsQuery);
-		sql.createDefaultTable("bluespawns", spawnsQuery);
-		sql.createDefaultTable("specspawns", spawnsQuery);
+		sql.createDefaultTable("redspawns", spawnsQuery, null);
+		sql.createDefaultTable("bluespawns", spawnsQuery, null);
+		sql.createDefaultTable("specspawns", spawnsQuery, null);
 		
 		String lobbyQuery = "location_id INTEGER";
-		sql.createDefaultTable("lobbyspawns", lobbyQuery);
+		sql.createDefaultTable("lobbyspawns", lobbyQuery, null);
 		
 	}
 
@@ -341,7 +341,7 @@ public class SQLArenaLobby {
 			settingsQuery += ","+s;
 			settingsValues += ",0"; 
 		}
-		sql.updateQuery("INSERT OR IGNORE INTO arenas(name,"+settingsQuery+") VALUES('"+arena+"'"+settingsValues+");");
+		sql.updateQuery("INSERT OR IGNORE INTO arenas(name"+settingsQuery+") VALUES('"+arena+"'"+settingsValues+");");
 		
 		//ARENASTATS
 		String statsQuery = "";
@@ -350,7 +350,7 @@ public class SQLArenaLobby {
 			statsQuery += ","+s;
 			statsValues += ",0"; 
 		}
-		sql.updateQuery("INSERT OR IGNORE INTO arenastats(name,"+statsQuery+") VALUES('"+arena+"'"+statsValues+");");
+		sql.updateQuery("INSERT OR IGNORE INTO arenastats(name"+statsQuery+") VALUES('"+arena+"'"+statsValues+");");
 	}
 
 	public void addLobbyspawn(Location loc) {

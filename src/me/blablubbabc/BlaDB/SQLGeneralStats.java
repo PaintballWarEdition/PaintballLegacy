@@ -27,20 +27,11 @@ public class SQLGeneralStats {
 
 	public void createDefaultTables() {
 		//general stats
-		HashMap<String, String> stats = new HashMap<String, String>();
-		String columns = "";
-		String values = "";
-		for(String s : statsList) {
-			stats.put(s, "INTEGER");
-			columns += s+",";
-			values += "0,";
-		}
-		sql.createDefaultTable("general_stats", stats, null);
+		sql.createDefaultTable("general_stats", "key TEXT, value INTEGER", "key");
+		
 		//DEFAULT VALUES:
-		if(columns.length() > 1) {
-			columns = columns.substring(0, columns.length()-1);
-			values = values.substring(0, values.length()-1);
-			sql.updateQuery("INSERT OR IGNORE INTO general_stats("+columns+") VALUES("+values+");");
+		for(String s : statsList) {
+			sql.updateQuery("INSERT OR IGNORE INTO general_stats(key,value) VALUES("+s+",0);");
 		}
 	}
 	

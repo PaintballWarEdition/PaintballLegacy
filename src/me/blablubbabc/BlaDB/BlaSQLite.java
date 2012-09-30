@@ -103,8 +103,9 @@ public class BlaSQLite {
 	/////////////////////////////
 	//PAINTBALL SPEZIFISCHER TEIL
 
-	public void createDefaultTable(String name, String query) {
+	public void createDefaultTable(String name, String query, String indexOn) {
 		this.updateQuery("CREATE TABLE IF NOT EXISTS "+name+"("+query+");");
+		if(indexOn != null) this.updateQuery("CREATE UNIQUE INDEX ON "+name+"("+indexOn+");");
 	}
 
 	public void createDefaultTable(String name, HashMap<String, String> content, String indexOn) {

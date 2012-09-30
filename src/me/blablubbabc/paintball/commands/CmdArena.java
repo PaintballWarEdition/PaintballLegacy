@@ -1,7 +1,10 @@
 package me.blablubbabc.paintball.commands;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
+import java.util.Map.Entry;
+
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 import me.blablubbabc.paintball.ArenaManager;
@@ -27,17 +30,14 @@ public class CmdArena {
 			Player player = (Player) sender;
 			if(args[1].equalsIgnoreCase("list")) {
 				//list
-				LinkedHashMap<String, Object> arenas = am.getArenaData();
+				ArrayList<String> arenas = am.getAllArenaNames();
 				HashMap<String, String> vars = new HashMap<String, String>();
 				vars.put("arenas", String.valueOf(arenas.size()));
 				player.sendMessage(plugin.t.getString("ARENA_LIST_HEADER", vars));
-				for(String name : arenas.keySet()) {
-					String ready = "";
-					if(am.isReady(name)) ready = plugin.t.getString("ARENA_STATUS_READY");
-					else ready = plugin.t.getString("ARENA_STATUS_NOT_READY");
+				for(String name : arenas) {
 					HashMap<String, String> vars2 = new HashMap<String, String>();
 					vars2.put("arena", name);
-					vars2.put("status", ready);
+					vars2.put("status", am.getArenaStatus(name));
 					player.sendMessage(plugin.t.getString("ARENA_LIST_ENTRY", vars2));
 				}
 				return true;
@@ -61,20 +61,30 @@ public class CmdArena {
 				//Existing:
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 				if(args[2].equalsIgnoreCase("info")) {
-					LinkedHashMap<String, Object> arena = am.getArena(name);
-					String ready = "";
-					if(am.isReady(name)) ready = plugin.t.getString("ARENA_STATUS_READY");
-					else ready = plugin.t.getString("ARENA_STATUS_NOT_READY");
-					vars.put("status", ready);
-					vars.put("size", String.valueOf(arena.get("size")));
-					vars.put("rounds", String.valueOf(arena.get("rounds")));
-					vars.put("kills", String.valueOf(arena.get("kills")));
-					vars.put("shots", String.valueOf(arena.get("shots")));
+					HashMap<String, Integer> arenaStats = am.getArenaStats(name);
+					vars.put("status", am.getArenaStatus(name));
+					for(Entry<String, Integer> entry : arenaStats.entrySet()) {
+						vars.put(entry.getKey(), String.valueOf(entry.getValue()));
+					}
 					player.sendMessage(plugin.t.getString("ARENA_INFO_HEADER", vars));
-					player.sendMessage(plugin.t.getString("ARENA_INFO_SIZE", vars));
-					player.sendMessage(plugin.t.getString("ARENA_INFO_ROUNDS", vars));
-					player.sendMessage(plugin.t.getString("ARENA_INFO_KILLS", vars));
-					player.sendMessage(plugin.t.getString("ARENA_INFO_SHOTS", vars));
+					player.sendMessage(plugin.t.getString("ARENA_INFO_STATS_HEADER"));
+					player.sendMessage(plugin.t.getString("ARENA_INFO_STATS_ROUNDS", vars));
+					player.sendMessage(plugin.t.getString("ARENA_INFO_STATS_KILLS", vars));
+					player.sendMessage(plugin.t.getString("ARENA_INFO_STATS_SHOTS", vars));
+					player.sendMessage(plugin.t.getString("ARENA_INFO_STATS_GRENADES", vars));
+					player.sendMessage(plugin.t.getString("ARENA_INFO_STATS_AIRSTRIKES", vars));
+					
+					HashMap<String, Integer> arenaSettings = am.getArenaSettings(name);
+					for(Entry<String, Integer> entry : arenaSettings.entrySet()) {
+						vars.put(entry.getKey(), String.valueOf(entry.getValue()));
+					}
+					
+					player.sendMessage(plugin.t.getString("ARENA_INFO_SETTINGS_HEADER"));
+					player.sendMessage(plugin.t.getString("ARENA_INFO_SETTINGS_BALLS", vars));
+					player.sendMessage(plugin.t.getString("ARENA_INFO_SETTINGS_GRENADES", vars));
+					player.sendMessage(plugin.t.getString("ARENA_INFO_SETTINGS_AIRSTRIKES", vars));
+					player.sendMessage(plugin.t.getString("ARENA_INFO_SETTINGS_LIVES", vars));
+					player.sendMessage(plugin.t.getString("ARENA_INFO_SETTINGS_RESPAWNS", vars));
 					
 					vars.put("team", String.valueOf(Lobby.BLUE.getName()));
 					vars.put("spawns", String.valueOf(am.getBlueSpawnsSize(name)));
