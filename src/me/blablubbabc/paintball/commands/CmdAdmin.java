@@ -1,8 +1,6 @@
 package me.blablubbabc.paintball.commands;
 
 import java.util.HashMap;
-
-import org.bukkit.Location;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
@@ -50,19 +48,16 @@ public class CmdAdmin {
 					if(args[2].equalsIgnoreCase("blue")) {
 						ItemStack is = player.getItemInHand();
 						Lobby.BLUE.setHelmet(is.getType(), is.getData().getData());
-						Lobby.BLUE.saveData();
 						player.sendMessage(plugin.t.getString("HELMET_SET"));
 						return true;
 					} else if(args[2].equalsIgnoreCase("red")) {
 						ItemStack is = player.getItemInHand();
 						Lobby.RED.setHelmet(is.getType(), is.getData().getData());
-						Lobby.RED.saveData();
 						player.sendMessage(plugin.t.getString("HELMET_SET"));
 						return true;
 					} else if(args[2].equalsIgnoreCase("spec") || args[2].equalsIgnoreCase("spectator")) {
 						ItemStack is = player.getItemInHand();
 						Lobby.SPECTATE.setHelmet(is.getType(), is.getData().getData());
-						Lobby.SPECTATE.saveData();
 						player.sendMessage(plugin.t.getString("HELMET_SET"));
 						return true;
 					}
@@ -74,17 +69,12 @@ public class CmdAdmin {
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 		if(args[1].equalsIgnoreCase("reset")) {
 			if(args.length == 3 && args[2].equalsIgnoreCase("all")) {
-				//reload:
-				//plugin.active = false;
-				//plugin.reload();
-				//sender.sendMessage(plugin.t.getString("REALOAD_FINISHED"));
-				//playerstats löschen
 				long time1 = System.currentTimeMillis();
 				plugin.pm.resetData();
 				long time2 = System.currentTimeMillis();
 				long delta = time2 - time1;
 				
-				int amount = plugin.pm.getData().size();
+				int amount = plugin.pm.getPlayerCount();
 				
 				HashMap<String, String> vars = new HashMap<String, String>();
 				vars.put("time", String.valueOf(delta));
@@ -94,15 +84,7 @@ public class CmdAdmin {
 			} else if(args.length == 3) {
 				if(plugin.pm.exists(args[2])) {
 					String name = args[2];
-					//reset all values:
-					plugin.pm.setDeaths(name, 0);
-					plugin.pm.setKills(name, 0);
-					plugin.pm.setLooses(name, 0);
-					plugin.pm.setWins(name, 0);
-					plugin.pm.setMoney(name, 0);
-					plugin.pm.setPoints(name, 0);
-					plugin.pm.setShots(name, 0);
-					plugin.pm.saveData();
+					plugin.pm.resetData(name);
 					HashMap<String, String> vars = new HashMap<String, String>();
 					vars.put("player", name);
 					sender.sendMessage(plugin.t.getString("PLAYER_ALL_STATS_RESET", vars));
@@ -114,16 +96,17 @@ public class CmdAdmin {
 				return true;
 			} else if(args.length == 4) {
 				if(plugin.pm.exists(args[2])) {
-					if(plugin.pm.possibleValues.contains(args[3])) {
-						plugin.pm.setIntValue(args[2], args[3], 0);
-						plugin.pm.saveData();
+					if(plugin.sql.sqlPlayers.statsList.contains(args[3])) {
+						HashMap<String, Integer> setStat = new HashMap<String, Integer>();
+						setStat.put(args[3], 0);
+						plugin.pm.setStats(args[2], setStat);
 						HashMap<String, String> vars = new HashMap<String, String>();
 						vars.put("player", args[2]);
 						vars.put("stat", args[3]);
 						sender.sendMessage(plugin.t.getString("PLAYER_STAT_RESET", vars));
 					} else {
 						String values = "";
-						for(String s : plugin.pm.possibleValues) {
+						for(String s : plugin.sql.sqlPlayers.statsList) {
 							values += s + ",";
 						}
 						if(values.length() > 1) values.substring(0, (values.length() -1));
@@ -139,40 +122,74 @@ public class CmdAdmin {
 				return true;
 			}
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-		} else if(args[1].equalsIgnoreCase("cash")) {
-			if(args.length == 3) {
-				plugin.stats.sendCash(sender, args[2]);
-				return true;
-			} else if(args.length == 4) {
-				try {
-					int money = Integer.parseInt(args[3]);
-					plugin.pm.addMoney(args[2], money);
-					plugin.pm.saveData();
-					HashMap<String,String> vars = new HashMap<String, String>();
+		} else if(args[1].equalsIgnoreCase("set")) {
+			if(args.length == 5) {
+				if(plugin.pm.exists(args[2])) {
+					if(plugin.sql.sqlPlayers.statsList.contains(args[3])) {
+						try {
+							String stat = args[3];
+							int value = Integer.parseInt(args[4]);
+							HashMap<String, Integer> setStat = new HashMap<String, Integer>();
+							setStat.put(args[3], value);
+							plugin.pm.setStats(args[2], setStat);
+							HashMap<String,String> vars = new HashMap<String, String>();
+							vars.put("player", args[2]);
+							vars.put("stat", stat);
+							vars.put("value", String.valueOf(value));
+							sender.sendMessage(plugin.t.getString("PLAYER_STAT_SET", vars));
+						} catch(Exception e) {
+							sender.sendMessage(plugin.t.getString("INVALID_NUMBER"));
+						}
+					} else {
+						String values = "";
+						for(String s : plugin.sql.sqlPlayers.statsList) {
+							values += s + ",";
+						}
+						if(values.length() > 1) values.substring(0, (values.length() -1));
+						HashMap<String, String> vars = new HashMap<String, String>();
+						vars.put("values", values);
+						sender.sendMessage(plugin.t.getString("VALUE_NOT_FOUND", vars));
+					}
+				} else {
+					HashMap<String, String> vars = new HashMap<String, String>();
 					vars.put("player", args[2]);
-					vars.put("value", String.valueOf(money));
-					sender.sendMessage(plugin.t.getString("PLAYER_RECEIVED_VALUE", vars));
-				} catch(Exception e) {
-					sender.sendMessage(plugin.t.getString("INVALID_NUMBER"));
+					sender.sendMessage(plugin.t.getString("PLAYER_NOT_FOUND", vars));
 				}
 				return true;
 			}
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-		} else if(args[1].equalsIgnoreCase("rank")) {
-			if(args.length == 3) {
-				plugin.stats.sendRank(sender, args[2]);
-				return true;
-			} else if(args.length == 4) {
-				try {
-					int points = Integer.parseInt(args[3]);
-					plugin.pm.addPoints(args[2], points);
-					plugin.pm.saveData();
-					HashMap<String,String> vars = new HashMap<String, String>();
+		} else if(args[1].equalsIgnoreCase("add")) {
+			if(args.length == 5) {
+				if(plugin.pm.exists(args[2])) {
+					if(plugin.sql.sqlPlayers.statsList.contains(args[3])) {
+						try {
+							String stat = args[3];
+							int value = Integer.parseInt(args[4]);
+							HashMap<String, Integer> setStat = new HashMap<String, Integer>();
+							setStat.put(args[3], value);
+							plugin.pm.addStats(args[2], setStat);
+							HashMap<String,String> vars = new HashMap<String, String>();
+							vars.put("player", args[2]);
+							vars.put("stat", stat);
+							vars.put("value", String.valueOf(value));
+							sender.sendMessage(plugin.t.getString("PLAYER_STAT_ADDED", vars));
+						} catch(Exception e) {
+							sender.sendMessage(plugin.t.getString("INVALID_NUMBER"));
+						}
+					} else {
+						String values = "";
+						for(String s : plugin.sql.sqlPlayers.statsList) {
+							values += s + ",";
+						}
+						if(values.length() > 1) values.substring(0, (values.length() -1));
+						HashMap<String, String> vars = new HashMap<String, String>();
+						vars.put("values", values);
+						sender.sendMessage(plugin.t.getString("VALUE_NOT_FOUND", vars));
+					}
+				} else {
+					HashMap<String, String> vars = new HashMap<String, String>();
 					vars.put("player", args[2]);
-					vars.put("value", String.valueOf(points));
-					sender.sendMessage(plugin.t.getString("PLAYER_RECEIVED_VALUE", vars));
-				} catch(Exception e) {
-					sender.sendMessage(plugin.t.getString("INVALID_NUMBER"));
+					sender.sendMessage(plugin.t.getString("PLAYER_NOT_FOUND", vars));
 				}
 				return true;
 			}
@@ -246,23 +263,6 @@ public class CmdAdmin {
 				plugin.onlyRandom = true;
 				sender.sendMessage(plugin.t.getString("ONLY_RANDOM_ON"));
 			}
-			return true;
-////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-		} else if(args[1].equalsIgnoreCase("test")) {
-			//TEST COMMAND
-			plugin.sql.sqlArenaLobby.addNewArena("test_arena");
-			System.out.println("[PB DEV] TEST COMMAND: 'test_arena' created.");
-			Location loc1 = new Location(plugin.getServer().getWorld("world"), 1.23D, 2.13455D, 3.5D, 13.74F, 0.123F);
-			Location loc2 = new Location(plugin.getServer().getWorld("world"), 2.56D, 2.13455D, 3.5D, 13.74F, 0.123F);
-			Location loc3 = new Location(plugin.getServer().getWorld("world"), 7.2D, 2.13455D, 3.5D, 13.74F, 0.123F);
-			plugin.sql.sqlArenaLobby.addRedspawn(loc1, "test_arena");
-			System.out.println("[PB DEV] TEST COMMAND: 'loc1' added.");
-			plugin.sql.sqlArenaLobby.addRedspawn(loc2, "test_arena");
-			System.out.println("[PB DEV] TEST COMMAND: 'loc2' added.");
-			plugin.sql.sqlArenaLobby.addRedspawn(loc3, "test_arena");
-			System.out.println("[PB DEV] TEST COMMAND: 'loc3' added.");
-			plugin.sql.sqlArenaLobby.getRedspawns("test_arena");
-			
 			return true;
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 		} else {

@@ -58,7 +58,7 @@ public class Newsfeeder {
 		vars.put("plugin", pluginName);
 		vars.put("message", String.valueOf(message));
 		for(Player player : Lobby.LOBBY.getMembers()) {
-			if(!Lobby.toggledFeed(player)) player.sendMessage(plugin.t.getString("TEXT", vars));
+			player.sendMessage(plugin.t.getString("TEXT", vars));
 		}
 	}
 	

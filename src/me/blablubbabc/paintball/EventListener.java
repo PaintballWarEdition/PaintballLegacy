@@ -2,12 +2,13 @@ package me.blablubbabc.paintball;
 
 import java.util.HashMap;
 import java.util.HashSet;
-import java.util.Map.Entry;
 import me.blablubbabc.paintball.extras.Airstrike;
 import me.blablubbabc.paintball.extras.Grenade;
 import org.bukkit.ChatColor;
+import org.bukkit.Chunk;
 import org.bukkit.Location;
 import org.bukkit.Material;
+import org.bukkit.World;
 import org.bukkit.block.Block;
 import org.bukkit.entity.Egg;
 import org.bukkit.entity.Player;
@@ -40,7 +41,6 @@ import org.bukkit.event.player.PlayerMoveEvent;
 import org.bukkit.event.player.PlayerPickupItemEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
 import org.bukkit.event.player.PlayerTeleportEvent;
-import org.bukkit.event.player.PlayerTeleportEvent.TeleportCause;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.util.Vector;
 
@@ -52,20 +52,11 @@ public class EventListener implements Listener{
 	private HashSet<Byte> transparent;
 	private HashMap<Player, String> chatMessages;
 
-	public HashMap<String, Location> teleportLoc;
-	public HashMap<String, TeleportCause> teleportCause;
-	private boolean teleportTaskRunning = false;
-	private HashMap<String, Location> allowedTeleport;
-
 	public EventListener(Paintball pl) {
 		plugin = pl;
 		mm = plugin.mm;
 		taskIds = new HashMap<Player, Integer>();
 		chatMessages = new HashMap<Player, String>();
-
-		teleportLoc = new HashMap<String, Location>();
-		teleportCause = new HashMap<String, TeleportCause>();
-		allowedTeleport = new HashMap<String, Location>();
 
 		transparent = new HashSet<Byte>();
 		transparent.add((byte) 0);
@@ -88,12 +79,8 @@ public class EventListener implements Listener{
 		if(mm.getMatch(player) != null) {
 			Match match = mm.getMatch(player);
 			if(!match.started) {
-				//To not cancle the teleport event from players not yet teleported.
-				if(!teleportLoc.containsKey(player.getName()) && !allowedTeleport.containsKey(event.getPlayer().getName())) {
-					if(event.getFrom().getX() != event.getTo().getX() || event.getFrom().getZ() != event.getTo().getZ()) {
-						event.setCancelled(true);
-						//player.teleport(event.getFrom());
-					}
+				if(event.getFrom().getX() != event.getTo().getX() || event.getFrom().getZ() != event.getTo().getZ()) {
+					event.setCancelled(true);
 				}
 			}
 		}
@@ -101,52 +88,19 @@ public class EventListener implements Listener{
 
 	@EventHandler
 	public void onPlayerTeleport(PlayerTeleportEvent event) {
-		if(plugin.teleportFix && (Lobby.getTeam(event.getPlayer()) != null)) {
-			if(allowedTeleport.containsKey(event.getPlayer().getName()) 
-					&& allowedTeleport.get(event.getPlayer().getName()).equals(event.getTo())) {
-				allowedTeleport.remove(event.getPlayer().getName());
-			} else {
-				teleportLoc.put(event.getPlayer().getName(), event.getTo());
-				teleportCause
-				.put(event.getPlayer().getName(), event.getCause());
-				event.setCancelled(true);
-
-				if (!teleportTaskRunning) {
-					teleportTaskRunning = true;
-					runTeleportTask();
-				}
-			}
+		if (event.isCancelled()) {
+			return;
 		}
-	}
-
-
-	private void runTeleportTask() {
-		plugin.getServer().getScheduler().scheduleSyncDelayedTask(plugin, new Runnable() {
-			public void run() {
-				if(teleportLoc.size() > 0) {
-					@SuppressWarnings("unchecked")
-					Entry<String, Location> entryLoc = (Entry<String, Location>) teleportLoc.entrySet().toArray()[0];
-
-					String name = entryLoc.getKey();
-					Location loc = entryLoc.getValue();
-					TeleportCause cause = teleportCause.get(name);
-					Player p = plugin.getServer().getPlayer(name);
-
-					teleportLoc.remove(name);
-					teleportCause.remove(name);
-
-					if(loc != null && cause != null && p != null) {
-						allowedTeleport.put(name, loc);
-						p.teleport(loc, cause);
-					}
-					if(teleportLoc.size() > 0){
-						runTeleportTask();
-					}else {
-						teleportTaskRunning = false;
-					}
-				}
-			}
-		}, 1L);
+		Location loc = event.getTo();
+		if (loc == null) {
+			return;
+		}
+		World world = loc.getWorld();
+		Chunk chunk = world.getChunkAt(loc);
+		if (!world.isChunkLoaded(chunk)) {
+			world.loadChunk(chunk);
+		}
+		world.refreshChunk(chunk.getX(), chunk.getZ());
 	}
 
 

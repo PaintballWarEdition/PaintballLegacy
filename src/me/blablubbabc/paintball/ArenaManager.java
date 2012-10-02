@@ -6,30 +6,17 @@ import org.bukkit.Location;
 
 public class ArenaManager {
 	private static Paintball plugin;
-	private HashMap<String, Boolean> active;
-	private HashMap<String, Boolean> checkSpawns;
 	private int zähler;
 	private String nextArenaForce;
 
 	public ArenaManager(Paintball pl) {
 		plugin = pl;
-		loadArenas();
 		zähler = 0;
 		nextArenaForce = "";
 	}
 	//METHODS
-	private synchronized void loadArenas() {
-		active = new HashMap<String, Boolean>();
-		checkSpawns = new HashMap<String, Boolean>();
-
-		for(String name : plugin.sql.sqlArenaLobby.getAllArenaNames()) {
-			active.put(name, false);
-			checkSpawns.put(name, hasAllSpawnsCheck(name));
-		}
-	}
 
 	public boolean existing(String name) {
-		//return (active.keySet().contains(name) ? true : false);
 		return plugin.sql.sqlArenaLobby.isArenaExisting(name);
 	}
 	//GETTER
@@ -37,26 +24,18 @@ public class ArenaManager {
 		return plugin.sql.sqlArenaLobby.getAllArenaNames();
 	}
 	
-	public synchronized boolean isReady() {
-		for(String arena : active.keySet()) {
+	public boolean isReady() {
+		for(String arena : getAllArenaNames()) {
 			if(isReady(arena)) return true;
 		}
 		return false;
 	}
-
-	private synchronized boolean hasAllSpawnsCheck(String arena) {
+	
+	public boolean hasAllSpawns(String arena) {
 		if(getBlueSpawnsSize(arena) > 0 && getRedSpawnsSize(arena) > 0 && getSpecSpawnsSize(arena) > 0) return true;
 		else return false;
 	}
 	
-	public boolean hasAllSpawns(String arena) {
-		synchronized(checkSpawns) {
-			if(!checkSpawns.containsKey(arena) || !checkSpawns.get(arena)) {
-				return false;
-			} else return true;
-		}
-	}
-
 	public String getArenaStatus(String name) {
 		String ready = "";
 		if(isReady(name)) ready = plugin.t.getString("ARENA_STATUS_READY");
@@ -64,8 +43,8 @@ public class ArenaManager {
 		return ready;
 	}
 	
-	public synchronized boolean isReady(String arena) {
-		if(!active.get(arena)) {
+	public boolean isReady(String arena) {
+		if(!inUse(arena)) {
 			//spawns?
 			if(hasAllSpawns(arena)) {
 				//worlds pvp on?
@@ -75,8 +54,8 @@ public class ArenaManager {
 		return false;
 	}
 
-	public synchronized  boolean inUse(String arena) {
-		if(active.get(arena)) return true;
+	public boolean inUse(String arena) {
+		if(plugin.sql.sqlArenaLobby.isArenaActive(arena)) return true;
 		else return false;
 	}
 
@@ -93,19 +72,19 @@ public class ArenaManager {
 		return true;
 	}
 
-	private synchronized ArrayList<String> readyArenas() {
+	private ArrayList<String> readyArenas() {
 		ArrayList<String> arenas = new ArrayList<String>();
-		for(String a : active.keySet()) {
-			if(!active.get(a) && isReady(a)) arenas.add(a);
+		for(String arena : getAllArenaNames()) {
+			if(!inUse(arena) && isReady(arena)) arenas.add(arena);
 		}
 		return arenas;
 	}
 	//SETTER
-	public synchronized void setNotActive(String arena) {
-		active.put(arena, false);
+	public void setNotActive(String arena) {
+		plugin.sql.sqlArenaLobby.setArenaNotActive(arena);
 	}
-	public synchronized void setActive(String arena) {
-		active.put(arena, true);
+	public void setActive(String arena) {
+		plugin.sql.sqlArenaLobby.setArenaActive(arena);
 	}
 
 
@@ -160,8 +139,7 @@ public class ArenaManager {
 
 	//SETTER
 
-	public synchronized void addArena(String name) {
-		active.put(name, false);
+	public void addArena(String name) {
 		plugin.sql.sqlArenaLobby.addNewArena(name);
 	}
 
@@ -190,47 +168,25 @@ public class ArenaManager {
 	//SPAWNS
 	public void addBlueSpawn(String arena, Location loc) {
 		plugin.sql.sqlArenaLobby.addBluespawn(loc, arena);
-		synchronized(checkSpawns) {
-			checkSpawns.put(arena, hasAllSpawnsCheck(arena));
-		}
 	}
 	public void addRedSpawn(String arena, Location loc) {
 		plugin.sql.sqlArenaLobby.addRedspawn(loc, arena);
-		synchronized(checkSpawns) {
-			checkSpawns.put(arena, hasAllSpawnsCheck(arena));
-		}
 	}
 	public void addSpecSpawn(String arena, Location loc) {
 		plugin.sql.sqlArenaLobby.addSpecspawn(loc, arena);
-		synchronized(checkSpawns) {
-			checkSpawns.put(arena, hasAllSpawnsCheck(arena));
-		}
 	}
 
 	public void removeBlueSpawns(String arena) {
 		plugin.sql.sqlArenaLobby.removeBluespawns(arena);
-		synchronized(checkSpawns) {
-			checkSpawns.put(arena, false);
-		}
 	}
 	public void removeRedSpawns(String arena) {
 		plugin.sql.sqlArenaLobby.removeBluespawns(arena);
-		synchronized(checkSpawns) {
-			checkSpawns.put(arena, false);
-		}
 	}
 	public void removeSpecSpawns(String arena) {
 		plugin.sql.sqlArenaLobby.removeBluespawns(arena);
-		synchronized(checkSpawns) {
-			checkSpawns.put(arena, false);
-		}
 	}
 
 	public synchronized void remove(String name) {
-		active.remove(name);
-		synchronized(checkSpawns) {
-			checkSpawns.remove(name);
-		}
 		plugin.sql.sqlArenaLobby.removeArena(name);
 	}
 }

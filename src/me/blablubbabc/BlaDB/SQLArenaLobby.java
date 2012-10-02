@@ -5,7 +5,6 @@ import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map.Entry;
-
 import me.blablubbabc.paintball.Paintball;
 import org.bukkit.Location;
 import org.bukkit.World;
@@ -16,7 +15,6 @@ public class SQLArenaLobby {
 	private static Paintball plugin;
 	
 	public ArrayList<String> statsList;
-	
 	public ArrayList<String> settingsList;
 
 	public SQLArenaLobby(BlaSQLite blasql, Paintball pl) {
@@ -32,12 +30,15 @@ public class SQLArenaLobby {
 	
 	public void createDefaultTables() {
 		//arenas
-		HashMap<String, String> arenas = new HashMap<String, String>();
-		arenas.put("name", "TEXT");
+		String arenasQuery = "name TEXT, active INTEGER";
+		sql.createDefaultTable("arenas", arenasQuery, "name");
+		//arenasettings
+		HashMap<String, String> arenasettings = new HashMap<String, String>();
+		arenasettings.put("name", "TEXT");
 		for(String s : settingsList) {
-			arenas.put(s, "INTEGER");
+			arenasettings.put(s, "INTEGER");
 		}
-		sql.createDefaultTable("arenas", arenas, "name");
+		sql.createDefaultTable("arenasettings", arenasettings, "name");
 		
 		//arenastats
 		HashMap<String, String> arenastats = new HashMap<String, String>();
@@ -60,7 +61,13 @@ public class SQLArenaLobby {
 		String lobbyQuery = "location_id INTEGER";
 		sql.createDefaultTable("lobbyspawns", lobbyQuery, null);
 		
+		//INIT RESET
+		for(String arena : getAllArenaNames()) {
+			sql.updateQuery("UPDATE OR IGNORE arenas SET active=0 WHERE name='"+arena+"';");
+		}	
 	}
+	
+	
 
 	//ARENADATA and LOBBYSPAWNS
 	//GET
@@ -97,7 +104,7 @@ public class SQLArenaLobby {
 	
 	public HashMap<String, Integer> getArenaSettings(String arena) {
 		HashMap<String, Integer> data = new HashMap<String, Integer>();
-		ResultSet rs = sql.resultQuery("SELECT * FROM arenas WHERE name = '"+arena+"' LIMIT 1;");
+		ResultSet rs = sql.resultQuery("SELECT * FROM arenasettings WHERE name = '"+arena+"' LIMIT 1;");
 		try {
 			if(rs != null && rs.first()) {
 				for(String s : settingsList) {
@@ -152,7 +159,7 @@ public class SQLArenaLobby {
 		}
 
 	}
-
+	
 	public int getRedspawnsSize(String arena) {
 		ResultSet rs = sql.resultQuery("SELECT COUNT(*) FROM redspawns WHERE arena = '"+arena+"';");
 		try {
@@ -261,7 +268,27 @@ public class SQLArenaLobby {
 		return getLocations(ids);
 	}
 
+	public boolean isArenaActive(String arena) {
+		ResultSet rs = sql.resultQuery("SELECT active FROM arenas WHERE name='"+arena+"' LIMIT 1;");
+		boolean active = false;
+		try {
+			if(rs != null && rs.first()) {
+				if(rs.getInt(1)==1) active = true;
+			}
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
+		return active;
+	}
+	
 	//SET
+	public void setArenaActive(String arena) {
+		sql.updateQuery("UPDATE OR IGNORE arenas SET active=1 WHERE name='"+arena+"';");
+	}
+	public void setArenaNotActive(String arena) {
+		sql.updateQuery("UPDATE OR IGNORE arenas SET active=0 WHERE name='"+arena+"';");
+	}
+	
 	public void addArenaStats(String arena, HashMap<String, Integer> stats) {
 		String query = "";
 		for(Entry<String, Integer> entry : stats.entrySet()) {
@@ -300,12 +327,13 @@ public class SQLArenaLobby {
 		}
 		if(query.length() > 0) {
 			query = query.substring(0, query.length()-1);
-			sql.updateQuery("UPDATE OR IGNORE arenas SET "+query+" WHERE name='"+arena+"';");
+			sql.updateQuery("UPDATE OR IGNORE arenasettings SET "+query+" WHERE name='"+arena+"';");
 		}
 	}
 	//REMOVE
 	public void removeArena(String arena) {
 		sql.updateQuery("DELETE FROM arenas WHERE name='"+arena+"';");
+		sql.updateQuery("DELETE FROM arenasettings WHERE name='"+arena+"';");
 		sql.updateQuery("DELETE FROM arenastats WHERE name='"+arena+"';");
 		removeRedspawns(arena);
 		removeBluespawns(arena);
@@ -334,6 +362,8 @@ public class SQLArenaLobby {
 	}
 
 	public void addNewArena(String arena) {
+		//ARENAS name TEXT, active INTEGER
+		sql.updateQuery("INSERT OR IGNORE INTO arenas(name, active) VALUES('"+arena+"',0);");
 		//ARENASETTINGS
 		String settingsQuery = "";
 		String settingsValues = "";
@@ -341,7 +371,7 @@ public class SQLArenaLobby {
 			settingsQuery += ","+s;
 			settingsValues += ",0"; 
 		}
-		sql.updateQuery("INSERT OR IGNORE INTO arenas(name"+settingsQuery+") VALUES('"+arena+"'"+settingsValues+");");
+		sql.updateQuery("INSERT OR IGNORE INTO arenasettings(name"+settingsQuery+") VALUES('"+arena+"'"+settingsValues+");");
 		
 		//ARENASTATS
 		String statsQuery = "";

@@ -24,7 +24,7 @@ public class SQLPlayers {
 		statsList = new ArrayList<String>();
 		statsList.add("points"); statsList.add("kills"); statsList.add("deaths"); statsList.add("kd");
 		statsList.add("shots"); statsList.add("hits"); statsList.add("hitquote"); statsList.add("teamattacks");
-		statsList.add("rounds"); statsList.add("wins"); statsList.add("looses");
+		statsList.add("rounds"); statsList.add("wins"); statsList.add("defeats");
 		statsList.add("money"); statsList.add("money_spent"); 
 		statsList.add("grenades"); statsList.add("airstrikes");
 		
@@ -42,6 +42,34 @@ public class SQLPlayers {
 	
 	//PLAYERDATA
 	//GET
+	public int getPlayerCount() {
+		ResultSet rs = sql.resultQuery("SELECT COUNT(*) FROM players;");
+		try {
+			if(rs != null) {
+				return rs.getInt(1);
+			}
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
+		return 0;
+	}
+	
+	public ArrayList<String> getAllPlayerNames() {
+		ArrayList<String> players = new ArrayList<String>();
+
+		ResultSet rs = sql.resultQuery("SELECT name FROM players;");
+		try {
+			if(rs != null) {
+				while(rs.next()) {
+					players.add(rs.getString(1));
+				}
+			}
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
+		return players;
+	}
+	
 	public boolean isPlayerExisting(String player) {
 		ResultSet rs = sql.resultQuery("SELECT EXISTS(SELECT 1 FROM players WHERE name='"+player+"' LIMIT 1);");
 		try {
@@ -93,6 +121,28 @@ public class SQLPlayers {
 			if(statsList.contains(key)) {
 				query += key+"="+entry.getValue()+",";
 			}
+		}
+		if(query.length() > 0) {
+			query = query.substring(0, query.length()-1);
+			sql.updateQuery("UPDATE OR IGNORE players SET "+query+" WHERE name='"+player+"';");
+		}
+	}
+	
+	public void resetAllPlayerStats() {
+		String query = "";
+		for(String stat : statsList) {
+			query += stat+"=0,";
+		}
+		if(query.length() > 0) {
+			query = query.substring(0, query.length()-1);
+			sql.updateQuery("UPDATE OR IGNORE players SET "+query+";");
+		}
+	}
+	
+	public void resetPlayerStats(String player) {
+		String query = "";
+		for(String stat : statsList) {
+			query += stat+"=0,";
 		}
 		if(query.length() > 0) {
 			query = query.substring(0, query.length()-1);

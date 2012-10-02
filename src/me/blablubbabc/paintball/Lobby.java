@@ -1,8 +1,7 @@
 package me.blablubbabc.paintball;
 
-import java.util.LinkedHashMap;
+import java.util.HashMap;
 import java.util.Set;
-import me.blablubbabc.BlaDB.BlaDBRegister;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
@@ -18,43 +17,31 @@ public enum Lobby {
 	LOBBY		("lobby", Material.AIR, (byte)0, ChatColor.WHITE);
 	
 	private Paintball plugin;
-	private LinkedHashMap<Player, Boolean> players;	//members of a team: true: playing, false: waiting; Lobby: true/false toggle messages
+	private HashMap<Player, Boolean> players;	//members of a team: true: playing, false: waiting; Lobby: true/false toggle messages
 	private int maxPlayers;
 	private String name;
 	private ItemStack helmet;
 	private ChatColor color;
-	private BlaDBRegister data;
 	
 	private Lobby(String name, Material mat, byte data, ChatColor color) {
 		this.plugin = (Paintball) Bukkit.getServer().getPluginManager().getPlugin("Paintball");
 		this.name = plugin.t.getString(name);
 		this.helmet = new ItemStack(mat, 1, Short.parseShort("0"), data);
 		this.color = color;
-		this.players = new LinkedHashMap<Player, Boolean>();
+		this.players = new HashMap<Player, Boolean>();
 		this.maxPlayers = 0;
-		this.data = new BlaDBRegister();
-		this.updateData();
 		this.loadData();
 	}
 	//DATA
 	public void updateData() {
-		if(plugin.data.getRegister(this.toString().toLowerCase()) == null) saveData();
-		else this.data = plugin.data.getRegister(this.toString().toLowerCase());
-		
-		if(this.data.getValue("helmet.id") == null) this.data.setValue("helmet.id", helmet.getTypeId());
-		if(this.data.getValue("helmet.data") == null) this.data.setValue("helmet.data", helmet.getData().getData());
-		//if(this.data.getValue("color") == null) this.data.setValue("color", color);
-		//UPDATE 1.0.5->1.0.6
-		this.data.setValue("color", color);
-		this.saveData();
-	}
-	public void saveData() {
-		plugin.data.addRegister(this.toString().toLowerCase(), this.data);
-		plugin.data.saveFile();
+		if(!plugin.sql.sqlData.exists(this.name()+".helmet.id")) plugin.sql.sqlData.addInt(this.name()+".helmet.id", this.helmet.getTypeId());
+		if(!plugin.sql.sqlData.exists(this.name()+".helmet.data")) plugin.sql.sqlData.addString(this.name()+".helmet.data", String.valueOf(this.helmet.getData().getData()));
+		if(!plugin.sql.sqlData.exists(this.name()+".color")) plugin.sql.sqlData.addString(this.name()+".color", this.color.name());
 	}
 	public void loadData() {
-		this.helmet = new ItemStack(this.data.getInt("helmet.id"), 1, Short.parseShort("0"), (Byte)this.data.getValue("helmet.data"));
-		this.color = (ChatColor) this.data.getValue("color");
+		this.updateData();
+		this.helmet = new ItemStack(plugin.sql.sqlData.getInt(this.name()+".helmet.id"), 1, Short.parseShort("0"), Byte.valueOf(plugin.sql.sqlData.getString(this.name()+".helmet.data")));
+		this.color = ChatColor.valueOf(plugin.sql.sqlData.getString(this.name()+".color"));
 	}
 	//METHODS
 	//SETTER

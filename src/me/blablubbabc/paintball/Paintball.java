@@ -4,7 +4,6 @@ import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.LinkedHashMap;
 import java.util.LinkedList;
 import me.blablubbabc.BlaDB.BlaSQLite;
 import me.blablubbabc.paintball.Metrics.Graph;
@@ -60,6 +59,7 @@ public class Paintball extends JavaPlugin{
 	public int minPlayers;
 	public int maxPlayers;
 	public int lives;
+	public int respawns;
 	public int balls;
 	public double speedmulti;
 	public boolean listnames;
@@ -75,7 +75,6 @@ public class Paintball extends JavaPlugin{
 	public boolean allowMelee;
 	public int meleeDamage;
 	public boolean autoLobby;
-	public boolean teleportFix;
 	public boolean afkDetection;
 	public int afkRadius;
 	public int afkMatchAmount;
@@ -173,7 +172,6 @@ public class Paintball extends JavaPlugin{
 		if(getConfig().get("Paintball.AFK Detection.enabled") == null)getConfig().set("Paintball.AFK Detection.enabled", true);
 		if(getConfig().get("Paintball.AFK Detection.Movement Radius around Spawn (keep in mind: knockbacks, pushing, waterflows, falling, etc)") == null)getConfig().set("Paintball.AFK Detection.Movement Radius around Spawn (keep in mind: knockbacks, pushing, waterflows, falling, etc)", 5);
 		if(getConfig().get("Paintball.AFK Detection.Amount of Matches") == null)getConfig().set("Paintball.AFK Detection.Amount of Matches", 3);
-		if(getConfig().get("Paintball.TeleportFix") == null)getConfig().set("Paintball.TeleportFix", true);
 		if(getConfig().get("Paintball.Language") == null)getConfig().set("Paintball.Language", "enUS");
 		if(getConfig().get("Paintball.No Permissions") == null)getConfig().set("Paintball.No Permissions", false);
 		if(getConfig().get("Paintball.Auto Lobby") == null)getConfig().set("Paintball.Auto Lobby", false);
@@ -207,6 +205,7 @@ public class Paintball extends JavaPlugin{
 		if(getConfig().get("Paintball.Match.Allow Melee") == null)getConfig().set("Paintball.Match.Allow Melee", true);
 		if(getConfig().get("Paintball.Match.Melee Damage") == null)getConfig().set("Paintball.Match.Melee Damage", 1);
 		if(getConfig().get("Paintball.Match.Lives") == null)getConfig().set("Paintball.Match.Lives", 1);
+		if(getConfig().get("Paintball.Match.Respawns") == null)getConfig().set("Paintball.Match.Respawns", 0);
 		if(getConfig().get("Paintball.Match.Balls") == null)getConfig().set("Paintball.Match.Balls", 50);
 		if(getConfig().get("Paintball.Match.Minimum players") == null)getConfig().set("Paintball.Match.Minimum players", 2);
 		if(getConfig().get("Paintball.Match.Maximum players") == null)getConfig().set("Paintball.Match.Maximum players", 1000);
@@ -246,7 +245,6 @@ public class Paintball extends JavaPlugin{
 		noPerms = getConfig().getBoolean("Paintball.No Permissions", false);
 		autoLobby = getConfig().getBoolean("Paintball.Auto Lobby", false);
 		allowedCommands = (ArrayList<String>) getConfig().getList("Paintball.Allowed Commands", allowedCommands);
-		teleportFix = getConfig().getBoolean("Paintball.TeleportFix", false);
 		afkDetection = getConfig().getBoolean("Paintball.AFK Detection.enabled", true);
 		afkMatchAmount = getConfig().getInt("Paintball.AFK Detection.Amount of Matches", 3);
 		if(afkMatchAmount < 1) afkMatchAmount = 1;
@@ -255,6 +253,8 @@ public class Paintball extends JavaPlugin{
 
 		lives = getConfig().getInt("Paintball.Match.Lives", 1);
 		if(lives < 1) lives = 1;
+		respawns = getConfig().getInt("Paintball.Match.Respawns", 0);
+		if(respawns < -1) respawns = -1;
 		balls = getConfig().getInt("Paintball.Match.Balls", 50);
 		if(balls < -1) balls = -1;
 		minPlayers = getConfig().getInt("Paintball.Match.Minimum players", 2);
@@ -311,8 +311,6 @@ public class Paintball extends JavaPlugin{
 		//SQLite with version: 1081
 		sql = new BlaSQLite(new File(this.getDataFolder().toString()+"/"+"pbdata_1081"+".db"), this);
 		//DB
-		//data = new BlaDB("paintball", this.getDataFolder().toString());
-		//data.autosave(false);
 		loadDB();
 		//TRANSLATOR
 		t = new Translator(this, local);
@@ -419,10 +417,8 @@ public class Paintball extends JavaPlugin{
 				public int getValue() {
 					try {
 						int number = 0;
-						for(String name : pm.getData().keySet()) {
-							LinkedHashMap<String, Object> player = new LinkedHashMap<String, Object>();
-							player = (LinkedHashMap<String, Object>) pm.getData().get(name);
-							if((Integer) player.get("shots") > 0) number++;
+						for(String name : pm.getAllPlayerNames()) {
+							if(pm.getStats(name).get("shots") > 0) number++;
 						}
 						return number;
 					} catch (Exception e) {
@@ -456,26 +452,6 @@ public class Paintball extends JavaPlugin{
 	}
 
 	public void onDisable(){
-		//Teleports TEST
-		/*if(teleportFix) {
-			teleportFix = false;
-			for(Entry<String, Location> entryLoc : listener.teleportLoc.entrySet()) {
-				String name = entryLoc.getKey();
-				Location loc = entryLoc.getValue();
-				TeleportCause cause = listener.teleportCause.get(name);
-				Player p = getServer().getPlayer(name);
-
-				if(loc != null && cause != null && p != null) {
-					//listener.allowedTeleport.put(name, loc);
-					p.teleport(loc, cause);
-				}
-				//listener.teleportLoc.remove(name);
-				//listener.teleportCause.remove(name);
-			}
-			listener.teleportLoc.clear();
-			listener.teleportCause.clear();
-		}*/
-
 		if(mm != null) mm.forceReload();
 		log("Disabled!");
 	}
@@ -496,36 +472,16 @@ public class Paintball extends JavaPlugin{
 		for(Location loc : sql.sqlArenaLobby.getLobbyspawns()) {
 			lobbyspawns.add(loc);
 		}
-		/*ArrayList<LinkedHashMap<String, Object>> lobbyspawns = new ArrayList<LinkedHashMap<String, Object>>();
-		if(data.getValue("lobbyspawns") == null) data.setValue("lobbyspawns", lobbyspawns);
-
-		data.saveFile();	*/
 	}
 
 	public synchronized void addLobbySpawn(Location loc) {
 		lobbyspawns.add(loc);
 		sql.sqlArenaLobby.addLobbyspawn(loc);
-		/*LinkedHashMap<String, Object> map = transformLocation(loc);
-		ArrayList<LinkedHashMap<String, Object>> lobbyspawns = (ArrayList<LinkedHashMap<String, Object>>) data.getValue("lobbyspawns");
-		lobbyspawns.add(map);
-		data.setValue("lobbyspawns", lobbyspawns);
-
-		data.saveFile();	*/
 	}
 	public synchronized void deleteLobbySpawns() {
 		sql.sqlArenaLobby.removeLobbyspawns();
 		lobbyspawns = new LinkedList<Location>();
-		/*ArrayList<LinkedHashMap<String, Object>> lobbyspawns = new ArrayList<LinkedHashMap<String, Object>>();
-		data.setValue("lobbyspawns", lobbyspawns);
-
-		data.saveFile();	*/
 	}
-	
-	/*public synchronized ArrayList<Location> getLobbySpawns() {
-		return new ArrayList<Location>(lobbyspawns);;
-		/*ArrayList<LinkedHashMap<String, Object>> lobbyspawns = (ArrayList<LinkedHashMap<String, Object>>) data.getValue("lobbyspawns");
-		return lobbyspawns;*/
-	//}
 	
 	public synchronized int getLobbyspawnsCount() {
 		return lobbyspawns.size();
@@ -540,23 +496,6 @@ public class Paintball extends JavaPlugin{
 	////////////////////////////////////
 	//UTILS
 	////////////////////////////////////
-
-	/*public LinkedHashMap<String, Object> transformLocation(Location loc) {
-		LinkedHashMap<String, Object> map = new LinkedHashMap<String, Object>();
-		map.put("world", loc.getWorld().getName());
-		map.put("x", loc.getBlockX());
-		map.put("y", loc.getBlockY());
-		map.put("z", loc.getBlockZ());
-		return map;
-	}
-	public Location transformLocation(LinkedHashMap<String, Object> map){
-		String world = (String) map.get("world");
-		int x = (Integer) map.get("x");
-		int y = (Integer) map.get("y");
-		int z = (Integer) map.get("z");
-		Location loc = new Location(getServer().getWorld(world), x, y, z);
-		return loc;
-	}*/
 
 	public void checks(Player player) {
 		if(!isEmpty(player)) clearInv(player);
@@ -590,7 +529,6 @@ public class Paintball extends JavaPlugin{
 		checks(player);
 		//Lobbyteleport
 		player.teleport(getNextLobbySpawn());
-		//player.teleport(transformLocation(getLobbySpawns().get(getNextLobbySpawn())));
 	}
 
 	public void leaveLobby(Player player, boolean messages, boolean teleport, boolean restoreInventory) {
@@ -610,8 +548,6 @@ public class Paintball extends JavaPlugin{
 				player.getInventory().setArmorContents(isa);
 			}
 			
-			//player.getInventory().setContents(pm.getInvContent(player));
-			//player.getInventory().setArmorContents(pm.getInvArmor(player));
 			player.sendMessage(t.getString("INVENTORY_RESTORED"));
 		}
 		//teleport:
