@@ -167,6 +167,19 @@ public class SQLPlayers {
 		}
 		sql.updateQuery("INSERT OR IGNORE INTO players(name"+query+") VALUES('"+player+"'"+queryV+");");
 	}
+	
+	//STATS, RANGLISTEN, TOP
+	public void calculateStats(String player) {
+		/*statsList = new ArrayList<String>();
+		statsList.add("points"); statsList.add("kills"); statsList.add("deaths"); statsList.add("kd");
+		statsList.add("shots"); statsList.add("hits"); statsList.add("hitquote"); statsList.add("teamattacks");
+		statsList.add("rounds"); statsList.add("wins"); statsList.add("defeats");
+		statsList.add("money"); statsList.add("money_spent"); 
+		statsList.add("grenades"); statsList.add("airstrikes");
+		*/
+		String query = "kd=kills/deaths, hitquote=hits/shots";
+		sql.updateQuery("UPDATE OR IGNORE players SET "+query+" WHERE name='"+player+"';");
+	}
 
 
 }

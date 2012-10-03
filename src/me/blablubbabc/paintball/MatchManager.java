@@ -25,7 +25,7 @@ public class MatchManager{
 		countdownStarted = false;
 	}
 
-	public void forceReload() {
+	public synchronized void forceReload() {
 		//closing all matches and kicking all players from lobby:
 		ArrayList<Match> mlist = new ArrayList<Match>();
 		for(Match m : matches) {
@@ -90,7 +90,7 @@ public class MatchManager{
 		}
 	}
 
-	public void gameStart() {
+	public synchronized void gameStart() {
 		//auto spec lobby
 		if(plugin.autoSpecLobby) {
 			for(Player player : Lobby.LOBBY.getMembers()) {
@@ -134,8 +134,7 @@ public class MatchManager{
 		matches.add(match);
 	}
 
-	public void gameEnd(Match match, HashMap<String, Location> playersLoc, Set<Player> winners, String win, Set<Player> loosers, String loose, Set<Player> specs, HashMap<Player, Integer> shots,
-			HashMap<Player, Integer> hits, HashMap<Player, Integer> deaths, HashMap<Player, Integer> kills, HashMap<Player, Integer> teamattacks) {
+	public synchronized void gameEnd(Match match, HashMap<String, Location> playersLoc, Set<Player> winners, String win, Set<Player> loosers, String loose, Set<Player> specs, HashMap<String, HashMap<String, Integer>> stats) {
 		//stats etc
 		for(Player p : winners) {
 			//stats
@@ -250,10 +249,6 @@ public class MatchManager{
 		plugin.stats.addShots(shotsAll);
 		plugin.stats.addKills(killsAll);
 
-		//save:
-		plugin.pm.saveData();
-		plugin.stats.saveData();
-		plugin.am.saveData();
 		//messages:
 		plugin.nf.status("Match is over!");
 		HashMap<String, String> vars = new HashMap<String, String>();
@@ -300,14 +295,14 @@ public class MatchManager{
 		}
 	}
 
-	public Match getMatch(Player player) {
+	public synchronized Match getMatch(Player player) {
 		for(Match m : matches) {
 			if(m.inMatch(player)) return m;
 		}
 		return null;
 	}
 
-	public String ready() {
+	public synchronized String ready() {
 		//softreload-check:
 		softCheck();
 		//activated?

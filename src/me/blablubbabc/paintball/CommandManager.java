@@ -209,7 +209,7 @@ public class CommandManager implements CommandExecutor{
 		sender.sendMessage(plugin.t.getString("COMMAND_ARENA_DELBLUE", vars));
 		sender.sendMessage(plugin.t.getString("COMMAND_ARENA_DELRED", vars));
 		sender.sendMessage(plugin.t.getString("COMMAND_ARENA_DELSPEC", vars));
-		sender.sendMessage(plugin.t.getString("COMMAND_ARENA_SIZE"));
+		sender.sendMessage(plugin.t.getString("COMMAND_ARENA_SET"));
 	}
 	public void adminhelp(CommandSender sender) {
 		sender.sendMessage(plugin.aqua+""+ plugin.bold+"[ "+plugin.yellow+""+ plugin.bold+"Paintball by blablubbabc"+plugin.aqua+""+ plugin.bold+" ]");
@@ -221,10 +221,10 @@ public class CommandManager implements CommandExecutor{
 		sender.sendMessage(plugin.t.getString("COMMAND_ADMIN_DISABLE"));
 		sender.sendMessage(plugin.t.getString("COMMAND_ADMIN_LOBBY_SPAWN"));
 		sender.sendMessage(plugin.t.getString("COMMAND_ADMIN_LOBBY_REMOVE"));
-		sender.sendMessage(plugin.t.getString("COMMAND_ADMIN_CASH"));
-		sender.sendMessage(plugin.t.getString("COMMAND_ADMIN_RANK"));
 		sender.sendMessage(plugin.t.getString("COMMAND_ADMIN_STATS"));
 		sender.sendMessage(plugin.t.getString("COMMAND_ADMIN_RESET"));
+		sender.sendMessage(plugin.t.getString("COMMAND_ADMIN_SET"));
+		sender.sendMessage(plugin.t.getString("COMMAND_ADMIN_ADD"));
 		sender.sendMessage(plugin.t.getString("COMMAND_ADMIN_HELMET"));
 		sender.sendMessage(plugin.t.getString("COMMAND_ADMIN_NEXT"));
 		sender.sendMessage(plugin.t.getString("COMMAND_ADMIN_RANDOM"));	

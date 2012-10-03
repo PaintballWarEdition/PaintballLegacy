@@ -197,7 +197,7 @@ public class Stats {
 	}
 	
 	public void sendTop(CommandSender sender) {
-		calculateRanks();
+		//calculateRanks();
 		sender.sendMessage(plugin.t.getString("TOP_TEN"));
 		HashMap<String, String> vars = new HashMap<String, String>();
 		for(int i = 1; i <= 10; i++) {
@@ -212,7 +212,7 @@ public class Stats {
 	}
 	
 	public void sendRank(CommandSender sender, String name) {
-		calculateRanks();
+		//calculateRanks();
 		HashMap<String, String> vars = new HashMap<String, String>();
 		vars.put("player", name);
 		if(plugin.pm.exists(name)) {
@@ -224,7 +224,7 @@ public class Stats {
 	}
 	
 	public void sendCash(CommandSender sender, String name) {
-		calculateRanks();
+		//calculateRanks();
 		HashMap<String, String> vars = new HashMap<String, String>();
 		vars.put("player", name);
 		if(plugin.pm.exists(name)) {
@@ -236,7 +236,7 @@ public class Stats {
 	}
 	
 	public void sendStats(CommandSender sender, String name) {
-		calculateRanks();
+		//calculateRanks();
 		HashMap<String, String> vars = new HashMap<String, String>();
 		vars.put("player", name);
 		if(plugin.pm.exists(name)) {
