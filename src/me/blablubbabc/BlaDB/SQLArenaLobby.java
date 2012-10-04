@@ -93,7 +93,7 @@ public class SQLArenaLobby {
 		LinkedHashMap<String, Integer> data = new LinkedHashMap<String, Integer>();
 		ResultSet rs = sql.resultQuery("SELECT * FROM arenastats WHERE name='"+arena+"' LIMIT 1;");
 		try {
-			if(rs != null && rs.first()) {
+			if(rs != null && rs.next()) {
 				for(String s : statsList) {
 					data.put(s, rs.getInt(s));
 				}
@@ -108,7 +108,7 @@ public class SQLArenaLobby {
 		LinkedHashMap<String, Integer> data = new LinkedHashMap<String, Integer>();
 		ResultSet rs = sql.resultQuery("SELECT * FROM arenasettings WHERE name='"+arena+"' LIMIT 1;");
 		try {
-			if(rs != null && rs.first()) {
+			if(rs != null && rs.next()) {
 				for(String s : settingsList) {
 					data.put(s, rs.getInt(s));
 				}
@@ -298,7 +298,7 @@ public class SQLArenaLobby {
 		ResultSet rs = sql.resultQuery("SELECT active FROM arenas WHERE name='"+arena+"' LIMIT 1;");
 		boolean active = false;
 		try {
-			if(rs != null && rs.first()) {
+			if(rs != null && rs.next()) {
 				if(rs.getInt(1)==1) active = true;
 			}
 		} catch (SQLException e) {

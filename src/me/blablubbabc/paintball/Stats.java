@@ -9,24 +9,24 @@ import org.bukkit.command.CommandSender;
 public class Stats {
 
 	private Paintball plugin;
-	
+
 	public Stats (Paintball pl) {
 		plugin = pl;
 	}
-	
+
 	////////////////////////////////////
 	//GENERAL
 	////////////////////////////////////
-	
+
 	//SETTER
 	public void addGeneralStats(HashMap<String, Integer> stats) {
 		plugin.sql.sqlGeneralStats.addStats(stats);
 	}
-	
+
 	public void matchEndStats(HashMap<String, Integer> stats, int playerAmount) {
 		plugin.sql.sqlGeneralStats.addStatsMatchEnd(stats, playerAmount);
 	}
-	
+
 	public void setGeneralStats(HashMap<String, Integer> stats) {
 		plugin.sql.sqlGeneralStats.setStats(stats);
 	}
@@ -34,11 +34,11 @@ public class Stats {
 	public LinkedHashMap<String, Integer> getGerneralStats() {
 		return plugin.sql.sqlGeneralStats.getStats();
 	}
-	
+
 	public int getRank(String name, String stat) {
 		return plugin.sql.sqlPlayers.getRank(name, stat);
 	}
-	
+
 	public void sendTop(CommandSender sender, String stat) {
 		HashMap<String, String> vars = new HashMap<String, String>();
 		if(plugin.sql.sqlPlayers.statsList.contains(stat)) {
@@ -59,7 +59,7 @@ public class Stats {
 			sender.sendMessage(plugin.t.getString("VALUE_NOT_FOUND", vars));
 		}
 	}
-	
+
 	public void sendRank(CommandSender sender, String name, String stat) {
 		HashMap<String, String> vars = new HashMap<String, String>();
 		vars.put("player", name);
@@ -70,7 +70,7 @@ public class Stats {
 			sender.sendMessage(plugin.t.getString("PLAYER_NOT_FOUND", vars));
 		}
 	}
-	
+
 	public void sendCash(CommandSender sender, String name) {
 		HashMap<String, String> vars = new HashMap<String, String>();
 		vars.put("player", name);
@@ -82,7 +82,7 @@ public class Stats {
 			sender.sendMessage(plugin.t.getString("PLAYER_NOT_FOUND", vars));
 		}
 	}
-	
+
 	public void sendStats(CommandSender sender, String name) {
 		HashMap<String, String> vars = new HashMap<String, String>();
 		vars.put("player", name);
@@ -91,7 +91,7 @@ public class Stats {
 			LinkedHashMap<String, Integer> pStats = plugin.sql.sqlPlayers.getPlayerStats(name);
 			LinkedHashMap<String, SimpleEntry<String, Integer>> topStats = plugin.sql.sqlPlayers.getTopStats();
 			LinkedHashMap<String, Integer> gStats = getGerneralStats();
-			
+
 			//KD + HITQUOTE
 			float kdF = (float)pStats.get("kd") / 100;
 			float hitquoteF = (float)pStats.get("hitquote") / 100;
@@ -100,9 +100,9 @@ public class Stats {
 			int hitquoteT = topStats.get("hitquote").getValue();
 			float kdFT = (float)kdT / 100;
 			float hitquoteFT = (float)hitquoteT / 100;
-			
+
 			DecimalFormat dec = new DecimalFormat("###.##");
-			
+
 			for(String stat : pStats.keySet()) {
 				vars.put(stat, String.valueOf(pStats.get(stat)));
 				vars.put("player_"+stat+"_top", topStats.get(stat).getKey());
@@ -114,28 +114,28 @@ public class Stats {
 			//HITQUOTE
 			vars.put("hitquote", dec.format(hitquoteF));
 			vars.put("hitquote_top", dec.format(hitquoteFT));
-			
+
 			//SEND
 			sender.sendMessage(plugin.t.getString("STATS_HEADER"));
 			sender.sendMessage(plugin.t.getString("STATS_PLAYER", vars));
 			for(String stat : pStats.keySet()) {
 				sender.sendMessage(plugin.t.getString("STATS_"+stat.toUpperCase(), vars));
 			}
-			
+
 			//GENERAL STATS
 			for(String stat : gStats.keySet()) {
 				vars.put(stat, String.valueOf(gStats.get(stat)));
 			}
-			
+
 			//SEND
 			sender.sendMessage(plugin.t.getString("STATS_GENERAL"));
 			for(String stat : gStats.keySet()) {
 				sender.sendMessage(plugin.t.getString("STATS_GENERAL_"+stat.toUpperCase(), vars));
 			}
-			
+
 		} else {
 			sender.sendMessage(plugin.t.getString("PLAYER_NOT_FOUND", vars));
 		}	
 	}
-	
+
 }

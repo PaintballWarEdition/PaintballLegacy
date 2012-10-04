@@ -55,10 +55,10 @@ public class SQLPlayers {
 	}
 	public int getRank(String player, String stat) {
 		int rank = 0;
-		ResultSet rs = sql.resultQuery("SELECT COUNT(*) FROM players AS 'higher_rank' WHERE "+stat+" > (SELECT "+stat+" from players WHERE name="+player+";);");
+		ResultSet rs = sql.resultQuery("SELECT COUNT(*) FROM players WHERE "+stat+" > (SELECT "+stat+" from players WHERE name='"+player+"');");
 		try {
 			if(rs != null && rs.next()) {
-				rank = rs.getInt("higher_rank")+1 ;
+				rank = rs.getInt(1)+1 ;
 			}
 		} catch(Exception e) {
 			e.printStackTrace();

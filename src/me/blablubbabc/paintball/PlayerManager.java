@@ -15,12 +15,13 @@ public class PlayerManager {
 
 	public PlayerManager(Paintball pl) {
 		plugin = pl;
-		for(Player p : plugin.getServer().getOnlinePlayers()) {
-			addPlayer(p.getName());
-		}
 		locations = new HashMap<Player, Location>();
 		invContent = new HashMap<Player, ItemStack[]>();
 		invArmor = new HashMap<Player, ItemStack[]>();
+		
+		for(Player p : plugin.getServer().getOnlinePlayers()) {
+			addPlayer(p.getName());
+		}
 	}
 
 	//METHODS

@@ -38,9 +38,21 @@ public class BlaSQLite {
 		sqlData.createDefaultTables();
 	}
 
+	public void closeConnection() {
+		try {
+			connection.close();
+		} catch(Exception e) {
+			e.printStackTrace();
+		}
+	}
+	
 	public void refreshConnection() {
-		if (connection == null) {
-			initialise();
+		try {
+			if (connection == null || connection.isClosed()) {
+				initialise();
+			}
+		} catch (SQLException e) {
+			e.printStackTrace();
 		}
 	}
 
