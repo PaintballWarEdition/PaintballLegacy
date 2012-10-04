@@ -2,6 +2,7 @@ package me.blablubbabc.paintball;
 
 import java.util.HashMap;
 
+import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
 
@@ -54,33 +55,40 @@ public class Newsfeeder {
 	}
 	
 	public void text(String message) {
-		HashMap<String, String> vars = new HashMap<String, String>();
-		vars.put("plugin", pluginName);
-		vars.put("message", String.valueOf(message));
 		for(Player player : Lobby.LOBBY.getMembers()) {
-			player.sendMessage(plugin.t.getString("TEXT", vars));
+			if(!Lobby.toggledFeed(player)) text(player, message);
 		}
 	}
 	
-	public void status(String message) {
+	public void text(CommandSender sender, String message) {
 		HashMap<String, String> vars = new HashMap<String, String>();
 		vars.put("plugin", pluginName);
 		vars.put("message", String.valueOf(message));
+		sender.sendMessage(plugin.t.getString("TEXT", vars));
+	}
+	
+	public void status(String message) {
 		for(Player player : Lobby.LOBBY.getMembers()) {
-			if(!Lobby.toggledFeed(player)) player.sendMessage(plugin.t.getString("MATCH_STATUS", vars));
+			if(!Lobby.toggledFeed(player)) status(player, message);
 		}
 	}
+	
+	public void status(CommandSender sender, String message) {
+		HashMap<String, String> vars = new HashMap<String, String>();
+		vars.put("plugin", pluginName);
+		vars.put("message", String.valueOf(message));
+		sender.sendMessage(plugin.t.getString("MATCH_STATUS", vars));
+	}
+	
 	public void players() {
-		HashMap<String, String> vars = new HashMap<String, String>();
-		vars.put("needed_players_overview", getNeededPlayers());
 		for(Player player : Lobby.LOBBY.getMembers()) {
-			if(!Lobby.toggledFeed(player)) player.sendMessage(plugin.t.getString("WAITING_PLAYERS_OVERVIEW", vars));
+			if(!Lobby.toggledFeed(player)) players(player);
 		}
 	}
-	public void players(Player player) {
+	public void players(CommandSender sender) {
 		HashMap<String, String> vars = new HashMap<String, String>();
 		vars.put("needed_players_overview", getNeededPlayers());
-		player.sendMessage(plugin.t.getString("WAITING_PLAYERS_OVERVIEW", vars));
+		sender.sendMessage(plugin.t.getString("WAITING_PLAYERS_OVERVIEW", vars));
 	}
 	public String getPlayersOverview() {
 		HashMap<String, String> vars = new HashMap<String, String>();

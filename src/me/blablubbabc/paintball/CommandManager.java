@@ -128,7 +128,8 @@ public class CommandManager implements CommandExecutor{
 					
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 				} else if(args[0].equalsIgnoreCase("rank")) {
-					plugin.stats.sendRank(player, player.getName());
+					if(args.length == 1) plugin.stats.sendRank(player, player.getName(), "points");
+					else plugin.stats.sendRank(player, player.getName(), args[1]);
 					return true;
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 				} else if(args[0].equalsIgnoreCase("stats")) {
@@ -148,7 +149,8 @@ public class CommandManager implements CommandExecutor{
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 			//CONSOLE AND PLAYER
 			if(args[0].equalsIgnoreCase("top")) {
-				plugin.stats.sendTop(sender);
+				if(args.length == 1) plugin.stats.sendTop(sender, "points");
+				else plugin.stats.sendTop(sender, args[1]);
 				return true;
 			}
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -280,10 +282,11 @@ public class CommandManager implements CommandExecutor{
 			else if(spec) player.sendMessage(plugin.t.getString("YOU_JOINED_SPECTATORS", vars));
 		}
 		if(!spec) {
-			if (plugin.mm.ready().equalsIgnoreCase(plugin.t.getString("READY"))) {
+			String ready = plugin.mm.ready();
+			if (ready.equalsIgnoreCase(plugin.t.getString("READY"))) {
 				plugin.mm.countdown(plugin.countdown, plugin.countdownInit);
 			} else {
-				plugin.nf.status(plugin.mm.ready());
+				plugin.nf.status(player, ready);
 			}
 		}
 		//players:

@@ -47,8 +47,8 @@ public class BlaSQLite {
 	public boolean initialise() {
 		if (!databaseFile.exists()) {
 			try {
+				databaseFile.getParentFile().mkdirs();
 				databaseFile.createNewFile();
-				//databaseFile.getParentFile().mkdir();
 			} catch (IOException e) {
 				e.printStackTrace();
 			}
@@ -107,19 +107,19 @@ public class BlaSQLite {
 	//PAINTBALL SPEZIFISCHER TEIL
 
 	public void createDefaultTable(String name, String query, String indexOn) {
-		this.updateQuery("CREATE TABLE IF NOT EXISTS "+name+"("+query+");");
-		if(indexOn != null) this.updateQuery("CREATE UNIQUE INDEX ON "+name+"("+indexOn+");");
+		this.updateQuery("CREATE TABLE IF NOT EXISTS " + name + "(" + query + ");");
+		if (indexOn != null)
+			this.updateQuery("CREATE UNIQUE INDEX IF NOT EXISTS "+name+"_"+indexOn+" ON " + name + "(" + indexOn + ");");
 	}
 
 	public void createDefaultTable(String name, HashMap<String, String> content, String indexOn) {
 		String query = "";
-		for(Entry<String, String> entry : content.entrySet()) {
-			query += entry.getKey()+" "+entry.getValue().toUpperCase()+", ";
+		for (Entry<String, String> entry : content.entrySet()) {
+			query += entry.getKey() + " " + entry.getValue().toUpperCase() + ", ";
 		}
-		if(query.length() > 2) {
-			query = query.substring(0, query.length()-2);
-			this.updateQuery("CREATE TABLE IF NOT EXISTS "+name+"("+query+");");
-			if(indexOn != null) this.updateQuery("CREATE UNIQUE INDEX ON "+name+"("+indexOn+");");
+		if (query.length() > 2) {
+			query = query.substring(0, query.length() - 2);
+			createDefaultTable(name, query, indexOn);
 		}
 	}
 

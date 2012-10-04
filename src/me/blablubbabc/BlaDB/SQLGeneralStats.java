@@ -1,11 +1,10 @@
 package me.blablubbabc.BlaDB;
 
 import java.sql.ResultSet;
-import java.sql.ResultSetMetaData;
 import java.sql.SQLException;
-import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.Map.Entry;
+import java.util.LinkedHashMap;
+import java.util.LinkedList;
 
 import me.blablubbabc.paintball.Paintball;
 
@@ -15,13 +14,13 @@ public class SQLGeneralStats {
 	@SuppressWarnings("unused")
 	private static Paintball plugin;
 	
-	public ArrayList<String> statsList;
+	public LinkedList<String> statsList;
 
 	public SQLGeneralStats(BlaSQLite blasql, Paintball pl) {
 		sql = blasql;
 		plugin = pl;
-		statsList = new ArrayList<String>();
-		statsList.add("rounds"); statsList.add("kills"); statsList.add("shots"); statsList.add("money_spent"); 
+		statsList = new LinkedList<String>();
+		statsList.add("shots"); statsList.add("grenades"); statsList.add("airstrikes"); statsList.add("kills"); statsList.add("rounds"); statsList.add("money_spent"); 
 		statsList.add("average_players"); statsList.add("max_players");
 	}
 
@@ -31,22 +30,19 @@ public class SQLGeneralStats {
 		
 		//DEFAULT VALUES:
 		for(String s : statsList) {
-			sql.updateQuery("INSERT OR IGNORE INTO general_stats(key,value) VALUES("+s+",0);");
+			sql.updateQuery("INSERT OR IGNORE INTO general_stats(key,value) VALUES('"+s+"','0');");
 		}
 	}
 	
-	//PLAYERDATA
 	//GET
 
-	public HashMap<String, Integer> getStats() {
-		HashMap<String, Integer> data = new HashMap<String, Integer>();
-		ResultSet rs = sql.resultQuery("SELECT * FROM general_stats WHERE row_id='1';");
+	public LinkedHashMap<String, Integer> getStats() {
+		LinkedHashMap<String, Integer> data = new LinkedHashMap<String, Integer>();
+		ResultSet rs = sql.resultQuery("SELECT * FROM general_stats;");
 		try {
-			if(rs != null && rs.first()) {
-				ResultSetMetaData rsmd = rs.getMetaData();
-				int columns = rsmd.getColumnCount();
-				for(int i = 2; i <= columns; i++) {
-					data.put(rs.getMetaData().getColumnName(i), rs.getInt(i));
+			if(rs != null) {
+				while(rs.next()) {
+					data.put(rs.getString("key"), rs.getInt("value"));
 				}
 			}
 		} catch (SQLException e) {
@@ -55,36 +51,38 @@ public class SQLGeneralStats {
 		return data;
 	}
 	//SET
-	public void matchEnd() {
-		
-	}
 	
 	public void addStats(HashMap<String, Integer> stats) {
-		String query = "";
-		for(Entry<String, Integer> entry : stats.entrySet()) {
-			String key = entry.getKey();
+		for(String key : stats.keySet()) {
 			if(statsList.contains(key)) {
-				query += key+"="+key+"+"+entry.getValue()+",";
+				String query = key+"="+key+"+"+stats.get(key);
+				sql.updateQuery("UPDATE OR IGNORE general_stats SET "+query+" WHERE key="+key+";");
 			}
-		}
-		if(query.length() > 0) {
-			query = query.substring(0, query.length()-1);
-			sql.updateQuery("UPDATE OR IGNORE general_stats SET "+query+" WHERE row_id='1';");
 		}
 	}
 
 	public void setStats(HashMap<String, Integer> stats) {
-		String query = "";
-		for(Entry<String, Integer> entry : stats.entrySet()) {
-			String key = entry.getKey();
+		for(String key : stats.keySet()) {
 			if(statsList.contains(key)) {
-				query += key+"="+entry.getValue()+",";
+				String query = key+"="+stats.get(key);
+				sql.updateQuery("UPDATE OR IGNORE general_stats SET "+query+" WHERE key="+key+";");
 			}
 		}
-		if(query.length() > 0) {
-			query = query.substring(0, query.length()-1);
-			sql.updateQuery("UPDATE OR IGNORE general_stats SET "+query+" WHERE row_id='1';");
+	}
+	
+	public void addStatsMatchEnd(HashMap<String, Integer> stats, int playerAmount) {
+		for(String key : stats.keySet()) {
+			if(statsList.contains(key)) {
+				String query = key+"="+key+"+"+stats.get(key);
+				sql.updateQuery("UPDATE OR IGNORE general_stats SET "+query+" WHERE key="+key+";");
+			}
 		}
+		//CALCULATE AVERAGE PLAYERS + MAX PLAYERS
+		String queryC = "average_players=average_players+(("+playerAmount+"-average_players)/(SELECT value FROM general_stats WHERE key='rounds';))";
+		sql.updateQuery("UPDATE OR IGNORE general_stats SET "+queryC+" WHERE key=average_players;");
+		
+		String queryMax = "max_players=(CASE WHEN max_players>='"+playerAmount+"' THEN max_players ELSE '"+playerAmount+"' END)";
+		sql.updateQuery("UPDATE OR IGNORE general_stats SET "+queryMax+" WHERE key=max_players;");
 	}
 
 	//REMOVE

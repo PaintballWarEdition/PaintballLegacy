@@ -105,13 +105,8 @@ public class CmdAdmin {
 						vars.put("stat", args[3]);
 						sender.sendMessage(plugin.t.getString("PLAYER_STAT_RESET", vars));
 					} else {
-						String values = "";
-						for(String s : plugin.sql.sqlPlayers.statsList) {
-							values += s + ",";
-						}
-						if(values.length() > 1) values.substring(0, (values.length() -1));
 						HashMap<String, String> vars = new HashMap<String, String>();
-						vars.put("values", values);
+						vars.put("values", plugin.sql.sqlPlayers.getStatsListString());
 						sender.sendMessage(plugin.t.getString("VALUE_NOT_FOUND", vars));
 					}
 				} else {
@@ -141,13 +136,8 @@ public class CmdAdmin {
 							sender.sendMessage(plugin.t.getString("INVALID_NUMBER"));
 						}
 					} else {
-						String values = "";
-						for(String s : plugin.sql.sqlPlayers.statsList) {
-							values += s + ",";
-						}
-						if(values.length() > 1) values.substring(0, (values.length() -1));
 						HashMap<String, String> vars = new HashMap<String, String>();
-						vars.put("values", values);
+						vars.put("values", plugin.sql.sqlPlayers.getStatsListString());
 						sender.sendMessage(plugin.t.getString("VALUE_NOT_FOUND", vars));
 					}
 				} else {
@@ -177,13 +167,8 @@ public class CmdAdmin {
 							sender.sendMessage(plugin.t.getString("INVALID_NUMBER"));
 						}
 					} else {
-						String values = "";
-						for(String s : plugin.sql.sqlPlayers.statsList) {
-							values += s + ",";
-						}
-						if(values.length() > 1) values.substring(0, (values.length() -1));
 						HashMap<String, String> vars = new HashMap<String, String>();
-						vars.put("values", values);
+						vars.put("values", plugin.sql.sqlPlayers.getStatsListString());
 						sender.sendMessage(plugin.t.getString("VALUE_NOT_FOUND", vars));
 					}
 				} else {
@@ -217,7 +202,7 @@ public class CmdAdmin {
 				HashMap<String, String> vars = new HashMap<String, String>();
 				vars.put("plugin", plugin.nf.pluginName);
 				vars.put("arena", arena);
-				plugin.nf.text(plugin.t.getString("NEXT_ARENA_SET", vars));
+				plugin.nf.text(sender, plugin.t.getString("NEXT_ARENA_SET", vars));
 				return true;
 			}
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////

@@ -4,6 +4,8 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.LinkedHashMap;
+import java.util.LinkedList;
 import java.util.Map.Entry;
 import me.blablubbabc.paintball.Paintball;
 import org.bukkit.Location;
@@ -14,18 +16,18 @@ public class SQLArenaLobby {
 	private static BlaSQLite sql;
 	private static Paintball plugin;
 	
-	public ArrayList<String> statsList;
-	public ArrayList<String> settingsList;
+	public LinkedList<String> statsList;
+	public LinkedList<String> settingsList;
 
 	public SQLArenaLobby(BlaSQLite blasql, Paintball pl) {
 		sql = blasql;
 		plugin = pl;
 		
-		statsList = new ArrayList<String>();
+		statsList = new LinkedList<String>();
 		statsList.add("rounds"); statsList.add("kills"); statsList.add("shots"); statsList.add("grenades"); statsList.add("airstrikes");
 		
-		settingsList = new ArrayList<String>();
-		settingsList.add("balls"); settingsList.add("grenades"); settingsList.add("airstrikes"); settingsList.add("lives"); settingsList.add("respawns");
+		settingsList = new LinkedList<String>();
+		settingsList.add("lives"); settingsList.add("respawns"); settingsList.add("balls"); settingsList.add("grenades"); settingsList.add("airstrikes");
 	}
 	
 	public void createDefaultTables() {
@@ -87,9 +89,9 @@ public class SQLArenaLobby {
 		return arenas;
 	}
 
-	public HashMap<String, Integer> getArenaStats(String arena) {
-		HashMap<String, Integer> data = new HashMap<String, Integer>();
-		ResultSet rs = sql.resultQuery("SELECT * FROM arenastats WHERE name = '"+arena+"' LIMIT 1;");
+	public LinkedHashMap<String, Integer> getArenaStats(String arena) {
+		LinkedHashMap<String, Integer> data = new LinkedHashMap<String, Integer>();
+		ResultSet rs = sql.resultQuery("SELECT * FROM arenastats WHERE name='"+arena+"' LIMIT 1;");
 		try {
 			if(rs != null && rs.first()) {
 				for(String s : statsList) {
@@ -102,9 +104,9 @@ public class SQLArenaLobby {
 		return data;
 	}
 	
-	public HashMap<String, Integer> getArenaSettings(String arena) {
-		HashMap<String, Integer> data = new HashMap<String, Integer>();
-		ResultSet rs = sql.resultQuery("SELECT * FROM arenasettings WHERE name = '"+arena+"' LIMIT 1;");
+	public LinkedHashMap<String, Integer> getArenaSettings(String arena) {
+		LinkedHashMap<String, Integer> data = new LinkedHashMap<String, Integer>();
+		ResultSet rs = sql.resultQuery("SELECT * FROM arenasettings WHERE name='"+arena+"' LIMIT 1;");
 		try {
 			if(rs != null && rs.first()) {
 				for(String s : settingsList) {
@@ -117,12 +119,12 @@ public class SQLArenaLobby {
 		return data;
 	}
 
-	public ArrayList<Location> getLocations(ArrayList<Integer> ids) {
+	private ArrayList<Location> getLocations(ArrayList<Integer> ids) {
 		ArrayList<Location> locs = new ArrayList<Location>();
 		if(ids.size() > 0) {
 			String idss = "";
 			for(int id : ids) {
-				idss += "id = "+id+" OR ";
+				idss += "id='"+id+"' OR ";
 			}
 			idss = idss.substring(0, idss.length()-4);
 			ResultSet rs = sql.resultQuery("SELECT * FROM locations WHERE "+idss+";");
@@ -145,6 +147,17 @@ public class SQLArenaLobby {
 			}
 		}
 		return locs;
+	}
+	
+	private void removeLocations(ArrayList<Integer> ids) {
+		if(ids.size() > 0) {
+			String idss = "";
+			for(int id : ids) {
+				idss += "id='"+id+"' OR ";
+			}
+			idss = idss.substring(0, idss.length()-4);
+			sql.updateQuery("DELETE FROM locations WHERE "+idss+";");
+		}
 	}
 
 	public boolean isArenaExisting(String arena) {
@@ -208,7 +221,7 @@ public class SQLArenaLobby {
 		return 0;
 	}
 
-	public ArrayList<Location> getRedspawns(String arena) {
+	private ArrayList<Integer> getRedspawnsIds(String arena) {
 		ArrayList<Integer> ids = new ArrayList<Integer>();
 		ResultSet rs = sql.resultQuery("SELECT location_id FROM redspawns WHERE arena = '"+arena+"';");
 		try {
@@ -220,10 +233,9 @@ public class SQLArenaLobby {
 		} catch (SQLException e) {
 			e.printStackTrace();
 		}
-		return getLocations(ids);
+		return ids;
 	}
-
-	public ArrayList<Location> getBluespawns(String arena) {
+	private ArrayList<Integer> getBluespawnsIds(String arena) {
 		ArrayList<Integer> ids = new ArrayList<Integer>();
 		ResultSet rs = sql.resultQuery("SELECT location_id FROM redspawns WHERE arena = '"+arena+"';");
 		try {
@@ -235,10 +247,9 @@ public class SQLArenaLobby {
 		} catch (SQLException e) {
 			e.printStackTrace();
 		}
-		return getLocations(ids);
+		return ids;
 	}
-
-	public ArrayList<Location> getSpecspawns(String arena) {
+	private ArrayList<Integer> getSpecspawnsIds(String arena) {
 		ArrayList<Integer> ids = new ArrayList<Integer>();
 		ResultSet rs = sql.resultQuery("SELECT location_id FROM redspawns WHERE arena = '"+arena+"';");
 		try {
@@ -250,10 +261,9 @@ public class SQLArenaLobby {
 		} catch (SQLException e) {
 			e.printStackTrace();
 		}
-		return getLocations(ids);
+		return ids;
 	}
-	
-	public ArrayList<Location> getLobbyspawns() {
+	private ArrayList<Integer> getLobbyspawnsIds() {
 		ArrayList<Integer> ids = new ArrayList<Integer>();
 		ResultSet rs = sql.resultQuery("SELECT location_id FROM lobbyspawns;");
 		try {
@@ -265,7 +275,23 @@ public class SQLArenaLobby {
 		} catch (SQLException e) {
 			e.printStackTrace();
 		}
-		return getLocations(ids);
+		return ids;
+	}
+	
+	public ArrayList<Location> getRedspawns(String arena) {
+		return getLocations(getRedspawnsIds(arena));
+	}
+
+	public ArrayList<Location> getBluespawns(String arena) {
+		return getLocations(getBluespawnsIds(arena));
+	}
+
+	public ArrayList<Location> getSpecspawns(String arena) {
+		return getLocations(getSpecspawnsIds(arena));
+	}
+	
+	public ArrayList<Location> getLobbyspawns() {
+		return getLocations(getLobbyspawnsIds());
 	}
 
 	public boolean isArenaActive(String arena) {
@@ -294,7 +320,7 @@ public class SQLArenaLobby {
 		for(Entry<String, Integer> entry : stats.entrySet()) {
 			String key = entry.getKey();
 			if(statsList.contains(key)) {
-				query += key+"="+key+"+"+entry.getValue()+",";
+				query += key+"="+key+"+'"+entry.getValue()+"',";
 			}
 		}
 		if(query.length() > 0) {
@@ -308,7 +334,7 @@ public class SQLArenaLobby {
 		for(Entry<String, Integer> entry : stats.entrySet()) {
 			String key = entry.getKey();
 			if(statsList.contains(key)) {
-				query += key+"="+entry.getValue()+",";
+				query += key+"='"+entry.getValue()+"',";
 			}
 		}
 		if(query.length() > 0) {
@@ -322,7 +348,7 @@ public class SQLArenaLobby {
 		for(Entry<String, Integer> entry : settings.entrySet()) {
 			String key = entry.getKey();
 			if(settingsList.contains(key)) {
-				query += key+"="+entry.getValue()+",";
+				query += key+"='"+entry.getValue()+"',";
 			}
 		}
 		if(query.length() > 0) {
@@ -341,18 +367,22 @@ public class SQLArenaLobby {
 	}
 
 	public void removeRedspawns(String arena) {
+		removeLocations(getRedspawnsIds(arena));
 		sql.updateQuery("DELETE FROM redspawns WHERE arena='"+arena+"';");
 	}
 
 	public void removeBluespawns(String arena) {
+		removeLocations(getBluespawnsIds(arena));
 		sql.updateQuery("DELETE FROM bluespawns WHERE arena='"+arena+"';");
 	}
 
 	public void removeSpecspawns(String arena) {
+		removeLocations(getSpecspawnsIds(arena));
 		sql.updateQuery("DELETE FROM specspawns WHERE arena='"+arena+"';");
 	}
 	
 	public void removeLobbyspawns() {
+		removeLocations(getLobbyspawnsIds());
 		sql.updateQuery("DELETE FROM lobbyspawns;");
 	}
 
@@ -363,13 +393,13 @@ public class SQLArenaLobby {
 
 	public void addNewArena(String arena) {
 		//ARENAS name TEXT, active INTEGER
-		sql.updateQuery("INSERT OR IGNORE INTO arenas(name, active) VALUES('"+arena+"',0);");
+		sql.updateQuery("INSERT OR IGNORE INTO arenas(name, active) VALUES('"+arena+"','0');");
 		//ARENASETTINGS
 		String settingsQuery = "";
 		String settingsValues = "";
 		for(String s : settingsList) {
 			settingsQuery += ","+s;
-			settingsValues += ",0"; 
+			settingsValues += ",'0'"; 
 		}
 		sql.updateQuery("INSERT OR IGNORE INTO arenasettings(name"+settingsQuery+") VALUES('"+arena+"'"+settingsValues+");");
 		
@@ -378,7 +408,7 @@ public class SQLArenaLobby {
 		String statsValues = "";
 		for(String s : statsList) {
 			statsQuery += ","+s;
-			statsValues += ",0"; 
+			statsValues += ",'0'"; 
 		}
 		sql.updateQuery("INSERT OR IGNORE INTO arenastats(name"+statsQuery+") VALUES('"+arena+"'"+statsValues+");");
 	}

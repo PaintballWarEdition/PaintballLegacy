@@ -58,6 +58,7 @@ public class CmdShop {
 			if(args.length == 1) {
 				//Goods-List
 				player.sendMessage(plugin.t.getString("SHOP_HEADER"));
+				plugin.stats.sendCash(player, player.getName());
 				player.sendMessage("");
 				int i = 1;
 				HashMap<String, String> vars = new HashMap<String, String>();
@@ -95,8 +96,11 @@ public class CmdShop {
 							return true;
 						}
 						//money
-						plugin.pm.addMoney(player.getName(), -price);
-						plugin.stats.addMoney(price);
+						HashMap<String, Integer> pStats = new HashMap<String, Integer>();
+						pStats.put("money", -price);
+						pStats.put("money_spent", price);
+						plugin.pm.addStats(player.getName(), pStats);
+						plugin.stats.addGeneralStats(pStats);
 						//items
 						if(isItem(split[1], "ball")) player.getInventory().addItem(new ItemStack(Material.SNOW_BALL, amount));
 						if(isItem(split[1], "grenade")) player.getInventory().addItem(new ItemStack(Material.EGG, amount));

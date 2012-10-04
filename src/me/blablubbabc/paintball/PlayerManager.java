@@ -46,10 +46,12 @@ public class PlayerManager {
 	//STATS
 	public void addStats(String player, HashMap<String, Integer> stats) {
 		plugin.sql.sqlPlayers.addPlayerStats(player, stats);
+		plugin.sql.sqlPlayers.calculateStats(player);
 	}
 
 	public void setStats(String player, HashMap<String, Integer> stats) {
 		plugin.sql.sqlPlayers.setPlayerStats(player, stats);
+		plugin.sql.sqlPlayers.calculateStats(player);
 	}
 	
 	//GETTER

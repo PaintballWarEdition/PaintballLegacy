@@ -57,17 +57,17 @@ public class SQLData {
 	}
 	//SET
 	public void setInt(String key, int number) {
-		sql.updateQuery("UPDATE OR IGNORE data SET valueInt="+number+" WHERE key='"+key+"';");
+		sql.updateQuery("UPDATE OR IGNORE data SET valueInt='"+number+"' WHERE key='"+key+"';");
 	}
 	public void setString(String key, String text) {
 		sql.updateQuery("UPDATE OR IGNORE data SET valueString='"+text+"' WHERE key='"+key+"';");
 	}
 	//ADD
 	public void addInt(String key, int number) {
-		sql.updateQuery("INSERT OR IGNORE INTO data(key, valueInt, valueString) VALUES('"+key+"',"+number+",'');");
+		sql.updateQuery("INSERT OR IGNORE INTO data(key, valueInt, valueString) VALUES('"+key+"','"+number+"','');");
 	}
 	public void addString(String key, String text) {
-		sql.updateQuery("INSERT OR IGNORE INTO data(key, valueInt, valueString) VALUES('"+key+"',0,'"+text+"');");
+		sql.updateQuery("INSERT OR IGNORE INTO data(key, valueInt, valueString) VALUES('"+key+"','0','"+text+"');");
 	}
 	//REMOVE
 	public void remove(String key) {

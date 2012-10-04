@@ -78,9 +78,6 @@ public class Match {
 				this.redT.put(p, plugin.lives);
 			}
 		}
-		//STATS Template
-		HashMap<String, Integer> stat = new HashMap<String, Integer>();
-		stat.put("shots", 0); stat.put("hits", 0); stat.put("kills", 0); stat.put("deaths", 0); stat.put("teamattacks", 0); stat.put("grenades", 0); stat.put("airstrikes", 0);
 		
 		for(Player p : players) {
 			//STATS
@@ -373,21 +370,8 @@ public class Match {
 				matchOver = true;
 				//unhideAll();
 				undoAllColors();
-				//STATS
-				HashMap<String, HashMap<String, Integer>> stats = new HashMap<String, HashMap<String,Integer>>();
-				for(Player p : players) {
-					HashMap<String, Integer> pStats = new HashMap<String, Integer>();
-					pStats.put("shots", shots.get(p.getName()));
-					pStats.put("hits", shots.get(p.getName()));
-					pStats.put("kills", shots.get(p.getName()));
-					pStats.put("deaths", shots.get(p.getName()));
-					pStats.put("teamattacks", shots.get(p.getName()));
-					pStats.put("grenades", shots.get(p.getName()));
-					pStats.put("airstrikes", shots.get(p.getName()));
-					
-					stats.put(p.getName(), pStats);
-				}
-				plugin.mm.gameEnd(this, playersLoc, getEnemyTeam(player).keySet(), getEnemyTeamName(player), getTeam(player).keySet(), getTeamName(player), spec, stats);
+						
+				plugin.mm.gameEnd(this, playersLoc, getEnemyTeam(player).keySet(), getEnemyTeamName(player), getTeam(player).keySet(), getTeamName(player), spec, shots, hits, kills, deaths, teamattacks, grenades, airstrikes);
 			}
 		} else if(spec.contains(player)) spec.remove(player);
 	}
@@ -395,6 +379,14 @@ public class Match {
 	public synchronized void shot(Player player) {
 		//add 1
 		shots.put(player.getName(), shots.get(player.getName())+1);
+	}
+	public synchronized void grenade(Player player) {
+		//add 1
+		grenades.put(player.getName(), grenades.get(player.getName())+1);
+	}
+	public synchronized void airstrike(Player player) {
+		//add 1
+		airstrikes.put(player.getName(), airstrikes.get(player.getName())+1);
 	}
 	
 	public synchronized void hitSnow(Player target, Player shooter) {
@@ -444,7 +436,7 @@ public class Match {
 		vars.put("target", target.getName());
 		vars.put("killer", killer.getName());
 		vars.put("points", String.valueOf(plugin.pointsPerKill));
-		vars.put("cash", String.valueOf(plugin.cashPerKill));
+		vars.put("money", String.valueOf(plugin.cashPerKill));
 		killer.sendMessage(plugin.t.getString("YOU_KILLED", vars));
 		target.sendMessage(plugin.t.getString("YOU_WERE_KILLED", vars));
 		plugin.nf.feed(target, killer, this2);
@@ -473,29 +465,13 @@ public class Match {
 			@Override
 			public void run() {
 				plugin.joinLobby(target);
-				//target.teleport(plugin.transformLocation(plugin.getLobbySpawns().get(plugin.getNextLobbySpawn())));
-				//plugin.clearInv(target);
-				//points+cash+kill+death
 				//survivors?->endGame
 				if(survivors(getTeam(target)) == 0) {
 					//unhideAll();
 					matchOver = true;
 					undoAllColors();
-					//STATS
-					HashMap<String, HashMap<String, Integer>> stats = new HashMap<String, HashMap<String,Integer>>();
-					for(Player p : players) {
-						HashMap<String, Integer> pStats = new HashMap<String, Integer>();
-						pStats.put("shots", shots.get(p.getName()));
-						pStats.put("hits", shots.get(p.getName()));
-						pStats.put("kills", shots.get(p.getName()));
-						pStats.put("deaths", shots.get(p.getName()));
-						pStats.put("teamattacks", shots.get(p.getName()));
-						pStats.put("grenades", shots.get(p.getName()));
-						pStats.put("airstrikes", shots.get(p.getName()));
-						
-						stats.put(p.getName(), pStats);
-					}
-					plugin.mm.gameEnd(this2, playersLoc, getTeam(killer).keySet(), getTeamName(killer), getTeam(target).keySet(), getTeamName(target), spec, stats);
+					
+					plugin.mm.gameEnd(this2, playersLoc, getTeam(killer).keySet(), getTeamName(killer), getTeam(target).keySet(), getTeamName(target), spec, shots, hits, kills, deaths, teamattacks, grenades, airstrikes);
 				}
 				
 			}
@@ -533,43 +509,9 @@ public class Match {
 			matchOver = true;
 			//unhideAll();
 			undoAllColors();
-			//STATS
-			HashMap<String, HashMap<String, Integer>> stats = new HashMap<String, HashMap<String,Integer>>();
-			for(Player p : players) {
-				HashMap<String, Integer> pStats = new HashMap<String, Integer>();
-				pStats.put("shots", shots.get(p.getName()));
-				pStats.put("hits", shots.get(p.getName()));
-				pStats.put("kills", shots.get(p.getName()));
-				pStats.put("deaths", shots.get(p.getName()));
-				pStats.put("teamattacks", shots.get(p.getName()));
-				pStats.put("grenades", shots.get(p.getName()));
-				pStats.put("airstrikes", shots.get(p.getName()));
-				
-				stats.put(p.getName(), pStats);
-			}
-			plugin.mm.gameEnd(this, playersLoc, getEnemyTeam(target).keySet(), getEnemyTeamName(target), getTeam(target).keySet(), getTeamName(target), spec, stats);
+			
+			plugin.mm.gameEnd(this, playersLoc, getEnemyTeam(target).keySet(), getEnemyTeamName(target), getTeam(target).keySet(), getTeamName(target), spec, shots, hits, kills, deaths, teamattacks, grenades, airstrikes);
 		}
 	}
-
-
-	/*private void runTeleportTask() {
-		plugin.getServer().getScheduler().scheduleSyncDelayedTask(plugin, new Runnable() {
-            public void run() {
-            	if(teleportList.size() > 0) {
-            		@SuppressWarnings("unchecked")
-					Entry<String, Location> entry = (Entry<String, Location>) teleportList.entrySet().toArray()[0];
-            		
-					Player p = plugin.getServer().getPlayer(entry.getKey());
-					if (p != null) {
-						p.teleport(entry.getValue());
-					}
-					teleportList.remove(entry.getKey());
-					if (teleportList.size() > 0){
-						runTeleportTask();
-					}
-				}
-            }
-        }, 1L);
-	}*/
 
 }

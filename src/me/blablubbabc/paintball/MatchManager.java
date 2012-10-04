@@ -32,8 +32,6 @@ public class MatchManager{
 			mlist.add(m);
 		}
 		for(Match match : mlist) {
-			//match.unhideAll();
-
 			//colors
 			match.undoAllColors();
 			//Teleport all remaining players back to lobby:
@@ -134,20 +132,30 @@ public class MatchManager{
 		matches.add(match);
 	}
 
-	public synchronized void gameEnd(Match match, HashMap<String, Location> playersLoc, Set<Player> winners, String win, Set<Player> loosers, String loose, Set<Player> specs, HashMap<String, HashMap<String, Integer>> stats) {
-		//stats etc
+	public synchronized void gameEnd(Match match, HashMap<String, Location> playersLoc, Set<Player> winners, String win, Set<Player> loosers, String loose, Set<Player> specs, 
+			HashMap<String, Integer> shots, HashMap<String, Integer> hits, HashMap<String, Integer> kills, HashMap<String, Integer> deaths,
+			HashMap<String, Integer> teamattacks, HashMap<String, Integer> grenades, HashMap<String, Integer> airstrikes) {
+
+		//STATS
+		HashMap<String, Integer> wins = new HashMap<String, Integer>();
+		HashMap<String, Integer> defeats = new HashMap<String, Integer>();
+		HashMap<String, Integer> points = new HashMap<String, Integer>();
+		HashMap<String, Integer> money = new HashMap<String, Integer>();
+
 		for(Player p : winners) {
 			//stats
-			plugin.pm.addWins(p.getName(), 1);
-			plugin.pm.addPoints(p.getName(), (plugin.pointsPerRound + plugin.pointsPerWin));
-			plugin.pm.addMoney(p.getName(), (plugin.cashPerRound + plugin.cashPerWin));
+			wins.put(p.getName(), 1);
+			defeats.put(p.getName(), 0);
+			points.put(p.getName(), (plugin.pointsPerRound + plugin.pointsPerWin));
+			money.put(p.getName(), (plugin.cashPerRound + plugin.cashPerWin));
 
 		}
 		for(Player p : loosers) {
 			//stats
-			plugin.pm.addLooses(p.getName(), 1);
-			plugin.pm.addPoints(p.getName(), plugin.pointsPerRound);
-			plugin.pm.addMoney(p.getName(), plugin.cashPerRound);
+			wins.put(p.getName(), 0);
+			defeats.put(p.getName(), 1);
+			points.put(p.getName(), plugin.pointsPerRound);
+			money.put(p.getName(), plugin.cashPerRound);
 
 		}
 
@@ -162,7 +170,7 @@ public class MatchManager{
 
 					//afk detection update on match end
 					if(plugin.afkDetection && !match.isSpec(p)) {
-						if(p.getLocation().getWorld().equals(playersLoc.get(p.getName()).getWorld()) && p.getLocation().distance(playersLoc.get(p.getName())) <= plugin.afkRadius && shots.get(p) == 0 && kills.get(p) == 0) {
+						if(p.getLocation().getWorld().equals(playersLoc.get(p.getName()).getWorld()) && p.getLocation().distance(playersLoc.get(p.getName())) <= plugin.afkRadius && shots.get(p.getName()) == 0 && kills.get(p.getName()) == 0) {
 							int afkCount;
 							if(plugin.afkMatchCount.get(p.getName()) != null) {
 								afkCount = plugin.afkMatchCount.get(p.getName());
@@ -203,51 +211,81 @@ public class MatchManager{
 			}
 		}
 
-		// Das ist eine Änderung, die du bestimmt später noch finden wirst, oder? <-- hä? woher kommt die?
-		//shots
+		//MORE STATS
 		int shotsAll = 0;
-		for(Entry<Player, Integer> e : shots.entrySet()) {
-			plugin.pm.addShots(e.getKey().getName(), e.getValue());
+		int hitsAll = 0;
+		int killsAll = 0;
+		int teamattacksAll = 0;
+		int grenadesAll = 0;
+		int airstrikesAll = 0;
+
+		//shots
+		for(Entry<String, Integer> e : shots.entrySet()) {
 			shotsAll += e.getValue();
 		}
 		//hits
-		int hitsAll = 0;
-		for(Entry<Player, Integer> e : hits.entrySet()) {
-			plugin.pm.addHits(e.getKey().getName(), e.getValue());
-			plugin.pm.addPoints(e.getKey().getName(), ( e.getValue() * plugin.pointsPerHit ));
-			plugin.pm.addMoney(e.getKey().getName(), ( e.getValue() * plugin.cashPerHit ));
+		for(Entry<String, Integer> e : hits.entrySet()) {
+			points.put(e.getKey(), points.get(e.getKey()) + ( e.getValue() * plugin.pointsPerHit ));
+			money.put(e.getKey(), money.get(e.getKey()) + ( e.getValue() * plugin.cashPerHit ));
 			hitsAll += e.getValue();
 		}
 		//kills
-		int killsAll = 0;
-		for(Entry<Player, Integer> e : kills.entrySet()) {
-			plugin.pm.addkills(e.getKey().getName(), e.getValue());
-			plugin.pm.addPoints(e.getKey().getName(), ( e.getValue() * plugin.pointsPerKill ));
-			plugin.pm.addMoney(e.getKey().getName(), ( e.getValue() * plugin.cashPerKill ));
+		for(Entry<String, Integer> e : kills.entrySet()) {
+			points.put(e.getKey(), points.get(e.getKey()) + ( e.getValue() * plugin.pointsPerKill ));
+			money.put(e.getKey(), money.get(e.getKey()) + ( e.getValue() * plugin.cashPerKill ));
 			killsAll += e.getValue();
 		}
-		//deaths
-		//int deathsAll = 0;
-		for(Entry<Player, Integer> e : deaths.entrySet()) {
-			plugin.pm.addDeaths(e.getKey().getName(), e.getValue());
-			//deathsAll += e.getValue();
-		}
 		//teamattacks
-		int teamattacksAll = 0;
-		for(Entry<Player, Integer> e : teamattacks.entrySet()) {
-			plugin.pm.addTeamattacks(e.getKey().getName(), e.getValue());
-			plugin.pm.addPoints(e.getKey().getName(), ( e.getValue() * plugin.pointsPerTeamattack ));
+		for(Entry<String, Integer> e : teamattacks.entrySet()) {
+			points.put(e.getKey(), points.get(e.getKey()) + ( e.getValue() * plugin.pointsPerTeamattack ));
 			teamattacksAll += e.getValue();
 		}
+		//grenades
+		for(Entry<String, Integer> e : grenades.entrySet()) {
+			grenadesAll += e.getValue();
+		}
+		//airstrikes
+		for(Entry<String, Integer> e : airstrikes.entrySet()) {
+			airstrikesAll += e.getValue();
+		}
+		
+		//PLAYER STATS
+		for(Player p : match.getAllPlayer()) {
+			HashMap<String, Integer> pStats = new HashMap<String, Integer>();
+			String name = p.getName();
+			pStats.put("shots", shots.get(name));
+			pStats.put("hits", shots.get(name));
+			pStats.put("kills", shots.get(name));
+			pStats.put("deaths", shots.get(name));
+			pStats.put("teamattacks", shots.get(name));
+			pStats.put("grenades", shots.get(name));
+			pStats.put("airstrikes", shots.get(name));
+			pStats.put("points", shots.get(name));
+			pStats.put("money", shots.get(name));
+			pStats.put("wins", shots.get(name));
+			pStats.put("defeats", shots.get(name));
 
-		//arena stats:
-		plugin.am.addShots(match.getArena(), shotsAll);
-		plugin.am.addRounds(match.getArena(), 1);
-		plugin.am.addKills(match.getArena(), killsAll);
-		//general stats:
-		plugin.stats.addRounds(1);
-		plugin.stats.addShots(shotsAll);
-		plugin.stats.addKills(killsAll);
+			plugin.pm.addStats(name, pStats);
+		}
+		//ARENA STATS
+		HashMap<String, Integer> aStats = new HashMap<String, Integer>();
+		aStats.put("shots", shotsAll);
+		aStats.put("kills", killsAll);
+		aStats.put("rounds", 1);
+		aStats.put("grenades", grenadesAll);
+		aStats.put("airstrikes", airstrikesAll);
+
+		plugin.am.addStats(match.getArena(), aStats);
+
+		//GENERAL STATS
+		HashMap<String, Integer> gStats = new HashMap<String, Integer>();
+		gStats.put("rounds", 1);
+		gStats.put("shots", shotsAll);
+		gStats.put("kills", killsAll);
+		gStats.put("grenades", grenadesAll);
+		gStats.put("airstrikes", airstrikesAll);
+		
+		plugin.stats.matchEndStats(gStats, match.getAllPlayer().size());
 
 		//messages:
 		plugin.nf.status("Match is over!");
@@ -261,11 +299,11 @@ public class MatchManager{
 		plugin.nf.text(plugin.t.getString("WINNER_TEAM", vars));
 
 		vars.put("points", String.valueOf(plugin.pointsPerWin));
-		vars.put("cash", String.valueOf(plugin.cashPerWin));
+		vars.put("money", String.valueOf(plugin.cashPerWin));
 		plugin.nf.text(plugin.t.getString("WINNER_BONUS", vars));
 
 		vars.put("points", String.valueOf(plugin.pointsPerRound));
-		vars.put("cash", String.valueOf(plugin.cashPerRound));
+		vars.put("money", String.valueOf(plugin.cashPerRound));
 		plugin.nf.text(plugin.t.getString("ROUND_BONUS", vars));
 
 		plugin.nf.text(plugin.t.getString("MATCH_STATS"));
