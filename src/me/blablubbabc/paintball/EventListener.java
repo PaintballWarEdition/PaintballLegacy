@@ -6,6 +6,7 @@ import me.blablubbabc.paintball.extras.Airstrike;
 import me.blablubbabc.paintball.extras.Grenade;
 import org.bukkit.ChatColor;
 import org.bukkit.Chunk;
+import org.bukkit.Effect;
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.World;
@@ -169,6 +170,8 @@ public class EventListener implements Listener{
 						} else if(shot instanceof Egg) {
 							if(plugin.grenades) {
 								Grenade.eggThrow(player, (Egg) shot);
+								//zählen
+								mm.getMatch(player).grenade(player);
 								if(plugin.grenadeAmount == -1) {
 									//+1grenade
 									player.getInventory().addItem(new ItemStack(Material.EGG, 1));
@@ -179,7 +182,6 @@ public class EventListener implements Listener{
 						}
 					} else {
 						event.setCancelled(true);
-						return;
 					}
 				}
 			}
@@ -214,11 +216,14 @@ public class EventListener implements Listener{
 		Player player = (Player) event.getPlayer();
 		if(Lobby.getTeam(player) != null) {
 			if(mm.getMatch(player) != null && Lobby.isPlaying(player) && mm.getMatch(player).started && mm.getMatch(player).isSurvivor(player)) {
+				//AIRSTRIKE
 				if(player.getItemInHand().getTypeId() == 280) {
 					if(event.getAction().equals(Action.LEFT_CLICK_AIR) || event.getAction().equals(Action.RIGHT_CLICK_AIR)) {
 						if(Airstrike.marked(player)) {
 							if(!Airstrike.active) {
 								Airstrike.call(plugin, player);
+								//zählen
+								mm.getMatch(player).airstrike(player);
 								//remove stick if not infinite
 								if(plugin.airstrikeAmount != -1) {
 									int amount = (player.getInventory().getItemInHand()
@@ -234,6 +239,7 @@ public class EventListener implements Listener{
 							}
 						}
 					}
+					//GRENADE
 				} else if(player.getItemInHand().getTypeId() == 344) {
 					if(event.getAction().equals(Action.RIGHT_CLICK_AIR) || event.getAction().equals(Action.RIGHT_CLICK_BLOCK)) {
 						player.sendMessage(plugin.t.getString("GRENADE_THROW"));
@@ -242,7 +248,6 @@ public class EventListener implements Listener{
 			} else if(event.getClickedBlock() != null && !event.getClickedBlock().getType().equals(Material.NOTE_BLOCK)) {
 				if(!player.isOp() && !player.hasPermission("paintball.admin")) {
 					event.setCancelled(true);
-					return;
 				}
 			}
 		}
@@ -288,7 +293,19 @@ public class EventListener implements Listener{
 	@EventHandler(priority = EventPriority.MONITOR)
 	public void onProjectileHit(ProjectileHitEvent event) {
 		Projectile shot = event.getEntity();
-		if(shot instanceof Snowball) {
+		if(shot instanceof Snowball) {	
+			if(shot.getShooter() instanceof Player) {
+				Player player = (Player) shot.getShooter();
+				if(mm.getMatch(player) != null) {
+					Match match = mm.getMatch(player);
+					Location loc = shot.getLocation();
+					if(match.isBlue(player)) {
+						loc.getWorld().playEffect(loc, Effect.POTION_BREAK, 1);
+					} else if(match.isRed(player)) {
+						loc.getWorld().playEffect(loc, Effect.POTION_BREAK, 2);
+					}
+				}
+			}
 			//some effect maybe?
 		} else if(shot instanceof Egg) {
 			if(plugin.grenades) {

@@ -34,7 +34,7 @@ public class SQLData {
 		}
 	}
 	public int getInt(String key) {
-		ResultSet rs = sql.resultQuery("SELECT valueInt FROM data WHERE key='"+key+"' LIMIT 1);");
+		ResultSet rs = sql.resultQuery("SELECT valueInt FROM data WHERE key='"+key+"' LIMIT 1;");
 		try {
 			if(rs != null) {
 				return rs.getInt("valueInt");
@@ -45,7 +45,7 @@ public class SQLData {
 		return 0;
 	}
 	public String getString(String key) {
-		ResultSet rs = sql.resultQuery("SELECT valueString FROM data WHERE key='"+key+"' LIMIT 1);");
+		ResultSet rs = sql.resultQuery("SELECT valueString FROM data WHERE key='"+key+"' LIMIT 1;");
 		try {
 			if(rs != null) {
 				return rs.getString("valueString");
