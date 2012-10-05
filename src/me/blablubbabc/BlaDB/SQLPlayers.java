@@ -1,7 +1,6 @@
 package me.blablubbabc.BlaDB;
 
 import java.sql.ResultSet;
-import java.sql.ResultSetMetaData;
 import java.sql.SQLException;
 import java.util.AbstractMap.SimpleEntry;
 import java.util.ArrayList;
@@ -112,11 +111,8 @@ public class SQLPlayers {
 		ResultSet rs = sql.resultQuery("SELECT * FROM players WHERE name = '"+player+"' LIMIT 1;");
 		try {
 			if(rs != null && rs.next()) {
-				ResultSetMetaData rsmd = rs.getMetaData();
-				int columns = rsmd.getColumnCount();
-				//startet bei 2, damit der 'name' nicht mit dabei ist.
-				for(int i = 2; i <= columns; i++) {
-					data.put(rs.getMetaData().getColumnName(i), rs.getInt(i));
+				for(String stat : statsList) {
+					data.put(stat, rs.getInt(stat));
 				}
 			}
 		} catch (SQLException e) {

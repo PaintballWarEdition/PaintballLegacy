@@ -30,7 +30,7 @@ public class BlaSQLite {
 		sqlPlayers = new SQLPlayers(this, plugin);
 		sqlGeneralStats = new SQLGeneralStats(this, plugin);
 		sqlData = new SQLData(this, plugin);
-		
+
 		//CREATE TABLES
 		sqlArenaLobby.createDefaultTables();
 		sqlPlayers.createDefaultTables();
@@ -45,15 +45,15 @@ public class BlaSQLite {
 			e.printStackTrace();
 		}
 	}
-	
+
 	public void refreshConnection() {
-		try {
-			if (connection == null || connection.isClosed()) {
-				initialise();
-			}
-		} catch (SQLException e) {
-			e.printStackTrace();
+		if (connection == null) {
+			initialise();
+			pragmas();
 		}
+	}
+	public void pragmas() {
+		//nothing here :(
 	}
 
 	public boolean initialise() {

@@ -64,7 +64,7 @@ public class SQLGeneralStats {
 	public void setStats(HashMap<String, Integer> stats) {
 		for(String key : stats.keySet()) {
 			if(statsList.contains(key)) {
-				String query = key+"="+stats.get(key);
+				String query = "value=value+"+stats.get(key);
 				sql.updateQuery("UPDATE OR IGNORE general_stats SET "+query+" WHERE key="+key+";");
 			}
 		}
@@ -73,7 +73,7 @@ public class SQLGeneralStats {
 	public void addStatsMatchEnd(HashMap<String, Integer> stats, int playerAmount) {
 		for(String key : stats.keySet()) {
 			if(statsList.contains(key)) {
-				String query = key+"="+key+"+"+stats.get(key);
+				String query = "value=value+"+stats.get(key);
 				sql.updateQuery("UPDATE OR IGNORE general_stats SET "+query+" WHERE key="+key+";");
 			}
 		}

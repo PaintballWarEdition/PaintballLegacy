@@ -134,7 +134,7 @@ public class EventListener implements Listener{
 				if(mm.getMatch(attacker) != null && mm.getMatch(target) != null) {
 					if(mm.getMatch(attacker).equals(mm.getMatch(target))) {
 						Match match = mm.getMatch(attacker);
-						if(!match.isSpec(attacker) && !match.isSpec(target) && match.isSurvivor(attacker) && match.isSurvivor(target) && match.started) {
+						if(match.enemys(attacker, target) && match.isSurvivor(attacker) && match.isSurvivor(target) && match.started) {
 							if(plugin.allowMelee) {
 								if(target.getHealth() > plugin.meleeDamage) target.setHealth(target.getHealth()-plugin.meleeDamage);
 								else {

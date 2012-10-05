@@ -65,6 +65,7 @@ public class Stats {
 		vars.put("player", name);
 		if(plugin.pm.exists(name)) {
 			vars.put("rank", String.valueOf(getRank(name, stat)));
+			vars.put("stats", stat);
 			sender.sendMessage(plugin.t.getString("RANK_PLAYER", vars));
 		} else {
 			sender.sendMessage(plugin.t.getString("PLAYER_NOT_FOUND", vars));
@@ -83,6 +84,21 @@ public class Stats {
 		}
 	}
 
+	public void sendGeneralStats(CommandSender sender, String name) {
+		HashMap<String, String> vars = new HashMap<String, String>();
+		//GENERAL STATS
+		LinkedHashMap<String, Integer> gStats = getGerneralStats();
+		for(String stat : gStats.keySet()) {
+			vars.put(stat, String.valueOf(gStats.get(stat)));
+		}
+
+		//SEND
+		sender.sendMessage(plugin.t.getString("STATS_GENERAL"));
+		for(String stat : gStats.keySet()) {
+			sender.sendMessage(plugin.t.getString("STATS_GENERAL_"+stat.toUpperCase(), vars));
+		}
+	}
+	
 	public void sendStats(CommandSender sender, String name) {
 		HashMap<String, String> vars = new HashMap<String, String>();
 		vars.put("player", name);
@@ -90,7 +106,6 @@ public class Stats {
 			//GET STATS
 			LinkedHashMap<String, Integer> pStats = plugin.sql.sqlPlayers.getPlayerStats(name);
 			LinkedHashMap<String, SimpleEntry<String, Integer>> topStats = plugin.sql.sqlPlayers.getTopStats();
-			LinkedHashMap<String, Integer> gStats = getGerneralStats();
 
 			//KD + HITQUOTE
 			float kdF = (float)pStats.get("kd") / 100;
@@ -120,17 +135,6 @@ public class Stats {
 			sender.sendMessage(plugin.t.getString("STATS_PLAYER", vars));
 			for(String stat : pStats.keySet()) {
 				sender.sendMessage(plugin.t.getString("STATS_"+stat.toUpperCase(), vars));
-			}
-
-			//GENERAL STATS
-			for(String stat : gStats.keySet()) {
-				vars.put(stat, String.valueOf(gStats.get(stat)));
-			}
-
-			//SEND
-			sender.sendMessage(plugin.t.getString("STATS_GENERAL"));
-			for(String stat : gStats.keySet()) {
-				sender.sendMessage(plugin.t.getString("STATS_GENERAL_"+stat.toUpperCase(), vars));
 			}
 
 		} else {

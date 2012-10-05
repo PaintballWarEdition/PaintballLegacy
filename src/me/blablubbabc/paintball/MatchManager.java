@@ -254,16 +254,16 @@ public class MatchManager{
 			HashMap<String, Integer> pStats = new HashMap<String, Integer>();
 			String name = p.getName();
 			pStats.put("shots", shots.get(name));
-			pStats.put("hits", shots.get(name));
-			pStats.put("kills", shots.get(name));
-			pStats.put("deaths", shots.get(name));
-			pStats.put("teamattacks", shots.get(name));
-			pStats.put("grenades", shots.get(name));
-			pStats.put("airstrikes", shots.get(name));
-			pStats.put("points", shots.get(name));
-			pStats.put("money", shots.get(name));
-			pStats.put("wins", shots.get(name));
-			pStats.put("defeats", shots.get(name));
+			pStats.put("hits", hits.get(name));
+			pStats.put("kills", kills.get(name));
+			pStats.put("deaths", deaths.get(name));
+			pStats.put("teamattacks", teamattacks.get(name));
+			pStats.put("grenades", grenades.get(name));
+			pStats.put("airstrikes", airstrikes.get(name));
+			pStats.put("points", points.get(name));
+			pStats.put("money", money.get(name));
+			pStats.put("wins", wins.get(name));
+			pStats.put("defeats", defeats.get(name));
 
 			plugin.pm.addStats(name, pStats);
 		}
