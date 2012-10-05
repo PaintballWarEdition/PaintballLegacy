@@ -210,30 +210,33 @@ public class CmdArena {
 					return true;
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 				} else if(args[2].equalsIgnoreCase("set")) {
-					if(args.length == 5) {
-						if(plugin.sql.sqlArenaLobby.settingsList.contains(args[3])) {
-							try {
-								int value = Integer.parseInt(args[4]);
-								HashMap<String, Integer> newSettings = new HashMap<String, Integer>();
-								newSettings.put(args[3], value);
-								am.setSettings(name, newSettings);
-								vars.put("setting", args[3]);
-								vars.put("value", String.valueOf(value));
-								player.sendMessage(plugin.t.getString("ARENA_SET_SETTING", vars));
-							}catch(Exception e) {
-								player.sendMessage(plugin.t.getString("INVALID_NUMBER"));
-								return true;
-							}
-						} else {
-							String settings = "";
-							for(String s : plugin.sql.sqlArenaLobby.settingsList) {
-								settings += s+",";
-							}
-							if(settings.length() > 1) settings = settings.substring(0, settings.length()-1);
-							vars.put("settings", settings);
-							player.sendMessage(plugin.t.getString("ARENA_INVALID_SETTING", vars));
+					if(am.inUse(name)) {
+						player.sendMessage(plugin.t.getString("ARENA_NO_EDIT_IN_USE"));
+						return true;
+					}
+					if(args.length == 5 && plugin.sql.sqlArenaLobby.settingsList.contains(args[3])) {
+						try {
+							int value = Integer.parseInt(args[4]);
+							HashMap<String, Integer> newSettings = new HashMap<String, Integer>();
+							newSettings.put(args[3], value);
+							am.setSettings(name, newSettings);
+							vars.put("setting", args[3]);
+							vars.put("value", String.valueOf(value));
+							player.sendMessage(plugin.t.getString("ARENA_SET_SETTING", vars));
+							return true;
+						}catch(Exception e) {
+							player.sendMessage(plugin.t.getString("INVALID_NUMBER"));
 							return true;
 						}
+					} else {
+						String settings = "";
+						for(String s : plugin.sql.sqlArenaLobby.settingsList) {
+							settings += s+",";
+						}
+						if(settings.length() > 1) settings = settings.substring(0, settings.length()-1);
+						vars.put("settings", settings);
+						player.sendMessage(plugin.t.getString("ARENA_INVALID_SETTING", vars));
+						return true;
 					}
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 				}

@@ -23,7 +23,7 @@ public class Match {
 	private HashMap<String, Integer> teamattacks = new HashMap<String, Integer>();
 	private HashMap<String, Integer> grenades = new HashMap<String, Integer>();
 	private HashMap<String, Integer> airstrikes = new HashMap<String, Integer>();
-	
+
 	private Set<Player> spec;
 	private ArrayList<Player> players;
 	private HashMap<String, Location> playersLoc;
@@ -35,10 +35,18 @@ public class Match {
 	private int spawnBlue;
 	private int spawnRed;
 	private int spawnSpec;
-	
-	
+
+	private int setting_balls;
+	private int setting_grenades;
+	private int setting_airstrikes;
+	private int setting_lives;
+	private int setting_respawns;
+
+
+
+
 	public boolean started;
-	
+
 	public Match(final Paintball plugin, Set<Player> red, Set<Player> blue, Set<Player> spec, Set<Player> random, String arena) {
 		this.plugin = plugin;
 		this.arena = arena;
@@ -47,11 +55,18 @@ public class Match {
 		this.left = new ArrayList<String>();
 		this.matchOver = false;
 		this.started = false;
-		
+
 		this.spawnBlue = 0;
 		this.spawnRed = 0;
 		this.spawnSpec = 0;
-        
+
+		this.setting_balls = plugin.balls;
+		this.setting_grenades = plugin.grenadeAmount;
+		this.setting_airstrikes = plugin.airstrikeAmount;
+		this.setting_lives = plugin.lives;
+		this.setting_respawns = plugin.respawns;
+		calculateSettings();
+
 		//TEAMS
 		for(Player p : red) {
 			this.redT.put(p, plugin.lives);
@@ -62,7 +77,7 @@ public class Match {
 			players.add(p);
 		}
 		this.spec = spec;
-		
+
 		//randoms:
 		List<Player> rand = new ArrayList<Player>();
 		for(Player p : random) {
@@ -78,7 +93,7 @@ public class Match {
 				this.redT.put(p, plugin.lives);
 			}
 		}
-		
+
 		for(Player p : players) {
 			//STATS
 			this.shots.put(p.getName(), 0);
@@ -88,24 +103,24 @@ public class Match {
 			this.teamattacks.put(p.getName(), 0);
 			this.grenades.put(p.getName(), 0);
 			this.airstrikes.put(p.getName(), 0);
-			
+
 			plugin.checks(p);
 			spawnPlayer(p);
 		}
-		
+
 		for(Player p : this.spec) {
 			plugin.checks(p);
 			spawnSpec(p);
 		}
 		//colorchanges:
 		changeAllColors();
-		
+
 		//WAITING TIMER:
 		this.started = false;
 		count = plugin.countdownStart;
-		
+
 		taskId = plugin.getServer().getScheduler().scheduleAsyncRepeatingTask(plugin, new Runnable() {
-			
+
 			@Override
 			public void run() {
 				if( count == plugin.countdownStart && count > 0) {
@@ -114,32 +129,32 @@ public class Match {
 					return;
 				}
 				if(( count % 10 ) == 0 && count > 3 )
-			    {
-			        //if above 3 and divisable by 10 message here
+				{
+					//if above 3 and divisable by 10 message here
 					sendCountdown(count);
-			    }
-			 
-			    if( count < 4 && count > 0)
-			    {
-			        //if below 4 message here (regardless of divisibility)
-			    	sendCountdown(count);
-			    }
-			    count--;
-			    if( count < 1) {
-			    	plugin.getServer().getScheduler().cancelTask(taskId);
-			    	//START:
-			    	started = true;
-			    	//lives + start!:
-			    	HashMap<String, String> vars = new HashMap<String, String>();
+				}
+
+				if( count < 4 && count > 0)
+				{
+					//if below 4 message here (regardless of divisibility)
+					sendCountdown(count);
+				}
+				count--;
+				if( count < 1) {
+					plugin.getServer().getScheduler().cancelTask(taskId);
+					//START:
+					started = true;
+					//lives + start!:
+					HashMap<String, String> vars = new HashMap<String, String>();
 					vars.put("lives", String.valueOf(plugin.lives));
 					if(plugin.lives == 1) plugin.nf.status(plugin.t.getString("MATCH_START_ONE_LIFE", vars));
 					else plugin.nf.status(plugin.t.getString("MATCH_START_MORE_LIVES", vars));
 					makeAllVisible();
-			    }
+				}
 			}
 		}, 0L, 20L);
 	}
-	
+
 	private void sendCountdown(int counter) {
 		HashMap<String, String> vars = new HashMap<String, String>();
 		vars.put("seconds", String.valueOf(counter));
@@ -147,9 +162,9 @@ public class Match {
 			player.sendMessage(plugin.t.getString("COUNTDOWN", vars));
 		}
 	}
-	
+
 	//SPAWNS
-	
+
 	public void spawnPlayer(Player player) {
 		if(redT.keySet().contains(player)) {
 			ArrayList<Location> redspawns = plugin.am.getRedSpawns(arena);
@@ -184,7 +199,7 @@ public class Match {
 		vars.put("team", getTeamName(player));
 		player.sendMessage(plugin.t.getString("BE_IN_TEAM", vars));
 	}
-	
+
 	public void spawnSpec(Player player) {
 		ArrayList<Location> specspawns = plugin.am.getSpecSpawns(arena);
 		if(spawnSpec > (specspawns.size()-1)) spawnSpec = 0;
@@ -198,7 +213,27 @@ public class Match {
 		vars.put("team", Lobby.getTeam(player).getName());
 		player.sendMessage(plugin.t.getString("BE_SPECTATOR", vars));
 	}
-	
+
+	//INVENTORY
+	private void calculateSettings() {
+		HashMap<String, Integer> settings = plugin.am.getArenaSettings(arena);
+		//BALLS
+		setting_balls += settings.get("balls");
+		if(setting_balls < -1) setting_balls = -1;
+		//GRENADES
+		setting_grenades += settings.get("grenades");
+		if(setting_grenades < -1) setting_grenades = -1;
+		//AIRSTRIKES
+		setting_airstrikes += settings.get("airstrikes");
+		if(setting_airstrikes < -1) setting_airstrikes = -1;
+		//LIVES
+		setting_lives += settings.get("lives");
+		if(setting_lives < 1) setting_lives = 1;
+		//RESPAWNS
+		setting_respawns += settings.get("respawns");
+		if(setting_respawns < -1) setting_respawns = -1;
+	}
+
 	public void makeAllVisible() {
 		for(Player pl : getAll()) {
 			for(Player p : getAll()) {
@@ -206,7 +241,7 @@ public class Match {
 			}	
 		}
 	}
-	
+
 	public void changeAllColors() {
 		for(Player p : redT.keySet()) {
 			//chatnames
@@ -233,7 +268,7 @@ public class Match {
 			}
 		}
 	}
-	
+
 	public void undoAllColors() {
 		for(Player p : getAllPlayer()) {
 			/*if(plugin.chatnames) {
@@ -245,18 +280,18 @@ public class Match {
 			}
 		}
 	}
-	
+
 	public int teamSizeRed() {
 		return redT.size();
 	}
 	public int teamSizeBlue() {
 		return blueT.size();
 	}
-	
+
 	public String getArena() {
 		return this.arena;
 	}
-	
+
 	public synchronized int survivors(HashMap<Player, Integer> team) {
 		int survivors = 0;
 		for(Player p : team.keySet()) {
@@ -277,7 +312,7 @@ public class Match {
 		}
 		return false;
 	}
-	
+
 	public String getTeamName(Player player) {
 		if(redT.keySet().contains(player)) return Lobby.RED.getName();
 		if(blueT.keySet().contains(player)) return Lobby.BLUE.getName();
@@ -288,7 +323,7 @@ public class Match {
 		if(blueT.keySet().contains(player)) return Lobby.RED.getName();
 		return null;
 	}
-	
+
 	public boolean isSpec(Player player) {
 		if(spec.contains(player)) return true;
 		else return false;
@@ -301,7 +336,7 @@ public class Match {
 		if(blueT.keySet().contains(player)) return true;
 		else return false;
 	}
-	
+
 	public HashMap<Player, Integer> getTeam(Player player) {
 		if(redT.keySet().contains(player)) return redT;
 		if(blueT.keySet().contains(player)) return blueT;
@@ -312,30 +347,30 @@ public class Match {
 		if(blueT.keySet().contains(player)) return redT;
 		return null;
 	}
-	
+
 	public boolean inMatch(Player player) {
 		if(redT.keySet().contains(player)) return true;
 		if(blueT.keySet().contains(player)) return true;
 		if(spec.contains(player)) return true;
 		return false;
 	}
-	
+
 	public boolean enemys(Player player1, Player player2) {
 		if(redT.keySet().contains(player1) && blueT.keySet().contains(player2)) return true;
 		if(redT.keySet().contains(player2) && blueT.keySet().contains(player1)) return true;
 		return false;
 	}
-	
+
 	public boolean friendly(Player player1, Player player2) {
 		if(redT.keySet().contains(player1) && redT.keySet().contains(player2)) return true;
 		if(blueT.keySet().contains(player1) && blueT.keySet().contains(player2)) return true;
 		return false;
 	}
-	
+
 	public ArrayList<Player> getAllPlayer() {
 		return players;
 	}
-	
+
 	public ArrayList<Player> getAllSpec() {
 		ArrayList<Player> list = new ArrayList<Player>();
 		for(Player p : spec) {
@@ -343,7 +378,7 @@ public class Match {
 		}
 		return list;
 	}
-	
+
 	public ArrayList<Player> getAll() {
 		//return players;
 		ArrayList<Player> list = new ArrayList<Player>(players);
@@ -352,9 +387,9 @@ public class Match {
 		}
 		return list;
 	}
-	
+
 	//AKTIONS
-	
+
 	public synchronized void left(Player player) {
 		//left
 		left.add(player.getName());
@@ -370,12 +405,12 @@ public class Match {
 				matchOver = true;
 				//unhideAll();
 				undoAllColors();
-						
+
 				plugin.mm.gameEnd(this, playersLoc, getEnemyTeam(player).keySet(), getEnemyTeamName(player), getTeam(player).keySet(), getTeamName(player), spec, shots, hits, kills, deaths, teamattacks, grenades, airstrikes);
 			}
 		} else if(spec.contains(player)) spec.remove(player);
 	}
-	
+
 	public synchronized void shot(Player player) {
 		//add 1
 		shots.put(player.getName(), shots.get(player.getName())+1);
@@ -388,7 +423,7 @@ public class Match {
 		//add 1
 		airstrikes.put(player.getName(), airstrikes.get(player.getName())+1);
 	}
-	
+
 	public synchronized void hitSnow(Player target, Player shooter) {
 		//math over already?
 		if(matchOver) return;
@@ -424,13 +459,13 @@ public class Match {
 			}
 		}
 	}
-	
+
 	public synchronized void frag(final Player target, final Player killer) {
 		final Match this2 = this;
 		//STATS
 		deaths.put(target.getName(), deaths.get(target.getName())+1);
 		kills.put(killer.getName(), kills.get(killer.getName())+1);
-		
+
 		//feed
 		HashMap<String, String> vars = new HashMap<String, String>();
 		vars.put("target", target.getName());
@@ -440,11 +475,11 @@ public class Match {
 		killer.sendMessage(plugin.t.getString("YOU_KILLED", vars));
 		target.sendMessage(plugin.t.getString("YOU_WERE_KILLED", vars));
 		plugin.nf.feed(target, killer, this2);
-		
+
 		if(survivors(getTeam(target)) == 0) {
 			matchOver = true;
 		}
-		
+
 		//afk detection on frag
 		if(plugin.afkDetection) {
 			if(target.getLocation().getWorld().equals(playersLoc.get(target.getName()).getWorld()) && target.getLocation().distance(playersLoc.get(target.getName())) <= plugin.afkRadius && shots.get(target) == 0 && kills.get(target) == 0) {
@@ -459,9 +494,9 @@ public class Match {
 				plugin.afkMatchCount.remove(target.getName());
 			}
 		}
-		
+
 		plugin.getServer().getScheduler().scheduleSyncDelayedTask(plugin, new Runnable() {
-			
+
 			@Override
 			public void run() {
 				plugin.joinLobby(target);
@@ -470,15 +505,15 @@ public class Match {
 					//unhideAll();
 					matchOver = true;
 					undoAllColors();
-					
+
 					plugin.mm.gameEnd(this2, playersLoc, getTeam(killer).keySet(), getTeamName(killer), getTeam(target).keySet(), getTeamName(target), spec, shots, hits, kills, deaths, teamattacks, grenades, airstrikes);
 				}
-				
+
 			}
 		}, 1L);
 
 	}
-	
+
 	public void death(final Player target) {
 		//afk detection on frag
 		if(plugin.afkDetection) {
@@ -494,7 +529,7 @@ public class Match {
 				plugin.afkMatchCount.remove(target.getName());
 			}
 		}
-		
+
 		plugin.joinLobby(target);
 		//feed
 		target.sendMessage(plugin.t.getString("YOU_DIED"));
@@ -509,7 +544,7 @@ public class Match {
 			matchOver = true;
 			//unhideAll();
 			undoAllColors();
-			
+
 			plugin.mm.gameEnd(this, playersLoc, getEnemyTeam(target).keySet(), getEnemyTeamName(target), getTeam(target).keySet(), getTeamName(target), spec, shots, hits, kills, deaths, teamattacks, grenades, airstrikes);
 		}
 	}

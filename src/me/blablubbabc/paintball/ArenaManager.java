@@ -2,6 +2,8 @@ package me.blablubbabc.paintball;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.LinkedHashMap;
+
 import org.bukkit.Location;
 
 public class ArenaManager {
@@ -104,11 +106,11 @@ public class ArenaManager {
 	}
 	/////////////////////////////
 
-	public HashMap<String, Integer> getArenaStats(String name) {
+	public LinkedHashMap<String, Integer> getArenaStats(String name) {
 		return plugin.sql.sqlArenaLobby.getArenaStats(name);
 	}
 
-	public HashMap<String, Integer> getArenaSettings(String name) {
+	public LinkedHashMap<String, Integer> getArenaSettings(String name) {
 		return plugin.sql.sqlArenaLobby.getArenaSettings(name);
 	}
 
@@ -162,7 +164,7 @@ public class ArenaManager {
 	//SETTINGS
 	public void setSettings(String arena, HashMap<String, Integer> settings) {
 		plugin.sql.sqlArenaLobby.setArenaSettings(arena, settings);
-		//settingsList.add("size"); settingsList.add("balls"); settingsList.add("grenades"); settingsList.add("airstrikes"); settingsList.add("lives"); settingsList.add("respawns");
+		//settingsList.add("balls"); settingsList.add("grenades"); settingsList.add("airstrikes"); settingsList.add("lives"); settingsList.add("respawns");
 	}
 
 	//SPAWNS

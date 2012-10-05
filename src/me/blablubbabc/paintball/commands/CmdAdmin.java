@@ -250,17 +250,6 @@ public class CmdAdmin {
 			}
 			return true;
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-		} else if(args[1].equalsIgnoreCase("test")) {
-			/*long time1 = System.currentTimeMillis();
-			for(int i = 5000; i < 10000; i++) {
-				plugin.sql.sqlPlayers.addNewPlayer(String.valueOf(i));
-				
-			}
-			long time2 = System.currentTimeMillis();
-			long delta = time2-time1;
-			sender.sendMessage("Zeit in ms: "+String.valueOf(delta));*/
-			return true;
-////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 		} else {
 			if(sender instanceof Player) return false;
 			else sender.sendMessage(plugin.t.getString("COMMAND_UNKNOWN_OR_NOT_CONSOLE"));
