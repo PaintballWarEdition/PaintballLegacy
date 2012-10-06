@@ -69,6 +69,7 @@ public class CmdAdmin {
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 		if(args[1].equalsIgnoreCase("reset")) {
 			if(args.length == 3 && args[2].equalsIgnoreCase("all")) {
+				sender.sendMessage(plugin.t.getString("THIS_NEEDS_TIME"));
 				long time1 = System.currentTimeMillis();
 				plugin.pm.resetData();
 				long time2 = System.currentTimeMillis();

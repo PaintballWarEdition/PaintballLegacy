@@ -108,7 +108,7 @@ public class CmdArena {
 					if(!am.isReady(name)) {
 						player.sendMessage(plugin.t.getString("ARENA_INFO_NEEDS_HEADER"));
 						if(am.inUse(name)) player.sendMessage(plugin.t.getString("ARENA_INFO_NEEDS_NO_USE"));
-						if(!am.pvpEnabled(name)) player.sendMessage(plugin.t.getString("ARENA_INFO_NEEDS_PVP"));
+						//if(!am.pvpEnabled(name)) player.sendMessage(plugin.t.getString("ARENA_INFO_NEEDS_PVP"));
 						if(redspawnsize == 0) {
 							vars.put("team", Lobby.RED.getName());
 							player.sendMessage(plugin.t.getString("ARENA_INFO_NEEDS_SPAWN", vars));

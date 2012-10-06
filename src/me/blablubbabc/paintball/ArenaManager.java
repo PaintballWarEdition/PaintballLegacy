@@ -49,8 +49,9 @@ public class ArenaManager {
 		if(!inUse(arena)) {
 			//spawns?
 			if(hasAllSpawns(arena)) {
+				return true;
 				//worlds pvp on?
-				if(pvpEnabled(arena)) return true;
+				//if(pvpEnabled(arena)) return true;
 			}
 		}
 		return false;
@@ -61,7 +62,7 @@ public class ArenaManager {
 		else return false;
 	}
 
-	public boolean pvpEnabled(String arena) {
+	/*public boolean pvpEnabled(String arena) {
 		for(Location loc : getBlueSpawns(arena)) {
 			if(!loc.getWorld().getPVP()) return false;
 		}
@@ -72,7 +73,7 @@ public class ArenaManager {
 			if(!loc.getWorld().getPVP()) return false;
 		}
 		return true;
-	}
+	}*/
 
 	private ArrayList<String> readyArenas() {
 		ArrayList<String> arenas = new ArrayList<String>();
