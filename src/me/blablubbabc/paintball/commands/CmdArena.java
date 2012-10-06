@@ -82,6 +82,7 @@ public class CmdArena {
 					vars.put("airstrikes_def", String.valueOf(plugin.airstrikeAmount));
 					vars.put("lives_def", String.valueOf(plugin.lives));
 					vars.put("respawns_def", String.valueOf(plugin.respawns));
+					vars.put("round_time_def", String.valueOf(plugin.roundTimer));
 					
 					player.sendMessage(plugin.t.getString("ARENA_INFO_SETTINGS_HEADER"));
 					player.sendMessage(plugin.t.getString("ARENA_INFO_SETTINGS_BALLS", vars));
@@ -89,6 +90,7 @@ public class CmdArena {
 					player.sendMessage(plugin.t.getString("ARENA_INFO_SETTINGS_AIRSTRIKES", vars));
 					player.sendMessage(plugin.t.getString("ARENA_INFO_SETTINGS_LIVES", vars));
 					player.sendMessage(plugin.t.getString("ARENA_INFO_SETTINGS_RESPAWNS", vars));
+					player.sendMessage(plugin.t.getString("ARENA_INFO_SETTINGS_ROUND_TIME", vars));
 					
 					vars.put("team", String.valueOf(Lobby.BLUE.getName()));
 					int bluespawnsize = am.getBlueSpawnsSize(name);

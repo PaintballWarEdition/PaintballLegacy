@@ -27,7 +27,7 @@ public class SQLArenaLobby {
 		statsList.add("rounds"); statsList.add("kills"); statsList.add("shots"); statsList.add("grenades"); statsList.add("airstrikes");
 		
 		settingsList = new LinkedList<String>();
-		settingsList.add("lives"); settingsList.add("respawns"); settingsList.add("balls"); settingsList.add("grenades"); settingsList.add("airstrikes");
+		settingsList.add("lives"); settingsList.add("respawns"); settingsList.add("round_time"); settingsList.add("balls"); settingsList.add("grenades"); settingsList.add("airstrikes");
 	}
 	
 	public void createDefaultTables() {

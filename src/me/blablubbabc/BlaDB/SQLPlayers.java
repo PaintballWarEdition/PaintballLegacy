@@ -28,7 +28,7 @@ public class SQLPlayers {
 		statsList.add("kills"); statsList.add("deaths"); statsList.add("kd");
 		statsList.add("shots"); statsList.add("hits"); statsList.add("hitquote"); statsList.add("teamattacks");
 		statsList.add("grenades"); statsList.add("airstrikes");
-		statsList.add("rounds"); statsList.add("wins"); statsList.add("defeats");
+		statsList.add("rounds"); statsList.add("wins"); statsList.add("defeats"); statsList.add("draws");
 
 	}
 
@@ -210,7 +210,7 @@ public class SQLPlayers {
 		if(pStats.get("deaths") > 0) kd="(kills*100)/deaths";
 		else hitquote = "kills/1";
 
-		String query = "rounds=wins+deaths,kd="+kd+",hitquote="+hitquote;
+		String query = "rounds=wins+deaths+draws,kd="+kd+",hitquote="+hitquote;
 		sql.updateQuery("UPDATE OR IGNORE players SET "+query+" WHERE name='"+player+"';");
 	}
 

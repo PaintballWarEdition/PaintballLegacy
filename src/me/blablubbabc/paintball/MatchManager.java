@@ -37,7 +37,7 @@ public class MatchManager{
 			//Teleport all remaining players back to lobby:
 			for(Player p : match.getAll()) {
 				//ist nicht aus minecraft raus:
-				if(!match.hasLeft(p)){
+				if(Lobby.isPlaying(p) || Lobby.isSpectating(p)){
 					//lobby
 					Lobby.getTeam(p).setWaiting(p);
 					//clear inventory
@@ -48,11 +48,11 @@ public class MatchManager{
 						plugin.joinLobby(p);
 					}
 				}
-				//no stats saving here
 			}
 
 			//close match
 			plugin.am.setNotActive(match.getArena());
+			match.endSchedulers();
 			matches.remove(match);	
 		}
 		//messages:
@@ -70,8 +70,6 @@ public class MatchManager{
 			list.add(p);
 		}
 		for(Player p : list) {
-			//Lobby.remove(p);
-			//p.teleport(plugin.pm.getLoc(p));
 			plugin.leaveLobby(p, false, true, true);
 		}
 	}
@@ -131,71 +129,76 @@ public class MatchManager{
 		Match match = new Match(plugin, Lobby.RED.getMembers(), Lobby.BLUE.getMembers(), Lobby.SPECTATE.getMembers(), Lobby.RANDOM.getMembers(), arena);
 		matches.add(match);
 	}
-
-	public synchronized void gameEnd(Match match, HashMap<String, Location> playersLoc, Set<Player> winners, String win, Set<Player> loosers, String loose, Set<Player> specs, 
+	
+	public synchronized void gameEnd(Match match, boolean draw, HashMap<String, Location> playersLoc, Set<Player> specs, 
 			HashMap<String, Integer> shots, HashMap<String, Integer> hits, HashMap<String, Integer> kills, HashMap<String, Integer> deaths,
 			HashMap<String, Integer> teamattacks, HashMap<String, Integer> grenades, HashMap<String, Integer> airstrikes) {
-
+		
 		//STATS
 		HashMap<String, Integer> wins = new HashMap<String, Integer>();
 		HashMap<String, Integer> defeats = new HashMap<String, Integer>();
+		HashMap<String, Integer> draws = new HashMap<String, Integer>();
 		HashMap<String, Integer> points = new HashMap<String, Integer>();
 		HashMap<String, Integer> money = new HashMap<String, Integer>();
 
-		for(Player p : winners) {
+		for(Player p : match.getAllPlayer()) {
+			points.put(p.getName(), plugin.pointsPerRound);
+			money.put(p.getName(), plugin.cashPerRound);
+			if(draw) {
+				draws.put(p.getName(), 1);
+				wins.put(p.getName(), 0);
+				defeats.put(p.getName(), 0);
+			}
+			else draws.put(p.getName(), 0);
+		}
+		
+		for(Player p : match.winners) {
 			//stats
 			wins.put(p.getName(), 1);
 			defeats.put(p.getName(), 0);
-			points.put(p.getName(), (plugin.pointsPerRound + plugin.pointsPerWin));
-			money.put(p.getName(), (plugin.cashPerRound + plugin.cashPerWin));
+			//bonus
+			points.put(p.getName(), points.get(p.getName())+plugin.pointsPerWin);
+			money.put(p.getName(), points.get(p.getName())+plugin.cashPerWin);
 
 		}
-		for(Player p : loosers) {
+		for(Player p :  match.loosers) {
 			//stats
 			wins.put(p.getName(), 0);
 			defeats.put(p.getName(), 1);
-			points.put(p.getName(), plugin.pointsPerRound);
-			money.put(p.getName(), plugin.cashPerRound);
-
 		}
 
 		//Teleport all remaining players back to lobby:
 		for(Player p : match.getAll()) {
 			//if is a remaining player:
-			if(!match.hasLeft(p)){
-				//lobby
-				Lobby.getTeam(p).setWaiting(p);
-				//noch im match:
-				if(match.isSurvivor(p)){
+			if(Lobby.isPlaying(p) || Lobby.isSpectating(p)){
 
-					//afk detection update on match end
-					if(plugin.afkDetection && !match.isSpec(p)) {
-						if(p.getLocation().getWorld().equals(playersLoc.get(p.getName()).getWorld()) && p.getLocation().distance(playersLoc.get(p.getName())) <= plugin.afkRadius && shots.get(p.getName()) == 0 && kills.get(p.getName()) == 0) {
-							int afkCount;
-							if(plugin.afkMatchCount.get(p.getName()) != null) {
-								afkCount = plugin.afkMatchCount.get(p.getName());
-							} else {
-								afkCount = 0;
-							}
-							plugin.afkMatchCount.put(p.getName(), afkCount+1);
-						}else {
-							plugin.afkMatchCount.remove(p.getName());
+				//afk detection update on match end
+				if(plugin.afkDetection && !match.isSpec(p)) {
+					if(p.getLocation().getWorld().equals(playersLoc.get(p.getName()).getWorld()) && p.getLocation().distance(playersLoc.get(p.getName())) <= plugin.afkRadius && shots.get(p.getName()) == 0 && kills.get(p.getName()) == 0) {
+						int afkCount;
+						if(plugin.afkMatchCount.get(p.getName()) != null) {
+							afkCount = plugin.afkMatchCount.get(p.getName());
+						} else {
+							afkCount = 0;
 						}
+						plugin.afkMatchCount.put(p.getName(), afkCount+1);
+					}else {
+						plugin.afkMatchCount.remove(p.getName());
 					}
-
-					//teleport is survivor:
-					plugin.joinLobby(p);
 				}
+
+				//teleport is survivor:
+				plugin.joinLobby(p);
 			}
 		}
 
 		//afk detection clean up and consequences:
 		if(plugin.afkDetection) {
-			//clearing players from hashmap which didn't play the during the last match or can't be found or left the match
+			//clearing players from hashmap which didn't play the during the last match or can't be found
 			Set<String> entries = plugin.afkMatchCount.keySet();
 			for(String afkP : entries) {
 				Player player = plugin.getServer().getPlayer(afkP);
-				if(player != null && !match.hasLeft(player)) {
+				if(player != null) {
 					if(!playersLoc.containsKey(afkP)) {
 						plugin.afkMatchCount.remove(afkP);
 					} else if(plugin.afkMatchCount.get(afkP) >= plugin.afkMatchAmount){
@@ -264,6 +267,7 @@ public class MatchManager{
 			pStats.put("money", money.get(name));
 			pStats.put("wins", wins.get(name));
 			pStats.put("defeats", defeats.get(name));
+			pStats.put("draws", draws.get(name));
 
 			plugin.pm.addStats(name, pStats);
 		}
@@ -288,20 +292,24 @@ public class MatchManager{
 		plugin.stats.matchEndStats(gStats, match.getAllPlayer().size());
 
 		//messages:
-		plugin.nf.status("Match is over!");
 		HashMap<String, String> vars = new HashMap<String, String>();
-		vars.put("winner_color", Lobby.getTeam(win).color().toString());
-		vars.put("winner", win);
-		vars.put("winner_size", String.valueOf(winners.size()));
-		vars.put("looser_color", Lobby.getTeam(loose).color().toString());
-		vars.put("looser", loose);
-		vars.put("looser_size", String.valueOf(loosers.size()));
-		plugin.nf.text(plugin.t.getString("WINNER_TEAM", vars));
+		plugin.nf.status("Match is over!");
+		if(draw) {
+			plugin.nf.text(plugin.t.getString("MATCH_DRAW"));
+		} else {
+			vars.put("winner_color", Lobby.getTeam(match.win).color().toString());
+			vars.put("winner", match.win);
+			vars.put("winner_size", String.valueOf(match.winners.size()));
+			vars.put("looser_color", Lobby.getTeam(match.loose).color().toString());
+			vars.put("looser", match.loose);
+			vars.put("looser_size", String.valueOf(match.loosers.size()));
+			plugin.nf.text(plugin.t.getString("WINNER_TEAM", vars));
 
-		vars.put("points", String.valueOf(plugin.pointsPerWin));
-		vars.put("money", String.valueOf(plugin.cashPerWin));
-		plugin.nf.text(plugin.t.getString("WINNER_BONUS", vars));
-
+			vars.put("points", String.valueOf(plugin.pointsPerWin));
+			vars.put("money", String.valueOf(plugin.cashPerWin));
+			plugin.nf.text(plugin.t.getString("WINNER_BONUS", vars));
+		}
+		
 		vars.put("points", String.valueOf(plugin.pointsPerRound));
 		vars.put("money", String.valueOf(plugin.cashPerRound));
 		plugin.nf.text(plugin.t.getString("ROUND_BONUS", vars));

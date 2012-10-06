@@ -56,6 +56,7 @@ public class Paintball extends JavaPlugin{
 	public int countdown;
 	public int countdownInit;
 	public int countdownStart;
+	public int roundTimer;
 	public int minPlayers;
 	public int maxPlayers;
 	public int lives;
@@ -168,7 +169,7 @@ public class Paintball extends JavaPlugin{
 		allowedCommands = new ArrayList<String>();
 
 
-		getConfig().options().header("Use a value of -1 to give the players infinite balls or extras.");
+		getConfig().options().header("Use a value of -1 to give the players infinite balls or extras. If you insert a not possible value/wrong value in a section the plugin will use the default value or the nearest possible value (Example: your value at section balls: -3 -> plugin will use -1).");
 		if(getConfig().get("Paintball.AFK Detection.enabled") == null)getConfig().set("Paintball.AFK Detection.enabled", true);
 		if(getConfig().get("Paintball.AFK Detection.Movement Radius around Spawn (keep in mind: knockbacks, pushing, waterflows, falling, etc)") == null)getConfig().set("Paintball.AFK Detection.Movement Radius around Spawn (keep in mind: knockbacks, pushing, waterflows, falling, etc)", 5);
 		if(getConfig().get("Paintball.AFK Detection.Amount of Matches") == null)getConfig().set("Paintball.AFK Detection.Amount of Matches", 3);
@@ -212,6 +213,7 @@ public class Paintball extends JavaPlugin{
 		if(getConfig().get("Paintball.Match.Countdown.Time") == null)getConfig().set("Paintball.Match.Countdown.Time", 20);
 		if(getConfig().get("Paintball.Match.Countdown.Delay") == null)getConfig().set("Paintball.Match.Countdown.Delay", 10);
 		if(getConfig().get("Paintball.Match.Countdown Round Start.Time") == null)getConfig().set("Paintball.Match.Countdown Round Start.Time", 5);
+		if(getConfig().get("Paintball.Match.Round Timer.Time (at least 30)") == null)getConfig().set("Paintball.Match.Round Timer.Time (at least 30)", 120);
 		if(getConfig().get("Paintball.Extras.Grenades.enabled") == null)getConfig().set("Paintball.Extras.Grenades.enabled", true);
 		if(getConfig().get("Paintball.Extras.Grenades.Time-Radius in Ticks (= 1/20 sec)") == null)getConfig().set("Paintball.Extras.Grenades.Time-Radius in Ticks (= 1/20 sec)", 60);
 		if(getConfig().get("Paintball.Extras.Grenades.Speed multi") == null)getConfig().set("Paintball.Extras.Grenades.Speed multi", 1.0);
@@ -224,6 +226,7 @@ public class Paintball extends JavaPlugin{
 		if(getConfig().get("Paintball.Shop.enabled") == null)getConfig().set("Paintball.Shop.enabled", true);
 		if(getConfig().get("Paintball.Shop.Goods") == null)getConfig().set("Paintball.Shop.Goods", goodsDef);
 		saveConfig();
+		
 
 		//points+cash:
 		pointsPerKill = getConfig().getInt("Paintball.Points per Kill", 2);
@@ -268,6 +271,8 @@ public class Paintball extends JavaPlugin{
 		if(countdownInit < 0) countdownInit = 0;
 		countdownStart = getConfig().getInt("Paintball.Match.Countdown Round Start.Time", 5);
 		if(countdownStart < 0) countdownStart = 0;
+		roundTimer = getConfig().getInt("Paintball.Match.Round Timer.Time (at least 30)", 120);
+		if(roundTimer < 30) roundTimer = 30;
 
 		speedmulti = getConfig().getDouble("Paintball.Ball speed multi", 1.5);
 		listnames = getConfig().getBoolean("Paintball.Colored listnames", true);
@@ -307,7 +312,7 @@ public class Paintball extends JavaPlugin{
 		if(airstrikeBombs < 0) airstrikeBombs = 0;
 		airstrikeAmount = getConfig().getInt("Paintball.Extras.Airstrike.Amount", 0);
 		if(airstrikeAmount < -1) airstrikeAmount = -1;
-
+		
 		//SQLite with version: 110
 		sql = new BlaSQLite(new File(this.getDataFolder().toString()+"/"+"pbdata_110"+".db"), this);
 		//DB
@@ -444,9 +449,30 @@ public class Paintball extends JavaPlugin{
 		}
 
 
+		//Some license stuff: Usage on own risk, no warranties, do not modify the code, do not redistribute, do not copy, and do not use for commercial purposes! Neither direct nor indirect. So this also applies to add-ons made for this plugin! 
 		log("By blablubbabc enabled.");
-		log("Do not redistribute or modify. Use it as it is and not for commercial purposes! Usage on own risk. No warranties.");
-		log("If you like this, give feedback and donate at wir-sind-wir.de/lukas");
+		logBlank(" ");
+		logBlank(" **************************************************");
+		logBlank(" --------------- PAINTBALL INFO ---------------");
+		logBlank(" ");
+		logBlank(" Some license stuff:");
+		logBlank("   - Usage on own risk.");
+		logBlank("   - I give no warranties for anything.");
+		logBlank("   - Do not modify the code.");
+		logBlank("   - Do not redistribute/upload/copy/give away.");
+		logBlank("   - Do not copy or use parts of it.");
+		logBlank("   - Do not use for commercial purposes!");
+		logBlank("     ->This also applies to any kind of add-on you are using");
+		logBlank("       related to this plugin!");
+		logBlank(" ");
+		logBlank(" If you like this plugin: Give feedback and donate at");
+		logBlank(" ->http://dev.bukkit.org/server-mods/paintball_pure_war/ ");
+		logBlank(" ");
+		logBlank(" Thank you and good shooting!");
+		logBlank("   - blablubbabc");
+		logBlank(" ");
+		logBlank(" **************************************************");
+		logBlank(" ");
 	}
 
 	public void onDisable(){
@@ -457,6 +483,10 @@ public class Paintball extends JavaPlugin{
 
 	public void log(String message) {
 		System.out.println("["+this.getName()+"] "+message);
+	}
+	
+	public void logBlank(String message) {
+		System.out.println(message);
 	}
 
 	public void reload() {
@@ -528,6 +558,8 @@ public class Paintball extends JavaPlugin{
 		checks(player);
 		//Lobbyteleport
 		player.teleport(getNextLobbySpawn());
+		//set waiting
+		if(Lobby.isPlaying(player) || Lobby.isSpectating(player)) Lobby.getTeam(player).setWaiting(player);
 	}
 
 	public void leaveLobby(Player player, boolean messages, boolean teleport, boolean restoreInventory) {

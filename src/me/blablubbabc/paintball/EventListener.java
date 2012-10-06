@@ -410,15 +410,12 @@ public class EventListener implements Listener{
 					//Color:
 					ChatColor farbe = Lobby.LOBBY.color();
 
-					if (plugin.mm.getMatch(player) != null) {
-						//noch im match?
-						if (!plugin.mm.getMatch(player).hasLeft(player)) {
+					if (Lobby.isPlaying(player) || Lobby.isSpectating(player)) {
 
-							//Color:
-							if(plugin.mm.getMatch(player).isRed(player)) farbe = Lobby.RED.color();
-							else if(plugin.mm.getMatch(player).isBlue(player)) farbe = Lobby.BLUE.color();
-							else if(plugin.mm.getMatch(player).isSpec(player)) farbe = Lobby.SPECTATE.color();
-						}
+						//Color:
+						if(plugin.mm.getMatch(player).isRed(player)) farbe = Lobby.RED.color();
+						else if(plugin.mm.getMatch(player).isBlue(player)) farbe = Lobby.BLUE.color();
+						else if(plugin.mm.getMatch(player).isSpec(player)) farbe = Lobby.SPECTATE.color();
 					}
 					event.setMessage(event.getMessage().replace("pb1x2y3"+message+"pb1x2y3", farbe + message));
 				}
