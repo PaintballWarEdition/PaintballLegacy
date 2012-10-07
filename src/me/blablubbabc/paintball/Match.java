@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Random;
 import java.util.Set;
 import org.bukkit.Location;
 import org.bukkit.Material;
@@ -39,6 +40,10 @@ public class Match {
 	public int roundTime;
 	private int roundTimeTaskId;
 
+	private ArrayList<Location> redspawns;
+	private ArrayList<Location> bluespawns;
+	private ArrayList<Location> specspawns;
+	
 	private int spawnBlue;
 	private int spawnRed;
 	private int spawnSpec;
@@ -64,9 +69,15 @@ public class Match {
 		this.arena = arena;
 		this.started = false;
 
-		this.spawnBlue = 0;
-		this.spawnRed = 0;
-		this.spawnSpec = 0;
+		this.redspawns = plugin.am.getRedSpawns(arena);
+		this.bluespawns = plugin.am.getBlueSpawns(arena);
+		this.specspawns = plugin.am.getSpecSpawns(arena);
+		
+		//random spawns
+		Random randSpawns = new Random();
+		this.spawnBlue = randSpawns.nextInt(bluespawns.size());
+		this.spawnRed = randSpawns.nextInt(redspawns.size());
+		this.spawnSpec = randSpawns.nextInt(specspawns.size());
 
 		this.setting_balls = plugin.balls;
 		this.setting_grenades = plugin.grenadeAmount;
@@ -240,9 +251,8 @@ public class Match {
 
 	//SPAWNS
 
-	public void spawnPlayer(Player player) {
+	public synchronized void spawnPlayer(Player player) {
 		if(redT.contains(player)) {
-			ArrayList<Location> redspawns = plugin.am.getRedSpawns(arena);
 			if(spawnRed > (redspawns.size()-1)) spawnRed = 0;
 			Location loc = redspawns.get(spawnRed);
 			player.teleport(loc);
@@ -250,7 +260,6 @@ public class Match {
 			//afk Location
 			playersLoc.put(player.getName(), loc);
 		} else if(blueT.contains(player)) {
-			ArrayList<Location> bluespawns = plugin.am.getBlueSpawns(arena);
 			if(spawnBlue > (bluespawns.size()-1)) spawnBlue = 0;
 			Location loc = bluespawns.get(spawnBlue);
 			player.teleport(loc);
@@ -277,8 +286,7 @@ public class Match {
 		player.sendMessage(plugin.t.getString("BE_IN_TEAM", vars));
 	}
 
-	public void spawnSpec(Player player) {
-		ArrayList<Location> specspawns = plugin.am.getSpecSpawns(arena);
+	public synchronized void spawnSpec(Player player) {
 		if(spawnSpec > (specspawns.size()-1)) spawnSpec = 0;
 		player.teleport(specspawns.get(spawnSpec));
 		spawnSpec++;
