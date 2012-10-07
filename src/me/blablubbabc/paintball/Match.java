@@ -524,7 +524,7 @@ public class Match {
 			HashMap<String, String> vars = new HashMap<String, String>();
 			vars.put("lives", String.valueOf(setting_lives));
 			if(setting_respawns == -1) vars.put("respawns", plugin.t.getString("INFINITE"));
-			else vars.put("respawns", String.valueOf(setting_respawns));
+			else vars.put("respawns", String.valueOf(respawnsLeft.get(player)));
 			player.sendMessage(plugin.t.getString("RESPAWN", vars));
 
 		} else {
