@@ -204,13 +204,13 @@ public class SQLPlayers {
 
 		HashMap<String, Integer> pStats = getPlayerStats(player);
 
-		if(pStats.get("shots") > 0) hitquote="(hits*100)/shots";
-		else hitquote = "0";
+		if(pStats.get("shots") > 0) hitquote="(hits*'100')/shots";
+		else hitquote = "hits*'100'";
 
-		if(pStats.get("deaths") > 0) kd="(kills*100)/deaths";
-		else hitquote = "kills/1";
+		if(pStats.get("deaths") > 0) kd="(kills*'100')/deaths";
+		else kd = "kills*'100'";
 
-		String query = "rounds=wins+deaths+draws,kd='"+kd+"',hitquote='"+hitquote+"'";
+		String query = "rounds=wins+deaths+draws,kd="+kd+",hitquote="+hitquote+"";
 		sql.updateQuery("UPDATE OR IGNORE players SET "+query+" WHERE name='"+player+"';");
 	}
 

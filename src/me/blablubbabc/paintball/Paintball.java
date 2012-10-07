@@ -423,7 +423,7 @@ public class Paintball extends JavaPlugin{
 					try {
 						int number = 0;
 						for(String name : pm.getAllPlayerNames()) {
-							if(pm.getStats(name).get("shots") > 0) number++;
+							if(pm.getStats(name).get("rounds") > 0) number++;
 						}
 						return number;
 					} catch (Exception e) {
