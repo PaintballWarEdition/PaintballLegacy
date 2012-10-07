@@ -227,12 +227,27 @@ public class Match {
 					if(matchOver) return;
 					matchOver = true;
 					//winner?
-
+					ArrayList<Player> winnerTeam = getWinner();
+					if(winnerTeam == null) {
+						//draw:
+						gameEnd(true, null, null, null, null);
+					} else {
+						Player p = winnerTeam.get(0);
+						gameEnd(false, winnerTeam, getEnemyTeam(p), getTeamName(p), getEnemyTeamName(p));
+					}
+					
 				}
 			}
 		}, 0L, 20L);
 	}
 
+	private ArrayList<Player> getWinner() {
+		if(survivors(redT) > survivors(blueT)) return redT;
+		if(survivors(blueT) > survivors(redT)) return blueT;
+		//else: survivors(blueT) == survivors(redT)-> DRAW
+		return null;
+	}
+	
 	private void sendRoundTime(int time) {
 		HashMap<String, String> vars = new HashMap<String, String>();
 		vars.put("seconds", String.valueOf(time));

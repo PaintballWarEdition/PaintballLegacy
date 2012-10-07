@@ -73,6 +73,7 @@ STATS_TEAMATTACKS = "&aTeamattacks: &b{teamattacks} &6( Top: {player_teamattacks
 STATS_ROUNDS = "&aRounds: &b{rounds} &6( Top: {player_rounds_top} - {rounds_top} )"
 STATS_WINS = "&aWins: &b{wins} &6( Top: {player_wins_top} - {wins_top} )"
 STATS_DEFEATS = "&aDefeats: &b{defeats} &6( Top: {player_defeats_top} - {defeats_top} )"
+STATS_DRAWS = "&aDraws: &b{draws} &6( Top: {player_draws_top} - {draws_top} )"
 STATS_GRENADES = "&aGrenades: &b{grenades} &6( Top: {player_grenades_top} - {grenades_top} )"
 STATS_AIRSTRIKES = "&aAirstrikes: &b{airstrikes} &6( Top: {player_airstrikes_top} - {airstrikes_top} )"
 STATS_GENERAL = "&c__________General Stats__________"

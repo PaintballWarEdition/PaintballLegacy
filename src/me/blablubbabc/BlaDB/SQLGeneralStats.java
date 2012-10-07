@@ -55,7 +55,7 @@ public class SQLGeneralStats {
 	public void addStats(HashMap<String, Integer> stats) {
 		for(String key : stats.keySet()) {
 			if(statsList.contains(key)) {
-				String query = key+"="+key+"+'"+stats.get(key)+"'";
+				String query = "value=value+'"+stats.get(key)+"'";
 				sql.updateQuery("UPDATE OR IGNORE general_stats SET "+query+" WHERE key='"+key+"';");
 			}
 		}
@@ -78,10 +78,10 @@ public class SQLGeneralStats {
 			}
 		}
 		//CALCULATE AVERAGE PLAYERS + MAX PLAYERS
-		String queryC = "average_players=average_players+(("+playerAmount+"-average_players)/(SELECT value FROM general_stats WHERE key='rounds';))";
+		String queryC = "value=value+(("+playerAmount+"-value)/(SELECT value FROM general_stats WHERE key='rounds'))";
 		sql.updateQuery("UPDATE OR IGNORE general_stats SET "+queryC+" WHERE key='average_players';");
 		
-		String queryMax = "max_players=(CASE WHEN max_players>='"+playerAmount+"' THEN max_players ELSE '"+playerAmount+"' END)";
+		String queryMax = "value=(CASE WHEN value>='"+playerAmount+"' THEN value ELSE '"+playerAmount+"' END)";
 		sql.updateQuery("UPDATE OR IGNORE general_stats SET "+queryMax+" WHERE key='max_players';");
 	}
 
