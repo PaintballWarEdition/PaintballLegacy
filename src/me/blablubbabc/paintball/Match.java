@@ -43,7 +43,7 @@ public class Match {
 	private ArrayList<Location> redspawns;
 	private ArrayList<Location> bluespawns;
 	private ArrayList<Location> specspawns;
-	
+
 	private int spawnBlue;
 	private int spawnRed;
 	private int spawnSpec;
@@ -72,7 +72,7 @@ public class Match {
 		this.redspawns = plugin.am.getRedSpawns(arena);
 		this.bluespawns = plugin.am.getBlueSpawns(arena);
 		this.specspawns = plugin.am.getSpecSpawns(arena);
-		
+
 		//random spawns
 		Random randSpawns = new Random();
 		this.spawnBlue = randSpawns.nextInt(bluespawns.size());
@@ -197,7 +197,7 @@ public class Match {
 		roundTime--;
 	}
 
-	private synchronized void startRoundTimer() {
+	private void startRoundTimer() {
 		roundTime = setting_round_time;
 
 		roundTimeTaskId = plugin.getServer().getScheduler().scheduleAsyncRepeatingTask(plugin, new Runnable() {
@@ -235,7 +235,7 @@ public class Match {
 						Player p = winnerTeam.get(0);
 						gameEnd(false, winnerTeam, getEnemyTeam(p), getTeamName(p), getEnemyTeamName(p));
 					}
-					
+
 				}
 			}
 		}, 0L, 20L);
@@ -247,7 +247,7 @@ public class Match {
 		//else: survivors(blueT) == survivors(redT)-> DRAW
 		return null;
 	}
-	
+
 	private void sendRoundTime(int time) {
 		HashMap<String, String> vars = new HashMap<String, String>();
 		vars.put("seconds", String.valueOf(time));
@@ -518,12 +518,14 @@ public class Match {
 		if(respawnsLeft.get(player) != 0) {
 			livesLeft.put(player, setting_lives);
 			if(setting_respawns != -1) respawnsLeft.put(player, respawnsLeft.get(player)-1);
+			//spawn
+			spawnPlayer(player);
 			//message
 			HashMap<String, String> vars = new HashMap<String, String>();
 			vars.put("lives", String.valueOf(setting_lives));
 			if(setting_respawns == -1) vars.put("respawns", plugin.t.getString("INFINITE"));
 			else vars.put("respawns", String.valueOf(setting_respawns));
-			plugin.t.getString("RESPAWN", vars);
+			player.sendMessage(plugin.t.getString("RESPAWN", vars));
 
 		} else {
 			//dead
@@ -626,18 +628,16 @@ public class Match {
 			public void run() {
 				if(isSurvivor(target)) {
 					//afk check
-					if(plugin.afkDetection) {
-						String name = target.getName();
-						if(plugin.afkMatchCount.get(name) >= plugin.afkMatchAmount){
-							//consequences after being afk:
-							plugin.afkMatchCount.remove(name);
-							respawnsLeft.put(target, 0);
-							plugin.joinLobby(target);
+					String name = target.getName();
+					if(plugin.afkDetection && plugin.afkMatchCount.get(name) != null && (plugin.afkMatchCount.get(name) >= plugin.afkMatchAmount)) {
+						//consequences after being afk:
+						plugin.afkMatchCount.remove(name);
+						respawnsLeft.put(target, 0);
+						plugin.joinLobby(target);
 
-							Lobby.getTeam(target).removeMember(target);
-							plugin.nf.afkLeave(target, this2);
-							target.sendMessage(plugin.t.getString("YOU_LEFT_TEAM"));
-						}
+						Lobby.getTeam(target).removeMember(target);
+						plugin.nf.afkLeave(target, this2);
+						target.sendMessage(plugin.t.getString("YOU_LEFT_TEAM"));
 					} else respawn(target);
 				}
 				else plugin.joinLobby(target);

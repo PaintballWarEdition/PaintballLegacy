@@ -16,7 +16,8 @@ public class InSignsFeature {
 
 			@Override
 			public String getValue(String playerName) {
-				return ""+plugin.pm.getStats(playerName).get("points");
+				if(plugin.pm.exists(playerName)) return ""+plugin.pm.getStats(playerName).get("points");
+				else return "-not found-";
 			}
 
 		});

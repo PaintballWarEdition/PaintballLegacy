@@ -333,6 +333,7 @@ public class Paintball extends JavaPlugin{
 		//MATCHMANAGER|LISTENER
 		mm = new MatchManager(this);
 		listener = new EventListener(this);
+		new InvisibleFix(this);
 		//ARENAMANAGER
 		am = new ArenaManager(this);
 		//STATS

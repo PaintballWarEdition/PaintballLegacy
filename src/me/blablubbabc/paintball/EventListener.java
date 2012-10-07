@@ -5,11 +5,9 @@ import java.util.HashSet;
 import me.blablubbabc.paintball.extras.Airstrike;
 import me.blablubbabc.paintball.extras.Grenade;
 import org.bukkit.ChatColor;
-import org.bukkit.Chunk;
 import org.bukkit.Effect;
 import org.bukkit.Location;
 import org.bukkit.Material;
-import org.bukkit.World;
 import org.bukkit.block.Block;
 import org.bukkit.entity.Egg;
 import org.bukkit.entity.Player;
@@ -89,7 +87,7 @@ public class EventListener implements Listener{
 
 	@EventHandler
 	public void onPlayerTeleport(PlayerTeleportEvent event) {
-		if (event.isCancelled()) {
+		/*if (event.isCancelled()) {
 			return;
 		}
 		Location loc = event.getTo();
@@ -98,10 +96,10 @@ public class EventListener implements Listener{
 		}
 		World world = loc.getWorld();
 		Chunk chunk = world.getChunkAt(loc);
-		if (!world.isChunkLoaded(chunk)) {
+		if(!world.isChunkLoaded(chunk)) {
 			world.loadChunk(chunk);
 		}
-		world.refreshChunk(chunk.getX(), chunk.getZ());
+		world.refreshChunk(chunk.getX(), chunk.getZ());*/
 	}
 
 
