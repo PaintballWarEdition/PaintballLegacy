@@ -237,7 +237,7 @@ public class SQLArenaLobby {
 	}
 	private ArrayList<Integer> getBluespawnsIds(String arena) {
 		ArrayList<Integer> ids = new ArrayList<Integer>();
-		ResultSet rs = sql.resultQuery("SELECT location_id FROM redspawns WHERE arena = '"+arena+"';");
+		ResultSet rs = sql.resultQuery("SELECT location_id FROM bluespawns WHERE arena = '"+arena+"';");
 		try {
 			if(rs != null) {
 				while(rs.next()) {
@@ -251,7 +251,7 @@ public class SQLArenaLobby {
 	}
 	private ArrayList<Integer> getSpecspawnsIds(String arena) {
 		ArrayList<Integer> ids = new ArrayList<Integer>();
-		ResultSet rs = sql.resultQuery("SELECT location_id FROM redspawns WHERE arena = '"+arena+"';");
+		ResultSet rs = sql.resultQuery("SELECT location_id FROM specspawns WHERE arena = '"+arena+"';");
 		try {
 			if(rs != null) {
 				while(rs.next()) {

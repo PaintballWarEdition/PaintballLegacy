@@ -583,16 +583,17 @@ public class Match {
 
 		//afk detection on frag
 		if(plugin.afkDetection) {
-			if(target.getLocation().getWorld().equals(playersLoc.get(target.getName()).getWorld()) && target.getLocation().distance(playersLoc.get(target.getName())) <= plugin.afkRadius && shots.get(target) == 0 && kills.get(target) == 0) {
+			String name = target.getName();
+			if(target.getLocation().getWorld().equals(playersLoc.get(name).getWorld()) && target.getLocation().distance(playersLoc.get(name)) <= plugin.afkRadius && shots.get(name) == 0 && kills.get(name) == 0) {
 				int afkCount;
-				if(plugin.afkMatchCount.get(target.getName()) != null) {
-					afkCount = plugin.afkMatchCount.get(target.getName());
+				if(plugin.afkMatchCount.get(name) != null) {
+					afkCount = plugin.afkMatchCount.get(name);
 				} else {
 					afkCount = 0;
 				}
-				plugin.afkMatchCount.put(target.getName(), afkCount+1);
+				plugin.afkMatchCount.put(name, afkCount+1);
 			}else {
-				plugin.afkMatchCount.remove(target.getName());
+				plugin.afkMatchCount.remove(name);
 			}
 		}
 
@@ -633,7 +634,7 @@ public class Match {
 		//afk detection on death
 		if(plugin.afkDetection) {
 			String name = target.getName();
-			if(target.getLocation().getWorld().equals(playersLoc.get(name).getWorld()) && target.getLocation().distance(playersLoc.get(name)) <= plugin.afkRadius && shots.get(target) == 0 && kills.get(target) == 0) {
+			if(target.getLocation().getWorld().equals(playersLoc.get(name).getWorld()) && target.getLocation().distance(playersLoc.get(name)) <= plugin.afkRadius && shots.get(name) == 0 && kills.get(name) == 0) {
 				int afkCount;
 				if(plugin.afkMatchCount.get(name) != null) {
 					afkCount = plugin.afkMatchCount.get(name);

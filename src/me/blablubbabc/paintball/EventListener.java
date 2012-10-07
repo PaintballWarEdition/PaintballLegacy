@@ -300,9 +300,9 @@ public class EventListener implements Listener{
 					Match match = mm.getMatch(player);
 					Location loc = shot.getLocation();
 					if(match.isBlue(player)) {
-						loc.getWorld().playEffect(loc, Effect.POTION_BREAK, 1);
-					} else if(match.isRed(player)) {
 						loc.getWorld().playEffect(loc, Effect.POTION_BREAK, 2);
+					} else if(match.isRed(player)) {
+						loc.getWorld().playEffect(loc, Effect.POTION_BREAK, 1);
 					}
 				}
 			}
