@@ -4,9 +4,6 @@ import java.util.HashMap;
 import java.util.HashSet;
 import me.blablubbabc.paintball.extras.Airstrike;
 import me.blablubbabc.paintball.extras.Grenade;
-import net.minecraft.server.Packet34EntityTeleport;
-import org.bukkit.craftbukkit.entity.CraftPlayer;
-import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Chunk;
 import org.bukkit.Effect;
@@ -102,14 +99,6 @@ public class EventListener implements Listener{
 			world.loadChunk(chunk);
 		}
 		world.refreshChunk(chunk.getX(), chunk.getZ());
-		
-        Player player = event.getPlayer();
-        for (Player p : Bukkit.getOnlinePlayers()) {
-            ((CraftPlayer) p).getHandle().netServerHandler.sendPacket(new Packet34EntityTeleport((net.minecraft.server.Entity) player));
-        }
-        for (Player p : Bukkit.getOnlinePlayers()) {
-            ((CraftPlayer) player).getHandle().netServerHandler.sendPacket(new Packet34EntityTeleport((net.minecraft.server.Entity) p));
-        }
 	}
 
 
