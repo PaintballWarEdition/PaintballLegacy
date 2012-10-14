@@ -152,19 +152,21 @@ public class MatchManager{
 			else draws.put(p.getName(), 0);
 		}
 		
-		for(Player p : match.winners) {
-			//stats
-			wins.put(p.getName(), 1);
-			defeats.put(p.getName(), 0);
-			//bonus
-			points.put(p.getName(), points.get(p.getName())+plugin.pointsPerWin);
-			money.put(p.getName(), points.get(p.getName())+plugin.cashPerWin);
+		if(!draw) {
+			for(Player p : match.winners) {
+				//stats
+				wins.put(p.getName(), 1);
+				defeats.put(p.getName(), 0);
+				//bonus
+				points.put(p.getName(), points.get(p.getName())+plugin.pointsPerWin);
+				money.put(p.getName(), points.get(p.getName())+plugin.cashPerWin);
 
-		}
-		for(Player p :  match.loosers) {
-			//stats
-			wins.put(p.getName(), 0);
-			defeats.put(p.getName(), 1);
+			}
+			for(Player p :  match.loosers) {
+				//stats
+				wins.put(p.getName(), 0);
+				defeats.put(p.getName(), 1);
+			}
 		}
 
 		//Teleport all remaining players back to lobby:

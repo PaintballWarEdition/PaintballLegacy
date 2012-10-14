@@ -34,9 +34,6 @@ public class InvisibleFix implements Listener {
 			public void run() {
 				// Refresh nearby clients
 				final List<Player> nearby = getPlayersWithin(player, visibleDistance);
-
-				System.out.println("Applying fix ... " + visibleDistance);
-
 				// Hide every player
 				updateEntities(nearby, false);
 
