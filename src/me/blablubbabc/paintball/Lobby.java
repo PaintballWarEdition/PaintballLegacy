@@ -111,7 +111,7 @@ public enum Lobby {
 	}
 	public synchronized static Lobby getTeam(Player player) {
 		for(Lobby team : Lobby.values()) {
-			if(team.isMember(player) && !team.equals(Lobby.LOBBY)) return team;
+			if(team.isMember(player) && team !=Lobby.LOBBY) return team;
 		}
 		if(Lobby.LOBBY.isMember(player)) return Lobby.LOBBY;
 		return null;
@@ -125,19 +125,19 @@ public enum Lobby {
 		else Lobby.LOBBY.players.put(player, true);
 	}
 	public synchronized static boolean inTeam(Player player) {
-		if(getTeam(player).equals(Lobby.RED) || getTeam(player).equals(Lobby.BLUE) || getTeam(player).equals(Lobby.RANDOM)) {
+		if(getTeam(player) == Lobby.RED || getTeam(player) == Lobby.BLUE || getTeam(player) == Lobby.RANDOM) {
 			return true;
 		}
 		return false;
 	}
 	public synchronized static boolean isPlaying(Player player) {
-		if(getTeam(player).equals(Lobby.RED) || getTeam(player).equals(Lobby.BLUE) || getTeam(player).equals(Lobby.RANDOM)) {
+		if(inTeam(player)) {
 			if(getTeam(player).players.get(player)) return true;
 		}
 		return false;
 	}
 	public synchronized static boolean isSpectating(Player player) {
-		if(getTeam(player).equals(Lobby.SPECTATE)) {
+		if(getTeam(player) == Lobby.SPECTATE) {
 			if(getTeam(player).players.get(player)) return true;
 		}
 		return false;
