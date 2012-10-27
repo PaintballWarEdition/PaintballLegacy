@@ -64,9 +64,14 @@ public class Stats {
 		HashMap<String, String> vars = new HashMap<String, String>();
 		vars.put("player", name);
 		if(plugin.pm.exists(name)) {
-			vars.put("rank", String.valueOf(getRank(name, stat)));
-			vars.put("stats", stat);
-			sender.sendMessage(plugin.t.getString("RANK_PLAYER", vars));
+			if(plugin.sql.sqlPlayers.statsList.contains(stat)) {
+				vars.put("rank", String.valueOf(getRank(name, stat)));
+				vars.put("stats", stat);
+				sender.sendMessage(plugin.t.getString("RANK_PLAYER", vars));
+			} else {
+				vars.put("values", plugin.sql.sqlPlayers.getStatsListString());
+				sender.sendMessage(plugin.t.getString("VALUE_NOT_FOUND", vars));
+			}
 		} else {
 			sender.sendMessage(plugin.t.getString("PLAYER_NOT_FOUND", vars));
 		}

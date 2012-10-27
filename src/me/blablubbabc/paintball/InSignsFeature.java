@@ -12,7 +12,7 @@ public class InSignsFeature {
 		plugin = pbPlugin;
 		
 		InSigns insigns = (InSigns) insignsPlugin;
-		insigns.addChanger(new Changer("[PB POINTS]") {
+		insigns.addChanger(new Changer("[PB POINTS]", "pbpoints") {
 
 			@Override
 			public String getValue(String playerName) {
