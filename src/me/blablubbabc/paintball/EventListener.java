@@ -85,21 +85,6 @@ public class EventListener implements Listener{
 		}
 	}
 
-	@EventHandler
-	public void onPlayerTeleport(PlayerTeleportEvent event) {
-		/*Location loc = event.getTo();
-		if (loc == null) {
-			return;
-		}
-		World world = loc.getWorld();
-		Chunk chunk = world.getChunkAt(loc);
-		if(!world.isChunkLoaded(chunk)) {
-			world.loadChunk(chunk);
-		}
-		world.refreshChunk(chunk.getX(), chunk.getZ());*/
-	}
-
-
 	@EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = false)
 	public void onPlayerHit(EntityDamageByEntityEvent event) {
 		if(event.getDamager() instanceof Projectile) {
