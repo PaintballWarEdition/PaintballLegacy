@@ -29,7 +29,7 @@ public class Paintball extends JavaPlugin{
 	public Stats stats;
 	public boolean active;
 	public boolean softreload;
-	
+
 	//LOBBYSPAWNS
 	public int lobbyspawn;
 	private LinkedList<Location> lobbyspawns;
@@ -226,7 +226,7 @@ public class Paintball extends JavaPlugin{
 		if(getConfig().get("Paintball.Shop.enabled") == null)getConfig().set("Paintball.Shop.enabled", true);
 		if(getConfig().get("Paintball.Shop.Goods") == null)getConfig().set("Paintball.Shop.Goods", goodsDef);
 		saveConfig();
-		
+
 
 		//points+cash:
 		pointsPerKill = getConfig().getInt("Paintball.Points per Kill", 2);
@@ -312,7 +312,7 @@ public class Paintball extends JavaPlugin{
 		if(airstrikeBombs < 0) airstrikeBombs = 0;
 		airstrikeAmount = getConfig().getInt("Paintball.Extras.Airstrike.Amount", 0);
 		if(airstrikeAmount < -1) airstrikeAmount = -1;
-		
+
 		//SQLite with version: 110
 		sql = new BlaSQLite(new File(this.getDataFolder().toString()+"/"+"pbdata_110"+".db"), this);
 		//DB
@@ -452,30 +452,48 @@ public class Paintball extends JavaPlugin{
 
 		//Some license stuff: Usage on own risk, no warranties, do not modify the code, do not redistribute, do not copy, and do not use for commercial purposes! Neither direct nor indirect. So this also applies to add-ons made for this plugin! 
 		log("By blablubbabc enabled.");
-		logBlank(" ");
-		logBlank(" **************************************************");
-		logBlank(" --------------- PAINTBALL INFO ---------------");
-		logBlank(" ");
-		logBlank(" Some license stuff:");
-		logBlank("   - Usage on own risk.");
-		logBlank("   - I give no warranties for anything.");
-		logBlank("   - Do not modify the code.");
-		logBlank("   - Do not redistribute/upload/copy/give away.");
-		logBlank("   - Do not copy or use parts of it.");
-		logBlank("   - Do not use for commercial purposes!");
-		logBlank("     ->This also applies to any kind of add-on you are using");
-		logBlank("       related to this plugin!");
-		logBlank(" ");
-		logBlank(" If you like this plugin: Give feedback and donate at");
-		logBlank(" ->http://dev.bukkit.org/server-mods/paintball_pure_war/ ");
-		logBlank(" ");
-		logBlank(" Thank you and good shooting!");
-		logBlank("   - blablubbabc");
-		logBlank(" ");
-		logBlank(" **************************************************");
-		logBlank(" ");
+		getServer().getScheduler().scheduleSyncDelayedTask(this, new Runnable() {
+
+			@Override
+			public void run() {
+				delayedInfo();
+			}
+		}, 1L);
+
 	}
 
+	public void delayedInfo() {
+		getServer().getScheduler().scheduleAsyncDelayedTask(this, new Runnable() {
+
+			@Override
+			public void run() {
+
+				logBlank(" ");
+				logBlank(ChatColor.YELLOW+" **************************************************");
+				logBlank(ChatColor.YELLOW+" ----------------- PAINTBALL INFO -----------------");
+				logBlank(" ");
+				logBlank(ChatColor.RED+" License stuff:");
+				logBlank(ChatColor.GOLD+"   - Usage on own risk.");
+				logBlank(ChatColor.GOLD+"   - I give no warranties for anything.");
+				logBlank(ChatColor.GOLD+"   - Do not modify. Use it as it is!");
+				logBlank(ChatColor.GOLD+"   - Do not redistribute/upload/copy/give away.");
+				logBlank(ChatColor.GOLD+"   - Do not copy or use parts of it.");
+				logBlank(ChatColor.GOLD+"   - Do not use for commercial purposes!");
+				logBlank(ChatColor.GOLD+"     ->This also applies to any kind of add-on you are using");
+				logBlank(ChatColor.GOLD+"       related to this plugin!");
+				logBlank(" ");
+				logBlank(ChatColor.DARK_GREEN+" If you like this plugin: Give feedback and donate at");
+				logBlank(ChatColor.DARK_GREEN+" ->http://dev.bukkit.org/server-mods/paintball_pure_war/ ");
+				logBlank(" ");
+				logBlank(ChatColor.GREEN+" Thank you and good shooting!");
+				logBlank(ChatColor.GREEN+"   - blablubbabc");
+				logBlank(" ");
+				logBlank(ChatColor.YELLOW+" **************************************************");
+				logBlank(" ");
+			}
+		}, 20L);
+	}
+	
 	public void onDisable(){
 		if(mm != null) mm.forceReload();
 		sql.closeConnection();
@@ -485,9 +503,10 @@ public class Paintball extends JavaPlugin{
 	public void log(String message) {
 		System.out.println("["+this.getName()+"] "+message);
 	}
-	
+
 	public void logBlank(String message) {
-		System.out.println(message);
+		getServer().getConsoleSender().sendMessage(message);
+		//System.out.println(message);
 	}
 
 	public void reload() {
@@ -512,11 +531,11 @@ public class Paintball extends JavaPlugin{
 		sql.sqlArenaLobby.removeLobbyspawns();
 		lobbyspawns = new LinkedList<Location>();
 	}
-	
+
 	public synchronized int getLobbyspawnsCount() {
 		return lobbyspawns.size();
 	}
-	
+
 	public synchronized Location getNextLobbySpawn() {
 		lobbyspawn++;
 		if(lobbyspawn > (lobbyspawns.size()-1)) lobbyspawn = 0;
@@ -579,7 +598,7 @@ public class Paintball extends JavaPlugin{
 			if(isa != null) {
 				player.getInventory().setArmorContents(isa);
 			}
-			
+
 			player.sendMessage(t.getString("INVENTORY_RESTORED"));
 		}
 		//teleport:
