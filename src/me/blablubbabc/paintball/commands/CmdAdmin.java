@@ -258,8 +258,8 @@ public class CmdAdmin {
 			for(Lobby l : Lobby.values()) {
 				sender.sendMessage(l.color()+l.name()+" ( "+l.number()+" ):");
 				for(Player p : l.getMembers()) {
-					if(l != Lobby.LOBBY) sender.sendMessage(p.getName()+" : "+(Lobby.isPlaying(p) ? ((l == Lobby.SPECTATE) ? "spectating":"playing"):"waiting"));
-					if(l == Lobby.LOBBY) sender.sendMessage(p.getName()+" : "+((Lobby.inTeam(p) || Lobby.getTeam(p)==Lobby.SPECTATE) ? "in team":"not in team") );
+					if(l != Lobby.LOBBY) sender.sendMessage(ChatColor.GRAY+p.getName()+ChatColor.WHITE+" : "+(Lobby.isPlaying(p) ? ((l == Lobby.SPECTATE) ? "spectating":"playing"):"waiting"));
+					if(l == Lobby.LOBBY) sender.sendMessage(ChatColor.GRAY+p.getName()+ChatColor.WHITE+" : "+((Lobby.inTeam(p) || Lobby.getTeam(p)==Lobby.SPECTATE) ? "in team":"not in team") );
 				}
 			}
 			return true;
