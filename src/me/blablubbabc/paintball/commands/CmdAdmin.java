@@ -1,6 +1,8 @@
 package me.blablubbabc.paintball.commands;
 
 import java.util.HashMap;
+
+import org.bukkit.ChatColor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
@@ -248,6 +250,17 @@ public class CmdAdmin {
 			} else {
 				plugin.onlyRandom = true;
 				sender.sendMessage(plugin.t.getString("ONLY_RANDOM_ON"));
+			}
+			return true;
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+		} else if(args[1].equalsIgnoreCase("list")) {
+			sender.sendMessage(ChatColor.YELLOW+""+ChatColor.BOLD+"Paintball Player Overview:");
+			for(Lobby l : Lobby.values()) {
+				sender.sendMessage(l.color()+l.name()+" ( "+l.number()+" ):");
+				for(Player p : l.getMembers()) {
+					if(l != Lobby.LOBBY) sender.sendMessage(p.getName()+" : "+(Lobby.isPlaying(p) ? ((l == Lobby.SPECTATE) ? "spectating":"playing"):"waiting"));
+					if(l == Lobby.LOBBY) sender.sendMessage(p.getName()+" : "+((Lobby.inTeam(p) || Lobby.getTeam(p)==Lobby.SPECTATE) ? "in team":"not in team") );
+				}
 			}
 			return true;
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
