@@ -230,5 +230,5 @@ PLAYER_LEFT_MATCH = "{plugin} {target_color}{target} &bhas left the match"
 PLAYER_AFK = "{plugin} &6[AFK-Detection] {player_color}{player} &bwas forced to leave his team"
 THIS_NEEDS_TIME = "&aThis can take a few seconds now.."
 MATCH_REMAINING_TIME = "&bRound Timer: &6{seconds} seconds left"
-RESPAWN = "&aYou just respawned! &aRespawns left: &6{respawns} Lives: &6{lives}"
+RESPAWN = "&aYou just respawned! &aRespawns left: &6{respawns} &aLives: &6{lives}"
 INFINITE = "unlimited";
