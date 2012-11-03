@@ -50,7 +50,7 @@ public class Stats {
 					vars.put("rank", String.valueOf(i));
 					vars.put("player", (String)topStats.keySet().toArray()[i-1]);
 					if(stat.equalsIgnoreCase("kd")||stat.equalsIgnoreCase("hitquote")) {
-						float valueF = (Float)topStats.values().toArray()[i-1] / 100;
+						float valueF = (float)(Integer)topStats.values().toArray()[i-1] / 100;
 						DecimalFormat dec = new DecimalFormat("###.##");
 						vars.put("value", dec.format(valueF));
 					}

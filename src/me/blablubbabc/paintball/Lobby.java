@@ -8,33 +8,26 @@ import org.bukkit.entity.Player;
 
 public enum Lobby {
 
-	RED			("red", ChatColor.RED),
-	BLUE		("blue", ChatColor.BLUE),
-	RANDOM		("random", ChatColor.GREEN),
-	SPECTATE	("spectator", ChatColor.YELLOW),
-	LOBBY		("lobby", ChatColor.WHITE);
+	RED			("red", 0x1, ChatColor.RED),
+	BLUE		("blue", 0x4, ChatColor.BLUE),
+	RANDOM		("random", 0xA, ChatColor.GREEN),
+	SPECTATE	("spectator", 0xB, ChatColor.YELLOW),
+	LOBBY		("lobby", 0xF, ChatColor.WHITE);
 	
 	private Paintball plugin;
 	private HashMap<Player, Boolean> players;	//members of a team: true: playing, false: waiting; Lobby: true/false toggle messages
 	private int maxPlayers;
 	private String name;
 	private ChatColor color;
+	private int colorA;
 	
-	private Lobby(String name, ChatColor color) {
+	private Lobby(String name, int colorA, ChatColor color) {
 		this.plugin = (Paintball) Bukkit.getServer().getPluginManager().getPlugin("Paintball");
 		this.name = plugin.t.getString(name);
 		this.color = color;
+		this.colorA = colorA;
 		this.players = new HashMap<Player, Boolean>();
 		this.maxPlayers = 0;
-		this.loadData();
-	}
-	//DATA
-	public void updateData() {
-		if(!plugin.sql.sqlData.exists(this.name()+".color")) plugin.sql.sqlData.addString(this.name()+".color", this.color.name());
-	}
-	public void loadData() {
-		this.updateData();
-		this.color = ChatColor.valueOf(plugin.sql.sqlData.getString(this.name()+".color"));
 	}
 	//METHODS
 	//SETTER
@@ -87,6 +80,9 @@ public enum Lobby {
 	}
 	public ChatColor color() {
 		return color;
+	}
+	public int colorA() {
+		return colorA;
 	}
 	//STATIC
 	//GETTER

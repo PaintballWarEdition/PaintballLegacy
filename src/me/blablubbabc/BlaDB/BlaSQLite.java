@@ -19,7 +19,6 @@ public class BlaSQLite {
 	public SQLArenaLobby sqlArenaLobby;
 	public SQLPlayers sqlPlayers;
 	public SQLGeneralStats sqlGeneralStats;
-	public SQLData sqlData;
 
 	public BlaSQLite(File databaseFile, Paintball pl) {
 		this.databaseFile = databaseFile;
@@ -29,13 +28,11 @@ public class BlaSQLite {
 		sqlArenaLobby = new SQLArenaLobby(this, plugin);
 		sqlPlayers = new SQLPlayers(this, plugin);
 		sqlGeneralStats = new SQLGeneralStats(this, plugin);
-		sqlData = new SQLData(this, plugin);
 
 		//CREATE TABLES
 		sqlArenaLobby.createDefaultTables();
 		sqlPlayers.createDefaultTables();
 		sqlGeneralStats.createDefaultTables();
-		sqlData.createDefaultTables();
 	}
 
 	public void closeConnection() {

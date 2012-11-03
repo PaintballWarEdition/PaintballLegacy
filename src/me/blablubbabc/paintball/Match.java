@@ -292,9 +292,10 @@ public class Match {
 		//INVENTORY
 		plugin.clearInv(player);
 
-		//player.getInventory().setHelmet(Lobby.getTeam(getTeamName(player)).helmet());
-		player.getInventory().setHelmet(new ItemStack(Material.LEATHER_HELMET, 1, (short)0, (byte)14));
-		player.getInventory().setChestplate(setColor(new ItemStack(Material.LEATHER_CHESTPLATE, 1), 14));
+		player.getInventory().setHelmet(setColor(new ItemStack(Material.LEATHER_HELMET, 1), Lobby.getTeam(getTeamName(player)).colorA()));
+		player.getInventory().setChestplate(setColor(new ItemStack(Material.LEATHER_CHESTPLATE, 1), Lobby.getTeam(getTeamName(player)).colorA()));
+		player.getInventory().setLeggings(setColor(new ItemStack(Material.LEATHER_LEGGINGS, 1), Lobby.getTeam(getTeamName(player)).colorA()));
+		player.getInventory().setBoots(setColor(new ItemStack(Material.LEATHER_BOOTS, 1), Lobby.getTeam(getTeamName(player)).colorA()));
 		if(setting_balls > 0 ) player.getInventory().addItem(new ItemStack(Material.SNOW_BALL, setting_balls));
 		else if(setting_balls == -1 ) player.getInventory().addItem(new ItemStack(Material.SNOW_BALL, 10));
 		if(setting_grenades > 0 ) player.getInventory().addItem(new ItemStack(Material.EGG, setting_grenades));
@@ -313,7 +314,10 @@ public class Match {
 		player.teleport(specspawns.get(spawnSpec));
 		spawnSpec++;
 		//INVENTORY
-		//player.getInventory().setHelmet(Lobby.SPECTATE.helmet());
+		player.getInventory().setHelmet(setColor(new ItemStack(Material.LEATHER_HELMET, 1), Lobby.SPECTATE.colorA()));
+		player.getInventory().setChestplate(setColor(new ItemStack(Material.LEATHER_CHESTPLATE, 1), Lobby.SPECTATE.colorA()));
+		player.getInventory().setLeggings(setColor(new ItemStack(Material.LEATHER_LEGGINGS, 1), Lobby.SPECTATE.colorA()));
+		player.getInventory().setBoots(setColor(new ItemStack(Material.LEATHER_BOOTS, 1), Lobby.SPECTATE.colorA()));
 		//MESSAGE
 		HashMap<String, String> vars = new HashMap<String, String>();
 		vars.put("team_color", Lobby.getTeam(player).color().toString());
