@@ -8,11 +8,11 @@ import org.bukkit.entity.Player;
 
 public enum Lobby {
 
-	RED			("red", 0x1, ChatColor.RED),
-	BLUE		("blue", 0x4, ChatColor.BLUE),
-	RANDOM		("random", 0xA, ChatColor.GREEN),
-	SPECTATE	("spectator", 0xB, ChatColor.YELLOW),
-	LOBBY		("lobby", 0xF, ChatColor.WHITE);
+	RED			("red", 0xCC4C4C, ChatColor.RED),
+	BLUE		("blue", 0x3366CC, ChatColor.BLUE),
+	RANDOM		("random", 0x7FCC19, ChatColor.GREEN),
+	SPECTATE	("spectator", 0xE5E533, ChatColor.YELLOW),
+	LOBBY		("lobby", 0xFFFFFF, ChatColor.WHITE);
 	
 	private Paintball plugin;
 	private HashMap<Player, Boolean> players;	//members of a team: true: playing, false: waiting; Lobby: true/false toggle messages

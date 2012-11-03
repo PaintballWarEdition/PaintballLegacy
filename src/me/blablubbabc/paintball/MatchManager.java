@@ -334,7 +334,7 @@ public class MatchManager{
 		plugin.nf.text("-------------------------------------------------");
 		//TEST
 		long time2 = System.currentTimeMillis();
-		long delta = time1-time2;
+		long delta = time2-time1;
 		plugin.nf.text("Match end took: "+delta+" ms");
 
 		//close match
