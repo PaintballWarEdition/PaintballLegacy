@@ -6,9 +6,13 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Random;
 import java.util.Set;
+
+import net.minecraft.server.NBTTagCompound;
+
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.Sound;
+import org.bukkit.craftbukkit.inventory.CraftItemStack;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 
@@ -288,7 +292,9 @@ public class Match {
 		//INVENTORY
 		plugin.clearInv(player);
 
-		player.getInventory().setHelmet(Lobby.getTeam(getTeamName(player)).helmet());
+		//player.getInventory().setHelmet(Lobby.getTeam(getTeamName(player)).helmet());
+		player.getInventory().setHelmet(new ItemStack(Material.LEATHER_HELMET, 1, (short)0, (byte)14));
+		player.getInventory().setChestplate(setColor(new ItemStack(Material.LEATHER_CHESTPLATE, 1), 14));
 		if(setting_balls > 0 ) player.getInventory().addItem(new ItemStack(Material.SNOW_BALL, setting_balls));
 		else if(setting_balls == -1 ) player.getInventory().addItem(new ItemStack(Material.SNOW_BALL, 10));
 		if(setting_grenades > 0 ) player.getInventory().addItem(new ItemStack(Material.EGG, setting_grenades));
@@ -307,7 +313,7 @@ public class Match {
 		player.teleport(specspawns.get(spawnSpec));
 		spawnSpec++;
 		//INVENTORY
-		player.getInventory().setHelmet(Lobby.SPECTATE.helmet());
+		//player.getInventory().setHelmet(Lobby.SPECTATE.helmet());
 		//MESSAGE
 		HashMap<String, String> vars = new HashMap<String, String>();
 		vars.put("team_color", Lobby.getTeam(player).color().toString());
@@ -346,6 +352,31 @@ public class Match {
 		}
 	}
 
+	//TEST
+	public ItemStack setColor(ItemStack item, int color){
+		CraftItemStack craftStack = null;
+		net.minecraft.server.ItemStack itemStack = null;
+		if (item instanceof CraftItemStack) {
+			craftStack = (CraftItemStack) item;
+			itemStack = craftStack.getHandle();
+		}
+		else if (item instanceof ItemStack) {
+			craftStack = new CraftItemStack(item);
+			itemStack = craftStack.getHandle();
+		}
+		NBTTagCompound tag = itemStack.tag;
+		if (tag == null) {
+			tag = new NBTTagCompound();
+			tag.setCompound("display", new NBTTagCompound());
+			itemStack.tag = tag;
+		}
+
+		tag = itemStack.tag.getCompound("display");
+		tag.setInt("color", color);
+		itemStack.tag.setCompound("display", tag);
+		return craftStack;
+	}
+	
 	public void changeAllColors() {
 		for(Player p : redT) {
 			//chatnames

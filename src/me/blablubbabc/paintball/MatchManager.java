@@ -134,6 +134,7 @@ public class MatchManager{
 			HashMap<String, Integer> shots, HashMap<String, Integer> hits, HashMap<String, Integer> kills, HashMap<String, Integer> deaths,
 			HashMap<String, Integer> teamattacks, HashMap<String, Integer> grenades, HashMap<String, Integer> airstrikes) {
 		
+		long time1 = System.currentTimeMillis();
 		//STATS
 		HashMap<String, Integer> wins = new HashMap<String, Integer>();
 		HashMap<String, Integer> defeats = new HashMap<String, Integer>();
@@ -331,6 +332,10 @@ public class MatchManager{
 		plugin.nf.text(plugin.t.getString("MATCH_TEAMATTACKS", vars));
 		plugin.nf.text(plugin.t.getString("MATCH_KILLS", vars));
 		plugin.nf.text("-------------------------------------------------");
+		//TEST
+		long time2 = System.currentTimeMillis();
+		long delta = time1-time2;
+		plugin.nf.text("Match end took: "+delta+" ms");
 
 		//close match
 		plugin.am.setNotActive(match.getArena());

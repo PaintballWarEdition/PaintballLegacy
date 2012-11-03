@@ -4,29 +4,25 @@ import java.util.HashMap;
 import java.util.Set;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
-import org.bukkit.Material;
 import org.bukkit.entity.Player;
-import org.bukkit.inventory.ItemStack;
 
 public enum Lobby {
 
-	RED			("red", Material.WOOL, (byte)14, ChatColor.RED),
-	BLUE		("blue", Material.WOOL, (byte)11, ChatColor.BLUE),
-	RANDOM		("random", Material.AIR, (byte)0, ChatColor.GREEN),
-	SPECTATE	("spectator", Material.WOOL, (byte)4, ChatColor.YELLOW),
-	LOBBY		("lobby", Material.AIR, (byte)0, ChatColor.WHITE);
+	RED			("red", ChatColor.RED),
+	BLUE		("blue", ChatColor.BLUE),
+	RANDOM		("random", ChatColor.GREEN),
+	SPECTATE	("spectator", ChatColor.YELLOW),
+	LOBBY		("lobby", ChatColor.WHITE);
 	
 	private Paintball plugin;
 	private HashMap<Player, Boolean> players;	//members of a team: true: playing, false: waiting; Lobby: true/false toggle messages
 	private int maxPlayers;
 	private String name;
-	private ItemStack helmet;
 	private ChatColor color;
 	
-	private Lobby(String name, Material mat, byte data, ChatColor color) {
+	private Lobby(String name, ChatColor color) {
 		this.plugin = (Paintball) Bukkit.getServer().getPluginManager().getPlugin("Paintball");
 		this.name = plugin.t.getString(name);
-		this.helmet = new ItemStack(mat, 1, Short.parseShort("0"), data);
 		this.color = color;
 		this.players = new HashMap<Player, Boolean>();
 		this.maxPlayers = 0;
@@ -34,13 +30,10 @@ public enum Lobby {
 	}
 	//DATA
 	public void updateData() {
-		if(!plugin.sql.sqlData.exists(this.name()+".helmet.id")) plugin.sql.sqlData.addInt(this.name()+".helmet.id", this.helmet.getTypeId());
-		if(!plugin.sql.sqlData.exists(this.name()+".helmet.data")) plugin.sql.sqlData.addString(this.name()+".helmet.data", String.valueOf(this.helmet.getData().getData()));
 		if(!plugin.sql.sqlData.exists(this.name()+".color")) plugin.sql.sqlData.addString(this.name()+".color", this.color.name());
 	}
 	public void loadData() {
 		this.updateData();
-		this.helmet = new ItemStack(plugin.sql.sqlData.getInt(this.name()+".helmet.id"), 1, Short.parseShort("0"), Byte.valueOf(plugin.sql.sqlData.getString(this.name()+".helmet.data")));
 		this.color = ChatColor.valueOf(plugin.sql.sqlData.getString(this.name()+".color"));
 	}
 	//METHODS
@@ -54,9 +47,6 @@ public enum Lobby {
 	}
 	public synchronized void removeMember(Player player) {
 		if(players.containsKey(player)) players.remove(player);
-	}
-	public void setHelmet(Material mat, byte data) {
-		helmet = new ItemStack(mat, 1, Short.parseShort("0"), data);
 	}
 	public synchronized void setPlaying(Player player) {
 		if(players.containsKey(player)) players.put(player, true);
@@ -94,9 +84,6 @@ public enum Lobby {
 	}
 	public String getName() {
 		return name;
-	}
-	public ItemStack helmet() {
-		return helmet;
 	}
 	public ChatColor color() {
 		return color;

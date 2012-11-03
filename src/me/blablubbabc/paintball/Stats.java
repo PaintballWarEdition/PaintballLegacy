@@ -49,7 +49,12 @@ public class Stats {
 				if(i <= topStats.keySet().toArray().length) {
 					vars.put("rank", String.valueOf(i));
 					vars.put("player", (String)topStats.keySet().toArray()[i-1]);
-					vars.put("value", String.valueOf((Integer)topStats.values().toArray()[i-1]));
+					if(stat.equalsIgnoreCase("kd")||stat.equalsIgnoreCase("hitquote")) {
+						float valueF = (Float)topStats.values().toArray()[i-1] / 100;
+						DecimalFormat dec = new DecimalFormat("###.##");
+						vars.put("value", dec.format(valueF));
+					}
+					else vars.put("value", String.valueOf((Integer)topStats.values().toArray()[i-1]));
 					sender.sendMessage(plugin.t.getString("TOP_TEN_ENTRY", vars));
 				}
 				else break;
@@ -89,7 +94,7 @@ public class Stats {
 		}
 	}
 
-	public void sendGeneralStats(CommandSender sender, String name) {
+	public void sendGeneralStats(CommandSender sender) {
 		HashMap<String, String> vars = new HashMap<String, String>();
 		//GENERAL STATS
 		LinkedHashMap<String, Integer> gStats = getGerneralStats();
@@ -103,7 +108,7 @@ public class Stats {
 			sender.sendMessage(plugin.t.getString("STATS_GENERAL_"+stat.toUpperCase(), vars));
 		}
 	}
-	
+
 	public void sendStats(CommandSender sender, String name) {
 		HashMap<String, String> vars = new HashMap<String, String>();
 		vars.put("player", name);
@@ -141,6 +146,7 @@ public class Stats {
 			for(String stat : pStats.keySet()) {
 				sender.sendMessage(plugin.t.getString("STATS_"+stat.toUpperCase(), vars));
 			}
+			sendGeneralStats(sender);
 
 		} else {
 			sender.sendMessage(plugin.t.getString("PLAYER_NOT_FOUND", vars));

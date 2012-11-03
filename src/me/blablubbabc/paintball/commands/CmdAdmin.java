@@ -5,7 +5,6 @@ import java.util.HashMap;
 import org.bukkit.ChatColor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
-import org.bukkit.inventory.ItemStack;
 import me.blablubbabc.paintball.Lobby;
 import me.blablubbabc.paintball.Paintball;
 
@@ -41,26 +40,6 @@ public class CmdAdmin {
 						HashMap<String, String> vars = new HashMap<String, String>();
 						vars.put("lobby_color", Lobby.LOBBY.color().toString());
 						player.sendMessage(plugin.t.getString("LOBBY_SPAWNS_REMOVED", vars));
-						return true;
-					}
-				}
-////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-			} else if(args[1].equalsIgnoreCase("helmet")) {
-				if(args.length == 3) {
-					if(args[2].equalsIgnoreCase("blue")) {
-						ItemStack is = player.getItemInHand();
-						Lobby.BLUE.setHelmet(is.getType(), is.getData().getData());
-						player.sendMessage(plugin.t.getString("HELMET_SET"));
-						return true;
-					} else if(args[2].equalsIgnoreCase("red")) {
-						ItemStack is = player.getItemInHand();
-						Lobby.RED.setHelmet(is.getType(), is.getData().getData());
-						player.sendMessage(plugin.t.getString("HELMET_SET"));
-						return true;
-					} else if(args[2].equalsIgnoreCase("spec") || args[2].equalsIgnoreCase("spectator")) {
-						ItemStack is = player.getItemInHand();
-						Lobby.SPECTATE.setHelmet(is.getType(), is.getData().getData());
-						player.sendMessage(plugin.t.getString("HELMET_SET"));
 						return true;
 					}
 				}
@@ -185,6 +164,20 @@ public class CmdAdmin {
 		} else if(args[1].equalsIgnoreCase("stats")) {
 			if(args.length == 3) {
 				plugin.stats.sendStats(sender, args[2]);
+				return true;
+			}
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+		} else if(args[1].equalsIgnoreCase("rank")) {
+			if(args.length >= 3) {
+				if(plugin.pm.exists(args[2])) {
+					if(args.length == 3) plugin.stats.sendRank(sender, args[2], "points");
+					else if(args.length == 4) plugin.stats.sendRank(sender, args[2], args[3]);
+					else return false;
+				} else {
+					HashMap<String, String> vars = new HashMap<String, String>();
+					vars.put("player", args[2]);
+					sender.sendMessage(plugin.t.getString("PLAYER_NOT_FOUND", vars));
+				}
 				return true;
 			}
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
