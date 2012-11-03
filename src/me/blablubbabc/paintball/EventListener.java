@@ -8,6 +8,7 @@ import org.bukkit.ChatColor;
 import org.bukkit.Effect;
 import org.bukkit.Location;
 import org.bukkit.Material;
+import org.bukkit.Sound;
 import org.bukkit.block.Block;
 import org.bukkit.entity.Egg;
 import org.bukkit.entity.Player;
@@ -99,6 +100,9 @@ public class EventListener implements Listener{
 								//Geschoss?
 								if (shot instanceof Snowball) {
 									//hit by snowball
+									//effect
+									shooter.playSound(shooter.getLocation(), Sound.MAGMACUBE_WALK, 100F, 0F);
+									//match
 									match.hitSnow(target, shooter);
 								}
 							}
@@ -146,6 +150,8 @@ public class EventListener implements Listener{
 							}
 							//boosting:
 							shot.setVelocity(v.multiply(plugin.speedmulti));
+							//effekt
+							player.playSound(player.getLocation(), Sound.WOOD_CLICK, 100F, 0F);
 						} else if(shot instanceof Egg) {
 							if(plugin.grenades) {
 								Grenade.eggThrow(player, (Egg) shot);

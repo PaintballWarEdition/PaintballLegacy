@@ -8,6 +8,7 @@ import java.util.Random;
 import java.util.Set;
 import org.bukkit.Location;
 import org.bukkit.Material;
+import org.bukkit.Sound;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 
@@ -200,7 +201,7 @@ public class Match {
 	private void startRoundTimer() {
 		roundTime = setting_round_time;
 
-		roundTimeTaskId = plugin.getServer().getScheduler().scheduleAsyncRepeatingTask(plugin, new Runnable() {
+		roundTimeTaskId = plugin.getServer().getScheduler().scheduleSyncRepeatingTask(plugin, new Runnable() {
 
 			@Override
 			public void run() {
@@ -584,6 +585,7 @@ public class Match {
 	}
 
 	public synchronized void frag(final Player target, final Player killer) {
+		target.playSound(target.getLocation(), Sound.GHAST_SCREAM2, 100F, 0F);
 		//math over already?
 		if(matchOver) return;
 
