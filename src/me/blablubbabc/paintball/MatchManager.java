@@ -130,7 +130,7 @@ public class MatchManager{
 		matches.add(match);
 	}
 	
-	public synchronized void gameEnd(Match match, boolean draw, HashMap<String, Location> playersLoc, Set<Player> specs, 
+	public synchronized void gameEnd(final Match match, boolean draw, HashMap<String, Location> playersLoc, Set<Player> specs, 
 			HashMap<String, Integer> shots, HashMap<String, Integer> hits, HashMap<String, Integer> kills, HashMap<String, Integer> deaths,
 			HashMap<String, Integer> teamattacks, HashMap<String, Integer> grenades, HashMap<String, Integer> airstrikes) {
 		
@@ -262,8 +262,8 @@ public class MatchManager{
 		
 		//PLAYER STATS
 		for(Player p : match.getAllPlayer()) {
-			HashMap<String, Integer> pStats = new HashMap<String, Integer>();
-			String name = p.getName();
+			final HashMap<String, Integer> pStats = new HashMap<String, Integer>();
+			final String name = p.getName();
 			pStats.put("shots", shots.get(name));
 			pStats.put("hits", hits.get(name));
 			pStats.put("kills", kills.get(name));
@@ -276,31 +276,54 @@ public class MatchManager{
 			pStats.put("wins", wins.get(name));
 			pStats.put("defeats", defeats.get(name));
 			pStats.put("draws", draws.get(name));
-
-			plugin.pm.addStats(name, pStats);
+			
+			plugin.getServer().getScheduler().runTaskAsynchronously(plugin, new Runnable() {
+				
+				@Override
+				public void run() {
+					plugin.pm.addStats(name, pStats);
+				}
+			});
+			//plugin.pm.addStats(name, pStats);
 		}
 		//ARENA STATS
-		HashMap<String, Integer> aStats = new HashMap<String, Integer>();
+		final HashMap<String, Integer> aStats = new HashMap<String, Integer>();
 		aStats.put("shots", shotsAll);
 		aStats.put("kills", killsAll);
 		aStats.put("rounds", 1);
 		aStats.put("grenades", grenadesAll);
 		aStats.put("airstrikes", airstrikesAll);
-
-		plugin.am.addStats(match.getArena(), aStats);
+		
+		plugin.getServer().getScheduler().runTaskAsynchronously(plugin, new Runnable() {
+			
+			@Override
+			public void run() {
+				plugin.am.addStats(match.getArena(), aStats);
+			}
+		});
+		//plugin.am.addStats(match.getArena(), aStats);
 
 		//GENERAL STATS
-		HashMap<String, Integer> gStats = new HashMap<String, Integer>();
+		final HashMap<String, Integer> gStats = new HashMap<String, Integer>();
 		gStats.put("rounds", 1);
 		gStats.put("shots", shotsAll);
 		gStats.put("kills", killsAll);
 		gStats.put("grenades", grenadesAll);
 		gStats.put("airstrikes", airstrikesAll);
 		
-		plugin.stats.matchEndStats(gStats, match.getAllPlayer().size());
+		plugin.getServer().getScheduler().runTaskAsynchronously(plugin, new Runnable() {
+			
+			@Override
+			public void run() {
+				plugin.stats.matchEndStats(gStats, match.getAllPlayer().size());
+			}
+		});
+		
+		//plugin.stats.matchEndStats(gStats, match.getAllPlayer().size());
 
 		//messages:
 		HashMap<String, String> vars = new HashMap<String, String>();
+		plugin.nf.text("-------------------------------------------------");
 		plugin.nf.status("Match is over!");
 		if(draw) {
 			plugin.nf.text(plugin.t.getString("MATCH_DRAW"));

@@ -2,11 +2,10 @@ package me.blablubbabc.paintball;
 
 import me.blablubbabc.insigns.Changer;
 import me.blablubbabc.insigns.InSigns;
-
 import org.bukkit.plugin.Plugin;
 
 public class InSignsFeature {
-	Paintball plugin;
+	private Paintball plugin;
 	
 	public InSignsFeature(Plugin insignsPlugin, Paintball pbPlugin) {
 		plugin = pbPlugin;
@@ -16,7 +15,8 @@ public class InSignsFeature {
 
 			@Override
 			public String getValue(String playerName) {
-				if(plugin.getServer().getPluginManager().isPluginEnabled(plugin) && plugin.pm.exists(playerName)) return ""+plugin.pm.getStats(playerName).get("points");
+				if(!plugin.sql.isConnected()) return "-not connected-";
+				else if(plugin.pm.exists(playerName)) return ""+plugin.pm.getStats(playerName).get("points");
 				else return "-not found-";
 			}
 

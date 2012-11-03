@@ -42,6 +42,15 @@ public class BlaSQLite {
 			e.printStackTrace();
 		}
 	}
+	
+	public boolean isConnected() {
+		try {
+			return((connection==null || connection.isClosed()) ? false:true);
+		} catch (SQLException e) {
+			e.printStackTrace();
+			return false;
+		}
+	}
 
 	public void refreshConnection() {
 		if (connection == null) {
