@@ -49,13 +49,13 @@ public class EventListener implements Listener{
 
 	private HashMap<Player, Integer> taskIds;
 	private HashSet<Byte> transparent;
-	private HashMap<Player, String> chatMessages;
+	//private HashMap<Player, String> chatMessages;
 
 	public EventListener(Paintball pl) {
 		plugin = pl;
 		mm = plugin.mm;
 		taskIds = new HashMap<Player, Integer>();
-		chatMessages = new HashMap<Player, String>();
+		//chatMessages = new HashMap<Player, String>();
 
 		transparent = new HashSet<Byte>();
 		transparent.add((byte) 0);
@@ -370,7 +370,7 @@ public class EventListener implements Listener{
 			}
 		}
 	}
-	@EventHandler(priority = EventPriority.LOWEST)
+	/*@EventHandler(priority = EventPriority.LOWEST)
 	public void onPlayerChat1(AsyncPlayerChatEvent event) {
 		Player player = event.getPlayer();
 		if(Lobby.getTeam(player) != null) {
@@ -403,7 +403,42 @@ public class EventListener implements Listener{
 				}
 			}
 		}
+	}*/
+	
+	@EventHandler(priority = EventPriority.LOWEST)
+	public void onPlayerChat(AsyncPlayerChatEvent event) {
+		Player player = event.getPlayer();
+		if(Lobby.getTeam(player) != null) {
+			if(plugin.chatnames) {
+				ChatColor farbe = Lobby.LOBBY.color();
+				if (Lobby.isPlaying(player) || Lobby.isSpectating(player)) {
+
+					//Color:
+					if(plugin.mm.getMatch(player).isRed(player)) farbe = Lobby.RED.color();
+					else if(plugin.mm.getMatch(player).isBlue(player)) farbe = Lobby.BLUE.color();
+					else if(plugin.mm.getMatch(player).isSpec(player)) farbe = Lobby.SPECTATE.color();
+				}
+				event.setMessage(farbe+event.getMessage());
+				
+				/*if (chatMessages.containsKey(player)) {
+					String message = chatMessages.get(player);
+					chatMessages.remove(player);
+					//Color:
+					ChatColor farbe = Lobby.LOBBY.color();
+
+					if (Lobby.isPlaying(player) || Lobby.isSpectating(player)) {
+
+						//Color:
+						if(plugin.mm.getMatch(player).isRed(player)) farbe = Lobby.RED.color();
+						else if(plugin.mm.getMatch(player).isBlue(player)) farbe = Lobby.BLUE.color();
+						else if(plugin.mm.getMatch(player).isSpec(player)) farbe = Lobby.SPECTATE.color();
+					}
+					event.setMessage(event.getMessage().replace("pb1x2y3"+message+"pb1x2y3", farbe + message));
+				}*/
+			}
+		}
 	}
+	
 	@EventHandler(priority = EventPriority.MONITOR)
 	public void onPlayerDead(PlayerDeathEvent event) {
 		Player player = (Player) event.getEntity();
