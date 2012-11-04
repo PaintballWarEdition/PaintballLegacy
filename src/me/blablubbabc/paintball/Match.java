@@ -356,7 +356,6 @@ public class Match {
 		}
 	}
 
-	//TEST
 	public ItemStack setColor(ItemStack item, int color){
 		CraftItemStack craftStack = null;
 		net.minecraft.server.ItemStack itemStack = null;
