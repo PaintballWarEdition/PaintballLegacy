@@ -99,9 +99,6 @@ public class EventListener implements Listener{
 							if(!match.isSpec(shooter) && !match.isSpec(target) && match.isSurvivor(shooter) && match.isSurvivor(target) && match.started) {
 								//Geschoss?
 								if (shot instanceof Snowball) {
-									//hit by snowball
-									//effect
-									shooter.playSound(shooter.getLocation(), Sound.MAGMACUBE_WALK, 100F, 0F);
 									//match
 									match.hitSnow(target, shooter);
 								}
@@ -150,8 +147,6 @@ public class EventListener implements Listener{
 							}
 							//boosting:
 							shot.setVelocity(v.multiply(plugin.speedmulti));
-							//effekt
-							player.playSound(player.getLocation(), Sound.WOOD_CLICK, 100F, 0F);
 						} else if(shot instanceof Egg) {
 							if(plugin.grenades) {
 								Grenade.eggThrow(player, (Egg) shot);
@@ -228,13 +223,14 @@ public class EventListener implements Listener{
 				} else if(player.getItemInHand().getTypeId() == 344) {
 					if(event.getAction().equals(Action.RIGHT_CLICK_AIR) || event.getAction().equals(Action.RIGHT_CLICK_BLOCK)) {
 						player.sendMessage(plugin.t.getString("GRENADE_THROW"));
+						player.playSound(player.getLocation(), Sound.SILVERFISH_IDLE, 100L, 1L);
 					}
 				}
-			} else if(event.getClickedBlock() != null && !event.getClickedBlock().getType().equals(Material.NOTE_BLOCK)) {
+			} /*else if(event.getClickedBlock() != null && !event.getClickedBlock().getType().equals(Material.NOTE_BLOCK)) {
 				if(!player.isOp() && !player.hasPermission("paintball.admin")) {
 					event.setCancelled(true);
 				}
-			}
+			}*/
 		}
 	}
 
@@ -284,14 +280,15 @@ public class EventListener implements Listener{
 				if(mm.getMatch(player) != null) {
 					Match match = mm.getMatch(player);
 					Location loc = shot.getLocation();
-					if(match.isBlue(player)) {
-						loc.getWorld().playEffect(loc, Effect.POTION_BREAK, 2);
-					} else if(match.isRed(player)) {
-						loc.getWorld().playEffect(loc, Effect.POTION_BREAK, 1);
+					if(plugin.effects) {
+						if(match.isBlue(player)) {
+							loc.getWorld().playEffect(loc, Effect.POTION_BREAK, 2);
+						} else if(match.isRed(player)) {
+							loc.getWorld().playEffect(loc, Effect.POTION_BREAK, 1);
+						}
 					}
 				}
 			}
-			//some effect maybe?
 		} else if(shot instanceof Egg) {
 			if(plugin.grenades) {
 				Grenade.hit(shot, plugin);

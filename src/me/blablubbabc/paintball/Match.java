@@ -571,6 +571,8 @@ public class Match {
 	public synchronized void shot(Player player) {
 		//add 1
 		shots.put(player.getName(), shots.get(player.getName())+1);
+		//effekt
+		player.playSound(player.getLocation(), Sound.WOOD_CLICK, 100F, 0F);
 	}
 	public synchronized void grenade(Player player) {
 		//add 1
@@ -595,6 +597,8 @@ public class Match {
 				livesLeft.put(target, livesLeft.get(target)-1);
 				//stats
 				hits.put(shooter.getName(), hits.get(shooter.getName())+1);
+				//effect
+				shooter.playSound(shooter.getLocation(), Sound.MAGMACUBE_WALK, 100F, 0F);
 				//dead?->frag
 				//message:
 				if(livesLeft.get(target) <= 0) {

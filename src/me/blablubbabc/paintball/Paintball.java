@@ -81,6 +81,7 @@ public class Paintball extends JavaPlugin{
 	public int afkRadius;
 	public int afkMatchAmount;
 	public boolean autoSpecLobby;
+	public boolean effects;
 	//unused
 	//public boolean autoSpecDeadPlayers;
 	//public int repsawns;
@@ -134,17 +135,6 @@ public class Paintball extends JavaPlugin{
 	//- arena disable/enable
 	//- airstrike finalMark bleibt
 
-	//important:
-	//- map list mit übersicht, ob ready, und warum nicht ready (/)
-	//- admin: next <name> zum arena festlegen. (/)
-	//- config-header-beschreibung
-	//- infinite eggs bug! (/)
-	//- count nades and airstrike seperate!
-	//- infinite mode (/)
-	//- invisible bug
-	//- arena not ready bug (/)
-	//- admin cash und rank kommando überprüfen, ob ein spieler mit namen args existiert
-
 
 	//Permissions:
 	//paintball.general
@@ -192,6 +182,7 @@ public class Paintball extends JavaPlugin{
 		if(getConfig().get("Paintball.Only Random") == null)getConfig().set("Paintball.Only Random", false);
 		if(getConfig().get("Paintball.Auto Random") == null)getConfig().set("Paintball.Auto Random", true);
 		if(getConfig().get("Paintball.Auto Spec Lobby") == null)getConfig().set("Paintball.Auto Spec Lobby", false);
+		if(getConfig().get("Paintball.Effects") == null)getConfig().set("Paintball.Effects", true);
 		if(getConfig().get("Paintball.Allowed Commands") == null)getConfig().set("Paintball.Allowed Commands", allowedCommands);
 		//lobby join checks
 		if(getConfig().get("Paintball.Lobby join.Checks.Inventory") == null)getConfig().set("Paintball.Lobby join.Checks.Inventory", true);
@@ -281,6 +272,7 @@ public class Paintball extends JavaPlugin{
 		onlyRandom = getConfig().getBoolean("Paintball.Only Random", false);
 		autoRandom = getConfig().getBoolean("Paintball.Auto Random", true);
 		autoSpecLobby = getConfig().getBoolean("Paintball.Auto Spec Lobby", false);
+		effects = getConfig().getBoolean("Paintball.Effects", true);
 
 		//shop:
 		shop = getConfig().getBoolean("Paintball.Shop.enabled", true);
