@@ -113,7 +113,6 @@ public class Stats {
 		HashMap<String, String> vars = new HashMap<String, String>();
 		vars.put("player", name);
 		if(plugin.pm.exists(name)) {
-			sendGeneralStats(sender);
 			//GET STATS
 			LinkedHashMap<String, Integer> pStats = plugin.sql.sqlPlayers.getPlayerStats(name);
 			LinkedHashMap<String, SimpleEntry<String, Integer>> topStats = plugin.sql.sqlPlayers.getTopStats();
@@ -143,6 +142,7 @@ public class Stats {
 
 			//SEND
 			sender.sendMessage(plugin.t.getString("STATS_HEADER"));
+			sendGeneralStats(sender);
 			sender.sendMessage(plugin.t.getString("STATS_PLAYER", vars));
 			for(String stat : pStats.keySet()) {
 				sender.sendMessage(plugin.t.getString("STATS_"+stat.toUpperCase(), vars));

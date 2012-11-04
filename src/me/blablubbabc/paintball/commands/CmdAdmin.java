@@ -247,12 +247,12 @@ public class CmdAdmin {
 			return true;
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 		} else if(args[1].equalsIgnoreCase("list")) {
-			sender.sendMessage(ChatColor.YELLOW+""+ChatColor.BOLD+"Paintball Player Overview:");
+			sender.sendMessage(plugin.t.getString("PLAYER_OVERVIEW"));
 			for(Lobby l : Lobby.values()) {
 				sender.sendMessage(l.color()+l.name()+" ( "+l.number()+" ):");
 				for(Player p : l.getMembers()) {
-					if(l != Lobby.LOBBY) sender.sendMessage(ChatColor.GRAY+p.getName()+ChatColor.WHITE+" : "+(Lobby.isPlaying(p) ? ((l == Lobby.SPECTATE) ? "spectating":"playing"):"waiting"));
-					if(l == Lobby.LOBBY && Lobby.getTeam(p) == Lobby.LOBBY) sender.sendMessage(ChatColor.GRAY+p.getName()+ChatColor.WHITE+" : not in team");
+					if(l != Lobby.LOBBY) sender.sendMessage(ChatColor.GRAY+p.getName()+ChatColor.WHITE+" : "+(Lobby.isPlaying(p) ? ((l == Lobby.SPECTATE) ? plugin.t.getString("SPECTATING"):plugin.t.getString("PLAYING")):plugin.t.getString("WAITING")));
+					if(l == Lobby.LOBBY && Lobby.getTeam(p) == Lobby.LOBBY) sender.sendMessage(ChatColor.GRAY+p.getName()+ChatColor.WHITE+" : "+plugin.t.getString("NOT_IN_TEAM"));
 				}
 			}
 			return true;

@@ -14,8 +14,6 @@ public class BlaSQLite {
 	private Connection connection;
 	private static Paintball plugin;
 
-	public HashMap<String, HashMap<String, String>> tables;
-
 	public SQLArenaLobby sqlArenaLobby;
 	public SQLPlayers sqlPlayers;
 	public SQLGeneralStats sqlGeneralStats;
@@ -23,7 +21,6 @@ public class BlaSQLite {
 	public BlaSQLite(File databaseFile, Paintball pl) {
 		this.databaseFile = databaseFile;
 		plugin = pl;
-		this.tables = new HashMap<String, HashMap<String, String>>();
 
 		sqlArenaLobby = new SQLArenaLobby(this, plugin);
 		sqlPlayers = new SQLPlayers(this, plugin);

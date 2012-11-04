@@ -230,6 +230,7 @@ public class CommandManager implements CommandExecutor{
 		sender.sendMessage(plugin.t.getString("COMMAND_ADMIN_RANK"));
 		sender.sendMessage(plugin.t.getString("COMMAND_ADMIN_NEXT"));
 		sender.sendMessage(plugin.t.getString("COMMAND_ADMIN_RANDOM"));
+		sender.sendMessage(plugin.t.getString("COMMAND_ADMIN_LIST"));
 	}
 	
 	private boolean joinTeam(Player player, Lobby team) {

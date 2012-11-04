@@ -27,6 +27,7 @@ public class Paintball extends JavaPlugin{
 	public ArenaManager am;
 	public Translator t;
 	public Stats stats;
+	public InSignsFeature isf;
 	public boolean active;
 	public boolean softreload;
 
@@ -443,7 +444,7 @@ public class Paintball extends JavaPlugin{
 		//InSigns sign changer:
 		Plugin insignsPlugin = getServer().getPluginManager().getPlugin("InSigns");
 		if((insignsPlugin != null) && insignsPlugin.isEnabled()) {
-			new InSignsFeature(insignsPlugin, this);
+			isf = new InSignsFeature(insignsPlugin, this);
 			log("Plugin 'InSigns' found. Using it now.");
 		} else {
 			log("Plugin 'InSigns' not found. Additional sign features disabled.");
@@ -626,8 +627,6 @@ public class Paintball extends JavaPlugin{
 		p.getInventory().clear();
 		p.getInventory().setArmorContents(null);
 	}
-
-
 
 
 }
