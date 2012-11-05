@@ -48,6 +48,10 @@ public class PlayerManager {
 		});
 	}
 	
+	public void resetDataSameThread() {
+		plugin.sql.sqlPlayers.resetAllPlayerStats();
+	}
+	
 	public void resetData(final String player) {
 		plugin.getServer().getScheduler().runTaskAsynchronously(plugin, new Runnable() {
 			

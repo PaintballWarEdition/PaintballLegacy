@@ -17,7 +17,7 @@ public class CmdAdmin {
 		plugin = pl;
 	}
 
-	public boolean command(CommandSender sender, String[] args) {
+	public boolean command(final CommandSender sender, String[] args) {
 		if(sender instanceof Player) {
 			//PERMISSION CHECK
 			if(!sender.isOp() && !sender.hasPermission("paintball.admin")) {
@@ -51,17 +51,23 @@ public class CmdAdmin {
 		if(args[1].equalsIgnoreCase("reset")) {
 			if(args.length == 3 && args[2].equalsIgnoreCase("all")) {
 				sender.sendMessage(plugin.t.getString("THIS_NEEDS_TIME"));
-				long time1 = System.currentTimeMillis();
-				plugin.pm.resetData();
-				long time2 = System.currentTimeMillis();
-				long delta = time2 - time1;
-				
-				int amount = plugin.pm.getPlayerCount();
-				
-				HashMap<String, String> vars = new HashMap<String, String>();
-				vars.put("time", String.valueOf(delta));
-				vars.put("amount", String.valueOf(amount));
-				sender.sendMessage(plugin.t.getString("ALL_STATS_RESET", vars));
+				plugin.getServer().getScheduler().runTaskAsynchronously(plugin, new Runnable() {
+					
+					@Override
+					public void run() {
+						long time1 = System.currentTimeMillis();
+						plugin.pm.resetDataSameThread();
+						long time2 = System.currentTimeMillis();
+						long delta = time2 - time1;
+						
+						int amount = plugin.pm.getPlayerCount();
+						
+						HashMap<String, String> vars = new HashMap<String, String>();
+						vars.put("time", String.valueOf(delta));
+						vars.put("amount", String.valueOf(amount));
+						sender.sendMessage(plugin.t.getString("ALL_STATS_RESET", vars));
+					}
+				});
 				return true;
 			} else if(args.length == 3) {
 				if(plugin.pm.exists(args[2])) {

@@ -130,25 +130,19 @@ public class Stats {
 		});
 	}
 
-	public void sendGeneralStats(final CommandSender sender) {
-		plugin.getServer().getScheduler().runTaskAsynchronously(plugin, new Runnable() {
-			
-			@Override
-			public void run() {
-				HashMap<String, String> vars = new HashMap<String, String>();
-				//GENERAL STATS
-				LinkedHashMap<String, Integer> gStats = getGerneralStats();
-				for(String stat : gStats.keySet()) {
-					vars.put(stat, String.valueOf(gStats.get(stat)));
-				}
+	private void sendGeneralStats(CommandSender sender) {
+		HashMap<String, String> vars = new HashMap<String, String>();
+		//GENERAL STATS
+		LinkedHashMap<String, Integer> gStats = getGerneralStats();
+		for(String stat : gStats.keySet()) {
+			vars.put(stat, String.valueOf(gStats.get(stat)));
+		}
 
-				//SEND
-				sender.sendMessage(plugin.t.getString("STATS_GENERAL"));
-				for(String stat : gStats.keySet()) {
-					sender.sendMessage(plugin.t.getString("STATS_GENERAL_"+stat.toUpperCase(), vars));
-				}
-			}
-		});
+		//SEND
+		sender.sendMessage(plugin.t.getString("STATS_GENERAL"));
+		for(String stat : gStats.keySet()) {
+			sender.sendMessage(plugin.t.getString("STATS_GENERAL_"+stat.toUpperCase(), vars));
+		}
 	}
 
 	public void sendStats(final CommandSender sender, final String name) {

@@ -58,7 +58,6 @@ public class CmdShop {
 			if(args.length == 1) {
 				//Goods-List
 				player.sendMessage(plugin.t.getString("SHOP_HEADER"));
-				plugin.stats.sendCash(player, player.getName());
 				player.sendMessage("");
 				int i = 1;
 				HashMap<String, String> vars = new HashMap<String, String>();
@@ -72,6 +71,7 @@ public class CmdShop {
 				}
 				player.sendMessage("");
 				player.sendMessage(plugin.t.getString("SHOP_BUY"));
+				plugin.stats.sendCash(player, player.getName());
 				return true;
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 			} else if(args.length == 2) {
