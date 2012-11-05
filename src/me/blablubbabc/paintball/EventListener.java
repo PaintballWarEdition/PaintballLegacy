@@ -455,7 +455,14 @@ public class EventListener implements Listener{
 	@EventHandler(priority = EventPriority.MONITOR)
 	public void onPlayerJoin(PlayerJoinEvent event) {
 		final Player player = (Player) event.getPlayer();
-		plugin.pm.addPlayer(player.getName());
+		plugin.getServer().getScheduler().runTaskAsynchronously(plugin, new Runnable() {
+			
+			@Override
+			public void run() {
+				plugin.pm.addPlayer(player.getName());
+			}
+		});
+		//plugin.pm.addPlayer(player.getName());
 
 		plugin.getServer().getScheduler().scheduleAsyncDelayedTask(plugin, new Runnable() {
 
