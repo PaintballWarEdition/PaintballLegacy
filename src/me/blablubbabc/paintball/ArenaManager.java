@@ -154,39 +154,93 @@ public class ArenaManager {
 	}
 
 	//STATS
-	public void addStats(String arena, HashMap<String, Integer> stats) {
-		plugin.sql.sqlArenaLobby.addArenaStats(arena, stats);
-		//statsList.add("rounds"); statsList.add("kills"); statsList.add("shots"); statsList.add("grenades"); statsList.add("airstrikes");
+	public void addStats(final String arena, final HashMap<String, Integer> stats) {
+		plugin.getServer().getScheduler().runTaskAsynchronously(plugin, new Runnable() {
+			
+			@Override
+			public void run() {
+				plugin.sql.sqlArenaLobby.addArenaStats(arena, stats);
+				//statsList.add("rounds"); statsList.add("kills"); statsList.add("shots"); statsList.add("grenades"); statsList.add("airstrikes");
+			}
+		});
 	}
 
-	public void setStats(String arena, HashMap<String, Integer> stats) {
-		plugin.sql.sqlArenaLobby.setArenaStats(arena, stats);
+	public void setStats(final String arena, final HashMap<String, Integer> stats) {
+		plugin.getServer().getScheduler().runTaskAsynchronously(plugin, new Runnable() {
+			
+			@Override
+			public void run() {
+				plugin.sql.sqlArenaLobby.setArenaStats(arena, stats);
+			}
+		});
 	}
 	//SETTINGS
-	public void setSettings(String arena, HashMap<String, Integer> settings) {
-		plugin.sql.sqlArenaLobby.setArenaSettings(arena, settings);
-		//settingsList.add("balls"); settingsList.add("grenades"); settingsList.add("airstrikes"); settingsList.add("lives"); settingsList.add("respawns");
+	public void setSettings(final String arena, final HashMap<String, Integer> settings) {
+		plugin.getServer().getScheduler().runTaskAsynchronously(plugin, new Runnable() {
+			
+			@Override
+			public void run() {
+				plugin.sql.sqlArenaLobby.setArenaSettings(arena, settings);
+				//settingsList.add("balls"); settingsList.add("grenades"); settingsList.add("airstrikes"); settingsList.add("lives"); settingsList.add("respawns");
+			}
+		});
 	}
 
 	//SPAWNS
-	public void addBlueSpawn(String arena, Location loc) {
-		plugin.sql.sqlArenaLobby.addBluespawn(loc, arena);
+	public void addBlueSpawn(final String arena, final Location loc) {
+		plugin.getServer().getScheduler().runTaskAsynchronously(plugin, new Runnable() {
+			
+			@Override
+			public void run() {
+				plugin.sql.sqlArenaLobby.addBluespawn(loc, arena);
+			}
+		});
 	}
-	public void addRedSpawn(String arena, Location loc) {
-		plugin.sql.sqlArenaLobby.addRedspawn(loc, arena);
+	public void addRedSpawn(final String arena, final Location loc) {
+		plugin.getServer().getScheduler().runTaskAsynchronously(plugin, new Runnable() {
+			
+			@Override
+			public void run() {
+				plugin.sql.sqlArenaLobby.addRedspawn(loc, arena);
+			}
+		});
 	}
-	public void addSpecSpawn(String arena, Location loc) {
-		plugin.sql.sqlArenaLobby.addSpecspawn(loc, arena);
+	public void addSpecSpawn(final String arena, final Location loc) {
+		plugin.getServer().getScheduler().runTaskAsynchronously(plugin, new Runnable() {
+			
+			@Override
+			public void run() {
+				plugin.sql.sqlArenaLobby.addSpecspawn(loc, arena);
+			}
+		});
 	}
 
-	public void removeBlueSpawns(String arena) {
-		plugin.sql.sqlArenaLobby.removeBluespawns(arena);
+	public void removeBlueSpawns(final String arena) {
+		plugin.getServer().getScheduler().runTaskAsynchronously(plugin, new Runnable() {
+			
+			@Override
+			public void run() {
+				plugin.sql.sqlArenaLobby.removeBluespawns(arena);
+			}
+		});
 	}
-	public void removeRedSpawns(String arena) {
-		plugin.sql.sqlArenaLobby.removeBluespawns(arena);
+	public void removeRedSpawns(final String arena) {
+		plugin.getServer().getScheduler().runTaskAsynchronously(plugin, new Runnable() {
+			
+			@Override
+			public void run() {
+				plugin.sql.sqlArenaLobby.removeBluespawns(arena);
+			}
+		});
 	}
-	public void removeSpecSpawns(String arena) {
-		plugin.sql.sqlArenaLobby.removeBluespawns(arena);
+	public void removeSpecSpawns(final String arena) {
+		plugin.getServer().getScheduler().runTaskAsynchronously(plugin, new Runnable() {
+			
+			@Override
+			public void run() {
+				plugin.sql.sqlArenaLobby.removeBluespawns(arena);
+			}
+		});
 	}
 
 	public synchronized void remove(String name) {

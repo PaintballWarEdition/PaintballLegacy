@@ -26,18 +26,36 @@ public class PlayerManager {
 
 	//METHODS
 	//SETTER
-	public void addPlayer(String name) {
-		if(!plugin.sql.sqlPlayers.isPlayerExisting(name)) {
-			plugin.sql.sqlPlayers.addNewPlayer(name);
-		}		
+	public void addPlayer(final String name) {
+		plugin.getServer().getScheduler().runTaskAsynchronously(plugin, new Runnable() {
+			
+			@Override
+			public void run() {
+				if(!plugin.sql.sqlPlayers.isPlayerExisting(name)) {
+					plugin.sql.sqlPlayers.addNewPlayer(name);
+				}
+			}
+		});		
 	}
 
 	public void resetData() {
-		plugin.sql.sqlPlayers.resetAllPlayerStats();
+		plugin.getServer().getScheduler().runTaskAsynchronously(plugin, new Runnable() {
+			
+			@Override
+			public void run() {
+				plugin.sql.sqlPlayers.resetAllPlayerStats();
+			}
+		});
 	}
 	
-	public void resetData(String player) {
-		plugin.sql.sqlPlayers.resetPlayerStats(player);
+	public void resetData(final String player) {
+		plugin.getServer().getScheduler().runTaskAsynchronously(plugin, new Runnable() {
+			
+			@Override
+			public void run() {
+				plugin.sql.sqlPlayers.resetPlayerStats(player);
+			}
+		});
 	}
 
 	public boolean exists(String player) {
@@ -45,14 +63,26 @@ public class PlayerManager {
 	}
 
 	//STATS
-	public void addStats(String player, HashMap<String, Integer> stats) {
-		plugin.sql.sqlPlayers.addPlayerStats(player, stats);
-		plugin.sql.sqlPlayers.calculateStats(player);
+	public void addStats(final String player, final HashMap<String, Integer> stats) {
+		plugin.getServer().getScheduler().runTaskAsynchronously(plugin, new Runnable() {
+			
+			@Override
+			public void run() {
+				plugin.sql.sqlPlayers.addPlayerStats(player, stats);
+				plugin.sql.sqlPlayers.calculateStats(player);
+			}
+		});
 	}
 
-	public void setStats(String player, HashMap<String, Integer> stats) {
-		plugin.sql.sqlPlayers.setPlayerStats(player, stats);
-		plugin.sql.sqlPlayers.calculateStats(player);
+	public void setStats(final String player, final HashMap<String, Integer> stats) {
+		plugin.getServer().getScheduler().runTaskAsynchronously(plugin, new Runnable() {
+			
+			@Override
+			public void run() {
+				plugin.sql.sqlPlayers.setPlayerStats(player, stats);
+				plugin.sql.sqlPlayers.calculateStats(player);
+			}
+		});
 	}
 	
 	//GETTER

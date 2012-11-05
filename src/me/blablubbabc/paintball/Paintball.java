@@ -508,6 +508,7 @@ public class Paintball extends JavaPlugin{
 		getServer().getPluginManager().enablePlugin(this);
 	}
 
+	
 	//METHODS LOBBYSPAWNS
 	private synchronized void loadDB() {
 		lobbyspawns = new LinkedList<Location>();
