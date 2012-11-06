@@ -21,6 +21,7 @@ import org.bukkit.potion.PotionEffect;
 
 public class Paintball extends JavaPlugin{
 	public PlayerManager pm;
+	public CommandManager cm;
 	public MatchManager mm;
 	public EventListener listener;
 	public Newsfeeder nf;
@@ -77,6 +78,7 @@ public class Paintball extends JavaPlugin{
 	public boolean allowMelee;
 	public int meleeDamage;
 	public boolean autoLobby;
+	public boolean autoTeam;
 	public boolean afkDetection;
 	public int afkRadius;
 	public int afkMatchAmount;
@@ -167,6 +169,7 @@ public class Paintball extends JavaPlugin{
 		if(getConfig().get("Paintball.Language") == null)getConfig().set("Paintball.Language", "enUS");
 		if(getConfig().get("Paintball.No Permissions") == null)getConfig().set("Paintball.No Permissions", false);
 		if(getConfig().get("Paintball.Auto Lobby") == null)getConfig().set("Paintball.Auto Lobby", false);
+		if(getConfig().get("Paintball.Auto Team") == null)getConfig().set("Paintball.Auto Team", false);
 		if(getConfig().get("Paintball.Points per Kill") == null)getConfig().set("Paintball.Points per Kill", 2);
 		if(getConfig().get("Paintball.Points per Hit") == null)getConfig().set("Paintball.Points per Hit", 1);
 		if(getConfig().get("Paintball.Points per Team-Attack") == null)getConfig().set("Paintball.Points per Team-Attack", -1);
@@ -239,6 +242,7 @@ public class Paintball extends JavaPlugin{
 		local = getConfig().getString("Paintball.Language", "enUS");
 		noPerms = getConfig().getBoolean("Paintball.No Permissions", false);
 		autoLobby = getConfig().getBoolean("Paintball.Auto Lobby", false);
+		autoTeam = getConfig().getBoolean("Paintball.Auto Team", false);
 		allowedCommands = (ArrayList<String>) getConfig().getList("Paintball.Allowed Commands", allowedCommands);
 		afkDetection = getConfig().getBoolean("Paintball.AFK Detection.enabled", true);
 		afkMatchAmount = getConfig().getInt("Paintball.AFK Detection.Amount of Matches", 3);
@@ -333,8 +337,9 @@ public class Paintball extends JavaPlugin{
 		getServer().getPluginManager().registerEvents(listener, this);
 		//getServer().getPluginManager().registerEvents(new InvisibleFix(this), this);
 		//COMMANDS
-		CommandExecutor cm = new CommandManager(this);
-		getCommand("pb").setExecutor(cm);
+		cm = new CommandManager(this);
+		CommandExecutor ce = cm;
+		getCommand("pb").setExecutor(ce);
 
 		active = true;
 		softreload = false;
@@ -344,24 +349,8 @@ public class Paintball extends JavaPlugin{
 		//autoLobby
 		if(autoLobby) {
 			for(Player player : getServer().getOnlinePlayers()) {
-				//Lobby vorhanden?
-				if(getLobbyspawnsCount() == 0) {
-					player.sendMessage(t.getString("NO_LOBBY_FOUND"));
-					continue;
-				}
-
-				//inventory
-				if(saveInventory) {
-					pm.setInv(player, player.getInventory());
-					player.sendMessage(t.getString("INVENTORY_SAVED"));
-				}
-				//save Location
-				pm.setLoc(player, player.getLocation());
-				//lobby add
-				Lobby.LOBBY.addMember(player);
-				nf.join(player.getName());
-
-				joinLobby(player);
+				if(autoTeam) cm.joinTeam(player, Lobby.RANDOM);
+				else cm.joinLobbyPre(player);
 			}
 		}
 

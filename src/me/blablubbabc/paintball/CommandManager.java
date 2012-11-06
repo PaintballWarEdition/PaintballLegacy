@@ -233,7 +233,7 @@ public class CommandManager implements CommandExecutor{
 		sender.sendMessage(plugin.t.getString("COMMAND_ADMIN_LIST"));
 	}
 	
-	private boolean joinTeam(Player player, Lobby team) {
+	public boolean joinTeam(Player player, Lobby team) {
 		boolean rb = false;
 		boolean spec = false;
 		if(team.equals(Lobby.RED) || team.equals(Lobby.BLUE)) rb = true;
@@ -295,7 +295,7 @@ public class CommandManager implements CommandExecutor{
 		return true;
 	}
 	
-	private boolean joinLobbyPre(Player player) {
+	public boolean joinLobbyPre(Player player) {
 		//Lobby vorhanden?
 		if(plugin.getLobbyspawnsCount() == 0) {
 			player.sendMessage(plugin.t.getString("NO_LOBBY_FOUND"));

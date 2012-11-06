@@ -53,6 +53,7 @@ public class EventListener implements Listener{
 
 	private HashMap<Player, Integer> taskIds;
 	private HashSet<Byte> transparent;
+	private long lastSignUpdate = 0;
 	//private HashMap<Player, String> chatMessages;
 
 	public EventListener(Paintball pl) {
@@ -93,14 +94,14 @@ public class EventListener implements Listener{
 	public void onSignCreate(SignChangeEvent event) {
 		if(event.isCancelled()) return;
 		Player player = event.getPlayer();
-		String l = ChatColor.stripColor(event.getLine(1));
-		
+		String l = ChatColor.stripColor(event.getLine(0));
+
 		for(String s : plugin.sql.sqlPlayers.statsList) {
 			if(s.equals("teamattacks")) s = "ta";
 			if(s.equals("hitquote")) s = "hq";
 			if(s.equals("airstrikes")) s = "as";
 			if(s.equals("money_spent")) s = "spent";
-			
+
 			if(l.equalsIgnoreCase("[PB "+s.toUpperCase()+"]")) {
 				if(!player.isOp() && !player.hasPermission("paintball.admin")) {
 					event.setCancelled(true);
@@ -117,38 +118,46 @@ public class EventListener implements Listener{
 			BlockState state = block.getState();
 			if(state instanceof Sign) {
 				Sign sign = (Sign) state;
-				String l = ChatColor.stripColor(sign.getLine(1));
-				
+				String l = ChatColor.stripColor(sign.getLine(0));
+
 				for(String stat : plugin.sql.sqlPlayers.statsList) {
 					String s = stat;
 					if(s.equals("teamattacks")) s = "ta";
 					if(s.equals("hitquote")) s = "hq";
 					if(s.equals("airstrikes")) s = "as";
 					if(s.equals("money_spent")) s = "spent";
-					
-					if(l.equalsIgnoreCase("[PB "+s.toUpperCase()+"]")) changeSign(event.getPlayer().getName(), sign, stat);
+
+					if(l.equalsIgnoreCase("[PB "+s.toUpperCase()+"]")) {
+						changeSign(event.getPlayer().getName(), sign, stat);
+						break;
+					}
 				}
 			}
 		}
 	}
-	
+
 	private void changeSign(String player, Sign sign, String stat) {
-		HashMap<String, String> vars = new HashMap<String, String>();
-		vars.put("player", player);
-		if(plugin.pm.exists(player)) {
-			if(stat.equals("hitquote") || stat.equals("kd")) {
-				DecimalFormat dec = new DecimalFormat("###.##");
-				float statF = (float)(Integer)plugin.pm.getStats(player).get(stat) / 100;
-				vars.put("value", dec.format(statF));
-			} else vars.put("value", ""+plugin.pm.getStats(player).get(stat));
-		}else vars.put("value", plugin.t.getString("NOT_FOUND"));
-		
-		sign.setLine(2, plugin.t.getString("SIGN_LINE_TWO", vars));
-		sign.setLine(3, plugin.t.getString("SIGN_LINE_THREE", vars));
-		sign.setLine(4, plugin.t.getString("SIGN_LINE_FOUR", vars));
-		sign.update();
+		if ((System.currentTimeMillis()-lastSignUpdate) > (10*1000)) {
+			HashMap<String, String> vars = new HashMap<String, String>();
+			vars.put("player", player);
+			if (plugin.pm.exists(player)) {
+				if (stat.equals("hitquote") || stat.equals("kd")) {
+					DecimalFormat dec = new DecimalFormat("###.##");
+					float statF = (float) (Integer) plugin.pm.getStats(player)
+							.get(stat) / 100;
+					vars.put("value", dec.format(statF));
+				} else
+					vars.put("value", "" + plugin.pm.getStats(player).get(stat));
+			} else
+				vars.put("value", plugin.t.getString("NOT_FOUND"));
+			sign.setLine(1, plugin.t.getString("SIGN_LINE_TWO", vars));
+			sign.setLine(2, plugin.t.getString("SIGN_LINE_THREE", vars));
+			sign.setLine(3, plugin.t.getString("SIGN_LINE_FOUR", vars));
+			sign.update();
+			lastSignUpdate = System.currentTimeMillis();
+		}
 	}
-	
+
 	@EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = false)
 	public void onPlayerHit(EntityDamageByEntityEvent event) {
 		if(event.getDamager() instanceof Projectile) {
@@ -468,7 +477,7 @@ public class EventListener implements Listener{
 			}
 		}
 	}*/
-	
+
 	@EventHandler(priority = EventPriority.LOWEST)
 	public void onPlayerChat(AsyncPlayerChatEvent event) {
 		Player player = event.getPlayer();
@@ -483,7 +492,7 @@ public class EventListener implements Listener{
 					else if(plugin.mm.getMatch(player).isSpec(player)) farbe = Lobby.SPECTATE.color();
 				}
 				event.setMessage(farbe+event.getMessage());
-				
+
 				/*if (chatMessages.containsKey(player)) {
 					String message = chatMessages.get(player);
 					chatMessages.remove(player);
@@ -502,7 +511,7 @@ public class EventListener implements Listener{
 			}
 		}
 	}
-	
+
 	@EventHandler(priority = EventPriority.MONITOR)
 	public void onPlayerDead(PlayerDeathEvent event) {
 		Player player = (Player) event.getEntity();
@@ -521,34 +530,15 @@ public class EventListener implements Listener{
 		final Player player = (Player) event.getPlayer();
 		plugin.pm.addPlayer(player.getName());
 
-		plugin.getServer().getScheduler().scheduleAsyncDelayedTask(plugin, new Runnable() {
+		plugin.getServer().getScheduler().scheduleSyncDelayedTask(plugin, new Runnable() {
 
 			@Override
 			public void run() {
-
-				if(plugin.autoLobby) {
-					//Lobby vorhanden?
-					if(plugin.getLobbyspawnsCount() == 0) {
-						player.sendMessage(plugin.t.getString("NO_LOBBY_FOUND"));
-						return;
-					}
-
-					//inventory
-					if(plugin.saveInventory) {
-						plugin.pm.setInv(player, player.getInventory());
-						player.sendMessage(plugin.t.getString("INVENTORY_SAVED"));
-					}
-					//save Location
-					plugin.pm.setLoc(player, player.getLocation());
-					//lobby add
-					Lobby.LOBBY.addMember(player);
-					plugin.nf.join(player.getName());
-
-					plugin.joinLobby(player);
-				}
-
+				if(plugin.autoLobby && plugin.autoTeam) plugin.cm.joinTeam(player, Lobby.RANDOM);
+				else if(plugin.autoLobby) plugin.cm.joinLobbyPre(player);
 			}
 		}, 1L);
+		
 	}
 
 	@EventHandler(priority = EventPriority.NORMAL)

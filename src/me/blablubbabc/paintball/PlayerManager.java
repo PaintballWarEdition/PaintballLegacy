@@ -35,7 +35,7 @@ public class PlayerManager {
 					plugin.sql.sqlPlayers.addNewPlayer(name);
 				}
 			}
-		});		
+		});	
 	}
 
 	public void resetData() {
