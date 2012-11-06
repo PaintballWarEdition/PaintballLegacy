@@ -22,11 +22,11 @@ public class InSignsFeature {
 			if(s.equals("airstrikes")) s = "as";
 			if(s.equals("money_spent")) s = "spent";
 			
-			insigns.addChanger(new Changer("[PB "+s.toUpperCase()+"]", "pb"+s) {
+			insigns.addChanger(new Changer("[PB_"+s.toUpperCase()+"]", "pb"+s) {
 
 				@Override
 				public String getValue(String playerName) {
-					if(!plugin.sql.isConnected()) return "-not connected-";
+					if(!plugin.sql.isConnected()) return plugin.t.getString("NOT_CONNECTED");
 					else if(plugin.pm.exists(playerName)) {
 						if(stat.equals("hitquote") || stat.equals("kd")) {
 							DecimalFormat dec = new DecimalFormat("###.##");
@@ -34,7 +34,7 @@ public class InSignsFeature {
 							return dec.format(statF);
 						} else return ""+plugin.pm.getStats(playerName).get(stat);
 					}
-					else return "-not found-";
+					else return plugin.t.getString("NOT_FOUND");
 				}
 
 			});

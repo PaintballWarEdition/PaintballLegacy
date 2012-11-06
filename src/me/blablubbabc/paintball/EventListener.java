@@ -1,5 +1,6 @@
 package me.blablubbabc.paintball;
 
+import java.text.DecimalFormat;
 import java.util.HashMap;
 import java.util.HashSet;
 import me.blablubbabc.paintball.extras.Airstrike;
@@ -10,6 +11,8 @@ import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.Sound;
 import org.bukkit.block.Block;
+import org.bukkit.block.BlockState;
+import org.bukkit.block.Sign;
 import org.bukkit.entity.Egg;
 import org.bukkit.entity.Player;
 import org.bukkit.entity.Projectile;
@@ -20,6 +23,7 @@ import org.bukkit.event.Listener;
 import org.bukkit.event.block.Action;
 import org.bukkit.event.block.BlockBreakEvent;
 import org.bukkit.event.block.BlockPlaceEvent;
+import org.bukkit.event.block.SignChangeEvent;
 import org.bukkit.event.entity.EntityDamageByEntityEvent;
 import org.bukkit.event.entity.EntityDamageEvent;
 import org.bukkit.event.entity.FoodLevelChangeEvent;
@@ -85,6 +89,66 @@ public class EventListener implements Listener{
 		}
 	}
 
+	@EventHandler(priority=EventPriority.NORMAL)
+	public void onSignCreate(SignChangeEvent event) {
+		if(event.isCancelled()) return;
+		Player player = event.getPlayer();
+		String l = ChatColor.stripColor(event.getLine(1));
+		
+		for(String s : plugin.sql.sqlPlayers.statsList) {
+			if(s.equals("teamattacks")) s = "ta";
+			if(s.equals("hitquote")) s = "hq";
+			if(s.equals("airstrikes")) s = "as";
+			if(s.equals("money_spent")) s = "spent";
+			
+			if(l.equalsIgnoreCase("[PB "+s.toUpperCase()+"]")) {
+				if(!player.isOp() && !player.hasPermission("paintball.admin")) {
+					event.setCancelled(true);
+					player.sendMessage(plugin.t.getString("NO_PERMISSION"));
+				}
+			}	
+		}	
+	}
+
+	@EventHandler(priority=EventPriority.NORMAL)
+	public void onInteract(PlayerInteractEvent event) {
+		if(event.getClickedBlock() != null) {
+			Block block = event.getClickedBlock();
+			BlockState state = block.getState();
+			if(state instanceof Sign) {
+				Sign sign = (Sign) state;
+				String l = ChatColor.stripColor(sign.getLine(1));
+				
+				for(String stat : plugin.sql.sqlPlayers.statsList) {
+					String s = stat;
+					if(s.equals("teamattacks")) s = "ta";
+					if(s.equals("hitquote")) s = "hq";
+					if(s.equals("airstrikes")) s = "as";
+					if(s.equals("money_spent")) s = "spent";
+					
+					if(l.equalsIgnoreCase("[PB "+s.toUpperCase()+"]")) changeSign(event.getPlayer().getName(), sign, stat);
+				}
+			}
+		}
+	}
+	
+	private void changeSign(String player, Sign sign, String stat) {
+		HashMap<String, String> vars = new HashMap<String, String>();
+		vars.put("player", player);
+		if(plugin.pm.exists(player)) {
+			if(stat.equals("hitquote") || stat.equals("kd")) {
+				DecimalFormat dec = new DecimalFormat("###.##");
+				float statF = (float)(Integer)plugin.pm.getStats(player).get(stat) / 100;
+				vars.put("value", dec.format(statF));
+			} else vars.put("value", ""+plugin.pm.getStats(player).get(stat));
+		}else vars.put("value", plugin.t.getString("NOT_FOUND"));
+		
+		sign.setLine(2, plugin.t.getString("SIGN_LINE_TWO", vars));
+		sign.setLine(3, plugin.t.getString("SIGN_LINE_THREE", vars));
+		sign.setLine(4, plugin.t.getString("SIGN_LINE_FOUR", vars));
+		sign.update();
+	}
+	
 	@EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = false)
 	public void onPlayerHit(EntityDamageByEntityEvent event) {
 		if(event.getDamager() instanceof Projectile) {
