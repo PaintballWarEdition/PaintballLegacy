@@ -52,6 +52,8 @@ public class Paintball extends JavaPlugin{
 	public ChatColor yellow = ChatColor.YELLOW;
 	public ChatColor light_purple = ChatColor.LIGHT_PURPLE;
 	public ChatColor dark_green = ChatColor.DARK_GREEN;
+	public ChatColor dark_red = ChatColor.DARK_RED;
+	public ChatColor white = ChatColor.WHITE;
 
 	public ChatColor bold = ChatColor.BOLD;
 

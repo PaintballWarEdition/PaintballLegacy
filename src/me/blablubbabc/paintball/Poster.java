@@ -93,7 +93,7 @@ public class Poster {
 		writer.close();
 		reader.close();
 
-		if (response == null) {
+		if (response == null || response.startsWith("ERR")) {
 			throw new IOException(response); 
 		} else {
 			//version check:

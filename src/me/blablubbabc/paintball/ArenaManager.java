@@ -188,59 +188,23 @@ public class ArenaManager {
 
 	//SPAWNS
 	public void addBlueSpawn(final String arena, final Location loc) {
-		plugin.getServer().getScheduler().runTaskAsynchronously(plugin, new Runnable() {
-			
-			@Override
-			public void run() {
-				plugin.sql.sqlArenaLobby.addBluespawn(loc, arena);
-			}
-		});
+		plugin.sql.sqlArenaLobby.addBluespawn(loc, arena);
 	}
 	public void addRedSpawn(final String arena, final Location loc) {
-		plugin.getServer().getScheduler().runTaskAsynchronously(plugin, new Runnable() {
-			
-			@Override
-			public void run() {
-				plugin.sql.sqlArenaLobby.addRedspawn(loc, arena);
-			}
-		});
+		plugin.sql.sqlArenaLobby.addRedspawn(loc, arena);
 	}
 	public void addSpecSpawn(final String arena, final Location loc) {
-		plugin.getServer().getScheduler().runTaskAsynchronously(plugin, new Runnable() {
-			
-			@Override
-			public void run() {
-				plugin.sql.sqlArenaLobby.addSpecspawn(loc, arena);
-			}
-		});
+		plugin.sql.sqlArenaLobby.addSpecspawn(loc, arena);
 	}
 
 	public void removeBlueSpawns(final String arena) {
-		plugin.getServer().getScheduler().runTaskAsynchronously(plugin, new Runnable() {
-			
-			@Override
-			public void run() {
-				plugin.sql.sqlArenaLobby.removeBluespawns(arena);
-			}
-		});
+		plugin.sql.sqlArenaLobby.removeBluespawns(arena);
 	}
 	public void removeRedSpawns(final String arena) {
-		plugin.getServer().getScheduler().runTaskAsynchronously(plugin, new Runnable() {
-			
-			@Override
-			public void run() {
-				plugin.sql.sqlArenaLobby.removeBluespawns(arena);
-			}
-		});
+		plugin.sql.sqlArenaLobby.removeRedspawns(arena);
 	}
 	public void removeSpecSpawns(final String arena) {
-		plugin.getServer().getScheduler().runTaskAsynchronously(plugin, new Runnable() {
-			
-			@Override
-			public void run() {
-				plugin.sql.sqlArenaLobby.removeBluespawns(arena);
-			}
-		});
+		plugin.sql.sqlArenaLobby.removeRedspawns(arena);
 	}
 
 	public synchronized void remove(String name) {
