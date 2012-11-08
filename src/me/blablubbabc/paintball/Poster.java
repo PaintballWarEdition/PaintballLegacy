@@ -28,7 +28,11 @@ public class Poster {
 				plugin.log(e.getMessage());
 			}
 		}
-		else plugin.log("You denied version checking. :(");
+		else {
+			plugin.log("You denied version checking. :(");
+			plugin.log("If you want to be informed about a new version of paintball");
+			plugin.log("-> enable it in the config.");
+		}
 		plugin.logBlank("--------- ---------------- ----------");
 	}
 
@@ -95,7 +99,7 @@ public class Poster {
 			//version check:
 				if(!description.getVersion().equals(response)) {
 					plugin.log("There is a new version of paintball available: "+response);
-					plugin.log("Check out the bukkit dev page for it.");
+					plugin.log("Download at the bukkit dev page.");
 				}else{
 					plugin.log("You are running the latest version. :)");
 				}
