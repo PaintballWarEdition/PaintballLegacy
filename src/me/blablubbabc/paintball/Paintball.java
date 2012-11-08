@@ -58,7 +58,8 @@ public class Paintball extends JavaPlugin{
 	//CONFIG:
 	//general:
 	public String serverid;
-	public boolean list;
+	public boolean serverlist;
+	public boolean versioncheck;
 	public String local;
 	public int countdown;
 	public int countdownInit;
@@ -169,6 +170,7 @@ public class Paintball extends JavaPlugin{
 
 		getConfig().options().header("Use a value of -1 to give the players infinite balls or extras. If you insert a not possible value/wrong value in a section the plugin will use the default value or the nearest possible value (Example: your value at section balls: -3 -> plugin will use -1).");
 		if(getConfig().get("Server.Id") == null)getConfig().set("Server.Id", UUID.randomUUID().toString());
+		if(getConfig().get("Server.Version Check") == null)getConfig().set("Server.Version Check", true);
 		if(getConfig().get("Server.List") == null)getConfig().set("Server.List", true);
 		if(getConfig().get("Paintball.AFK Detection.enabled") == null)getConfig().set("Paintball.AFK Detection.enabled", true);
 		if(getConfig().get("Paintball.AFK Detection.Movement Radius around Spawn (keep in mind: knockbacks, pushing, waterflows, falling, etc)") == null)getConfig().set("Paintball.AFK Detection.Movement Radius around Spawn (keep in mind: knockbacks, pushing, waterflows, falling, etc)", 5);
@@ -232,8 +234,13 @@ public class Paintball extends JavaPlugin{
 
 		//server
 		serverid = getConfig().getString("Server.Id", UUID.randomUUID().toString());
-		if(!isValid(serverid)) serverid = UUID.randomUUID().toString();
-		list = getConfig().getBoolean("Server.List", true);
+		if(!isValid(serverid)) {
+			serverid = UUID.randomUUID().toString();
+			getConfig().set("Server.Id", serverid);
+			saveConfig();
+		}
+		versioncheck = getConfig().getBoolean("Server.Version Check", true);
+		serverlist = getConfig().getBoolean("Server.List", true);
 		
 		//points+cash:
 		pointsPerKill = getConfig().getInt("Paintball.Points per Kill", 2);
