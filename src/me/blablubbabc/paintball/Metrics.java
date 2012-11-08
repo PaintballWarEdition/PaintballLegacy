@@ -262,7 +262,7 @@ public class Metrics {
                         // Each post thereafter will be a ping
                         firstPost = false;
                     } catch (IOException e) {
-                        Bukkit.getLogger().log(Level.INFO, "[Metrics] " + e.getMessage());
+                        //Bukkit.getLogger().log(Level.INFO, "[Metrics] " + e.getMessage());
                     }
                 }
             }, 0, PING_INTERVAL * 1200);
@@ -276,7 +276,7 @@ public class Metrics {
      *
      * @return
      */
-    public boolean isOptOut() {
+    public boolean isOptOut(boolean real) {
         synchronized(optOutLock) {
             try {
                 // Reload the metrics file
@@ -288,9 +288,12 @@ public class Metrics {
                 Bukkit.getLogger().log(Level.INFO, "[Metrics] " + ex.getMessage());
                 return true;
             }
-            //return configuration.getBoolean("opt-out", false);
-            return false;
+            if(real) return configuration.getBoolean("opt-out", false);
+            else return false;
         }
+    }
+    public boolean isOptOut() {
+    	return isOptOut(false);
     }
 
     /**

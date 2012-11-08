@@ -5,6 +5,8 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.LinkedList;
+import java.util.UUID;
+
 import me.blablubbabc.BlaDB.BlaSQLite;
 import me.blablubbabc.paintball.Metrics.Graph;
 import org.bukkit.ChatColor;
@@ -31,6 +33,7 @@ public class Paintball extends JavaPlugin{
 	public InSignsFeature isf;
 	public boolean active;
 	public boolean softreload;
+	public boolean nometrics = false;
 
 	//LOBBYSPAWNS
 	public int lobbyspawn;
@@ -54,6 +57,8 @@ public class Paintball extends JavaPlugin{
 
 	//CONFIG:
 	//general:
+	public String serverid;
+	public boolean list;
 	public String local;
 	public int countdown;
 	public int countdownInit;
@@ -163,6 +168,8 @@ public class Paintball extends JavaPlugin{
 
 
 		getConfig().options().header("Use a value of -1 to give the players infinite balls or extras. If you insert a not possible value/wrong value in a section the plugin will use the default value or the nearest possible value (Example: your value at section balls: -3 -> plugin will use -1).");
+		if(getConfig().get("Server.Id") == null)getConfig().set("Server.Id", UUID.randomUUID().toString());
+		if(getConfig().get("Server.List") == null)getConfig().set("Server.List", true);
 		if(getConfig().get("Paintball.AFK Detection.enabled") == null)getConfig().set("Paintball.AFK Detection.enabled", true);
 		if(getConfig().get("Paintball.AFK Detection.Movement Radius around Spawn (keep in mind: knockbacks, pushing, waterflows, falling, etc)") == null)getConfig().set("Paintball.AFK Detection.Movement Radius around Spawn (keep in mind: knockbacks, pushing, waterflows, falling, etc)", 5);
 		if(getConfig().get("Paintball.AFK Detection.Amount of Matches") == null)getConfig().set("Paintball.AFK Detection.Amount of Matches", 3);
@@ -223,6 +230,11 @@ public class Paintball extends JavaPlugin{
 		saveConfig();
 
 
+		//server
+		serverid = getConfig().getString("Server.Id", UUID.randomUUID().toString());
+		if(!isValid(serverid)) serverid = UUID.randomUUID().toString();
+		list = getConfig().getBoolean("Server.List", true);
+		
 		//points+cash:
 		pointsPerKill = getConfig().getInt("Paintball.Points per Kill", 2);
 		pointsPerHit = getConfig().getInt("Paintball.Points per Hit", 1);
@@ -358,6 +370,7 @@ public class Paintball extends JavaPlugin{
 		try {
 			Metrics metrics = new Metrics(this);
 
+			nometrics = metrics.isOptOut(true);
 			//Custom Data:
 
 			//Default graph:
@@ -434,14 +447,30 @@ public class Paintball extends JavaPlugin{
 
 		//Some license stuff: Usage on own risk, no warranties, do not modify the code, do not redistribute, do not copy, and do not use for commercial purposes! Neither direct nor indirect. So this also applies to add-ons made for this plugin! 
 		log("By blablubbabc enabled.");
+		
+		final Paintball plugin = this;
 		getServer().getScheduler().scheduleSyncDelayedTask(this, new Runnable() {
 
 			@Override
 			public void run() {
 				delayedInfo();
+				new Poster(plugin);
 			}
 		}, 1L);
 
+	}
+	
+	private static boolean isValid(String uuid){
+	    if( uuid == null) return false;
+	    try {
+	        // we have to convert to object and back to string because the built in fromString does not have 
+	        // good validation logic.
+	        UUID fromStringUUID = UUID.fromString(uuid);
+	        String toStringUUID = fromStringUUID.toString();
+	        return toStringUUID.equals(uuid);
+	    } catch(IllegalArgumentException e) {
+	        return false;
+	    }
 	}
 
 	public void delayedInfo() {
