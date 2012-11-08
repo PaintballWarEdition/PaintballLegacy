@@ -204,7 +204,7 @@ public class ArenaManager {
 		plugin.sql.sqlArenaLobby.removeRedspawns(arena);
 	}
 	public void removeSpecSpawns(final String arena) {
-		plugin.sql.sqlArenaLobby.removeRedspawns(arena);
+		plugin.sql.sqlArenaLobby.removeSpecspawns(arena);
 	}
 
 	public synchronized void remove(String name) {
