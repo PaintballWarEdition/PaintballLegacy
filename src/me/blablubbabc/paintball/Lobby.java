@@ -94,7 +94,7 @@ public enum Lobby {
 	}
 	public synchronized static Lobby getTeam(Player player) {
 		for(Lobby team : Lobby.values()) {
-			if(team.isMember(player) && team !=Lobby.LOBBY) return team;
+			if(team.isMember(player) && team != Lobby.LOBBY) return team;
 		}
 		if(Lobby.LOBBY.isMember(player)) return Lobby.LOBBY;
 		return null;

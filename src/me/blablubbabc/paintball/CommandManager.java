@@ -266,8 +266,8 @@ public class CommandManager implements CommandExecutor{
 	public boolean joinTeam(Player player, Lobby team) {
 		boolean rb = false;
 		boolean spec = false;
-		if(team.equals(Lobby.RED) || team.equals(Lobby.BLUE)) rb = true;
-		else if(team.equals(Lobby.SPECTATE)) spec = true;
+		if(team == Lobby.RED || team == Lobby.BLUE) rb = true;
+		else if(team == Lobby.SPECTATE) spec = true;
 
 		if(!Lobby.LOBBY.isMember(player)) {
 			if(!joinLobbyPre(player)) {

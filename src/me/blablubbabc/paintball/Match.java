@@ -538,7 +538,7 @@ public class Match {
 			respawnsLeft.put(player, 0);
 			//afk detection-> remove player
 			if(plugin.afkDetection) {
-				plugin.afkMatchCount.remove(player);
+				plugin.afkRemove(player.getName());
 			}
 			//survivors?->endGame
 			//math over already?
@@ -650,15 +650,9 @@ public class Match {
 		if(plugin.afkDetection) {
 			String name = target.getName();
 			if(target.getLocation().getWorld().equals(playersLoc.get(name).getWorld()) && target.getLocation().distance(playersLoc.get(name)) <= plugin.afkRadius && shots.get(name) == 0 && kills.get(name) == 0) {
-				int afkCount;
-				if(plugin.afkMatchCount.get(name) != null) {
-					afkCount = plugin.afkMatchCount.get(name);
-				} else {
-					afkCount = 0;
-				}
-				plugin.afkMatchCount.put(name, afkCount+1);
+				plugin.afkSet(name, plugin.afkGet(name)+1);
 			}else {
-				plugin.afkMatchCount.remove(name);
+				plugin.afkRemove(name);
 			}
 		}
 
@@ -669,9 +663,9 @@ public class Match {
 				if(isSurvivor(target)) {
 					//afk check
 					String name = target.getName();
-					if(plugin.afkDetection && plugin.afkMatchCount.get(name) != null && (plugin.afkMatchCount.get(name) >= plugin.afkMatchAmount)) {
+					if(plugin.afkDetection && (plugin.afkGet(name) >= plugin.afkMatchAmount)) {
 						//consequences after being afk:
-						plugin.afkMatchCount.remove(name);
+						plugin.afkRemove(name);
 						respawnsLeft.put(target, 0);
 						plugin.joinLobby(target);
 
@@ -698,16 +692,11 @@ public class Match {
 		if(plugin.afkDetection) {
 			String name = target.getName();
 			if(target.getLocation().getWorld().equals(playersLoc.get(name).getWorld()) && target.getLocation().distance(playersLoc.get(name)) <= plugin.afkRadius && shots.get(name) == 0 && kills.get(name) == 0) {
-				int afkCount;
-				if(plugin.afkMatchCount.get(name) != null) {
-					afkCount = plugin.afkMatchCount.get(name);
-				} else {
-					afkCount = 0;
-				}
 				//consequences:
-				if((afkCount+1) >= plugin.afkMatchAmount){
+				int afkAmount = plugin.afkGet(name);
+				if((afkAmount+1) >= plugin.afkMatchAmount){
 					//consequences after being afk:
-					plugin.afkMatchCount.remove(name);
+					plugin.afkRemove(name);
 					respawnsLeft.put(target, 0);
 					plugin.joinLobby(target);
 
@@ -715,10 +704,10 @@ public class Match {
 					plugin.nf.afkLeave(target, this);
 					target.sendMessage(plugin.t.getString("YOU_LEFT_TEAM"));
 				}else {
-					plugin.afkMatchCount.put(target.getName(), afkCount+1);
+					plugin.afkSet(target.getName(), afkAmount+1);
 				}
 			}else {
-				plugin.afkMatchCount.remove(target.getName());
+				plugin.afkRemove(target.getName());
 			}
 		}
 

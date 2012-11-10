@@ -566,6 +566,30 @@ public class Paintball extends JavaPlugin{
 	////////////////////////////////////
 	//UTILS
 	////////////////////////////////////
+	
+	public synchronized void afkRemove(String player) {
+		afkMatchCount.remove(player);
+	}
+	
+	public synchronized int afkGet(String player) {
+		int amount = 0;
+		if(afkMatchCount.get(player) != null) amount = afkMatchCount.get(player);
+		return amount;
+	}
+	
+	public synchronized void afkSet(String player, int amount) {
+		afkMatchCount.put(player, amount);
+	}
+	
+	public synchronized ArrayList<String> afkGetEntries() {
+		ArrayList<String> entries = new ArrayList<String>();
+		
+		for(String s : afkMatchCount.keySet()) {
+			entries.add(s);
+		}
+		
+		return entries;
+	}
 
 	public void checks(Player player) {
 		if(!isEmpty(player)) clearInv(player);
@@ -595,7 +619,7 @@ public class Paintball extends JavaPlugin{
 		if(listnames) player.setPlayerListName(null);
 	}
 
-	public void joinLobby(Player player) {
+	public synchronized void joinLobby(Player player) {
 		checks(player);
 		//Lobbyteleport
 		player.teleport(getNextLobbySpawn());
@@ -603,7 +627,7 @@ public class Paintball extends JavaPlugin{
 		if(Lobby.isPlaying(player) || Lobby.isSpectating(player)) Lobby.getTeam(player).setWaiting(player);
 	}
 
-	public void leaveLobby(Player player, boolean messages, boolean teleport, boolean restoreInventory) {
+	public synchronized void leaveLobby(Player player, boolean messages, boolean teleport, boolean restoreInventory) {
 		//lobby remove:
 		Lobby.remove(player);
 		checks(player);

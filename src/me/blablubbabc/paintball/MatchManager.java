@@ -177,15 +177,9 @@ public class MatchManager{
 				//afk detection update on match end
 				if(plugin.afkDetection && !match.isSpec(p)) {
 					if(p.getLocation().getWorld().equals(playersLoc.get(p.getName()).getWorld()) && p.getLocation().distance(playersLoc.get(p.getName())) <= plugin.afkRadius && shots.get(p.getName()) == 0 && kills.get(p.getName()) == 0) {
-						int afkCount;
-						if(plugin.afkMatchCount.get(p.getName()) != null) {
-							afkCount = plugin.afkMatchCount.get(p.getName());
-						} else {
-							afkCount = 0;
-						}
-						plugin.afkMatchCount.put(p.getName(), afkCount+1);
+						plugin.afkSet(p.getName(), plugin.afkGet(p.getName())+1);
 					}else {
-						plugin.afkMatchCount.remove(p.getName());
+						plugin.afkRemove(p.getName());
 					}
 				}
 
@@ -197,26 +191,22 @@ public class MatchManager{
 		//afk detection clean up and consequences:
 		if(plugin.afkDetection) {
 			//clearing players from hashmap which didn't play the during the last match or can't be found
-			ArrayList<String> entries = new ArrayList<String>();
-			
-			for(String s : plugin.afkMatchCount.keySet()) {
-				entries.add(s);
-			}
+			ArrayList<String> entries = plugin.afkGetEntries();
 			
 			for(String afkP : entries) {
 				Player player = plugin.getServer().getPlayer(afkP);
 				if(player != null) {
 					if(!playersLoc.containsKey(afkP)) {
-						plugin.afkMatchCount.remove(afkP);
-					} else if(plugin.afkMatchCount.get(afkP) >= plugin.afkMatchAmount){
+						plugin.afkRemove(afkP);
+					} else if(plugin.afkGet(afkP) >= plugin.afkMatchAmount){
 						//afk detection consequences after being afk:
-						plugin.afkMatchCount.remove(afkP);
+						plugin.afkRemove(afkP);
 						Lobby.getTeam(player).removeMember(player);
 						plugin.nf.afkLeave(player, match);
 						player.sendMessage(plugin.t.getString("YOU_LEFT_TEAM"));
 					}
 				} else {
-					plugin.afkMatchCount.remove(afkP);
+					plugin.afkRemove(afkP);
 				}
 			}
 		}

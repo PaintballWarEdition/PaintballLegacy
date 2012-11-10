@@ -100,22 +100,30 @@ public class PlayerManager {
 		return plugin.sql.sqlPlayers.getPlayerStats(player);
 	}
 
-	public Location getLoc(Player player) {
-		if(locations.get(player) != null) return locations.get(player);
+	public synchronized Location getLoc(Player player) {
+		if(locations.get(player) != null) {
+			Location loc = locations.get(player);
+			locations.remove(player);
+			return loc;
+		}
 		else return null;
 	}
-	public ItemStack[] getInvContent(Player player) {
-		return invContent.get(player);
+	public synchronized ItemStack[] getInvContent(Player player) {
+		ItemStack[] inv = invContent.get(player);
+		invContent.remove(player);
+		return inv;
 	}
-	public ItemStack[] getInvArmor(Player player) {
-		return invArmor.get(player);
+	public synchronized ItemStack[] getInvArmor(Player player) {
+		ItemStack[] inv = invArmor.get(player);
+		invArmor.remove(player);
+		return inv;
 	}
 
-	public void setLoc(Player player, Location loc) {
+	public synchronized void setLoc(Player player, Location loc) {
 		locations.put(player, loc);
 	}
 
-	public void setInv(Player player, PlayerInventory inv) {
+	public synchronized void setInv(Player player, PlayerInventory inv) {
 		invContent.put(player, inv.getContents());
 		invArmor.put(player, inv.getArmorContents());
 	}
