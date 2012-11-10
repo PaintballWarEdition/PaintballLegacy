@@ -443,9 +443,9 @@ public class Match {
 	public synchronized boolean isSurvivor(Player player) {
 		if(spec.contains(player)) return true;
 		if(getTeam(player) != null) {
-			if(setting_respawns == -1) return true;
-			if(respawnsLeft.get(player) > 0) return true;
-			if(livesLeft.get(player) > 0) return true;
+			//if(setting_respawns == -1) return true;
+			if(respawnsLeft.get(player) != 0) return true;
+			else if(livesLeft.get(player) > 0) return true;
 		}
 		return false;
 	}
@@ -550,22 +550,16 @@ public class Match {
 	}
 
 	private synchronized void respawn(Player player) {
-		if(respawnsLeft.get(player) != 0) {
-			livesLeft.put(player, setting_lives);
-			if(setting_respawns != -1) respawnsLeft.put(player, respawnsLeft.get(player)-1);
-			//spawn
-			spawnPlayer(player);
-			//message
-			HashMap<String, String> vars = new HashMap<String, String>();
-			vars.put("lives", String.valueOf(setting_lives));
-			if(setting_respawns == -1) vars.put("respawns", plugin.t.getString("INFINITE"));
-			else vars.put("respawns", String.valueOf(respawnsLeft.get(player)));
-			player.sendMessage(plugin.t.getString("RESPAWN", vars));
-
-		} else {
-			//dead
-			plugin.joinLobby(player);
-		}
+		livesLeft.put(player, setting_lives);
+		if(setting_respawns != -1) respawnsLeft.put(player, respawnsLeft.get(player)-1);
+		//spawn
+		spawnPlayer(player);
+		//message
+		HashMap<String, String> vars = new HashMap<String, String>();
+		vars.put("lives", String.valueOf(setting_lives));
+		if(setting_respawns == -1) vars.put("respawns", plugin.t.getString("INFINITE"));
+		else vars.put("respawns", String.valueOf(respawnsLeft.get(player)));
+		player.sendMessage(plugin.t.getString("RESPAWN", vars));
 	}
 
 	public synchronized void shot(Player player) {
@@ -655,8 +649,29 @@ public class Match {
 				plugin.afkRemove(name);
 			}
 		}
+		
+		if(isSurvivor(target)) {
+			//afk check
+			String name = target.getName();
+			if(plugin.afkDetection && (plugin.afkGet(name) >= plugin.afkMatchAmount)) {
+				//consequences after being afk:
+				plugin.afkRemove(name);
+				respawnsLeft.put(target, 0);
+				plugin.joinLobby(target);
 
-		plugin.getServer().getScheduler().scheduleSyncDelayedTask(plugin, new Runnable() {
+				Lobby.getTeam(target).removeMember(target);
+				plugin.nf.afkLeave(target, this2);
+				target.sendMessage(plugin.t.getString("YOU_LEFT_TEAM"));
+			} else respawn(target);
+		} else {
+			plugin.joinLobby(target);
+			//survivors?->endGame
+			if(survivors(getTeam(target)) == 0) {
+				gameEnd(false, getTeam(killer), getTeam(target), getTeamName(killer), getTeamName(target));
+			}
+		}
+
+		/*plugin.getServer().getScheduler().scheduleSyncDelayedTask(plugin, new Runnable() {
 
 			@Override
 			public void run() {
@@ -680,7 +695,7 @@ public class Match {
 					gameEnd(false, getTeam(killer), getTeam(target), getTeamName(killer), getTeamName(target));
 				}
 			}
-		}, 1L);
+		}, 1L);*/
 
 	}
 
@@ -721,10 +736,12 @@ public class Match {
 		livesLeft.put(target, 0);
 
 		if(isSurvivor(target)) respawn(target);
-		else plugin.joinLobby(target);
-		//survivors?->endGame
-		if(survivors(getTeam(target)) == 0) {
-			gameEnd(false, getEnemyTeam(target), getTeam(target), getEnemyTeamName(target), getTeamName(target));
+		else {
+			plugin.joinLobby(target);
+			//survivors?->endGame
+			if(survivors(getTeam(target)) == 0) {
+				gameEnd(false, getEnemyTeam(target), getTeam(target), getEnemyTeamName(target), getTeamName(target));
+			}
 		}
 	}
 
