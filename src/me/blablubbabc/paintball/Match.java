@@ -348,7 +348,7 @@ public class Match {
 		if(setting_round_time < 30) setting_round_time = 30;
 	}
 
-	public void makeAllVisible() {
+	private void makeAllVisible() {
 		for(Player pl : getAll()) {
 			for(Player p : getAll()) {
 				if(!p.equals(pl)) pl.showPlayer(p);
@@ -636,10 +636,6 @@ public class Match {
 		target.sendMessage(plugin.t.getString("YOU_WERE_KILLED", vars));
 		plugin.nf.feed(target, killer, this2);
 
-		if(survivors(getTeam(target)) == 0) {
-			matchOver = true;
-		}
-
 		//afk detection on frag
 		if(plugin.afkDetection) {
 			String name = target.getName();
@@ -659,16 +655,17 @@ public class Match {
 				respawnsLeft.put(target, 0);
 				plugin.joinLobby(target);
 
-				Lobby.getTeam(target).removeMember(target);
+				Lobby.getTeam(getTeamName(target)).removeMember(target);
 				plugin.nf.afkLeave(target, this2);
 				target.sendMessage(plugin.t.getString("YOU_LEFT_TEAM"));
 			} else respawn(target);
 		} else {
 			plugin.joinLobby(target);
-			//survivors?->endGame
-			if(survivors(getTeam(target)) == 0) {
-				gameEnd(false, getTeam(killer), getTeam(target), getTeamName(killer), getTeamName(target));
-			}
+		}
+		
+		//survivors?->endGame
+		if(survivors(getTeam(target)) == 0) {
+			gameEnd(false, getTeam(killer), getTeam(target), getTeamName(killer), getTeamName(target));
 		}
 
 		/*plugin.getServer().getScheduler().scheduleSyncDelayedTask(plugin, new Runnable() {
