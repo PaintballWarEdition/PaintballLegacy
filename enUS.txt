@@ -243,6 +243,6 @@ SIGN_LINE_TWO = "&f{player}"
 SIGN_LINE_THREE = "&c{value}"
 SIGN_LINE_FOUR = "&aCLICK ME"
 NOT_CONNECTED = "&c-not connected-";
-NOT FOUND = "&c-not found-";
+NOT_FOUND = "&c-not found-";
 ALLOWED_TO_PLAY_PAINTBALL = "You are allowed to play paintball."
 NOT_ALLOWED_TO_PLAY_PAINTBALL = "You are not allowed to play paintball."

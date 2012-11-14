@@ -230,7 +230,6 @@ public class Match {
 					plugin.getServer().getScheduler().cancelTask(roundTimeTaskId);
 					//END:
 					if(matchOver) return;
-					matchOver = true;
 					//winner?
 					ArrayList<Player> winnerTeam = getWinner();
 					if(winnerTeam == null) {
@@ -616,11 +615,12 @@ public class Match {
 		}
 	}
 
-	public synchronized void frag(final Player target, final Player killer) {
-		target.playSound(target.getLocation(), Sound.GHAST_SCREAM2, 100F, 0F);
+	public synchronized void frag(Player target, Player killer) {
 		//math over already?
 		if(matchOver) return;
-
+		
+		target.playSound(target.getLocation(), Sound.GHAST_SCREAM2, 100F, 0F);
+		
 		final Match this2 = this;
 		//STATS
 		deaths.put(target.getName(), deaths.get(target.getName())+1);
@@ -647,18 +647,20 @@ public class Match {
 		}
 		
 		if(isSurvivor(target)) {
+			respawn(target);
 			//afk check
-			String name = target.getName();
+			/*String name = target.getName();
 			if(plugin.afkDetection && (plugin.afkGet(name) >= plugin.afkMatchAmount)) {
 				//consequences after being afk:
 				plugin.afkRemove(name);
 				respawnsLeft.put(target, 0);
-				plugin.joinLobby(target);
 
-				Lobby.getTeam(getTeamName(target)).removeMember(target);
+				Lobby.getTeam(target).removeMember(target);
 				plugin.nf.afkLeave(target, this2);
 				target.sendMessage(plugin.t.getString("YOU_LEFT_TEAM"));
-			} else respawn(target);
+				
+				plugin.joinLobby(target);
+			} else respawn(target);*/
 		} else {
 			plugin.joinLobby(target);
 		}
@@ -696,7 +698,7 @@ public class Match {
 
 	}
 
-	public synchronized void death(final Player target) {
+	public synchronized void death(Player target) {
 		//math over already?
 		if(matchOver) return;
 
@@ -710,11 +712,12 @@ public class Match {
 					//consequences after being afk:
 					plugin.afkRemove(name);
 					respawnsLeft.put(target, 0);
-					plugin.joinLobby(target);
-
+					
 					Lobby.getTeam(target).removeMember(target);
 					plugin.nf.afkLeave(target, this);
 					target.sendMessage(plugin.t.getString("YOU_LEFT_TEAM"));
+					
+					plugin.joinLobby(target);
 				}else {
 					plugin.afkSet(target.getName(), afkAmount+1);
 				}

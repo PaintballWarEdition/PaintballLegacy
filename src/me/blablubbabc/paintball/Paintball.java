@@ -621,10 +621,10 @@ public class Paintball extends JavaPlugin{
 
 	public synchronized void joinLobby(Player player) {
 		checks(player);
-		//Lobbyteleport
-		player.teleport(getNextLobbySpawn());
 		//set waiting
 		if(Lobby.isPlaying(player) || Lobby.isSpectating(player)) Lobby.getTeam(player).setWaiting(player);
+		//Lobbyteleport
+		player.teleport(getNextLobbySpawn());
 	}
 
 	public synchronized void leaveLobby(Player player, boolean messages, boolean teleport, boolean restoreInventory) {
