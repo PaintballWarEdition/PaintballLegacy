@@ -378,7 +378,7 @@ public class Match {
 		itemStack.tag.setCompound("display", tag);
 		return craftStack;
 	}
-	
+
 	public void changeAllColors() {
 		for(Player p : redT) {
 			//chatnames
@@ -618,10 +618,9 @@ public class Match {
 	public synchronized void frag(Player target, Player killer) {
 		//math over already?
 		if(matchOver) return;
-		
+
 		target.playSound(target.getLocation(), Sound.GHAST_SCREAM2, 100F, 0F);
-		
-		final Match this2 = this;
+
 		//STATS
 		deaths.put(target.getName(), deaths.get(target.getName())+1);
 		kills.put(killer.getName(), kills.get(killer.getName())+1);
@@ -634,7 +633,7 @@ public class Match {
 		vars.put("money", String.valueOf(plugin.cashPerKill));
 		killer.sendMessage(plugin.t.getString("YOU_KILLED", vars));
 		target.sendMessage(plugin.t.getString("YOU_WERE_KILLED", vars));
-		plugin.nf.feed(target, killer, this2);
+		plugin.nf.feed(target, killer, this);
 
 		//afk detection on frag
 		if(plugin.afkDetection) {
@@ -645,86 +644,35 @@ public class Match {
 				plugin.afkRemove(name);
 			}
 		}
-		
+
 		if(isSurvivor(target)) {
-			respawn(target);
+			//respawn(target);
 			//afk check
-			/*String name = target.getName();
+			String name = target.getName();
 			if(plugin.afkDetection && (plugin.afkGet(name) >= plugin.afkMatchAmount)) {
 				//consequences after being afk:
 				plugin.afkRemove(name);
 				respawnsLeft.put(target, 0);
+				plugin.joinLobby(target);
 
 				Lobby.getTeam(target).removeMember(target);
-				plugin.nf.afkLeave(target, this2);
+				plugin.nf.afkLeave(target, this);
 				target.sendMessage(plugin.t.getString("YOU_LEFT_TEAM"));
-				
-				plugin.joinLobby(target);
-			} else respawn(target);*/
+			} else respawn(target);
 		} else {
 			plugin.joinLobby(target);
 		}
-		
+
 		//survivors?->endGame
 		if(survivors(getTeam(target)) == 0) {
 			gameEnd(false, getTeam(killer), getTeam(target), getTeamName(killer), getTeamName(target));
 		}
-
-		/*plugin.getServer().getScheduler().scheduleSyncDelayedTask(plugin, new Runnable() {
-
-			@Override
-			public void run() {
-				if(isSurvivor(target)) {
-					//afk check
-					String name = target.getName();
-					if(plugin.afkDetection && (plugin.afkGet(name) >= plugin.afkMatchAmount)) {
-						//consequences after being afk:
-						plugin.afkRemove(name);
-						respawnsLeft.put(target, 0);
-						plugin.joinLobby(target);
-
-						Lobby.getTeam(target).removeMember(target);
-						plugin.nf.afkLeave(target, this2);
-						target.sendMessage(plugin.t.getString("YOU_LEFT_TEAM"));
-					} else respawn(target);
-				}
-				else plugin.joinLobby(target);
-				//survivors?->endGame
-				if(survivors(getTeam(target)) == 0) {
-					gameEnd(false, getTeam(killer), getTeam(target), getTeamName(killer), getTeamName(target));
-				}
-			}
-		}, 1L);*/
 
 	}
 
 	public synchronized void death(Player target) {
 		//math over already?
 		if(matchOver) return;
-
-		//afk detection on death
-		if(plugin.afkDetection) {
-			String name = target.getName();
-			if(target.getLocation().getWorld().equals(playersLoc.get(name).getWorld()) && target.getLocation().distance(playersLoc.get(name)) <= plugin.afkRadius && shots.get(name) == 0 && kills.get(name) == 0) {
-				//consequences:
-				int afkAmount = plugin.afkGet(name);
-				if((afkAmount+1) >= plugin.afkMatchAmount){
-					//consequences after being afk:
-					plugin.afkRemove(name);
-					respawnsLeft.put(target, 0);
-					
-					Lobby.getTeam(target).removeMember(target);
-					plugin.nf.afkLeave(target, this);
-					target.sendMessage(plugin.t.getString("YOU_LEFT_TEAM"));
-					
-					plugin.joinLobby(target);
-				}else {
-					plugin.afkSet(target.getName(), afkAmount+1);
-				}
-			}else {
-				plugin.afkRemove(target.getName());
-			}
-		}
 
 		//feed
 		target.sendMessage(plugin.t.getString("YOU_DIED"));
@@ -735,13 +683,36 @@ public class Match {
 		//0 leben aka tot
 		livesLeft.put(target, 0);
 
-		if(isSurvivor(target)) respawn(target);
-		else {
-			plugin.joinLobby(target);
-			//survivors?->endGame
-			if(survivors(getTeam(target)) == 0) {
-				gameEnd(false, getEnemyTeam(target), getTeam(target), getEnemyTeamName(target), getTeamName(target));
+		//afk detection on death
+		if(plugin.afkDetection) {
+			String name = target.getName();
+			if(target.getLocation().getWorld().equals(playersLoc.get(name).getWorld()) && target.getLocation().distance(playersLoc.get(name)) <= plugin.afkRadius && shots.get(name) == 0 && kills.get(name) == 0) {
+				plugin.afkSet(name, plugin.afkGet(name)+1);
+			}else {
+				plugin.afkRemove(name);
 			}
+		}
+
+		if(isSurvivor(target)) {
+			//afk check
+			String name = target.getName();
+			if(plugin.afkDetection && (plugin.afkGet(name) >= plugin.afkMatchAmount)) {
+				//consequences after being afk:
+				plugin.afkRemove(name);
+				respawnsLeft.put(target, 0);
+				plugin.joinLobby(target);
+
+				Lobby.getTeam(target).removeMember(target);
+				plugin.nf.afkLeave(target, this);
+				target.sendMessage(plugin.t.getString("YOU_LEFT_TEAM"));
+			} else respawn(target);
+		} else {
+			plugin.joinLobby(target);
+		}
+
+		//survivors?->endGame
+		if(survivors(getTeam(target)) == 0) {
+			gameEnd(false, getEnemyTeam(target), getTeam(target), getEnemyTeamName(target), getTeamName(target));
 		}
 	}
 
