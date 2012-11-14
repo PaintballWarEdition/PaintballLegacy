@@ -137,7 +137,7 @@ public class EventListener implements Listener{
 	}
 
 	private void changeSign(String player, Sign sign, String stat) {
-		if ((System.currentTimeMillis()-lastSignUpdate) > (10*1000)) {
+		if ((System.currentTimeMillis()-lastSignUpdate) > (500)) {
 			HashMap<String, String> vars = new HashMap<String, String>();
 			vars.put("player", player);
 			if (plugin.pm.exists(player)) {
