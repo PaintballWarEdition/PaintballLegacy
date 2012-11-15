@@ -276,7 +276,7 @@ public class Metrics {
      *
      * @return
      */
-    public boolean isOptOut(boolean real) {
+    public boolean isOptOut() {
         synchronized(optOutLock) {
             try {
                 // Reload the metrics file
@@ -288,12 +288,8 @@ public class Metrics {
                 Bukkit.getLogger().log(Level.INFO, "[Metrics] " + ex.getMessage());
                 return true;
             }
-            if(real) return configuration.getBoolean("opt-out", false);
-            else return false;
+            return configuration.getBoolean("opt-out", false);
         }
-    }
-    public boolean isOptOut() {
-    	return isOptOut(false);
     }
 
     /**

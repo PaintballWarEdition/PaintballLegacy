@@ -379,7 +379,7 @@ public class Paintball extends JavaPlugin{
 		try {
 			Metrics metrics = new Metrics(this);
 
-			nometrics = metrics.isOptOut(true);
+			nometrics = metrics.isOptOut();
 			//Custom Data:
 
 			//Default graph:
