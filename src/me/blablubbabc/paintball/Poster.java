@@ -79,6 +79,8 @@ public class Poster {
 		connection = url.openConnection();
 		connection.setDoOutput(true);
 		connection.setDoInput(true);
+		connection.setConnectTimeout(5000);
+		connection.setReadTimeout(5000);
 
 		// Write the data
 		final OutputStreamWriter writer = new OutputStreamWriter(connection.getOutputStream());
