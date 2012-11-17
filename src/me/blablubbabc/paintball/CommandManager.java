@@ -208,6 +208,7 @@ public class CommandManager implements CommandExecutor{
 		String info = plugin.t.getString("COMMAND_GENERAL_INFO");
 		if(!ChatColor.stripColor(info).contains("info")) info = "&c/pb info &b- Showing information about paintball plugin.";
 		sender.sendMessage(info);
+		sender.sendMessage(plugin.t.getString("COMMAND_GENERAL_LIST"));
 		sender.sendMessage(plugin.t.getString("COMMAND_GENERAL_LOBBY"));
 
 		HashMap<String, String> vars = new HashMap<String, String>();
@@ -270,7 +271,6 @@ public class CommandManager implements CommandExecutor{
 		sender.sendMessage(plugin.t.getString("COMMAND_ADMIN_RANK"));
 		sender.sendMessage(plugin.t.getString("COMMAND_ADMIN_NEXT"));
 		sender.sendMessage(plugin.t.getString("COMMAND_ADMIN_RANDOM"));
-		sender.sendMessage(plugin.t.getString("COMMAND_ADMIN_LIST"));
 	}
 
 	public boolean joinTeam(Player player, Lobby team) {
