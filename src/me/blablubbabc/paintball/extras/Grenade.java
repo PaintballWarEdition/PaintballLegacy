@@ -14,7 +14,7 @@ public class Grenade{
 	
 	private static HashMap<Player, ArrayList<Egg>> nades = new HashMap<Player, ArrayList<Egg>>();
 	
-	public static void eggThrow(Player player, Egg nade) {
+	public static synchronized void eggThrow(Player player, Egg nade) {
 		Egg id = (Egg) nade;
 		ArrayList<Egg> n = new ArrayList<Egg>();
 		if(nades.get(player) == null) nades.put(player, n);
@@ -23,7 +23,7 @@ public class Grenade{
 		nades.put(player, n);
 	}
 	
-	public static void hit(Projectile nade, Paintball plugin) {
+	public static synchronized void hit(Projectile nade, Paintball plugin) {
 		Egg id = (Egg) nade;
 		for(Player player : nades.keySet()) {
 			ArrayList<Egg> n = new ArrayList<Egg>();
