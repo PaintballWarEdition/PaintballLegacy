@@ -159,9 +159,19 @@ public class CommandManager implements CommandExecutor{
 					if(args.length == 1) plugin.stats.sendTop(sender, "points");
 					else plugin.stats.sendTop(sender, args[1]);
 					return true;
-				}
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-				else {
+				} else if(args[0].equalsIgnoreCase("list")) {
+					sender.sendMessage(plugin.t.getString("PLAYER_OVERVIEW"));
+					for(Lobby l : Lobby.values()) {
+						sender.sendMessage(l.color()+l.name()+" ( "+l.number()+" ):");
+						for(Player p : l.getMembers()) {
+							if(l != Lobby.LOBBY) sender.sendMessage(ChatColor.GRAY+p.getName()+ChatColor.WHITE+" : "+(Lobby.isPlaying(p) ? ((l == Lobby.SPECTATE) ? plugin.t.getString("SPECTATING"):plugin.t.getString("PLAYING")):plugin.t.getString("WAITING")));
+							if(l == Lobby.LOBBY && Lobby.getTeam(p) == Lobby.LOBBY) sender.sendMessage(ChatColor.GRAY+p.getName()+ChatColor.WHITE+" : "+plugin.t.getString("NOT_IN_TEAM"));
+						}
+					}
+					return true;
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+				} else {
 					if(sender instanceof Player) return false;
 					else sender.sendMessage(plugin.t.getString("COMMAND_UNKNOWN_OR_NOT_CONSOLE"));
 					return true;

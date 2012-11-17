@@ -1,8 +1,6 @@
 package me.blablubbabc.paintball.commands;
 
 import java.util.HashMap;
-
-import org.bukkit.ChatColor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 import me.blablubbabc.paintball.Lobby;
@@ -249,17 +247,6 @@ public class CmdAdmin {
 			} else {
 				plugin.onlyRandom = true;
 				sender.sendMessage(plugin.t.getString("ONLY_RANDOM_ON"));
-			}
-			return true;
-////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-		} else if(args[1].equalsIgnoreCase("list")) {
-			sender.sendMessage(plugin.t.getString("PLAYER_OVERVIEW"));
-			for(Lobby l : Lobby.values()) {
-				sender.sendMessage(l.color()+l.name()+" ( "+l.number()+" ):");
-				for(Player p : l.getMembers()) {
-					if(l != Lobby.LOBBY) sender.sendMessage(ChatColor.GRAY+p.getName()+ChatColor.WHITE+" : "+(Lobby.isPlaying(p) ? ((l == Lobby.SPECTATE) ? plugin.t.getString("SPECTATING"):plugin.t.getString("PLAYING")):plugin.t.getString("WAITING")));
-					if(l == Lobby.LOBBY && Lobby.getTeam(p) == Lobby.LOBBY) sender.sendMessage(ChatColor.GRAY+p.getName()+ChatColor.WHITE+" : "+plugin.t.getString("NOT_IN_TEAM"));
-				}
 			}
 			return true;
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
