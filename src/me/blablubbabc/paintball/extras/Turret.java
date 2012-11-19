@@ -253,8 +253,14 @@ public class Turret {
 				table[i][j] = null;
 			}
 		}
-
-		for (int a = angleMin; a <= angleMax; a++) {
+		int aMin = angleMin;
+		int aMax = angleMax;
+		if(angleMin < 0) {
+			aMin = 360-angleMin;
+			aMax = 360+angleMax;
+		}
+		
+		for (int a = aMin; a <= aMax; a++) {
 			Double tan = Math.tan(a * Math.PI / 180.0);
 			// t=0:
 			Double vx = Math.cos(a * Math.PI / 180.0) * plugin.speedmulti;
