@@ -5,6 +5,8 @@ import java.util.HashMap;
 import java.util.HashSet;
 import me.blablubbabc.paintball.extras.Airstrike;
 import me.blablubbabc.paintball.extras.Grenade;
+import me.blablubbabc.paintball.extras.Turret;
+
 import org.bukkit.ChatColor;
 import org.bukkit.Effect;
 import org.bukkit.Location;
@@ -14,9 +16,11 @@ import org.bukkit.block.Block;
 import org.bukkit.block.BlockState;
 import org.bukkit.block.Sign;
 import org.bukkit.entity.Egg;
+import org.bukkit.entity.EntityType;
 import org.bukkit.entity.Player;
 import org.bukkit.entity.Projectile;
 import org.bukkit.entity.Snowball;
+import org.bukkit.entity.Snowman;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
@@ -26,6 +30,7 @@ import org.bukkit.event.block.BlockPlaceEvent;
 import org.bukkit.event.block.SignChangeEvent;
 import org.bukkit.event.entity.EntityDamageByEntityEvent;
 import org.bukkit.event.entity.EntityDamageEvent;
+import org.bukkit.event.entity.EntityDeathEvent;
 import org.bukkit.event.entity.FoodLevelChangeEvent;
 import org.bukkit.event.entity.PlayerDeathEvent;
 import org.bukkit.event.entity.ProjectileHitEvent;
@@ -111,6 +116,17 @@ public class EventListener implements Listener{
 		}	
 	}
 
+	@EventHandler(priority=EventPriority.NORMAL)
+	public void onEntityDeath(EntityDeathEvent event) {
+		if(event.getEntityType() == EntityType.SNOWMAN) {
+			Snowman snowman = (Snowman) event.getEntity();
+			Turret turret = Turret.isTurret(snowman);
+			if(turret != null) {
+				turret.die();
+			}
+		}
+	}
+	
 	@EventHandler(priority=EventPriority.NORMAL)
 	public void onInteract(PlayerInteractEvent event) {
 		if(event.getClickedBlock() != null) {
@@ -404,7 +420,14 @@ public class EventListener implements Listener{
 	public void onPlayerPlace(BlockPlaceEvent event) {
 		Player player = event.getPlayer();
 		if(Lobby.getTeam(player) != null) {
-			if(!player.isOp() && !player.hasPermission("paintball.admin")) event.setCancelled(true);
+			Block block = event.getBlock();
+			if(!player.isOp() && !player.hasPermission("paintball.admin") && block.getType() != Material.PUMPKIN) event.setCancelled(true);
+			else if(block.getType() == Material.PUMPKIN && plugin.mm.getMatch(player).isSurvivor(player)) {
+				//create turret:
+				block.setTypeId(0);
+				Snowman snowman = (Snowman) block.getLocation().getWorld().spawnEntity(player.getLocation(), EntityType.SNOWMAN);
+				new Turret(player, snowman, plugin.mm.getMatch(player), plugin);
+			}
 		}
 	}
 

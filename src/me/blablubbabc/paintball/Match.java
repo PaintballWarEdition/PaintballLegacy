@@ -7,6 +7,7 @@ import java.util.List;
 import java.util.Random;
 import java.util.Set;
 
+import me.blablubbabc.paintball.extras.Turret;
 import net.minecraft.server.NBTTagCompound;
 
 import org.bukkit.Location;
@@ -539,6 +540,10 @@ public class Match {
 			if(plugin.afkDetection) {
 				plugin.afkRemove(player.getName());
 			}
+			//remove turrets:
+			for(Turret t : Turret.getTurrets(player)) {
+				t.die();
+			}
 			//survivors?->endGame
 			//math over already?
 			if(matchOver) return;
@@ -653,6 +658,10 @@ public class Match {
 				//consequences after being afk:
 				plugin.afkRemove(name);
 				respawnsLeft.put(target, 0);
+				//remove turrets:
+				for(Turret t : Turret.getTurrets(target)) {
+					t.die();
+				}
 				plugin.joinLobby(target);
 
 				Lobby.getTeam(target).removeMember(target);
@@ -660,6 +669,10 @@ public class Match {
 				target.sendMessage(plugin.t.getString("YOU_LEFT_TEAM"));
 			} else respawn(target);
 		} else {
+			//remove turrets:
+			for(Turret t : Turret.getTurrets(target)) {
+				t.die();
+			}
 			plugin.joinLobby(target);
 		}
 
@@ -700,6 +713,10 @@ public class Match {
 				//consequences after being afk:
 				plugin.afkRemove(name);
 				respawnsLeft.put(target, 0);
+				//remove turrets:
+				for(Turret t : Turret.getTurrets(target)) {
+					t.die();
+				}
 				plugin.joinLobby(target);
 
 				Lobby.getTeam(target).removeMember(target);
@@ -707,6 +724,10 @@ public class Match {
 				target.sendMessage(plugin.t.getString("YOU_LEFT_TEAM"));
 			} else respawn(target);
 		} else {
+			//remove turrets:
+			for(Turret t : Turret.getTurrets(target)) {
+				t.die();
+			}
 			plugin.joinLobby(target);
 		}
 
@@ -720,6 +741,12 @@ public class Match {
 		matchOver = true;
 		endSchedulers();
 		undoAllColors();
+		for(Player p : getAllPlayer()) {
+			//remove turrets:
+			for(Turret t : Turret.getTurrets(p)) {
+				t.die();
+			}
+		}
 		if(!draw) {
 			for(Player p : winnerS) {
 				this.winners.add(p);
