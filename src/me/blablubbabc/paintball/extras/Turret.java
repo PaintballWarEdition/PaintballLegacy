@@ -149,13 +149,11 @@ public class Turret {
 					@Override
 					public void run() {
 						if (target != null && match.isSurvivor(target)) {
+							Vector targetVec = target.getLocation().toVector().add(new Vector(0, 1, 0));
+							Vector entVec = entity.getLocation().toVector();
+							Vector dir = targetVec.clone().subtract(entVec).normalize();
+							Vector dir2 = new Vector(dir.getX(), 0, dir.getZ()).normalize();
 							if (salve > 0) {
-								// debug
-								Vector targetVec = target.getLocation()
-										.toVector().add(new Vector(0, 1, 0));
-								Vector entVec = entity.getLocation().toVector();
-								Vector dir = targetVec.clone().subtract(entVec)
-										.normalize();
 
 								double x = dir.getX();
 								double y = dir.getY();
@@ -168,9 +166,6 @@ public class Turret {
 								changed.setPitch(90 - (float) Math
 										.toDegrees(Math.acos(y)));
 								entity.teleport(changed);
-
-								Vector dir2 = new Vector(dir.getX(), 0, dir
-										.getZ()).normalize();
 
 								Snowball s = entity
 										.getLocation()
@@ -188,7 +183,8 @@ public class Turret {
 								salve--;
 								shoot();
 							} else {
-								if (!entity.hasLineOfSight(target))
+								if (!entity.hasLineOfSight(target) || !canBeShoot(entVec.clone().add(new Vector(0, 2, 0))
+										.add(dir2), targetVec.clone(), dir2.clone()))
 									target = null;
 								salve = salveMax;
 								salveTask = -1;
@@ -260,7 +256,7 @@ public class Turret {
 			} else if ((y + ySize) < 0) {
 				yTarget = 0;
 			} else {
-				yTarget = y;
+				yTarget = (y+ySize);
 			}
 			// find nearest x (x is always positiv because of direction change)
 			if (x > table.length) {
