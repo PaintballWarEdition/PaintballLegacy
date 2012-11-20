@@ -13,6 +13,7 @@ import org.bukkit.util.Vector;
 public class Turret {
 
 	private static Double[][] table;
+	private static int ySize;
 
 	private static ArrayList<Turret> turrets = new ArrayList<Turret>();
 
@@ -65,6 +66,9 @@ public class Turret {
 	private int cooldown = 1;
 	private Player target = null;
 	private int salve = 30;
+	
+	public static int cooldownMax = 1;
+	public static int salveMax = 30;
 
 	public Turret(Player player, Snowman turret, Match match, Paintball plugin) {
 		this.entity = turret;
@@ -83,7 +87,7 @@ public class Turret {
 					@Override
 					public void run() {
 						if (target == null) {
-							target = searchTarget(40,10);
+							target = searchTarget(50, 15);
 						}
 
 						if (cooldown == 0) {
@@ -91,7 +95,7 @@ public class Turret {
 								tickTask = -1;
 								shoot();
 							} else {
-								cooldown = 1;
+								cooldown = cooldownMax;
 								tick();
 							}
 						} else {
@@ -108,10 +112,13 @@ public class Turret {
 		double distance = 0;
 		for (Player p : match.getEnemyTeam(player)) {
 			if (match.isSurvivor(p)) {
-				Vector targetVec = target.getLocation().toVector().add(new Vector(0, 1, 0));
-				Vector dir = targetVec.subtract(entVec).normalize();
+				Vector targetVec = p.getLocation().toVector()
+						.add(new Vector(0, 1, 0));
+				Vector dir = targetVec.clone().subtract(entVec).normalize();
 				Vector dir2 = new Vector(dir.getX(), 0, dir.getZ()).normalize();
-				if (entity.hasLineOfSight(p) && canBeShoot(entVec.clone().add(new Vector(0, 2, 0)).add(dir2), targetVec.clone(), dir2)) {
+				if (entity.hasLineOfSight(p)
+						&& canBeShoot(entVec.clone().add(new Vector(0, 2, 0))
+								.add(dir2), targetVec.clone(), dir2.clone())) {
 					double dist2 = entity.getLocation().distance(
 							p.getLocation());
 					if (dist2 <= instantRadius) {
@@ -134,7 +141,7 @@ public class Turret {
 		}
 		return nearest;
 	}
-	
+
 	private void shoot() {
 		salveTask = plugin.getServer().getScheduler()
 				.scheduleSyncDelayedTask(this.plugin, new Runnable() {
@@ -143,9 +150,12 @@ public class Turret {
 					public void run() {
 						if (target != null && match.isSurvivor(target)) {
 							if (salve > 0) {
-								Vector targetVec = target.getLocation().toVector().add(new Vector(0, 1, 0));
+								// debug
+								Vector targetVec = target.getLocation()
+										.toVector().add(new Vector(0, 1, 0));
 								Vector entVec = entity.getLocation().toVector();
-								Vector dir = targetVec.subtract(entVec).normalize();
+								Vector dir = targetVec.clone().subtract(entVec)
+										.normalize();
 
 								double x = dir.getX();
 								double y = dir.getY();
@@ -153,37 +163,40 @@ public class Turret {
 
 								// Now change the angle
 								Location changed = entity.getLocation().clone();
-								changed.setYaw(180 - (float) Math.toDegrees(Math.atan2(x, z)));
-								changed.setPitch(90 - (float) Math.toDegrees(Math.acos(y)));
+								changed.setYaw(180 - (float) Math
+										.toDegrees(Math.atan2(x, z)));
+								changed.setPitch(90 - (float) Math
+										.toDegrees(Math.acos(y)));
 								entity.teleport(changed);
 
-								Vector dir2 = new Vector(dir.getX(), 0, dir.getZ()).normalize();
+								Vector dir2 = new Vector(dir.getX(), 0, dir
+										.getZ()).normalize();
 
-								if(canBeShoot(entVec.clone().add(new Vector(0, 2, 0)).add(dir2), targetVec.clone(), dir2)) {
-									Snowball s = entity.getLocation().getWorld().spawn(entity.getLocation().add(new Vector(0, 2, 0)).add(dir2), Snowball.class);
-									s.setShooter(player);
+								Snowball s = entity
+										.getLocation()
+										.getWorld()
+										.spawn(entity.getLocation()
+												.add(new Vector(0, 2, 0))
+												.add(dir2), Snowball.class);
+								s.setShooter(player);
 
-									// Vector aim =
-									// calculateVector(entVec.getY()+2.0,
-									// targetVec.getY(), plugin.speedmulti,
-									// entity.getLocation().distance(target.getLocation()),
-									// dir2.clone());
+								s.setVelocity(getAimVector(
+										entVec.clone().add(new Vector(0, 2, 0))
+												.add(dir2), targetVec.clone(),
+										dir2.clone()));
 
-									s.setVelocity(getAimVector(entVec.clone().add(new Vector(0, 2, 0)).add(dir2), targetVec.clone(), dir2.clone()));
-
-									salve--;
-								}
+								salve--;
 								shoot();
 							} else {
 								if (!entity.hasLineOfSight(target))
 									target = null;
-								salve = 7;
+								salve = salveMax;
 								salveTask = -1;
 								tick();
 							}
 						} else {
 							target = null;
-							salve = 7;
+							salve = salveMax;
 							salveTask = -1;
 							tick();
 						}
@@ -218,27 +231,73 @@ public class Turret {
 		if (entity.isValid() && !entity.isDead())
 			entity.remove();
 	}
-	
+
 	private boolean canBeShoot(Vector pos, Vector target, Vector dir) {
-		int x = ((Double) target.clone().setY(0).distance(pos.clone().setY(0))).intValue();
-		int y = ((Double) (target.getY() - pos.getY()) ).intValue();
-		
-		return (table[x][y] != null);
+		int x = ((Double) target.clone().setY(0).distance(pos.clone().setY(0)))
+				.intValue();
+		int y = ((Double) (target.getY() - pos.getY())).intValue();
+		if (x < table.length && (y + ySize) < 2 * ySize && (y + ySize) >= 0) {
+			return (table[x][y + ySize] != null);
+		} else
+			return false;
 	}
-	
+
 	private Vector getAimVector(Vector pos, Vector target, Vector dir) {
-		Vector aim = new Vector(dir.getX(),0,dir.getZ()).normalize();
-		if(canBeShoot(pos, target, dir)) {
-			int x = ((Double) target.clone().setY(0).distance(pos.clone().setY(0))).intValue();
-			int y = ((Double) (target.getY() - pos.getY()) ).intValue();
-			Double tan = table[x][y];
-			aim.setY(tan).normalize().multiply(plugin.speedmulti);
+		Vector aim = dir.clone().normalize();
+		int x = ((Double) target.clone().setY(0).distance(pos.clone().setY(0)))
+				.intValue();
+		int y = ((Double) (target.getY() - pos.getY())).intValue();
+		Double tan = null;
+
+		if (canBeShoot(pos, target, dir)) {
+			tan = table[x][y + ySize];
+		} else {
+			int yTarget;
+			int xTarget;
+			// find nearest y
+			if ((y + ySize) >= 2 * ySize) {
+				yTarget = 2 * ySize - 1;
+			} else if ((y + ySize) < 0) {
+				yTarget = 0;
+			} else {
+				yTarget = y;
+			}
+			// find nearest x (x is always positiv because of direction change)
+			if (x > table.length) {
+				xTarget = 0;
+			} else {
+				xTarget = x;
+			}
+
+			// find max X for this y
+			for (int tablex = table.length - 1; tablex >= 0; tablex--) {
+				if (table[tablex][yTarget] != null) {
+					tan = table[tablex][yTarget];
+					break;
+				}
+			}
+			if (tan == null) {
+				// find max y for this x
+				for (int tabley = 2 * ySize - 1; tabley >= 0; tabley--) {
+					if (table[xTarget][tabley] != null) {
+						tan = table[xTarget][tabley];
+						break;
+					}
+				}
+			}
+			// shoot with nearly nearest anlge:
 		}
-		return aim;
+		if (tan == null) {
+			// default angle 45°; tan 45 = 1.619
+			tan = 1.619D;
+		}
+		return aim.setY(tan).normalize().multiply(plugin.speedmulti);
 	}
 
 	public static void calculateTable(int angleMin, int angleMax, int ticks,
 			int xSize, int ySize, Paintball plugin) {
+		Turret.ySize = ySize;
+
 		// if ySize = 50 -> size = 2*50: y-Size in both directions, up and down:
 		// 0=> 50
 		table = new Double[xSize][2 * ySize];
@@ -253,14 +312,8 @@ public class Turret {
 				table[i][j] = null;
 			}
 		}
-		int aMin = angleMin;
-		int aMax = angleMax;
-		if(angleMin < 0) {
-			aMin = 360-angleMin;
-			aMax = 360+angleMax;
-		}
-		
-		for (int a = aMin; a <= aMax; a++) {
+
+		for (int a = angleMin; a <= angleMax; a++) {
 			Double tan = Math.tan(a * Math.PI / 180.0);
 			// t=0:
 			Double vx = Math.cos(a * Math.PI / 180.0) * plugin.speedmulti;
@@ -278,9 +331,10 @@ public class Turret {
 
 				int tx = x.intValue();
 				int ty = y.intValue();
-				if (tx < table.length && (ty + ySize) < 2 * ySize)
-
-					table[tx][ty] = tan;
+				if (tx < table.length && (ty + ySize) < 2 * ySize
+						&& (ty + ySize) >= 0) {
+					table[tx][ty + ySize] = tan;
+				}
 			}
 		}
 		// 0 Location gets angle 0

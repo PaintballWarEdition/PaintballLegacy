@@ -6,6 +6,8 @@ import java.util.HashMap;
 import java.util.Map.Entry;
 import java.util.Set;
 
+import me.blablubbabc.paintball.extras.Turret;
+
 import org.bukkit.Location;
 import org.bukkit.entity.Player;
 
@@ -46,6 +48,10 @@ public class MatchManager{
 					if(match.isSurvivor(p)){
 						//teleport is survivor:
 						plugin.joinLobby(p);
+						//remove turrets
+						for(Turret t : Turret.getTurrets(p)) {
+							t.die();
+						}
 					}
 				}
 			}
