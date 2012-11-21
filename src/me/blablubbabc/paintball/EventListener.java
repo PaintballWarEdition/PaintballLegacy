@@ -5,6 +5,7 @@ import java.util.HashMap;
 import java.util.HashSet;
 import me.blablubbabc.paintball.extras.Airstrike;
 import me.blablubbabc.paintball.extras.Grenade;
+import me.blablubbabc.paintball.extras.LightEntity;
 import me.blablubbabc.paintball.extras.Turret;
 import org.bukkit.ChatColor;
 import org.bukkit.Effect;
@@ -235,6 +236,8 @@ public class EventListener implements Listener{
 							}
 							//boosting:
 							shot.setVelocity(v.multiply(plugin.speedmulti));
+							//TEST lights
+							LightEntity.addEntity(shot, plugin);
 						} else if(shot instanceof Egg) {
 							if(plugin.grenades) {
 								Grenade.eggThrow(player, (Egg) shot);
