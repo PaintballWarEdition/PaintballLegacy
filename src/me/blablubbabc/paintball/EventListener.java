@@ -6,7 +6,6 @@ import java.util.HashSet;
 import me.blablubbabc.paintball.extras.Airstrike;
 import me.blablubbabc.paintball.extras.Grenade;
 import me.blablubbabc.paintball.extras.Turret;
-
 import org.bukkit.ChatColor;
 import org.bukkit.Effect;
 import org.bukkit.Location;
