@@ -247,6 +247,7 @@ public class Match {
 	}
 
 	private ArrayList<Player> getWinner() {
+		//compare survivors:
 		if(survivors(redT) > survivors(blueT)) return redT;
 		if(survivors(blueT) > survivors(redT)) return blueT;
 		//else: survivors(blueT) == survivors(redT)-> DRAW
