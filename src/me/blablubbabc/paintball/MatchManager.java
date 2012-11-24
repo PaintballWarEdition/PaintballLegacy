@@ -1,6 +1,7 @@
 package me.blablubbabc.paintball;
 
 
+import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map.Entry;
@@ -139,7 +140,8 @@ public class MatchManager{
 	public synchronized void gameEnd(Match match, boolean draw, HashMap<String, Location> playersLoc, Set<Player> specs, 
 			HashMap<String, Integer> shots, HashMap<String, Integer> hits, HashMap<String, Integer> kills, HashMap<String, Integer> deaths,
 			HashMap<String, Integer> teamattacks, HashMap<String, Integer> grenades, HashMap<String, Integer> airstrikes) {
-		
+		//TIME
+		long time1 = System.nanoTime();
 		//STATS
 		HashMap<String, Integer> wins = new HashMap<String, Integer>();
 		HashMap<String, Integer> defeats = new HashMap<String, Integer>();
@@ -343,6 +345,11 @@ public class MatchManager{
 		} else {
 			plugin.nf.status(ready());
 		}
+		//TIME
+		long time2 = System.nanoTime();
+		Double delta = (time2 - time1)/10E6;
+		DecimalFormat dec = new DecimalFormat("#######.#######");
+		plugin.nf.text("Took ms: " + dec.format(delta));
 	}
 
 	public synchronized Match getMatch(Player player) {

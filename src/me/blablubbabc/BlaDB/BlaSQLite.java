@@ -103,13 +103,14 @@ public class BlaSQLite {
 		return row;
 	}
 
-	public synchronized ResultSet resultQuery(String query) {
+	public synchronized Result resultQuery(String query) {
 		this.refreshConnection();
 		try
 		{
 			Statement statement = this.connection.createStatement();
 			ResultSet result = statement.executeQuery(query);
-			return result;
+			
+			return new Result(statement, result);
 		}
 		catch(SQLException e)
 		{

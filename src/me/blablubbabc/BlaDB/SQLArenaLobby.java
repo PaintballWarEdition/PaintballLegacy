@@ -76,7 +76,8 @@ public class SQLArenaLobby {
 	public ArrayList<String> getAllArenaNames() {
 		ArrayList<String> arenas = new ArrayList<String>();
 
-		ResultSet rs = sql.resultQuery("SELECT name FROM arenas;");
+		Result r = sql.resultQuery("SELECT name FROM arenas;");
+		ResultSet rs = r.getResultSet();
 		try {
 			if(rs != null) {
 				while(rs.next()) {
@@ -86,12 +87,14 @@ public class SQLArenaLobby {
 		} catch (SQLException e) {
 			e.printStackTrace();
 		}
+		r.close();
 		return arenas;
 	}
 
 	public LinkedHashMap<String, Integer> getArenaStats(String arena) {
 		LinkedHashMap<String, Integer> data = new LinkedHashMap<String, Integer>();
-		ResultSet rs = sql.resultQuery("SELECT * FROM arenastats WHERE name='"+arena+"' LIMIT 1;");
+		Result r = sql.resultQuery("SELECT * FROM arenastats WHERE name='"+arena+"' LIMIT 1;");
+		ResultSet rs = r.getResultSet();
 		try {
 			if(rs != null && rs.next()) {
 				for(String s : statsList) {
@@ -101,12 +104,14 @@ public class SQLArenaLobby {
 		} catch (SQLException e) {
 			e.printStackTrace();
 		}
+		r.close();
 		return data;
 	}
 	
 	public LinkedHashMap<String, Integer> getArenaSettings(String arena) {
 		LinkedHashMap<String, Integer> data = new LinkedHashMap<String, Integer>();
-		ResultSet rs = sql.resultQuery("SELECT * FROM arenasettings WHERE name='"+arena+"' LIMIT 1;");
+		Result r = sql.resultQuery("SELECT * FROM arenasettings WHERE name='"+arena+"' LIMIT 1;");
+		ResultSet rs = r.getResultSet();
 		try {
 			if(rs != null && rs.next()) {
 				for(String s : settingsList) {
@@ -116,6 +121,7 @@ public class SQLArenaLobby {
 		} catch (SQLException e) {
 			e.printStackTrace();
 		}
+		r.close();
 		return data;
 	}
 
@@ -127,7 +133,8 @@ public class SQLArenaLobby {
 				idss += "id='"+id+"' OR ";
 			}
 			idss = idss.substring(0, idss.length()-4);
-			ResultSet rs = sql.resultQuery("SELECT * FROM locations WHERE "+idss+";");
+			Result r = sql.resultQuery("SELECT * FROM locations WHERE "+idss+";");
+			ResultSet rs = r.getResultSet();
 			if(rs != null) {
 				try {
 					while (rs.next()) {
@@ -145,6 +152,7 @@ public class SQLArenaLobby {
 					e.printStackTrace();
 				}
 			}
+			r.close();
 		}
 		return locs;
 	}
@@ -161,69 +169,86 @@ public class SQLArenaLobby {
 	}
 
 	public boolean isArenaExisting(String arena) {
-		ResultSet rs = sql.resultQuery("SELECT EXISTS(SELECT 1 FROM arenas WHERE name='"+arena+"' LIMIT 1);");
+		Result r = sql.resultQuery("SELECT EXISTS(SELECT 1 FROM arenas WHERE name='"+arena+"' LIMIT 1);");
+		ResultSet rs = r.getResultSet();
+		boolean b = false;
 		try {
 			if(rs != null) {
-				return (rs.getInt(1) == 1 ? true : false);
-			} else return false;
+				b = (rs.getInt(1) == 1 ? true : false);
+			}
 		} catch (SQLException e) {
 			e.printStackTrace();
-			return false;
+
 		}
+		r.close();
+		return b;
 
 	}
 	
 	public int getRedspawnsSize(String arena) {
-		ResultSet rs = sql.resultQuery("SELECT COUNT(*) FROM redspawns WHERE arena = '"+arena+"';");
+		Result r = sql.resultQuery("SELECT COUNT(*) FROM redspawns WHERE arena = '"+arena+"';");
+		ResultSet rs = r.getResultSet();
+		int a = 0;
 		try {
 			if(rs != null) {
-				return rs.getInt(1);
+				a = rs.getInt(1);
 			}
 		} catch (SQLException e) {
 			e.printStackTrace();
 		}
-		return 0;
+		r.close();
+		return a;
 	}
 
 	public int getBluespawnsSize(String arena) {
-		ResultSet rs = sql.resultQuery("SELECT COUNT(*) FROM bluespawns WHERE arena = '"+arena+"';");
+		Result r = sql.resultQuery("SELECT COUNT(*) FROM bluespawns WHERE arena = '"+arena+"';");
+		ResultSet rs = r.getResultSet();
+		int a = 0;
 		try {
 			if(rs != null) {
-				return rs.getInt(1);
+				a = rs.getInt(1);
 			}
 		} catch (SQLException e) {
 			e.printStackTrace();
 		}
-		return 0;
+		r.close();
+		return a;
 	}
 
 	public int getSpecspawnsSize(String arena) {
-		ResultSet rs = sql.resultQuery("SELECT COUNT(*) FROM specspawns WHERE arena = '"+arena+"';");
+		Result r = sql.resultQuery("SELECT COUNT(*) FROM specspawns WHERE arena = '"+arena+"';");
+		ResultSet rs = r.getResultSet();
+		int a = 0;
 		try {
 			if(rs != null) {
-				return rs.getInt(1);
+				a = rs.getInt(1);
 			}
 		} catch (SQLException e) {
 			e.printStackTrace();
 		}
-		return 0;
+		r.close();
+		return a;
 	}
 	
 	public int getLobbyspawnsSize() {
-		ResultSet rs = sql.resultQuery("SELECT COUNT(*) FROM lobbypawns;");
+		Result r = sql.resultQuery("SELECT COUNT(*) FROM lobbypawns;");
+		ResultSet rs = r.getResultSet();
+		int a = 0;
 		try {
 			if(rs != null) {
-				return rs.getInt(1);
+				a = rs.getInt(1);
 			}
 		} catch (SQLException e) {
 			e.printStackTrace();
 		}
-		return 0;
+		r.close();
+		return a;
 	}
 
 	private ArrayList<Integer> getRedspawnsIds(String arena) {
 		ArrayList<Integer> ids = new ArrayList<Integer>();
-		ResultSet rs = sql.resultQuery("SELECT location_id FROM redspawns WHERE arena = '"+arena+"';");
+		Result r = sql.resultQuery("SELECT location_id FROM redspawns WHERE arena = '"+arena+"';");
+		ResultSet rs = r.getResultSet();
 		try {
 			if(rs != null) {
 				while(rs.next()) {
@@ -233,11 +258,13 @@ public class SQLArenaLobby {
 		} catch (SQLException e) {
 			e.printStackTrace();
 		}
+		r.close();
 		return ids;
 	}
 	private ArrayList<Integer> getBluespawnsIds(String arena) {
 		ArrayList<Integer> ids = new ArrayList<Integer>();
-		ResultSet rs = sql.resultQuery("SELECT location_id FROM bluespawns WHERE arena = '"+arena+"';");
+		Result r = sql.resultQuery("SELECT location_id FROM bluespawns WHERE arena = '"+arena+"';");
+		ResultSet rs = r.getResultSet();
 		try {
 			if(rs != null) {
 				while(rs.next()) {
@@ -247,11 +274,13 @@ public class SQLArenaLobby {
 		} catch (SQLException e) {
 			e.printStackTrace();
 		}
+		r.close();
 		return ids;
 	}
 	private ArrayList<Integer> getSpecspawnsIds(String arena) {
 		ArrayList<Integer> ids = new ArrayList<Integer>();
-		ResultSet rs = sql.resultQuery("SELECT location_id FROM specspawns WHERE arena = '"+arena+"';");
+		Result r = sql.resultQuery("SELECT location_id FROM specspawns WHERE arena = '"+arena+"';");
+		ResultSet rs = r.getResultSet();
 		try {
 			if(rs != null) {
 				while(rs.next()) {
@@ -261,11 +290,13 @@ public class SQLArenaLobby {
 		} catch (SQLException e) {
 			e.printStackTrace();
 		}
+		r.close();
 		return ids;
 	}
 	private ArrayList<Integer> getLobbyspawnsIds() {
 		ArrayList<Integer> ids = new ArrayList<Integer>();
-		ResultSet rs = sql.resultQuery("SELECT location_id FROM lobbyspawns;");
+		Result r = sql.resultQuery("SELECT location_id FROM lobbyspawns;");
+		ResultSet rs = r.getResultSet();
 		try {
 			if(rs != null) {
 				while(rs.next()) {
@@ -275,6 +306,7 @@ public class SQLArenaLobby {
 		} catch (SQLException e) {
 			e.printStackTrace();
 		}
+		r.close();
 		return ids;
 	}
 	
@@ -295,7 +327,8 @@ public class SQLArenaLobby {
 	}
 
 	public boolean isArenaActive(String arena) {
-		ResultSet rs = sql.resultQuery("SELECT active FROM arenas WHERE name='"+arena+"' LIMIT 1;");
+		Result r = sql.resultQuery("SELECT active FROM arenas WHERE name='"+arena+"' LIMIT 1;");
+		ResultSet rs = r.getResultSet();
 		boolean active = false;
 		try {
 			if(rs != null && rs.next()) {
@@ -304,6 +337,7 @@ public class SQLArenaLobby {
 		} catch (SQLException e) {
 			e.printStackTrace();
 		}
+		r.close();
 		return active;
 	}
 	

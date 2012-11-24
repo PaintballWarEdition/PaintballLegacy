@@ -221,6 +221,8 @@ public class EventListener implements Listener{
 	public void onPlayerShoot(ProjectileLaunchEvent event) {
 		if(event.getEntity().getShooter() instanceof Player) {
 			Player player = (Player) event.getEntity().getShooter();
+			//TEST lights
+			//LightEntity.addEntity(event.getEntity(), plugin);
 			if(Lobby.getTeam(player) != null) {
 				if(mm.getMatch(player) != null && Lobby.isPlaying(player) && mm.getMatch(player).isSurvivor(player)) {
 					if(mm.getMatch(player).started) {
@@ -236,8 +238,6 @@ public class EventListener implements Listener{
 							}
 							//boosting:
 							shot.setVelocity(v.multiply(plugin.speedmulti));
-							//TEST lights
-							LightEntity.addEntity(shot, plugin);
 						} else if(shot instanceof Egg) {
 							if(plugin.grenades) {
 								Grenade.eggThrow(player, (Egg) shot);

@@ -38,7 +38,8 @@ public class SQLGeneralStats {
 
 	public LinkedHashMap<String, Integer> getStats() {
 		LinkedHashMap<String, Integer> data = new LinkedHashMap<String, Integer>();
-		ResultSet rs = sql.resultQuery("SELECT * FROM general_stats;");
+		Result r = sql.resultQuery("SELECT * FROM general_stats;");
+		ResultSet rs = r.getResultSet();
 		try {
 			if(rs != null) {
 				while(rs.next()) {
@@ -48,6 +49,7 @@ public class SQLGeneralStats {
 		} catch (SQLException e) {
 			e.printStackTrace();
 		}
+		r.close();
 		return data;
 	}
 	//SET

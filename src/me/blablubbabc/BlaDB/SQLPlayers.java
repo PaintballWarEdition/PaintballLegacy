@@ -54,7 +54,8 @@ public class SQLPlayers {
 	}
 	public int getRank(String player, String stat) {
 		int rank = 0;
-		ResultSet rs = sql.resultQuery("SELECT COUNT(*) FROM players WHERE "+stat+" > (SELECT "+stat+" from players WHERE name='"+player+"');");
+		Result r = sql.resultQuery("SELECT COUNT(*) FROM players WHERE "+stat+" > (SELECT "+stat+" from players WHERE name='"+player+"');");
+		ResultSet rs = r.getResultSet();
 		try {
 			if(rs != null && rs.next()) {
 				rank = rs.getInt(1)+1 ;
@@ -62,25 +63,30 @@ public class SQLPlayers {
 		} catch(Exception e) {
 			e.printStackTrace();
 		}
+		r.close();
 		return rank;
 	}
 
 	public int getPlayerCount() {
-		ResultSet rs = sql.resultQuery("SELECT COUNT(*) FROM players;");
+		Result r = sql.resultQuery("SELECT COUNT(*) FROM players;");
+		ResultSet rs = r.getResultSet();
+		int a = 0;
 		try {
 			if(rs != null) {
-				return rs.getInt(1);
+				a = rs.getInt(1);
 			}
 		} catch (SQLException e) {
 			e.printStackTrace();
 		}
-		return 0;
+		r.close();
+		return a;
 	}
 
 	public ArrayList<String> getAllPlayerNames() {
 		ArrayList<String> players = new ArrayList<String>();
 
-		ResultSet rs = sql.resultQuery("SELECT name FROM players;");
+		Result r = sql.resultQuery("SELECT name FROM players;");
+		ResultSet rs = r.getResultSet();
 		try {
 			if(rs != null) {
 				while(rs.next()) {
@@ -90,25 +96,30 @@ public class SQLPlayers {
 		} catch (SQLException e) {
 			e.printStackTrace();
 		}
+		r.close();
 		return players;
 	}
 
 	public boolean isPlayerExisting(String player) {
-		ResultSet rs = sql.resultQuery("SELECT EXISTS(SELECT 1 FROM players WHERE name='"+player+"' LIMIT 1);");
+		Result r = sql.resultQuery("SELECT EXISTS(SELECT 1 FROM players WHERE name='"+player+"' LIMIT 1);");
+		ResultSet rs = r.getResultSet();
+		boolean b = false;
 		try {
 			if(rs != null) {
-				return (rs.getInt(1) == 1 ? true : false);
-			} else return false;
+				b = (rs.getInt(1) == 1);
+			}
 		} catch (SQLException e) {
 			e.printStackTrace();
-			return false;
 		}
+		r.close();
+		return b;
 
 	}
 
 	public LinkedHashMap<String, Integer> getPlayerStats(String player) {
 		LinkedHashMap<String, Integer> data = new LinkedHashMap<String, Integer>();
-		ResultSet rs = sql.resultQuery("SELECT * FROM players WHERE name = '"+player+"' LIMIT 1;");
+		Result r = sql.resultQuery("SELECT * FROM players WHERE name = '"+player+"' LIMIT 1;");
+		ResultSet rs = r.getResultSet();
 		try {
 			if(rs != null && rs.next()) {
 				for(String stat : statsList) {
@@ -118,6 +129,7 @@ public class SQLPlayers {
 		} catch (SQLException e) {
 			e.printStackTrace();
 		}
+		r.close();
 		return data;
 	}
 	//SET
@@ -217,10 +229,12 @@ public class SQLPlayers {
 	public LinkedHashMap<String, SimpleEntry<String, Integer>> getTopStats() {
 		LinkedHashMap<String, SimpleEntry<String, Integer>> topStats = new LinkedHashMap<String, SimpleEntry<String, Integer>>();
 		for(String stats : statsList) {
-			ResultSet rs = sql.resultQuery("SELECT name,"+stats+" FROM players ORDER BY "+stats+" DESC LIMIT 1");
+			Result r = sql.resultQuery("SELECT name,"+stats+" FROM players ORDER BY "+stats+" DESC LIMIT 1");
+			ResultSet rs = r.getResultSet();
 			try {
 				if(rs != null && rs.next()) {
 					topStats.put(stats, new SimpleEntry<String, Integer>(rs.getString("name"), rs.getInt(stats)));
+					r.close();
 				}
 			}catch(Exception e) {
 				e.printStackTrace();
@@ -231,7 +245,8 @@ public class SQLPlayers {
 
 	public LinkedHashMap<String, Integer> getTop10Stats(String stat) {
 		LinkedHashMap<String, Integer> topStats = new LinkedHashMap<String, Integer>();
-		ResultSet rs = sql.resultQuery("SELECT name,"+stat+" FROM players ORDER BY "+stat+" DESC LIMIT 10");
+		Result r = sql.resultQuery("SELECT name,"+stat+" FROM players ORDER BY "+stat+" DESC LIMIT 10");
+		ResultSet rs = r.getResultSet();
 		try {
 			if(rs != null) {
 				while(rs.next()) {
@@ -241,6 +256,7 @@ public class SQLPlayers {
 		}catch(Exception e) {
 			e.printStackTrace();
 		}
+		r.close();
 		return topStats;
 	}
 
