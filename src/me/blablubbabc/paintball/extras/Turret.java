@@ -58,7 +58,7 @@ public class Turret {
 	public final Snowman entity;
 	public final Player player;
 	public final Paintball plugin;
-	public final Location loc;
+	//public final Location loc;
 
 	private int tickTask = -1;
 	private int salveTask = -1;
@@ -66,15 +66,17 @@ public class Turret {
 	private int cooldown;
 	private Player target = null;
 	private int salve;
+	private int lives;
 
 	public Turret(Player player, Snowman turret, Match match, Paintball plugin) {
 		this.entity = turret;
 		this.player = player;
 		this.match = match;
-		this.loc = entity.getLocation();
+		//this.loc = entity.getLocation();
 		this.plugin = plugin;
 		this.cooldown = plugin.turretCooldown;
 		this.salve = plugin.turretSalve;
+		this.lives = plugin.turretLives;
 		addTurret(this);
 		this.tick();
 	}
@@ -147,7 +149,7 @@ public class Turret {
 
 					@Override
 					public void run() {
-						if (target != null && match.isSurvivor(target)) {
+						if (target != null && match.isSurvivor(target) ) {
 							Vector targetVec = target.getLocation().toVector().add(new Vector(0, 1, 0));
 							Vector entVec = entity.getLocation().toVector();
 							Vector dir = targetVec.clone().subtract(entVec).normalize();
@@ -199,7 +201,7 @@ public class Turret {
 				}, 5L);
 	}
 
-	public void die() {
+	public synchronized void die() {
 		if (tickTask != -1)
 			plugin.getServer().getScheduler().cancelTask(tickTask);
 		if (salveTask != -1)
@@ -225,6 +227,13 @@ public class Turret {
 
 		if (entity.isValid() && !entity.isDead())
 			entity.remove();
+	}
+	
+	public synchronized void hit() {
+		this.lives--;
+		if(this.lives <= 0) {
+			this.die();
+		}
 	}
 
 	private boolean canBeShoot(Vector pos, Vector target, Vector dir) {

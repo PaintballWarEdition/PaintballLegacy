@@ -138,6 +138,7 @@ public class Paintball extends JavaPlugin{
 	public int turretYSize;
 	public int turretSalve;
 	public int turretCooldown;
+	public int turretLives;
 	
 	//TODO
 	//shop-items
@@ -255,6 +256,7 @@ public class Paintball extends JavaPlugin{
 		if(getConfig().get("Paintball.Extras.Turret.calculated range y (half)") == null)getConfig().set("Paintball.Extras.Turret.calculated range y (half)", 50);
 		if(getConfig().get("Paintball.Extras.Turret.shots per salve") == null)getConfig().set("Paintball.Extras.Turret.shots per salve", 15);
 		if(getConfig().get("Paintball.Extras.Turret.cooldown in seconds") == null)getConfig().set("Paintball.Extras.Turret.cooldown in seconds", 3);
+		if(getConfig().get("Paintball.Extras.Turret.lives") == null)getConfig().set("Paintball.Extras.Turret.lives", 10);
 		if(getConfig().get("Paintball.Shop.enabled") == null)getConfig().set("Paintball.Shop.enabled", true);
 		if(getConfig().get("Paintball.Shop.Goods (amount-name-id-price)") == null)getConfig().set("Paintball.Shop.Goods (amount-name-id-price)", goodsDef);
 		saveConfig();
@@ -356,15 +358,6 @@ public class Paintball extends JavaPlugin{
 		airstrikeAmount = getConfig().getInt("Paintball.Extras.Airstrike.Amount", 0);
 		if(airstrikeAmount < -1) airstrikeAmount = -1;
 		
-		if(getConfig().get("Paintball.Extras.Turret.enabled") == null)getConfig().set("Paintball.Extras.Turret.enabled", true);
-		if(getConfig().get("Paintball.Extras.Turret.angleMin (min -90)") == null)getConfig().set("Paintball.Extras.Turret.angleMin (min -90)", -45);
-		if(getConfig().get("Paintball.Extras.Turret.angleMax (max 90)") == null)getConfig().set("Paintball.Extras.Turret.angleMax (max 90)", 45);
-		if(getConfig().get("Paintball.Extras.Turret.calculated ticks") == null)getConfig().set("Paintball.Extras.Turret.calculated ticks", 100);
-		if(getConfig().get("Paintball.Extras.Turret.calculated range x") == null)getConfig().set("Paintball.Extras.Turret.calculated range x", 100);
-		if(getConfig().get("Paintball.Extras.Turret.calculated range y (half)") == null)getConfig().set("Paintball.Extras.Turret.calculated range y (half)", 50);
-		if(getConfig().get("Paintball.Extras.Turret.shots per salve") == null)getConfig().set("Paintball.Extras.Turret.shots per salve", 15);
-		if(getConfig().get("Paintball.Extras.Turret.cooldown in seconds") == null)getConfig().set("Paintball.Extras.Turret.cooldown in seconds", 3);
-		
 		turret = getConfig().getBoolean("Paintball.Extras.Turret.enabled", true);
 		turretAngleMin = getConfig().getInt("Paintball.Extras.Turret.angleMin (min -90)", -45);
 		if(turretAngleMin < -90) turretAngleMin = -90;
@@ -382,6 +375,8 @@ public class Paintball extends JavaPlugin{
 		if(turretSalve < 0) turretSalve = 0;
 		turretCooldown = getConfig().getInt("Paintball.Extras.Turret.cooldown in seconds", 3);
 		if(turretCooldown < 0) turretCooldown = 0;
+		turretLives = getConfig().getInt("Paintball.Extras.Turret.lives", 10);
+		if(turretLives < 0) turretLives = 0;
 
 		//SQLite with version: 110
 		sql = new BlaSQLite(new File(this.getDataFolder().toString()+"/"+"pbdata_110"+".db"), this);

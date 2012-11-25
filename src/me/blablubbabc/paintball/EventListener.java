@@ -177,25 +177,33 @@ public class EventListener implements Listener{
 	public void onPlayerHit(EntityDamageByEntityEvent event) {
 		if(event.getDamager() instanceof Projectile) {
 			Projectile shot = (Projectile) event.getDamager();
-			if(shot.getShooter() instanceof Player && event.getEntity() instanceof Player) {
+			if(shot.getShooter() instanceof Player) {
 				Player shooter = (Player) shot.getShooter();
-				Player target = (Player) event.getEntity();
-				if(!shooter.equals(target)) {
-					if(mm.getMatch(shooter) != null && mm.getMatch(target) != null) {
-						if(mm.getMatch(shooter).equals(mm.getMatch(target))) {
-							Match match = mm.getMatch(shooter);
-							if(!match.isSpec(shooter) && !match.isSpec(target) && match.isSurvivor(shooter) && match.isSurvivor(target) && match.started) {
-								//Geschoss?
-								if (shot instanceof Snowball) {
-									//match
-									match.hitSnow(target, shooter);
+				if(event.getEntity() instanceof Player) {
+					Player target = (Player) event.getEntity();
+					if(!shooter.equals(target)) {
+						if(mm.getMatch(shooter) != null && mm.getMatch(target) != null) {
+							if(mm.getMatch(shooter).equals(mm.getMatch(target))) {
+								Match match = mm.getMatch(shooter);
+								if(!match.isSpec(shooter) && !match.isSpec(target) && match.isSurvivor(shooter) && match.isSurvivor(target) && match.started) {
+									//Geschoss?
+									if (shot instanceof Snowball) {
+										//match
+										match.hitSnow(target, shooter);
+									}
 								}
 							}
 						}
 					}
+				} else if(event.getEntityType() == EntityType.SNOWMAN) {
+					Snowman snowman = (Snowman) event.getEntity();
+					Turret turret = Turret.isTurret(snowman);
+					if(turret != null) {
+						turret.hit();
+					}
 				}
 			}
-		}else if(event.getDamager() instanceof Player && event.getEntity() instanceof Player && event.getCause().equals(DamageCause.ENTITY_ATTACK)){
+		} else if(event.getDamager() instanceof Player && event.getEntity() instanceof Player && event.getCause().equals(DamageCause.ENTITY_ATTACK)){
 			Player attacker = (Player) event.getDamager();
 			Player target = (Player) event.getEntity();
 			if(!attacker.equals(target)) {
