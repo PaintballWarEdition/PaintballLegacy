@@ -43,6 +43,8 @@ public class Translator {
 		    	    out.write(buffer, 0, len);
 		    	    len = in.read(buffer);
 		    	}
+		    	out.close();
+		    	in.close();
 	    	}catch(Exception e) {
 	    		log("ERROR: Couldn't write the default language file!");
 	    		e.printStackTrace();
@@ -221,6 +223,7 @@ public class Translator {
 				//Add to translation map:
 				language.put(key, value);
 			}
+			scanner.close();
 			//TEST
 			log("Scanned lines: "+line);
 			log("Skipped lines: "+line_skipped);
