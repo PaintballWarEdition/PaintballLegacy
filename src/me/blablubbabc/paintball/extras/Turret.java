@@ -63,12 +63,9 @@ public class Turret {
 	private int tickTask = -1;
 	private int salveTask = -1;
 
-	private int cooldown = 1;
+	private int cooldown;
 	private Player target = null;
-	private int salve = 30;
-	
-	public static int cooldownMax = 1;
-	public static int salveMax = 30;
+	private int salve;
 
 	public Turret(Player player, Snowman turret, Match match, Paintball plugin) {
 		this.entity = turret;
@@ -76,6 +73,8 @@ public class Turret {
 		this.match = match;
 		this.loc = entity.getLocation();
 		this.plugin = plugin;
+		this.cooldown = plugin.turretCooldown;
+		this.salve = plugin.turretSalve;
 		addTurret(this);
 		this.tick();
 	}
@@ -95,7 +94,7 @@ public class Turret {
 								tickTask = -1;
 								shoot();
 							} else {
-								cooldown = cooldownMax;
+								cooldown = plugin.turretCooldown;
 								tick();
 							}
 						} else {
@@ -186,13 +185,13 @@ public class Turret {
 								if (!entity.hasLineOfSight(target) || !canBeShoot(entVec.clone().add(new Vector(0, 2, 0))
 										.add(dir2), targetVec.clone(), dir2.clone()))
 									target = null;
-								salve = salveMax;
+								salve = plugin.turretSalve;
 								salveTask = -1;
 								tick();
 							}
 						} else {
 							target = null;
-							salve = salveMax;
+							salve = plugin.turretSalve;
 							salveTask = -1;
 							tick();
 						}

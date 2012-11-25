@@ -1,41 +1,23 @@
 package me.blablubbabc.paintball.commands;
 
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.LinkedList;
-import org.bukkit.Material;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
-
 import me.blablubbabc.paintball.Match;
 import me.blablubbabc.paintball.Paintball;
+import me.blablubbabc.paintball.ShopGood;
 
 public class CmdShop {
 	private Paintball plugin;
-	private LinkedList<String> goods;
-	private String empty;
-	//ITEMS:
-	ArrayList<String> ball;
-	ArrayList<String> grenade;
-	ArrayList<String> airstrike;
-	
+	private LinkedList<ShopGood> goods;
 	
 	public CmdShop(Paintball pl) {
 		plugin = pl;
-		goods = new LinkedList<String>();
-		empty = plugin.t.getString("SHOP_EMPTY");
-		//ITEMS:
-		ball = new ArrayList<String>();
-		ball.add("ball");ball.add("balls");ball.add(plugin.t.getString("BALL"));ball.add(plugin.t.getString("BALLS"));
-		
-		grenade = new ArrayList<String>();
-		grenade.add("grenade");grenade.add("grenades");grenade.add(plugin.t.getString("GRENADE"));grenade.add(plugin.t.getString("GRENADES"));
-		
-		airstrike = new ArrayList<String>();
-		airstrike.add("airstrike");airstrike.add("airstrikes");airstrike.add(plugin.t.getString("AIRSTRIKE"));airstrike.add(plugin.t.getString("AIRSTRIKES"));
+		goods = new LinkedList<ShopGood>();
 		for(String s : plugin.shopGoods) {
-			goods.add(s);
+			goods.add(new ShopGood(s, pl));
 		}
 	}
 	
@@ -61,9 +43,9 @@ public class CmdShop {
 				player.sendMessage("");
 				int i = 1;
 				HashMap<String, String> vars = new HashMap<String, String>();
-				for(String s : goods) {
+				for(ShopGood good : goods) {
 					vars.put("id", String.valueOf(i));
-					vars.put("good", transformGood(s));
+					vars.put("good", good.getSlot());
 					String msg = plugin.t.getString("SHOP_ENTRY", vars);
 					if(player.hasPermission("paintball.shop.not"+String.valueOf(i)) && !player.isOp() && !player.hasPermission("paintball.admin")) msg = msg.concat(" "+plugin.red+"X");
 					player.sendMessage(msg);
@@ -78,14 +60,15 @@ public class CmdShop {
 				//Kaufen in der lobby während match aber tot:
 				Match match = plugin.mm.getMatch(player);
 				if(match != null && match.isSurvivor(player)) {
-					if(isNumber(args[1]) != null && isNumber(args[1]) > 0 && isNumber(args[1]) <= goods.size()) {
-						if(transformGood(goods.get(isNumber(args[1])-1)).equalsIgnoreCase(empty) || (player.hasPermission("paintball.shop.not"+String.valueOf(isNumber(args[1]))) && !player.isOp() && !player.hasPermission("paintball.admin")) ) {
+					Integer id = isNumber(args[1]);
+					if(id != null && id > 0 && id <= goods.size()) {
+						ShopGood good = goods.get(id-1);
+						if(good.isEmpty() || (player.hasPermission("paintball.shop.not"+String.valueOf(id)) && !player.isOp() && !player.hasPermission("paintball.admin")) ) {
 							player.sendMessage(plugin.t.getString("GOOD_NOT_AVAILABLE"));
 							return true;
 						}
-						String[] split = goods.get(isNumber(args[1])-1).split("-");
-						int price = Integer.parseInt(split[2]);
-						int amount = Integer.parseInt(split[0]);
+						int price = good.getPrice();
+						int amount = good.getAmount();
 						int cash = (Integer) plugin.pm.getStats(player.getName()).get("money");
 						if(cash < price) {
 							player.sendMessage(plugin.t.getString("NOT_ENOUGH_MONEY"));
@@ -101,14 +84,12 @@ public class CmdShop {
 						pStats.put("money_spent", price);
 						plugin.pm.addStats(player.getName(), pStats);
 						plugin.stats.addGeneralStats(pStats);
-						//items
-						if(isItem(split[1], "ball")) player.getInventory().addItem(new ItemStack(Material.SNOW_BALL, amount));
-						if(isItem(split[1], "grenade")) player.getInventory().addItem(new ItemStack(Material.EGG, amount));
-						if(isItem(split[1], "airstrike")) player.getInventory().addItem(new ItemStack(Material.STICK, amount));
+						//item
+						player.getInventory().addItem(new ItemStack(good.getMaterial(), amount));
 						
 						HashMap<String, String> vars = new HashMap<String, String>();
 						vars.put("amount", String.valueOf(amount));
-						vars.put("good", split[1]);
+						vars.put("good", good.getName());
 						vars.put("price", String.valueOf(price));
 						player.sendMessage(plugin.t.getString("YOU_BOUGHT", vars));
 						
@@ -131,73 +112,6 @@ public class CmdShop {
 	}
 	
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-	
-	private boolean isItem(String source, String item) {
-		if(item.equalsIgnoreCase("ball")) {	
-			for(String s : ball) {
-				if(source.equalsIgnoreCase(s)) return true;
-			}
-		}else if(item.equalsIgnoreCase("grenade")) {
-			for(String s : grenade) {
-				if(source.equalsIgnoreCase(s)) return true;
-			}
-		}else if(item.equalsIgnoreCase("airstrike")) {
-			for(String s : airstrike) {
-				if(source.equalsIgnoreCase(s)) return true;
-			}
-		}
-		return false;
-	}
-	
-	private String transformGood(String s) {
-		HashMap<String, String> vars = new HashMap<String, String>();
-		String slot = "";
-		String[] split = s.split("-");
-		if(split.length != 3) {
-			return empty;
-		}
-		if(isNumber(split[0]) == null || isNumber(split[2]) == null) {
-			return empty;
-		}
-		if(isNumber(split[0]) < 0 || isNumber(split[2]) < 0) {
-			return empty;
-		}
-		
-		vars.put("amount", split[0]);
-		
-		String good = "";
-		if(isItem(split[1], "ball")) {
-			if(isNumber(split[0]) == 1) {
-				good = plugin.t.getString("BALL");
-			} else {
-				good = plugin.t.getString("BALLS");
-			}
-		} else if(isItem(split[1], "grenade")) {
-			if(isNumber(split[0]) == 1) {
-				good = plugin.t.getString("GRENADE");
-			} else {
-				good = plugin.t.getString("GRENADES");
-			}
-			if(!plugin.grenades) {
-				return empty;
-			}
-		} else if(isItem(split[1], "airstrike")) {
-			if(isNumber(split[0]) == 1) {
-				good = plugin.t.getString("AIRSTRIKE");
-			} else {
-				good = plugin.t.getString("AIRSTRIKES");
-			}
-			if(!plugin.airstrike) {
-				return empty;
-			}
-		} else {
-			return empty;
-		}
-		vars.put("good", good);
-		vars.put("price", split[2]);
-		slot = plugin.t.getString("SHOP_GOOD", vars);
-		return slot;
-	}
 	
 	private Integer isNumber(String s) {
 		try {
