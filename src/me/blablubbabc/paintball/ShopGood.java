@@ -1,7 +1,6 @@
 package me.blablubbabc.paintball;
 
 import java.util.HashMap;
-
 import org.bukkit.Material;
 
 public class ShopGood {

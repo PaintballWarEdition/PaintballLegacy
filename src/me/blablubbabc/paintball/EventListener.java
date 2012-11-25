@@ -429,13 +429,21 @@ public class EventListener implements Listener{
 	public void onPlayerPlace(BlockPlaceEvent event) {
 		Player player = event.getPlayer();
 		if(Lobby.getTeam(player) != null) {
-			Block block = event.getBlock();
-			if(!player.isOp() && !player.hasPermission("paintball.admin") && block.getType() != Material.PUMPKIN) event.setCancelled(true);
-			else if(block.getType() == Material.PUMPKIN && plugin.mm.getMatch(player).isSurvivor(player)) {
+			Block block = event.getBlockPlaced();
+			if(!player.isOp() && !player.hasPermission("paintball.admin")) {
+				event.setCancelled(true);
+			}
+			if(block.getType() == Material.PUMPKIN && plugin.mm.getMatch(player).isSurvivor(player)) {
 				//create turret:
 				block.setTypeId(0);
 				Snowman snowman = (Snowman) block.getLocation().getWorld().spawnEntity(player.getLocation(), EntityType.SNOWMAN);
 				new Turret(player, snowman, plugin.mm.getMatch(player), plugin);
+				ItemStack i = player.getItemInHand();
+				if(i.getAmount() <= 1) player.setItemInHand(null);
+				else {
+					i.setAmount(i.getAmount()-1);
+					player.setItemInHand(i);
+				}
 			}
 		}
 	}

@@ -1,7 +1,6 @@
 package me.blablubbabc.paintball;
 
-
-import java.text.DecimalFormat;
+//import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map.Entry;
@@ -141,7 +140,7 @@ public class MatchManager{
 			HashMap<String, Integer> shots, HashMap<String, Integer> hits, HashMap<String, Integer> kills, HashMap<String, Integer> deaths,
 			HashMap<String, Integer> teamattacks, HashMap<String, Integer> grenades, HashMap<String, Integer> airstrikes) {
 		//TIME
-		long time1 = System.nanoTime();
+		//long time1 = System.nanoTime();
 		//STATS
 		HashMap<String, Integer> wins = new HashMap<String, Integer>();
 		HashMap<String, Integer> defeats = new HashMap<String, Integer>();
@@ -299,7 +298,7 @@ public class MatchManager{
 		//messages:
 		HashMap<String, String> vars = new HashMap<String, String>();
 		plugin.nf.text("-------------------------------------------------");
-		plugin.nf.status("Match is over!");
+		plugin.nf.status(plugin.t.getString("MATCH_IS_OVER"));
 		if(draw) {
 			plugin.nf.text(plugin.t.getString("MATCH_DRAW"));
 		} else {
@@ -346,10 +345,10 @@ public class MatchManager{
 			plugin.nf.status(ready());
 		}
 		//TIME
-		long time2 = System.nanoTime();
-		Double delta = (time2 - time1)/10E6;
-		DecimalFormat dec = new DecimalFormat("#######.#######");
-		plugin.nf.text("Took ms: " + dec.format(delta));
+		//long time2 = System.nanoTime();
+		//Double delta = (time2 - time1)/10E6;
+		//DecimalFormat dec = new DecimalFormat("##########.###");
+		//plugin.nf.text("Took " + dec.format(delta) + " ms");
 	}
 
 	public synchronized Match getMatch(Player player) {

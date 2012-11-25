@@ -6,11 +6,9 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.UUID;
-
 import me.blablubbabc.BlaDB.BlaSQLite;
 import me.blablubbabc.paintball.Metrics.Graph;
 import me.blablubbabc.paintball.extras.Turret;
-
 import org.bukkit.ChatColor;
 import org.bukkit.GameMode;
 import org.bukkit.Location;
@@ -78,7 +76,7 @@ public class Paintball extends JavaPlugin{
 	public boolean listnames;
 	public boolean chatnames;
 	public boolean shop;
-	public LinkedList<String> shopGoods;
+	public ArrayList<String> shopGoods;
 	public ArrayList<String> allowedCommands;
 	public boolean saveInventory;
 	public boolean onlyRandom;
@@ -172,7 +170,7 @@ public class Paintball extends JavaPlugin{
 	public void onEnable(){	
 
 		//CONFIG
-		LinkedList<String> goodsDef = new LinkedList<String>();
+		ArrayList<String> goodsDef = new ArrayList<String>();
 		//ALT
 		/*goodsDef.add("10-Balls-15");
 		goodsDef.add("50-Balls-65");
@@ -184,7 +182,7 @@ public class Paintball extends JavaPlugin{
 		goodsDef.add("100-Balls-332-120");
 		goodsDef.add("1-Grenade-344-20");
 		goodsDef.add("1-Airstrike-280-100");
-		goodsDef.add("1-Turret-86-400");
+		goodsDef.add("1-Turret-86-200");
 
 		allowedCommands = new ArrayList<String>();
 
@@ -329,7 +327,7 @@ public class Paintball extends JavaPlugin{
 
 		//shop:
 		shop = getConfig().getBoolean("Paintball.Shop.enabled", true);
-		shopGoods = (LinkedList<String>) getConfig().getList("Paintball.Shop.Goods (amount-name-id-price)", goodsDef);
+		shopGoods = (ArrayList<String>) getConfig().getList("Paintball.Shop.Goods (amount-name-id-price)", goodsDef);
 
 		//lobby join checks
 		checkInventory = getConfig().getBoolean("Paintball.Lobby join.Checks.Inventory", true);
