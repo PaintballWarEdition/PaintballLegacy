@@ -476,12 +476,26 @@ public class EventListener implements Listener{
 
 	@EventHandler(priority = EventPriority.HIGHEST)
 	public void onPlayerCommand(PlayerCommandPreprocessEvent event) {
-		if(Lobby.getTeam(event.getPlayer()) != null && !event.getMessage().startsWith("/pb") && !plugin.allowedCommands.contains(event.getMessage())) {
+		if(Lobby.getTeam(event.getPlayer()) != null && !event.getMessage().startsWith("/pb") && !isAllowedCommand(event.getMessage())) {
 			if(!event.getPlayer().hasPermission("paintball.admin") && !event.getPlayer().isOp()) {
 				event.getPlayer().sendMessage(plugin.t.getString("COMMAND_NOT_ALLOWED"));
 				event.setCancelled(true);
 			}
 		}
+	}
+	
+	private boolean isAllowedCommand(String cmd) {
+		String[] split = cmd.split(" ");
+		if(plugin.allowedCommands.contains(cmd)) return true;
+		for(int i = 0; i < split.length; i++) {
+			String cmds = "";
+			for(int a = 0; a <= i; a++) {
+				if(a == i) cmds += split[a];
+				else cmds += split[a]+" ";
+			}
+			if(plugin.allowedCommands.contains(cmds) || plugin.allowedCommands.contains(cmds+" *")) return true;
+		}
+		return false;
 	}
 	/*@EventHandler(priority = EventPriority.LOWEST)
 	public void onPlayerChat1(AsyncPlayerChatEvent event) {
