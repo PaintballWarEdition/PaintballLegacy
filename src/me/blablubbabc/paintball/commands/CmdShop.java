@@ -4,7 +4,6 @@ import java.util.HashMap;
 import java.util.LinkedList;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
-import org.bukkit.inventory.ItemStack;
 import me.blablubbabc.paintball.Match;
 import me.blablubbabc.paintball.Paintball;
 import me.blablubbabc.paintball.ShopGood;
@@ -85,7 +84,7 @@ public class CmdShop {
 						plugin.pm.addStats(player.getName(), pStats);
 						plugin.stats.addGeneralStats(pStats);
 						//item
-						player.getInventory().addItem(new ItemStack(good.getMaterial(), amount));
+						player.getInventory().addItem(good.getItemStack());
 						
 						HashMap<String, String> vars = new HashMap<String, String>();
 						vars.put("amount", String.valueOf(amount));

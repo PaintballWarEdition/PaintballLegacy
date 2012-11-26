@@ -29,7 +29,7 @@ public class InSignsFeature {
 					if(!plugin.sql.isConnected()) return plugin.t.getString("NOT_CONNECTED");
 					else if(plugin.pm.exists(playerName)) {
 						if(stat.equals("hitquote") || stat.equals("kd")) {
-							DecimalFormat dec = new DecimalFormat("###.##");
+							DecimalFormat dec = new DecimalFormat("####.##");
 							float statF = (float)(Integer)plugin.pm.getStats(playerName).get(stat) / 100;
 							return dec.format(statF);
 						} else return ""+plugin.pm.getStats(playerName).get(stat);

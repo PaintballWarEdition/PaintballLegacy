@@ -177,12 +177,20 @@ public class Paintball extends JavaPlugin{
 		goodsDef.add("100-Balls-120");
 		goodsDef.add("1-Grenade-20");
 		goodsDef.add("1-Airstrike-100");*/
-		goodsDef.add("10-Balls-332-15");
+		//OLD 2
+		/*goodsDef.add("10-Balls-332-15");
 		goodsDef.add("50-Balls-332-65");
 		goodsDef.add("100-Balls-332-120");
 		goodsDef.add("1-Grenade-344-20");
 		goodsDef.add("1-Airstrike-280-100");
-		goodsDef.add("1-Turret-86-200");
+		goodsDef.add("1-Turret-86-200");*/
+		
+		goodsDef.add("10-Balls-332-0-15");
+		goodsDef.add("50-Balls-332-0-65");
+		goodsDef.add("100-Balls-332-0-120");
+		goodsDef.add("1-Grenade-344-0-20");
+		goodsDef.add("1-Airstrike-280-0-100");
+		goodsDef.add("1-Turret-86-0-200");
 
 		allowedCommands = new ArrayList<String>();
 
@@ -256,7 +264,7 @@ public class Paintball extends JavaPlugin{
 		if(getConfig().get("Paintball.Extras.Turret.cooldown in seconds") == null)getConfig().set("Paintball.Extras.Turret.cooldown in seconds", 3);
 		if(getConfig().get("Paintball.Extras.Turret.lives") == null)getConfig().set("Paintball.Extras.Turret.lives", 10);
 		if(getConfig().get("Paintball.Shop.enabled") == null)getConfig().set("Paintball.Shop.enabled", true);
-		if(getConfig().get("Paintball.Shop.Goods (amount-name-id-price)") == null)getConfig().set("Paintball.Shop.Goods (amount-name-id-price)", goodsDef);
+		if(getConfig().get("Paintball.Shop.Goods (amount-name-id-subid-price)") == null)getConfig().set("Paintball.Shop.Goods (amount-name-id-subid-price)", goodsDef);
 		saveConfig();
 
 
@@ -327,7 +335,7 @@ public class Paintball extends JavaPlugin{
 
 		//shop:
 		shop = getConfig().getBoolean("Paintball.Shop.enabled", true);
-		shopGoods = (ArrayList<String>) getConfig().getList("Paintball.Shop.Goods (amount-name-id-price)", goodsDef);
+		shopGoods = (ArrayList<String>) getConfig().getList("Paintball.Shop.Goods (amount-name-id-subid-price)", goodsDef);
 
 		//lobby join checks
 		checkInventory = getConfig().getBoolean("Paintball.Lobby join.Checks.Inventory", true);
