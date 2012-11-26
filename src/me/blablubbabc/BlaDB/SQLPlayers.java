@@ -62,8 +62,9 @@ public class SQLPlayers {
 			}
 		} catch(Exception e) {
 			e.printStackTrace();
+		} finally {
+			r.close();
 		}
-		r.close();
 		return rank;
 	}
 
@@ -77,8 +78,9 @@ public class SQLPlayers {
 			}
 		} catch (SQLException e) {
 			e.printStackTrace();
+		} finally {
+			r.close();
 		}
-		r.close();
 		return a;
 	}
 
@@ -95,8 +97,9 @@ public class SQLPlayers {
 			}
 		} catch (SQLException e) {
 			e.printStackTrace();
+		} finally {
+			r.close();
 		}
-		r.close();
 		return players;
 	}
 
@@ -110,8 +113,9 @@ public class SQLPlayers {
 			}
 		} catch (SQLException e) {
 			e.printStackTrace();
+		} finally {
+			r.close();
 		}
-		r.close();
 		return b;
 
 	}
@@ -128,8 +132,9 @@ public class SQLPlayers {
 			}
 		} catch (SQLException e) {
 			e.printStackTrace();
+		} finally {
+			r.close();
 		}
-		r.close();
 		return data;
 	}
 	//SET
@@ -234,10 +239,11 @@ public class SQLPlayers {
 			try {
 				if(rs != null && rs.next()) {
 					topStats.put(stats, new SimpleEntry<String, Integer>(rs.getString("name"), rs.getInt(stats)));
-					r.close();
 				}
 			}catch(Exception e) {
 				e.printStackTrace();
+			} finally {
+				r.close();
 			}
 		}
 		return topStats;
@@ -255,8 +261,9 @@ public class SQLPlayers {
 			}
 		}catch(Exception e) {
 			e.printStackTrace();
+		} finally {
+			r.close();
 		}
-		r.close();
 		return topStats;
 	}
 

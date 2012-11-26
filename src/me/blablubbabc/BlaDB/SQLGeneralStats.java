@@ -48,8 +48,9 @@ public class SQLGeneralStats {
 			}
 		} catch (SQLException e) {
 			e.printStackTrace();
+		} finally {
+			r.close();
 		}
-		r.close();
 		return data;
 	}
 	//SET

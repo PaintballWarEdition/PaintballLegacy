@@ -86,8 +86,9 @@ public class SQLArenaLobby {
 			}
 		} catch (SQLException e) {
 			e.printStackTrace();
+		} finally {
+			r.close();
 		}
-		r.close();
 		return arenas;
 	}
 
@@ -103,8 +104,9 @@ public class SQLArenaLobby {
 			}
 		} catch (SQLException e) {
 			e.printStackTrace();
+		} finally {
+			r.close();
 		}
-		r.close();
 		return data;
 	}
 	
@@ -120,8 +122,9 @@ public class SQLArenaLobby {
 			}
 		} catch (SQLException e) {
 			e.printStackTrace();
+		} finally {
+			r.close();
 		}
-		r.close();
 		return data;
 	}
 
@@ -135,8 +138,8 @@ public class SQLArenaLobby {
 			idss = idss.substring(0, idss.length()-4);
 			Result r = sql.resultQuery("SELECT * FROM locations WHERE "+idss+";");
 			ResultSet rs = r.getResultSet();
-			if(rs != null) {
-				try {
+			try {
+				if(rs != null) {
 					while (rs.next()) {
 						World world = plugin.getServer().getWorld(
 								rs.getString("world"));
@@ -148,11 +151,12 @@ public class SQLArenaLobby {
 							locs.add(loc);
 						}
 					}
-				} catch (SQLException e) {
-					e.printStackTrace();
 				}
+			} catch (SQLException e) {
+				e.printStackTrace();
+			} finally {
+				r.close();
 			}
-			r.close();
 		}
 		return locs;
 	}
@@ -179,8 +183,9 @@ public class SQLArenaLobby {
 		} catch (SQLException e) {
 			e.printStackTrace();
 
+		} finally {
+			r.close();
 		}
-		r.close();
 		return b;
 
 	}
@@ -195,8 +200,9 @@ public class SQLArenaLobby {
 			}
 		} catch (SQLException e) {
 			e.printStackTrace();
+		} finally {
+			r.close();
 		}
-		r.close();
 		return a;
 	}
 
@@ -210,8 +216,9 @@ public class SQLArenaLobby {
 			}
 		} catch (SQLException e) {
 			e.printStackTrace();
+		} finally {
+			r.close();
 		}
-		r.close();
 		return a;
 	}
 
@@ -225,8 +232,9 @@ public class SQLArenaLobby {
 			}
 		} catch (SQLException e) {
 			e.printStackTrace();
+		} finally {
+			r.close();
 		}
-		r.close();
 		return a;
 	}
 	
@@ -240,8 +248,9 @@ public class SQLArenaLobby {
 			}
 		} catch (SQLException e) {
 			e.printStackTrace();
+		} finally {
+			r.close();
 		}
-		r.close();
 		return a;
 	}
 
@@ -257,8 +266,9 @@ public class SQLArenaLobby {
 			}
 		} catch (SQLException e) {
 			e.printStackTrace();
+		} finally {
+			r.close();
 		}
-		r.close();
 		return ids;
 	}
 	private ArrayList<Integer> getBluespawnsIds(String arena) {
@@ -273,8 +283,9 @@ public class SQLArenaLobby {
 			}
 		} catch (SQLException e) {
 			e.printStackTrace();
+		} finally {
+			r.close();
 		}
-		r.close();
 		return ids;
 	}
 	private ArrayList<Integer> getSpecspawnsIds(String arena) {
@@ -289,8 +300,9 @@ public class SQLArenaLobby {
 			}
 		} catch (SQLException e) {
 			e.printStackTrace();
+		} finally {
+			r.close();
 		}
-		r.close();
 		return ids;
 	}
 	private ArrayList<Integer> getLobbyspawnsIds() {
@@ -305,8 +317,9 @@ public class SQLArenaLobby {
 			}
 		} catch (SQLException e) {
 			e.printStackTrace();
+		} finally {
+			r.close();
 		}
-		r.close();
 		return ids;
 	}
 	
@@ -336,8 +349,9 @@ public class SQLArenaLobby {
 			}
 		} catch (SQLException e) {
 			e.printStackTrace();
+		} finally {
+			r.close();
 		}
-		r.close();
 		return active;
 	}
 	
