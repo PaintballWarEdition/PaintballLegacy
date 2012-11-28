@@ -32,14 +32,12 @@ import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.configuration.InvalidConfigurationException;
 import org.bukkit.plugin.Plugin;
 import org.bukkit.plugin.PluginDescriptionFile;
-
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.OutputStreamWriter;
 import java.io.UnsupportedEncodingException;
-import java.net.Proxy;
 import java.net.URL;
 import java.net.URLConnection;
 import java.net.URLEncoder;
@@ -387,11 +385,12 @@ public class Metrics {
 
         // Mineshafter creates a socks proxy, so we can safely bypass it
         // It does not reroute POST requests so we need to go around it
-        if (isMineshafterPresent()) {
+        /*if (isMineshafterPresent()) {
             connection = url.openConnection(Proxy.NO_PROXY);
         } else {
             connection = url.openConnection();
-        }
+        }*/
+        connection = url.openConnection();
 
         connection.setDoOutput(true);
 
@@ -433,14 +432,14 @@ public class Metrics {
      *
      * @return
      */
-    private boolean isMineshafterPresent() {
+    /*private boolean isMineshafterPresent() {
         try {
             Class.forName("mineshafter.MineServer");
             return true;
         } catch (Exception e) {
             return false;
         }
-    }
+    }*/
 
     /**
      * <p>Encode a key/value data pair to be used in a HTTP post request. This INCLUDES a & so the first
