@@ -435,7 +435,9 @@ public class EventListener implements Listener{
 			}
 			if(block.getType() == Material.PUMPKIN && plugin.mm.getMatch(player).isSurvivor(player)) {
 				//create turret:
-				block.setTypeId(0);
+				//TEST
+				//block.setTypeId(0);
+				event.setCancelled(true);
 				Snowman snowman = (Snowman) block.getLocation().getWorld().spawnEntity(player.getLocation(), EntityType.SNOWMAN);
 				new Turret(player, snowman, plugin.mm.getMatch(player), plugin);
 				ItemStack i = player.getItemInHand();
@@ -447,6 +449,7 @@ public class EventListener implements Listener{
 			}
 		}
 	}
+	
 
 	@EventHandler(priority = EventPriority.NORMAL)
 	public void onPlayerHunger(FoodLevelChangeEvent event) {
@@ -535,6 +538,18 @@ public class EventListener implements Listener{
 	@EventHandler(priority = EventPriority.LOWEST)
 	public void onPlayerChat(AsyncPlayerChatEvent event) {
 		Player player = event.getPlayer();
+		String[] m = event.getMessage().split(" ");
+		//basic commands
+		if(m[0].equalsIgnoreCase("/pb")) {
+			if(m.length == 1) {
+				plugin.cm.pbhelp(player);
+			} else if(m[1].equalsIgnoreCase("help") || m[1].equalsIgnoreCase("?")) {
+				plugin.cm.pbhelp(player);
+			} else if(m[1].equalsIgnoreCase("info")) {
+				plugin.cm.pbinfo(player);
+			}
+		}
+		
 		if(Lobby.getTeam(player) != null) {
 			if(plugin.chatnames) {
 				ChatColor farbe = Lobby.LOBBY.color();

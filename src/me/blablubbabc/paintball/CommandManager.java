@@ -30,13 +30,13 @@ public class CommandManager implements CommandExecutor{
 	public boolean onCommand(CommandSender sender, Command cmd, String label, String[] args) {
 		if(label.equalsIgnoreCase("pb")) {
 			if(args.length == 0) {
-				pbhelp(sender);
+				//pbhelp(sender);
 				return true;
 			} else if(args[0].equalsIgnoreCase("help") || args[0].equalsIgnoreCase("?")) {
-				pbhelp(sender);
+				//pbhelp(sender);
 				return true;
 			} else if(args[0].equalsIgnoreCase("info")) {
-				pbinfo(sender);
+				//pbinfo(sender);
 				return true;
 			} else {
 
@@ -193,8 +193,10 @@ public class CommandManager implements CommandExecutor{
 		sender.sendMessage(plugin.dark_green+"Permission: "+plugin.gold+(hasGeneralPerm(sender) ? plugin.t.getString("ALLOWED_TO_PLAY_PAINTBALL"):plugin.t.getString("NOT_ALLOWED_TO_PLAY_PAINTBALL")));
 		sender.sendMessage(plugin.dark_green+"Version: "+plugin.gold+plugin.getDescription().getVersion());
 		sender.sendMessage(plugin.dark_green+"Website: "+plugin.gold+"dev.bukkit.org/server-mods/paintball_pure_war/");
-		//sender.sendMessage(plugin.dark_red+"License hint for users: ");
-		//sender.sendMessage(plugin.gold+"Commercial usage of this plugin in any kind is not allowed.");
+		sender.sendMessage(plugin.dark_red+"Basic license hint: ");
+		sender.sendMessage(plugin.red+"§ Commercial usage of this plugin in any kind is not allowed.");
+		sender.sendMessage(plugin.red+"§ Changing code is not allowed.");
+		sender.sendMessage(plugin.red+"You can find a complete list of usage condition on the bukkit dev page.");
 		//sender.sendMessage(plugin.dark_green+"If you think your servers admins violate against this rule,");
 		//sender.sendMessage(plugin.dark_green+"feel free to report them to us so we can take legal action.");
 		//sender.sendMessage(plugin.green+"Thank you.");
