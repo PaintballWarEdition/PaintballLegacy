@@ -500,6 +500,22 @@ public class EventListener implements Listener{
 		}
 		return false;
 	}
+	
+	@EventHandler(priority = EventPriority.LOWEST)
+	public void onPbCommands(PlayerCommandPreprocessEvent event) {
+		Player player = event.getPlayer();
+		String[] m = event.getMessage().split(" ");
+		//basic commands
+		if(m[0].equalsIgnoreCase("/pb")) {
+			if(m.length == 1) {
+				plugin.cm.pbhelp(player);
+			} else if(m[1].equalsIgnoreCase("help") || m[1].equalsIgnoreCase("?")) {
+				plugin.cm.pbhelp(player);
+			} else if(m[1].equalsIgnoreCase("info")) {
+				plugin.cm.pbinfo(player);
+			}
+		}
+	}
 	/*@EventHandler(priority = EventPriority.LOWEST)
 	public void onPlayerChat1(AsyncPlayerChatEvent event) {
 		Player player = event.getPlayer();
@@ -538,17 +554,6 @@ public class EventListener implements Listener{
 	@EventHandler(priority = EventPriority.LOWEST)
 	public void onPlayerChat(AsyncPlayerChatEvent event) {
 		Player player = event.getPlayer();
-		String[] m = event.getMessage().split(" ");
-		//basic commands
-		if(m[0].equalsIgnoreCase("/pb")) {
-			if(m.length == 1) {
-				plugin.cm.pbhelp(player);
-			} else if(m[1].equalsIgnoreCase("help") || m[1].equalsIgnoreCase("?")) {
-				plugin.cm.pbhelp(player);
-			} else if(m[1].equalsIgnoreCase("info")) {
-				plugin.cm.pbinfo(player);
-			}
-		}
 		
 		if(Lobby.getTeam(player) != null) {
 			if(plugin.chatnames) {
