@@ -205,11 +205,11 @@ public class CommandManager implements CommandExecutor{
 	public void pbhelp(CommandSender sender) {
 		sender.sendMessage(plugin.aqua+""+ plugin.bold+"[ "+plugin.yellow+""+ plugin.bold+"Paintball by blablubbabc"+plugin.aqua+""+ plugin.bold+" ]");
 		sender.sendMessage(plugin.t.getString("COMMAND_GENERAL_HELP"));
-		sender.sendMessage(plugin.t.getString("COMMAND_GENERAL_ARENA"));
-		sender.sendMessage(plugin.t.getString("COMMAND_GENERAL_ADMIN"));
 		String info = plugin.t.getString("COMMAND_GENERAL_INFO");
 		if(!ChatColor.stripColor(info).contains("info")) info = "&c/pb info &b- Showing information about paintball plugin.";
 		sender.sendMessage(info);
+		sender.sendMessage(plugin.t.getString("COMMAND_GENERAL_ARENA"));
+		sender.sendMessage(plugin.t.getString("COMMAND_GENERAL_ADMIN"));
 		sender.sendMessage(plugin.t.getString("COMMAND_GENERAL_LIST"));
 		sender.sendMessage(plugin.t.getString("COMMAND_GENERAL_LOBBY"));
 
