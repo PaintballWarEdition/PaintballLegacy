@@ -56,7 +56,9 @@ public class Paintball extends JavaPlugin{
 	public ChatColor white = ChatColor.WHITE;
 
 	public ChatColor bold = ChatColor.BOLD;
-
+	public ChatColor italic = ChatColor.ITALIC;
+	public ChatColor reset = ChatColor.RESET;
+	
 	//CONFIG:
 	//general:
 	public String serverid;
@@ -168,7 +170,6 @@ public class Paintball extends JavaPlugin{
 
 	@SuppressWarnings("unchecked")
 	public void onEnable(){	
-
 		//CONFIG
 		ArrayList<String> goodsDef = new ArrayList<String>();
 		//ALT
