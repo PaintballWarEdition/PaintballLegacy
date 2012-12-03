@@ -649,7 +649,7 @@ public class Paintball extends JavaPlugin{
 		return entries;
 	}
 
-	public void checks(Player player) {
+	public void checks(Player player, boolean checkListname) {
 		if(!isEmpty(player)) clearInv(player);
 		//gamemode
 		if(!player.getGameMode().equals(GameMode.SURVIVAL)) player.setGameMode(GameMode.SURVIVAL);
@@ -674,11 +674,11 @@ public class Paintball extends JavaPlugin{
 		//Vehicle
 		if(player.isInsideVehicle()) player.leaveVehicle();
 		//listname
-		if(listnames) player.setPlayerListName(null);
+		if(checkListname && listnames) player.setPlayerListName(null);
 	}
 
 	public synchronized void joinLobby(Player player) {
-		checks(player);
+		checks(player, true);
 		//set waiting
 		if(Lobby.isPlaying(player) || Lobby.isSpectating(player)) Lobby.getTeam(player).setWaiting(player);
 		//Lobbyteleport
@@ -688,7 +688,7 @@ public class Paintball extends JavaPlugin{
 	public synchronized void leaveLobby(Player player, boolean messages, boolean teleport, boolean restoreInventory) {
 		//lobby remove:
 		Lobby.remove(player);
-		checks(player);
+		checks(player, true);
 		//restore saved inventory
 		if(restoreInventory && saveInventory) {
 			//PlayerInventory

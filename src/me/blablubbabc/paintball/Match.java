@@ -133,12 +133,12 @@ public class Match {
 			this.grenades.put(p.getName(), 0);
 			this.airstrikes.put(p.getName(), 0);
 
-			plugin.checks(p);
+			plugin.checks(p, true);
 			spawnPlayer(p);
 		}
 
 		for(Player p : this.spec) {
-			plugin.checks(p);
+			plugin.checks(p, true);
 			spawnSpec(p);
 		}
 		//colorchanges:
@@ -290,8 +290,9 @@ public class Match {
 		} else {
 			return;
 		}
+		//PLAYER
+		plugin.checks(player, false);
 		//INVENTORY
-		plugin.clearInv(player);
 
 		player.getInventory().setHelmet(setColor(new ItemStack(Material.LEATHER_HELMET, 1), Lobby.getTeam(getTeamName(player)).colorA()));
 		player.getInventory().setChestplate(setColor(new ItemStack(Material.LEATHER_CHESTPLATE, 1), Lobby.getTeam(getTeamName(player)).colorA()));

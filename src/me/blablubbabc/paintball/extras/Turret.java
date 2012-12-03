@@ -208,21 +208,22 @@ public class Turret {
 			plugin.getServer().getScheduler().cancelTask(salveTask);
 		removeTurret(this);
 		// some effect here:
-		entity.getWorld().playEffect(entity.getLocation().add(0, 1, 0),
+		Location loc = entity.getLocation();
+		entity.getWorld().playEffect(loc.add(0, 1, 0),
 				Effect.SMOKE, 1);
-		entity.getWorld().playEffect(entity.getLocation().add(0, 1, 0),
+		entity.getWorld().playEffect(loc.add(0, 1, 0),
 				Effect.SMOKE, 2);
-		entity.getWorld().playEffect(entity.getLocation().add(0, 1, 0),
+		entity.getWorld().playEffect(loc.add(0, 1, 0),
 				Effect.SMOKE, 3);
-		entity.getWorld().playEffect(entity.getLocation().add(0, 1, 0),
+		entity.getWorld().playEffect(loc.add(0, 1, 0),
 				Effect.SMOKE, 5);
-		entity.getWorld().playEffect(entity.getLocation().add(0, 1, 0),
+		entity.getWorld().playEffect(loc.add(0, 1, 0),
 				Effect.SMOKE, 6);
-		entity.getWorld().playEffect(entity.getLocation().add(0, 1, 0),
+		entity.getWorld().playEffect(loc.add(0, 1, 0),
 				Effect.SMOKE, 7);
-		entity.getWorld().playEffect(entity.getLocation().add(0, 1, 0),
+		entity.getWorld().playEffect(loc.add(0, 1, 0),
 				Effect.SMOKE, 8);
-		entity.getWorld().playEffect(entity.getLocation().add(0, 1, 0),
+		entity.getWorld().playEffect(loc.add(0, 1, 0),
 				Effect.MOBSPAWNER_FLAMES, 4);
 
 		if (entity.isValid() && !entity.isDead())

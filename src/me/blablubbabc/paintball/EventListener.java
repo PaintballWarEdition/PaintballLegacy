@@ -5,6 +5,7 @@ import java.util.HashMap;
 import java.util.HashSet;
 import me.blablubbabc.paintball.extras.Airstrike;
 import me.blablubbabc.paintball.extras.Grenade;
+import me.blablubbabc.paintball.extras.Rocket;
 import me.blablubbabc.paintball.extras.Turret;
 import org.bukkit.ChatColor;
 import org.bukkit.Effect;
@@ -15,7 +16,9 @@ import org.bukkit.block.Block;
 import org.bukkit.block.BlockState;
 import org.bukkit.block.Sign;
 import org.bukkit.entity.Egg;
+import org.bukkit.entity.Entity;
 import org.bukkit.entity.EntityType;
+import org.bukkit.entity.Fireball;
 import org.bukkit.entity.Player;
 import org.bukkit.entity.Projectile;
 import org.bukkit.entity.Snowball;
@@ -30,6 +33,7 @@ import org.bukkit.event.block.SignChangeEvent;
 import org.bukkit.event.entity.EntityDamageByEntityEvent;
 import org.bukkit.event.entity.EntityDamageEvent;
 import org.bukkit.event.entity.EntityDeathEvent;
+import org.bukkit.event.entity.EntityExplodeEvent;
 import org.bukkit.event.entity.FoodLevelChangeEvent;
 import org.bukkit.event.entity.PlayerDeathEvent;
 import org.bukkit.event.entity.ProjectileHitEvent;
@@ -223,7 +227,17 @@ public class EventListener implements Listener{
 			}
 		}
 	}
-
+	
+	@EventHandler(priority = EventPriority.NORMAL)
+	public void onFireballExplosion(EntityExplodeEvent event) {
+		Entity entity = event.getEntity();
+		if(entity != null && entity.getType() == EntityType.FIREBALL) {
+			if(Rocket.isRocket((Fireball)entity) != null) {
+				event.setCancelled(true);
+			}
+		}
+	}
+	
 	@EventHandler(priority = EventPriority.NORMAL)
 	public void onPlayerShoot(ProjectileLaunchEvent event) {
 		if(event.getEntity().getShooter() instanceof Player) {
@@ -323,6 +337,16 @@ public class EventListener implements Listener{
 						player.sendMessage(plugin.t.getString("GRENADE_THROW"));
 						player.playSound(player.getLocation(), Sound.SILVERFISH_IDLE, 100L, 1L);
 					}
+					//ROCKET
+				} else if(player.getItemInHand().getTypeId() == 356) {
+					if(event.getAction().equals(Action.RIGHT_CLICK_AIR) || event.getAction().equals(Action.RIGHT_CLICK_BLOCK)) {
+						player.playSound(player.getLocation(), Sound.SILVERFISH_IDLE, 100L, 1L);
+						Fireball rocket = player.launchProjectile(Fireball.class);
+						rocket.setShooter(player);
+						//Fireball rocket = (Fireball)player.getWorld().spawnEntity(player.getLocation().add(player.getLocation().getDirection().clone().normalize().multiply(2)), EntityType.FIREBALL);
+						rocket.setVelocity(player.getLocation().getDirection().clone().normalize().multiply(1.5));
+						new Rocket(player, rocket, plugin);
+					}
 				}
 			} /*else if(event.getClickedBlock() != null && !event.getClickedBlock().getType().equals(Material.NOTE_BLOCK)) {
 				if(!player.isOp() && !player.hasPermission("paintball.admin")) {
@@ -391,6 +415,12 @@ public class EventListener implements Listener{
 			if(plugin.grenades) {
 				Grenade.hit(shot, plugin);
 			}
+		} else if(shot instanceof Fireball) {
+			//TEST
+			if(true) {
+				Rocket rocket = Rocket.isRocket((Fireball) shot); 
+				if(rocket != null) rocket.die();
+			}
 		}
 	}
 
@@ -438,7 +468,7 @@ public class EventListener implements Listener{
 				//TEST
 				//block.setTypeId(0);
 				event.setCancelled(true);
-				Snowman snowman = (Snowman) block.getLocation().getWorld().spawnEntity(player.getLocation(), EntityType.SNOWMAN);
+				Snowman snowman = (Snowman) block.getLocation().getWorld().spawnEntity(block.getLocation(), EntityType.SNOWMAN);
 				new Turret(player, snowman, plugin.mm.getMatch(player), plugin);
 				ItemStack i = player.getItemInHand();
 				if(i.getAmount() <= 1) player.setItemInHand(null);

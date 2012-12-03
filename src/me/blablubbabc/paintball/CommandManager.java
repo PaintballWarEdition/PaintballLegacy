@@ -17,10 +17,12 @@ public class CommandManager implements CommandExecutor{
 	private CmdArena cmdArena;
 	private CmdAdmin cmdAdmin;
 	private CmdShop cmdShop;
+	private String blablubbabc;
 
 
 	public CommandManager(Paintball pl) {
 		plugin = pl;
+		blablubbabc = plugin.aqua+""+ plugin.bold+"[ "+plugin.gold+""+plugin.italic+""+plugin.bold+"Paintball by blablubbabc"+plugin.reset+plugin.aqua+""+ plugin.bold+" ]";
 		cmdArena = new CmdArena(plugin, plugin.am);
 		cmdAdmin = new CmdAdmin(plugin);
 		cmdShop = new CmdShop(plugin);
@@ -189,7 +191,7 @@ public class CommandManager implements CommandExecutor{
 	}
 	
 	public void pbinfo(CommandSender sender) {
-		sender.sendMessage(plugin.aqua+""+ plugin.bold+"[ "+plugin.gold+""+plugin.italic+""+plugin.bold+"Paintball by blablubbabc"+plugin.reset+plugin.aqua+""+ plugin.bold+" ]");
+		sender.sendMessage(blablubbabc);
 		sender.sendMessage(plugin.dark_green+"Permission: "+plugin.gold+(hasGeneralPerm(sender) ? plugin.t.getString("ALLOWED_TO_PLAY_PAINTBALL"):plugin.t.getString("NOT_ALLOWED_TO_PLAY_PAINTBALL")));
 		sender.sendMessage(plugin.dark_green+"Version: "+plugin.gold+plugin.getDescription().getVersion());
 		sender.sendMessage(plugin.dark_green+"Website: "+plugin.gold+"dev.bukkit.org/server-mods/paintball_pure_war/");
@@ -203,7 +205,7 @@ public class CommandManager implements CommandExecutor{
 	}
 	
 	public void pbhelp(CommandSender sender) {
-		sender.sendMessage(plugin.aqua+""+ plugin.bold+"[ "+plugin.gold+""+plugin.italic+""+plugin.bold+"Paintball by blablubbabc"+plugin.reset+plugin.aqua+""+ plugin.bold+" ]");
+		sender.sendMessage(blablubbabc);
 		sender.sendMessage(plugin.t.getString("COMMAND_GENERAL_HELP"));
 		String info = plugin.t.getString("COMMAND_GENERAL_INFO");
 		if(!ChatColor.stripColor(info).contains("info")) info = "&c/pb info &b- Showing information about paintball plugin.";
@@ -232,7 +234,7 @@ public class CommandManager implements CommandExecutor{
 		sender.sendMessage(plugin.t.getString("COMMAND_GENERAL_CASH"));
 	}
 	public void arenahelp(CommandSender sender) {
-		sender.sendMessage(plugin.aqua+""+ plugin.bold+"[ "+plugin.gold+""+plugin.italic+""+plugin.bold+"Paintball by blablubbabc"+plugin.reset+plugin.aqua+""+ plugin.bold+" ]");
+		sender.sendMessage(blablubbabc);
 		sender.sendMessage(plugin.t.getString("COMMAND_ARENA_HELP"));
 		sender.sendMessage(plugin.t.getString("COMMAND_ARENA_ARENA"));
 		sender.sendMessage(plugin.t.getString("COMMAND_ARENA_LIST"));
@@ -257,7 +259,7 @@ public class CommandManager implements CommandExecutor{
 		sender.sendMessage(plugin.t.getString("COMMAND_ARENA_SET"));
 	}
 	public void adminhelp(CommandSender sender) {
-		sender.sendMessage(plugin.aqua+""+ plugin.bold+"[ "+plugin.gold+""+plugin.italic+""+plugin.bold+"Paintball by blablubbabc"+plugin.reset+plugin.aqua+""+ plugin.bold+" ]");
+		sender.sendMessage(blablubbabc);
 		sender.sendMessage(plugin.t.getString("COMMAND_ADMIN_HELP"));
 		sender.sendMessage(plugin.t.getString("COMMAND_ADMIN_ARENA"));
 		sender.sendMessage(plugin.t.getString("COMMAND_ADMIN_ADMIN"));
