@@ -545,7 +545,11 @@ public class Match {
 			}
 			//remove turrets:
 			for(Turret t : Turret.getTurrets(player)) {
-				t.die();
+				t.die(true);
+			}
+			//remove mines:
+			for(Mine m : Mine.getMines(player)) {
+				m.explode(false);
 			}
 			//survivors?->endGame
 			//math over already?
@@ -664,7 +668,11 @@ public class Match {
 				respawnsLeft.put(target, 0);
 				//remove turrets:
 				for(Turret t : Turret.getTurrets(target)) {
-					t.die();
+					t.die(true);
+				}
+				//remove mines:
+				for(Mine m : Mine.getMines(target)) {
+					m.explode(false);
 				}
 				plugin.getServer().getScheduler().scheduleSyncDelayedTask(plugin, new Runnable() {
 					
@@ -682,7 +690,11 @@ public class Match {
 		} else {
 			//remove turrets:
 			for(Turret t : Turret.getTurrets(target)) {
-				t.die();
+				t.die(true);
+			}
+			//remove mines:
+			for(Mine m : Mine.getMines(target)) {
+				m.explode(false);
 			}
 			plugin.getServer().getScheduler().scheduleSyncDelayedTask(plugin, new Runnable() {
 				
@@ -733,7 +745,7 @@ public class Match {
 				respawnsLeft.put(target, 0);
 				//remove turrets:
 				for(Turret t : Turret.getTurrets(target)) {
-					t.die();
+					t.die(true);
 				}
 				plugin.joinLobby(target);
 
@@ -744,7 +756,11 @@ public class Match {
 		} else {
 			//remove turrets:
 			for(Turret t : Turret.getTurrets(target)) {
-				t.die();
+				t.die(true);
+			}
+			//remove mines:
+			for(Mine m : Mine.getMines(target)) {
+				m.explode(false);
 			}
 			plugin.joinLobby(target);
 		}
@@ -762,11 +778,11 @@ public class Match {
 		for(Player p : getAllPlayer()) {
 			//remove turrets:
 			for(Turret t : Turret.getTurrets(p)) {
-				t.die();
+				t.die(false);
 			}
 			//remove mines:
 			for(Mine m : Mine.getMines(p)) {
-				m.explode();
+				m.explode(false);
 			}
 		}
 		if(!draw) {

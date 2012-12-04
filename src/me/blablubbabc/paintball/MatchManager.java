@@ -6,6 +6,7 @@ import java.util.HashMap;
 import java.util.Map.Entry;
 import java.util.Set;
 
+import me.blablubbabc.paintball.extras.Mine;
 import me.blablubbabc.paintball.extras.Turret;
 
 import org.bukkit.Location;
@@ -50,7 +51,10 @@ public class MatchManager{
 						plugin.joinLobby(p);
 						//remove turrets
 						for(Turret t : Turret.getTurrets(p)) {
-							t.die();
+							t.die(false);
+						}
+						for(Mine m : Mine.getMines(p)) {
+							m.explode(false);
 						}
 					}
 				}

@@ -83,23 +83,26 @@ public class Mine {
 					@Override
 					public void run() {
 						if (!exploded) {
-
-							if (plugin.effects) {
-								// effect
-								for (Player p : match.getAllPlayer()) {
-									Location ploc = p.getLocation();
-									if(ploc.getWorld().equals(block.getWorld())) {
-										double dist = ploc.distance(loc);
-										if (dist < 10) {
-											p.playSound(loc, Sound.CLICK,(float) (200-(dist*20)),20F);
+							if(block.getType() == Material.FLOWER_POT) {
+								if (plugin.effects) {
+									// effect
+									for (Player p : match.getAllPlayer()) {
+										Location ploc = p.getLocation();
+										if(ploc.getWorld().equals(block.getWorld())) {
+											double dist = ploc.distance(loc);
+											if (dist < 10) {
+												p.playSound(loc, Sound.CLICK,((float) (100-(dist*10))),20F);
+											}
 										}
 									}
 								}
-							}
-							if (nearEnemy()) {
-								explode();
+								if (nearEnemy()) {
+									explode(true);
+								} else {
+									tick();
+								}
 							} else {
-								tick();
+								explode(false);
 							}
 						}
 					}
@@ -124,8 +127,8 @@ public class Mine {
 						loc1.getZ()),
 				Vec3D.a(loc2.getX(), loc2.getY(), loc2.getZ())) == null;
 	}
-
-	public synchronized void explode() {
+	
+	public synchronized void explode(boolean effect) {
 		if (!exploded) {
 			exploded = true;
 			if (tickTask != -1)
@@ -134,31 +137,33 @@ public class Mine {
 				block.setType(Material.AIR);
 			removeMine(this);
 
-			// some effect here:
-			if (plugin.effects) {
-				// effect
-				loc.getWorld().playEffect(loc, Effect.SMOKE, 1);
-				loc.getWorld().playEffect(loc, Effect.SMOKE, 2);
-				loc.getWorld().playEffect(loc, Effect.SMOKE, 3);
-				loc.getWorld().playEffect(loc, Effect.SMOKE, 4);
-				loc.getWorld().playEffect(loc, Effect.SMOKE, 5);
-				loc.getWorld().playEffect(loc, Effect.SMOKE, 6);
-				loc.getWorld().playEffect(loc, Effect.SMOKE, 7);
-				loc.getWorld().playEffect(loc, Effect.SMOKE, 8);
-				/*loc.getWorld().playEffect(loc, Effect.MOBSPAWNER_FLAMES, 1);
-				loc.getWorld().playEffect(loc, Effect.MOBSPAWNER_FLAMES, 2);
-				loc.getWorld().playEffect(loc, Effect.MOBSPAWNER_FLAMES, 3);*/
-				loc.getWorld().playEffect(loc, Effect.MOBSPAWNER_FLAMES, 4);
-				/*loc.getWorld().playEffect(loc, Effect.MOBSPAWNER_FLAMES, 5);
-				loc.getWorld().playEffect(loc, Effect.MOBSPAWNER_FLAMES, 6);
-				loc.getWorld().playEffect(loc, Effect.MOBSPAWNER_FLAMES, 7);
-				loc.getWorld().playEffect(loc, Effect.MOBSPAWNER_FLAMES, 8);*/
-			}
+			if(effect) {
+				// some effect here:
+				if (plugin.effects) {
+					// effect
+					loc.getWorld().playEffect(loc, Effect.SMOKE, 1);
+					loc.getWorld().playEffect(loc, Effect.SMOKE, 2);
+					loc.getWorld().playEffect(loc, Effect.SMOKE, 3);
+					loc.getWorld().playEffect(loc, Effect.SMOKE, 4);
+					loc.getWorld().playEffect(loc, Effect.SMOKE, 5);
+					loc.getWorld().playEffect(loc, Effect.SMOKE, 6);
+					loc.getWorld().playEffect(loc, Effect.SMOKE, 7);
+					loc.getWorld().playEffect(loc, Effect.SMOKE, 8);
+					/*loc.getWorld().playEffect(loc, Effect.MOBSPAWNER_FLAMES, 1);
+					loc.getWorld().playEffect(loc, Effect.MOBSPAWNER_FLAMES, 2);
+					loc.getWorld().playEffect(loc, Effect.MOBSPAWNER_FLAMES, 3);*/
+					loc.getWorld().playEffect(loc, Effect.MOBSPAWNER_FLAMES, 4);
+					/*loc.getWorld().playEffect(loc, Effect.MOBSPAWNER_FLAMES, 5);
+					loc.getWorld().playEffect(loc, Effect.MOBSPAWNER_FLAMES, 6);
+					loc.getWorld().playEffect(loc, Effect.MOBSPAWNER_FLAMES, 7);
+					loc.getWorld().playEffect(loc, Effect.MOBSPAWNER_FLAMES, 8);*/
+				}
 
-			loc.getWorld().createExplosion(loc, 0.0F);
-			for (Vector v : directions()) {
-				moveExpSnow(loc.getWorld().spawn(loc, Snowball.class), v,
-						player, plugin);
+				loc.getWorld().createExplosion(loc, 0.0F);
+				for (Vector v : directions()) {
+					moveExpSnow(loc.getWorld().spawn(loc, Snowball.class), v,
+							player, plugin);
+				}
 			}
 		}
 	}

@@ -204,30 +204,32 @@ public class Turret {
 				}, 5L);
 	}
 
-	public synchronized void die() {
+	public synchronized void die(boolean effect) {
 		if (tickTask != -1)
 			plugin.getServer().getScheduler().cancelTask(tickTask);
 		if (salveTask != -1)
 			plugin.getServer().getScheduler().cancelTask(salveTask);
 		removeTurret(this);
 		// some effect here:
-		Location loc = entity.getLocation();
-		entity.getWorld().playEffect(loc.add(0, 1, 0),
-				Effect.SMOKE, 1);
-		entity.getWorld().playEffect(loc.add(0, 1, 0),
-				Effect.SMOKE, 2);
-		entity.getWorld().playEffect(loc.add(0, 1, 0),
-				Effect.SMOKE, 3);
-		entity.getWorld().playEffect(loc.add(0, 1, 0),
-				Effect.SMOKE, 5);
-		entity.getWorld().playEffect(loc.add(0, 1, 0),
-				Effect.SMOKE, 6);
-		entity.getWorld().playEffect(loc.add(0, 1, 0),
-				Effect.SMOKE, 7);
-		entity.getWorld().playEffect(loc.add(0, 1, 0),
-				Effect.SMOKE, 8);
-		entity.getWorld().playEffect(loc.add(0, 1, 0),
-				Effect.MOBSPAWNER_FLAMES, 4);
+		if(effect) {
+			Location loc = entity.getLocation();
+			entity.getWorld().playEffect(loc.add(0, 1, 0),
+					Effect.SMOKE, 1);
+			entity.getWorld().playEffect(loc.add(0, 1, 0),
+					Effect.SMOKE, 2);
+			entity.getWorld().playEffect(loc.add(0, 1, 0),
+					Effect.SMOKE, 3);
+			entity.getWorld().playEffect(loc.add(0, 1, 0),
+					Effect.SMOKE, 5);
+			entity.getWorld().playEffect(loc.add(0, 1, 0),
+					Effect.SMOKE, 6);
+			entity.getWorld().playEffect(loc.add(0, 1, 0),
+					Effect.SMOKE, 7);
+			entity.getWorld().playEffect(loc.add(0, 1, 0),
+					Effect.SMOKE, 8);
+			entity.getWorld().playEffect(loc.add(0, 1, 0),
+					Effect.MOBSPAWNER_FLAMES, 4);
+		}
 
 		if (entity.isValid() && !entity.isDead())
 			entity.remove();
@@ -236,7 +238,7 @@ public class Turret {
 	public synchronized void hit() {
 		this.lives--;
 		if(this.lives <= 0) {
-			this.die();
+			this.die(true);
 		}
 	}
 

@@ -133,7 +133,7 @@ public class EventListener implements Listener {
 			Snowman snowman = (Snowman) event.getEntity();
 			Turret turret = Turret.isTurret(snowman);
 			if (turret != null) {
-				turret.die();
+				turret.die(true);
 			}
 		}
 	}
@@ -445,6 +445,12 @@ public class EventListener implements Listener {
 				if (mm.getMatch(player) != null) {
 					Match match = mm.getMatch(player);
 					Location loc = shot.getLocation();
+					//mine
+					Mine mine = Mine.isMine(loc.getBlock());
+					if(mine != null) {
+						mine.explode(true);
+					}
+					//effect
 					if (plugin.effects) {
 						if (match.isBlue(player)) {
 							loc.getWorld().playEffect(loc, Effect.POTION_BREAK,
