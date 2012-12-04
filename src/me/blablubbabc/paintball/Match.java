@@ -44,7 +44,7 @@ public class Match {
 	private int startTaskId;
 	private int startCount;
 
-	public int roundTime;
+	private int roundTime;
 	private int roundTimeTaskId;
 
 	private ArrayList<Location> redspawns;
@@ -55,12 +55,12 @@ public class Match {
 	private int spawnRed;
 	private int spawnSpec;
 
-	private int setting_balls;
-	private int setting_grenades;
-	private int setting_airstrikes;
-	private int setting_lives;
-	private int setting_respawns;
-	private int setting_round_time;
+	public int setting_balls;
+	public int setting_grenades;
+	public int setting_airstrikes;
+	public int setting_lives;
+	public int setting_respawns;
+	public int setting_round_time;
 
 	public boolean started = false;
 
@@ -86,12 +86,7 @@ public class Match {
 		this.spawnRed = randSpawns.nextInt(redspawns.size());
 		this.spawnSpec = randSpawns.nextInt(specspawns.size());
 
-		this.setting_balls = plugin.balls;
-		this.setting_grenades = plugin.grenadeAmount;
-		this.setting_airstrikes = plugin.airstrikeAmount;
-		this.setting_lives = plugin.lives;
-		this.setting_respawns = plugin.respawns;
-		this.setting_round_time = plugin.roundTimer;
+		
 		calculateSettings();
 
 		//TEAMS
@@ -332,22 +327,22 @@ public class Match {
 	private void calculateSettings() {
 		HashMap<String, Integer> settings = plugin.am.getArenaSettings(arena);
 		//BALLS
-		setting_balls += settings.get("balls");
+		setting_balls = plugin.balls + settings.get("balls");
 		if(setting_balls < -1) setting_balls = -1;
 		//GRENADES
-		setting_grenades += settings.get("grenades");
+		setting_grenades = plugin.grenadeAmount + settings.get("grenades");
 		if(setting_grenades < -1) setting_grenades = -1;
 		//AIRSTRIKES
-		setting_airstrikes += settings.get("airstrikes");
+		setting_airstrikes = plugin.airstrikeAmount + settings.get("airstrikes");
 		if(setting_airstrikes < -1) setting_airstrikes = -1;
 		//LIVES
-		setting_lives += settings.get("lives");
+		setting_lives = plugin.lives + settings.get("lives");
 		if(setting_lives < 1) setting_lives = 1;
 		//RESPAWNS
-		setting_respawns += settings.get("respawns");
+		setting_respawns = plugin.respawns + settings.get("respawns");
 		if(setting_respawns < -1) setting_respawns = -1;
 		//ROUND TIME
-		setting_round_time += settings.get("round_time");
+		setting_round_time = plugin.roundTimer + settings.get("round_time");
 		if(setting_round_time < 30) setting_round_time = 30;
 	}
 

@@ -337,9 +337,10 @@ public class EventListener implements Listener {
 	public void onPlayerInteract(PlayerInteractEvent event) {
 		Player player = (Player) event.getPlayer();
 		if (Lobby.getTeam(player) != null) {
-			if (mm.getMatch(player) != null && Lobby.isPlaying(player)
-					&& mm.getMatch(player).started
-					&& mm.getMatch(player).isSurvivor(player)) {
+			Match match = mm.getMatch(player);
+			if (match != null && Lobby.isPlaying(player)
+					&& match.started
+					&& match.isSurvivor(player)) {
 				// AIRSTRIKE
 				if (player.getItemInHand().getTypeId() == 280) {
 					if (event.getAction().equals(Action.LEFT_CLICK_AIR)
@@ -348,17 +349,24 @@ public class EventListener implements Listener {
 							if (!Airstrike.active) {
 								Airstrike.call(plugin, player);
 								// zählen
-								mm.getMatch(player).airstrike(player);
+								match.airstrike(player);
 								// remove stick if not infinite
-								if (plugin.airstrikeAmount != -1) {
-									int amount = (player.getInventory()
+								if (match.setting_airstrikes != -1) {
+									ItemStack i = player.getItemInHand();
+									if (i.getAmount() <= 1)
+										player.setItemInHand(null);
+									else {
+										i.setAmount(i.getAmount() - 1);
+										player.setItemInHand(i);
+									}
+									/*int amount = (player.getInventory()
 											.getItemInHand().getAmount() - 1);
 									if (amount > 0)
 										player.getInventory().setItemInHand(
 												new ItemStack(280, amount));
 									else
 										player.getInventory().setItemInHand(
-												null);
+												null);*/
 								}
 							} else {
 								player.sendMessage(plugin.t
@@ -388,6 +396,14 @@ public class EventListener implements Listener {
 						rocket.setVelocity(player.getLocation().getDirection()
 								.clone().normalize().multiply(1.5));
 						new Rocket(player, rocket, plugin);
+						ItemStack i = player.getItemInHand();
+						if (i.getAmount() <= 1)
+							player.setItemInHand(null);
+						else {
+							i.setAmount(i.getAmount() - 1);
+							player.setItemInHand(i);
+						}
+						
 					}
 				}
 			}
