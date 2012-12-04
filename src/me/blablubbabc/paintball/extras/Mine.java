@@ -91,7 +91,9 @@ public class Mine {
 										if(ploc.getWorld().equals(block.getWorld())) {
 											double dist = ploc.distance(loc);
 											if (dist < 10) {
-												p.playSound(loc, Sound.CLICK,((float) (100-(dist*10))),20F);
+												float vol = (float) (110-(dist*10));
+												float pitch = (float) (15-dist);
+												p.playSound(loc, Sound.CLICK,vol,pitch);
 											}
 										}
 									}
