@@ -90,10 +90,8 @@ public class Mine {
 										Location ploc = p.getLocation();
 										if(ploc.getWorld().equals(block.getWorld())) {
 											double dist = ploc.distance(loc);
-											if (dist < 10) {
-												float vol = (float) (110-(dist*10));
-												float pitch = (float) (15-dist);
-												p.playSound(loc, Sound.CLICK,vol,pitch);
+											if (dist < 6) {
+												p.playSound(loc, Sound.CLICK,10F,40F);
 											}
 										}
 									}

@@ -65,7 +65,7 @@ public class Rocket {
 						if (entity.isValid() && !entity.isDead() && lives > 0) {
 							lives--;
 
-							if (plugin.effects && lives < plugin.rocketRange-1) {
+							if (plugin.effects && lives < (plugin.rocketRange*10)-1) {
 								Location loc = entity.getLocation();
 								// effect
 								entity.getWorld().playEffect(loc, Effect.SMOKE,

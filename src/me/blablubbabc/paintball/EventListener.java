@@ -462,7 +462,7 @@ public class EventListener implements Listener {
 					Match match = mm.getMatch(player);
 					Location loc = shot.getLocation();
 					//mine
-					Mine mine = Mine.isMine(loc.getBlock());
+					Mine mine = Mine.isMine(loc.add(shot.getVelocity().clone().normalize().multiply(0.2)).getBlock());
 					if(mine != null) {
 						mine.explode(true);
 					}
@@ -483,8 +483,7 @@ public class EventListener implements Listener {
 				Grenade.hit(shot, plugin);
 			}
 		} else if (shot instanceof Fireball) {
-			// TEST
-			if (true) {
+			if (plugin.rocket) {
 				Rocket rocket = Rocket.isRocket((Fireball) shot);
 				if (rocket != null)
 					rocket.die();
