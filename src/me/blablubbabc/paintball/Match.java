@@ -572,7 +572,8 @@ public class Match {
 		//add 1
 		shots.put(player.getName(), shots.get(player.getName())+1);
 		//effekt
-		player.playSound(player.getLocation(), Sound.WOOD_CLICK, 100F, 0F);
+		Location loc = player.getLocation();
+		loc.getWorld().playSound(loc, Sound.WOOD_CLICK, 100F, 0F);
 	}
 	public synchronized void grenade(Player player) {
 		//add 1

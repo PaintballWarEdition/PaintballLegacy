@@ -384,20 +384,12 @@ public class EventListener implements Listener {
 						Fireball rocket = player
 								.launchProjectile(Fireball.class);
 						rocket.setShooter(player);
-						// Fireball rocket =
-						// (Fireball)player.getWorld().spawnEntity(player.getLocation().add(player.getLocation().getDirection().clone().normalize().multiply(2)),
-						// EntityType.FIREBALL);
 						rocket.setVelocity(player.getLocation().getDirection()
 								.clone().normalize().multiply(1.5));
 						new Rocket(player, rocket, plugin);
 					}
 				}
-			} /*
-			 * else if(event.getClickedBlock() != null &&
-			 * !event.getClickedBlock().getType().equals(Material.NOTE_BLOCK)) {
-			 * if(!player.isOp() && !player.hasPermission("paintball.admin")) {
-			 * event.setCancelled(true); } }
-			 */
+			}
 		}
 	}
 

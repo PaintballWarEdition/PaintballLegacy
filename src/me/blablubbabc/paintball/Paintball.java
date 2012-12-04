@@ -190,6 +190,7 @@ public class Paintball extends JavaPlugin{
 		goodsDef.add("50-Balls-332-0-65");
 		goodsDef.add("100-Balls-332-0-120");
 		goodsDef.add("1-Grenade-344-0-20");
+		goodsDef.add("1-Rocket Launcher-356-0-40");
 		goodsDef.add("1-Airstrike-280-0-100");
 		goodsDef.add("1-Turret-86-0-200");
 
