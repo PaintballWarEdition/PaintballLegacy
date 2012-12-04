@@ -394,7 +394,7 @@ public class EventListener implements Listener {
 								.launchProjectile(Fireball.class);
 						rocket.setShooter(player);
 						rocket.setVelocity(player.getLocation().getDirection()
-								.clone().normalize().multiply(1.5));
+								.clone().normalize().multiply(plugin.rocketSpeedMulti));
 						new Rocket(player, rocket, plugin);
 						ItemStack i = player.getItemInHand();
 						if (i.getAmount() <= 1)

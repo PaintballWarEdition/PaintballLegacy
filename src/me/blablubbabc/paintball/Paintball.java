@@ -140,6 +140,10 @@ public class Paintball extends JavaPlugin{
 	public int turretCooldown;
 	public int turretLives;
 	
+	public boolean rocket;
+	public int rocketRange;
+	public double rocketSpeedMulti;
+	
 	//TODO
 	//shop-items
 	//Extras: Luftschlag, verschiedene munition, airdrops, punktesystem abhängig von spieler im match, evt. bester spieler der runde, mehr extras :D
@@ -265,6 +269,9 @@ public class Paintball extends JavaPlugin{
 		if(getConfig().get("Paintball.Extras.Turret.shots per salve") == null)getConfig().set("Paintball.Extras.Turret.shots per salve", 15);
 		if(getConfig().get("Paintball.Extras.Turret.cooldown in seconds") == null)getConfig().set("Paintball.Extras.Turret.cooldown in seconds", 3);
 		if(getConfig().get("Paintball.Extras.Turret.lives") == null)getConfig().set("Paintball.Extras.Turret.lives", 10);
+		if(getConfig().get("Paintball.Extras.Rocket.enabled") == null)getConfig().set("Paintball.Extras.Rocket.enabled", true);
+		if(getConfig().get("Paintball.Extras.Rocket.Range in Seconds") == null)getConfig().set("Paintball.Extras.Airstrike.Range in Seconds", 4);
+		if(getConfig().get("Paintball.Extras.Rocket.Speed Multi") == null)getConfig().set("Paintball.Extras.Airstrike.Speed Multi", 1.5);
 		if(getConfig().get("Paintball.Shop.enabled") == null)getConfig().set("Paintball.Shop.enabled", true);
 		if(getConfig().get("Paintball.Shop.Goods (amount-name-id-subid-price)") == null)getConfig().set("Paintball.Shop.Goods (amount-name-id-subid-price)", goodsDef);
 		saveConfig();
@@ -385,6 +392,11 @@ public class Paintball extends JavaPlugin{
 		if(turretCooldown < 0) turretCooldown = 0;
 		turretLives = getConfig().getInt("Paintball.Extras.Turret.lives", 10);
 		if(turretLives < 0) turretLives = 0;
+		
+		rocket = getConfig().getBoolean("Paintball.Extras.Rocket.enabled", true);
+		rocketRange = getConfig().getInt("Paintball.Extras.Airstrike.Range in Seconds", 4);
+		if(rocketRange < 1) rocketRange = 1;
+		rocketSpeedMulti = getConfig().getDouble("Paintball.Extras.Airstrike.Speed Multi", 1.5);
 
 		//SQLite with version: 110
 		sql = new BlaSQLite(new File(this.getDataFolder().toString()+"/"+"pbdata_110"+".db"), this);

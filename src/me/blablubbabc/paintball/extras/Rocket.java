@@ -44,13 +44,14 @@ public class Rocket {
 	public final Paintball plugin;
 
 	private int tickTask = -1;
-	private int lives = 40;
+	private int lives;
 	private boolean exploded = false;
 
 	public Rocket(Player player, Fireball rocket, Paintball plugin) {
 		this.entity = rocket;
 		this.player = player;
 		this.plugin = plugin;
+		this.lives = plugin.rocketRange*10;
 		addRocket(this);
 		tick();
 	}
@@ -64,7 +65,7 @@ public class Rocket {
 						if (entity.isValid() && !entity.isDead() && lives > 0) {
 							lives--;
 
-							if (plugin.effects && lives < 40) {
+							if (plugin.effects && lives < plugin.rocketRange-1) {
 								Location loc = entity.getLocation();
 								// effect
 								entity.getWorld().playEffect(loc, Effect.SMOKE,
