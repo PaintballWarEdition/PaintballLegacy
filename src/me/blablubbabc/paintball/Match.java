@@ -622,7 +622,7 @@ public class Match {
 		}
 	}
 
-	public synchronized void frag(Player target, Player killer) {
+	public synchronized void frag(final Player target, Player killer) {
 		//math over already?
 		if(matchOver) return;
 
@@ -664,7 +664,14 @@ public class Match {
 				for(Turret t : Turret.getTurrets(target)) {
 					t.die();
 				}
-				plugin.joinLobby(target);
+				plugin.getServer().getScheduler().scheduleSyncDelayedTask(plugin, new Runnable() {
+					
+					@Override
+					public void run() {
+						plugin.joinLobby(target);
+						
+					}
+				}, 1L);
 
 				Lobby.getTeam(target).removeMember(target);
 				plugin.nf.afkLeave(target, this);
@@ -675,7 +682,14 @@ public class Match {
 			for(Turret t : Turret.getTurrets(target)) {
 				t.die();
 			}
-			plugin.joinLobby(target);
+			plugin.getServer().getScheduler().scheduleSyncDelayedTask(plugin, new Runnable() {
+				
+				@Override
+				public void run() {
+					plugin.joinLobby(target);
+					
+				}
+			}, 1L);
 		}
 
 		//survivors?->endGame
