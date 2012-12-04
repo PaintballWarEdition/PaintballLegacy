@@ -5,6 +5,7 @@ import java.util.HashMap;
 import java.util.HashSet;
 import me.blablubbabc.paintball.extras.Airstrike;
 import me.blablubbabc.paintball.extras.Grenade;
+import me.blablubbabc.paintball.extras.Mine;
 import me.blablubbabc.paintball.extras.Rocket;
 import me.blablubbabc.paintball.extras.Turret;
 import org.bukkit.ChatColor;
@@ -506,14 +507,13 @@ public class EventListener implements Listener {
 	public void onPlayerPlace(BlockPlaceEvent event) {
 		Player player = event.getPlayer();
 		if (Lobby.getTeam(player) != null) {
-			if (!player.isOp()
-					&& !player.hasPermission("paintball.admin")) {
+			if (!player.isOp() && !player.hasPermission("paintball.admin")) {
 				event.setCancelled(true);
 			}
-			Block block = event.getBlockPlaced();
+			final Block block = event.getBlockPlaced();
 			Match m = plugin.mm.getMatch(player);
 			if (m != null && m.isSurvivor(player)) {
-				if (block.getType() == Material.PUMPKIN ) {
+				if (block.getType() == Material.PUMPKIN) {
 					// turret:
 					event.setCancelled(true);
 					Snowman snowman = (Snowman) block
@@ -523,6 +523,24 @@ public class EventListener implements Listener {
 									EntityType.SNOWMAN);
 					new Turret(player, snowman, plugin.mm.getMatch(player),
 							plugin);
+					ItemStack i = player.getItemInHand();
+					if (i.getAmount() <= 1)
+						player.setItemInHand(null);
+					else {
+						i.setAmount(i.getAmount() - 1);
+						player.setItemInHand(i);
+					}
+				} else if (block.getType() == Material.FLOWER_POT) {
+					// mine:
+					event.setCancelled(true);
+					plugin.getServer().getScheduler().scheduleSyncDelayedTask(this.plugin, new Runnable() {
+
+						@Override
+						public void run() {
+							block.setType(Material.FLOWER_POT);
+						}
+					}, 1L);
+					new Mine(player, block, plugin.mm.getMatch(player), plugin);
 					ItemStack i = player.getItemInHand();
 					if (i.getAmount() <= 1)
 						player.setItemInHand(null);

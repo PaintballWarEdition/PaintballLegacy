@@ -86,8 +86,15 @@ public class Mine {
 
 							if (plugin.effects) {
 								// effect
-								loc.getWorld().playSound(loc, Sound.CLICK,
-										100F, 0F);
+								for (Player p : match.getAllPlayer()) {
+									Location ploc = p.getLocation();
+									if(ploc.getWorld().equals(block.getWorld())) {
+										double dist = ploc.distance(loc);
+										if (dist < 10) {
+											p.playSound(loc, Sound.CLICK,(float) (200-(dist*20)),20F);
+										}
+									}
+								}
 							}
 							if (nearEnemy()) {
 								explode();
@@ -138,20 +145,18 @@ public class Mine {
 				loc.getWorld().playEffect(loc, Effect.SMOKE, 6);
 				loc.getWorld().playEffect(loc, Effect.SMOKE, 7);
 				loc.getWorld().playEffect(loc, Effect.SMOKE, 8);
-				loc.getWorld().playEffect(loc, Effect.MOBSPAWNER_FLAMES, 1);
+				/*loc.getWorld().playEffect(loc, Effect.MOBSPAWNER_FLAMES, 1);
 				loc.getWorld().playEffect(loc, Effect.MOBSPAWNER_FLAMES, 2);
-				loc.getWorld().playEffect(loc, Effect.MOBSPAWNER_FLAMES, 3);
+				loc.getWorld().playEffect(loc, Effect.MOBSPAWNER_FLAMES, 3);*/
 				loc.getWorld().playEffect(loc, Effect.MOBSPAWNER_FLAMES, 4);
-				loc.getWorld().playEffect(loc, Effect.MOBSPAWNER_FLAMES, 5);
+				/*loc.getWorld().playEffect(loc, Effect.MOBSPAWNER_FLAMES, 5);
 				loc.getWorld().playEffect(loc, Effect.MOBSPAWNER_FLAMES, 6);
 				loc.getWorld().playEffect(loc, Effect.MOBSPAWNER_FLAMES, 7);
-				loc.getWorld().playEffect(loc, Effect.MOBSPAWNER_FLAMES, 8);
+				loc.getWorld().playEffect(loc, Effect.MOBSPAWNER_FLAMES, 8);*/
 			}
 
 			loc.getWorld().createExplosion(loc, 0.0F);
 			for (Vector v : directions()) {
-				moveExpSnow(loc.getWorld().spawn(loc, Snowball.class), v,
-						player, plugin);
 				moveExpSnow(loc.getWorld().spawn(loc, Snowball.class), v,
 						player, plugin);
 			}

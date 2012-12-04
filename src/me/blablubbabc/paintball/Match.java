@@ -7,6 +7,7 @@ import java.util.List;
 import java.util.Random;
 import java.util.Set;
 
+import me.blablubbabc.paintball.extras.Mine;
 import me.blablubbabc.paintball.extras.Turret;
 import net.minecraft.server.NBTTagCompound;
 
@@ -573,7 +574,7 @@ public class Match {
 		shots.put(player.getName(), shots.get(player.getName())+1);
 		//effekt
 		Location loc = player.getLocation();
-		loc.getWorld().playSound(loc, Sound.WOOD_CLICK, 100F, 0F);
+		player.playSound(loc, Sound.WOOD_CLICK, 100F, 0F);
 	}
 	public synchronized void grenade(Player player) {
 		//add 1
@@ -762,6 +763,10 @@ public class Match {
 			//remove turrets:
 			for(Turret t : Turret.getTurrets(p)) {
 				t.die();
+			}
+			//remove mines:
+			for(Mine m : Mine.getMines(p)) {
+				m.explode();
 			}
 		}
 		if(!draw) {

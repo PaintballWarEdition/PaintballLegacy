@@ -113,28 +113,31 @@ public class Turret {
 		double distance = 0;
 		for (Player p : match.getEnemyTeam(player)) {
 			if (match.isSurvivor(p)) {
-				Vector targetVec = p.getLocation().toVector()
-						.add(new Vector(0, 1, 0));
-				Vector dir = targetVec.clone().subtract(entVec).normalize();
-				Vector dir2 = new Vector(dir.getX(), 0, dir.getZ()).normalize();
-				if (entity.hasLineOfSight(p)
-						&& canBeShoot(entVec.clone().add(new Vector(0, 2, 0))
-								.add(dir2), targetVec.clone(), dir2.clone())) {
-					double dist2 = entity.getLocation().distance(
-							p.getLocation());
-					if (dist2 <= instantRadius) {
-						nearest = p;
-						distance = dist2;
-						break;
-					} else if (dist2 <= maxRadius) {
-						if (nearest != null) {
-							if (dist2 < distance) {
+				Location ploc = p.getLocation();
+				if(ploc.getWorld().equals(entity.getWorld())) {
+					Vector targetVec = ploc.toVector()
+							.add(new Vector(0, 1, 0));
+					Vector dir = targetVec.clone().subtract(entVec).normalize();
+					Vector dir2 = new Vector(dir.getX(), 0, dir.getZ()).normalize();
+					if (entity.hasLineOfSight(p)
+							&& canBeShoot(entVec.clone().add(new Vector(0, 2, 0))
+									.add(dir2), targetVec.clone(), dir2.clone())) {
+						double dist2 = entity.getLocation().distance(
+								ploc);
+						if (dist2 <= instantRadius) {
+							nearest = p;
+							distance = dist2;
+							break;
+						} else if (dist2 <= maxRadius) {
+							if (nearest != null) {
+								if (dist2 < distance) {
+									nearest = p;
+									distance = dist2;
+								}
+							} else {
 								nearest = p;
 								distance = dist2;
 							}
-						} else {
-							nearest = p;
-							distance = dist2;
 						}
 					}
 				}
