@@ -5,7 +5,6 @@ import java.util.ArrayList;
 import me.blablubbabc.paintball.Match;
 import me.blablubbabc.paintball.Paintball;
 import net.minecraft.server.Vec3D;
-
 import org.bukkit.Effect;
 import org.bukkit.Location;
 import org.bukkit.Material;
@@ -83,15 +82,20 @@ public class Mine {
 					@Override
 					public void run() {
 						if (!exploded) {
-							if(block.getType() == Material.FLOWER_POT) {
+							if (block.getType() == Material.FLOWER_POT) {
 								if (plugin.effects) {
 									// effect
 									for (Player p : match.getAllPlayer()) {
 										Location ploc = p.getLocation();
-										if(ploc.getWorld().equals(block.getWorld())) {
+										if (ploc.getWorld().equals(
+												block.getWorld())) {
 											double dist = ploc.distance(loc);
-											if (dist < 6) {
-												p.playSound(loc, Sound.CLICK,10F,40F);
+											if (dist < 20) {
+												float vol = (float) (0.2-(dist*0.01));
+												float pitch = (float) (2-(dist*0.06));
+												p.playSound(loc, Sound.CLICK, vol, pitch);
+												// p.playSound(loc,
+												// Sound.CLICK,0.1F,0F);
 											}
 										}
 									}
@@ -127,7 +131,7 @@ public class Mine {
 						loc1.getZ()),
 				Vec3D.a(loc2.getX(), loc2.getY(), loc2.getZ())) == null;
 	}
-	
+
 	public synchronized void explode(boolean effect) {
 		if (!exploded) {
 			exploded = true;
@@ -137,7 +141,7 @@ public class Mine {
 				block.setType(Material.AIR);
 			removeMine(this);
 
-			if(effect) {
+			if (effect) {
 				// some effect here:
 				if (plugin.effects) {
 					// effect
@@ -149,14 +153,7 @@ public class Mine {
 					loc.getWorld().playEffect(loc, Effect.SMOKE, 6);
 					loc.getWorld().playEffect(loc, Effect.SMOKE, 7);
 					loc.getWorld().playEffect(loc, Effect.SMOKE, 8);
-					/*loc.getWorld().playEffect(loc, Effect.MOBSPAWNER_FLAMES, 1);
-					loc.getWorld().playEffect(loc, Effect.MOBSPAWNER_FLAMES, 2);
-					loc.getWorld().playEffect(loc, Effect.MOBSPAWNER_FLAMES, 3);*/
 					loc.getWorld().playEffect(loc, Effect.MOBSPAWNER_FLAMES, 4);
-					/*loc.getWorld().playEffect(loc, Effect.MOBSPAWNER_FLAMES, 5);
-					loc.getWorld().playEffect(loc, Effect.MOBSPAWNER_FLAMES, 6);
-					loc.getWorld().playEffect(loc, Effect.MOBSPAWNER_FLAMES, 7);
-					loc.getWorld().playEffect(loc, Effect.MOBSPAWNER_FLAMES, 8);*/
 				}
 
 				loc.getWorld().createExplosion(loc, 0.0F);
