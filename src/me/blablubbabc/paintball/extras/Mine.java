@@ -92,10 +92,7 @@ public class Mine {
 											double dist = ploc.distance(loc);
 											if (dist < 20) {
 												float vol = (float) (0.2-(dist*0.01));
-												float pitch = (float) (2-(dist*0.06));
-												p.playSound(loc, Sound.CLICK, vol, pitch);
-												// p.playSound(loc,
-												// Sound.CLICK,0.1F,0F);
+												p.playSound(loc, Sound.CLICK, vol, 2F);
 											}
 										}
 									}
