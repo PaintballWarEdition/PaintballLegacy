@@ -14,7 +14,6 @@ import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.Sound;
 import org.bukkit.block.Block;
-import org.bukkit.block.BlockFace;
 import org.bukkit.block.BlockState;
 import org.bukkit.block.Sign;
 import org.bukkit.entity.Egg;
@@ -55,6 +54,7 @@ import org.bukkit.event.player.PlayerMoveEvent;
 import org.bukkit.event.player.PlayerPickupItemEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
 import org.bukkit.inventory.ItemStack;
+import org.bukkit.util.BlockIterator;
 import org.bukkit.util.Vector;
 
 public class EventListener implements Listener {
@@ -464,10 +464,15 @@ public class EventListener implements Listener {
 					Location loc = shot.getLocation();
 					//mine
 					Block block = loc.getBlock();
-					for(BlockFace f : BlockFace.values()) {
-						Mine mine = Mine.isMine(block.getRelative(f));
-						if(mine != null) {
-							mine.explode(true);
+					Mine mine = Mine.isMine(block);
+					if(mine != null) {
+						mine.explode(true);
+					}
+					BlockIterator iterator = new BlockIterator(loc.getWorld(), loc.toVector(), shot.getVelocity().normalize(), 0, 1);
+					while(iterator.hasNext()) {
+						Mine m = Mine.isMine(iterator.next());
+						if(m != null) {
+							m.explode(true);
 						}
 					}
 					//effect
