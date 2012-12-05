@@ -1,7 +1,10 @@
 package me.blablubbabc.paintball.extras;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.LinkedList;
+
+import me.blablubbabc.paintball.Match;
 import me.blablubbabc.paintball.Paintball;
 import org.bukkit.Location;
 import org.bukkit.Material;
@@ -14,15 +17,61 @@ import org.bukkit.entity.Player;
 import org.bukkit.util.Vector;
 
 public class Airstrike{
+	private static ArrayList<Airstrike> airstrikes = new ArrayList<Airstrike>();
+
+	public static synchronized void addAirstrike(Airstrike airstrike) {
+		airstrikes.add(airstrike);
+	}
+
+	public static synchronized void removeAirstrike(Airstrike airstrike) {
+		airstrikes.remove(airstrike);
+	}
+
+	public static synchronized ArrayList<Airstrike> getAirstrikes(Match match) {
+		ArrayList<Airstrike> list = new ArrayList<Airstrike>();
+		for (Airstrike a : airstrikes) {
+			if (a.match.equals(match)) {
+				list.add(a);
+			}
+		}
+		return list;
+	}
+
+	public static synchronized ArrayList<Airstrike> getAirstrikes(Player player) {
+		ArrayList<Airstrike> list = new ArrayList<Airstrike>();
+		for (Airstrike a : airstrikes) {
+			if (a.player.equals(player)) {
+				list.add(a);
+			}
+		}
+		return list;
+	}
+	
+	public final Player player;
+	public final Match match;
+	public final Paintball plugin;
+
+	public Airstrike(Player player, Match match, Paintball plugin) {
+		this.match = match;
+		this.player = player;
+		this.plugin = plugin;
+		addAirstrike(this);
+	}
+	
+	
+	
+	
 	
 	private static HashMap<Player, Block> marks = new HashMap<Player, Block>();
 	private static HashMap<Player, Block> finalmarks = new HashMap<Player, Block>();
 	private static int task;
-	public static boolean active = false;
+	//public static boolean active = false;
 	
-	public static void call(final Paintball plugin, final Player player) {
+	public static void call(final Paintball plugin, final Player player, final Match match) {
 		if(marked(player)) {
-			active = true;
+			//active = true;
+			final Airstrike a = new Airstrike(player, match, plugin);
+			
 			Block block = marks.get(player);
 			demark(player);
 			finalMark(block, player);
@@ -65,7 +114,8 @@ public class Airstrike{
 						plugin.getServer().getScheduler().cancelTask(task);
 						definalMark(player);
 						chick.remove();
-						active = false;
+						//active = false;
+						removeAirstrike(a);		
 					}
 				}
 			}, 0L, 5L);

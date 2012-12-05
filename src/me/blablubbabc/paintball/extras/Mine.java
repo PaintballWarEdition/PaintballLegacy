@@ -61,7 +61,6 @@ public class Mine {
 	public final Match match;
 	public final Paintball plugin;
 
-	private int range = 4;
 	private int tickTask = -1;
 	private boolean exploded = false;
 
@@ -114,7 +113,7 @@ public class Mine {
 	private boolean nearEnemy() {
 		for (Player p : match.getEnemyTeam(player)) {
 			if (match.isSurvivor(p)) {
-				if (loc.distance(p.getLocation()) < range && canSee(p, loc)) {
+				if (loc.distance(p.getLocation()) < plugin.mineRange && canSee(p, loc)) {
 					return true;
 				}
 			}
@@ -176,10 +175,10 @@ public class Mine {
 
 					@Override
 					public void run() {
-						if (!s.isDead())
+						if (!s.isDead() || s.isValid())
 							s.remove();
 					}
-				}, (long) plugin.grenadeTime);
+				}, (long) plugin.mineTime);
 	}
 
 	private static ArrayList<Vector> directions() {

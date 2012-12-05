@@ -129,6 +129,8 @@ public class Paintball extends JavaPlugin{
 	public int airstrikeBombs;
 	public int airstrikeAmount;
 	public int airstrikeHeight;
+	public int airstrikeMatchLimit;
+	public int airstrikePlayerLimit;
 
 	public boolean turret;
 	public int turretAngleMin;
@@ -139,10 +141,22 @@ public class Paintball extends JavaPlugin{
 	public int turretSalve;
 	public int turretCooldown;
 	public int turretLives;
+	public int turretMatchLimit;
+	public int turretPlayerLimit;
 	
 	public boolean rocket;
 	public int rocketRange;
 	public double rocketSpeedMulti;
+	public int rocketTime;
+	public int rocketMatchLimit;
+	public int rocketPlayerLimit;
+	
+	public boolean mine;
+	public double mineRange;
+	public int mineTime;
+	public int mineMatchLimit;
+	public int minePlayerLimit;
+	
 	
 	//TODO
 	//shop-items
@@ -194,14 +208,16 @@ public class Paintball extends JavaPlugin{
 		goodsDef.add("50-Balls-332-0-65");
 		goodsDef.add("100-Balls-332-0-120");
 		goodsDef.add("1-Grenade-344-0-20");
+		goodsDef.add("1-Mine-390-0-15");
 		goodsDef.add("1-Rocket Launcher-356-0-40");
 		goodsDef.add("1-Airstrike-280-0-100");
 		goodsDef.add("1-Turret-86-0-200");
+		goodsDef.add("1-Speed-373-16482-35");
 
 		allowedCommands = new ArrayList<String>();
 
 
-		getConfig().options().header("Use a value of -1 to give the players infinite balls or extras. If you insert a not possible value/wrong value in a section the plugin will use the default value or the nearest possible value (Example: your value at section balls: -3 -> plugin will use -1).");
+		getConfig().options().header("Use a value of -1 to give the players infinite balls or extras. If you insert a not possible value/wrong value in a section the plugin will use the default value or the nearest possible value (Example: your value at section balls: -3 -> plugin will use -1). 1 Tick = 1/20 seconds.");
 		if(getConfig().get("Server.Id") == null)getConfig().set("Server.Id", UUID.randomUUID().toString());
 		if(getConfig().get("Server.Version Check") == null)getConfig().set("Server.Version Check", true);
 		if(getConfig().get("Server.List") == null)getConfig().set("Server.List", true);
@@ -252,7 +268,7 @@ public class Paintball extends JavaPlugin{
 		if(getConfig().get("Paintball.Match.Countdown Round Start.Time") == null)getConfig().set("Paintball.Match.Countdown Round Start.Time", 5);
 		if(getConfig().get("Paintball.Match.Round Timer.Time (at least 30)") == null)getConfig().set("Paintball.Match.Round Timer.Time (at least 30)", 120);
 		if(getConfig().get("Paintball.Extras.Grenades.enabled") == null)getConfig().set("Paintball.Extras.Grenades.enabled", true);
-		if(getConfig().get("Paintball.Extras.Grenades.Time-Radius in Ticks (= 1/20 sec)") == null)getConfig().set("Paintball.Extras.Grenades.Time-Radius in Ticks (= 1/20 sec)", 60);
+		if(getConfig().get("Paintball.Extras.Grenades.Explosion-Time-Radius in Ticks") == null)getConfig().set("Paintball.Extras.Grenades.Explosion-Time-Radius in Ticks", 60);
 		if(getConfig().get("Paintball.Extras.Grenades.Speed multi") == null)getConfig().set("Paintball.Extras.Grenades.Speed multi", 1.0);
 		if(getConfig().get("Paintball.Extras.Grenades.Amount") == null)getConfig().set("Paintball.Extras.Grenades.Amount", 0);
 		if(getConfig().get("Paintball.Extras.Airstrike.enabled") == null)getConfig().set("Paintball.Extras.Airstrike.enabled", true);
@@ -260,6 +276,8 @@ public class Paintball extends JavaPlugin{
 		if(getConfig().get("Paintball.Extras.Airstrike.Range (half)") == null)getConfig().set("Paintball.Extras.Airstrike.Range (half)", 30);
 		if(getConfig().get("Paintball.Extras.Airstrike.Bombs") == null)getConfig().set("Paintball.Extras.Airstrike.Bombs", 15);
 		if(getConfig().get("Paintball.Extras.Airstrike.Amount") == null)getConfig().set("Paintball.Extras.Airstrike.Amount", 0);
+		if(getConfig().get("Paintball.Extras.Airstrike.Match Limit") == null)getConfig().set("Paintball.Extras.Airstrike.Match Limit", 3);
+		if(getConfig().get("Paintball.Extras.Airstrike.Player Limit") == null)getConfig().set("Paintball.Extras.Airstrike.Player Limit", 1);
 		if(getConfig().get("Paintball.Extras.Turret.enabled") == null)getConfig().set("Paintball.Extras.Turret.enabled", true);
 		if(getConfig().get("Paintball.Extras.Turret.angleMin (min -90)") == null)getConfig().set("Paintball.Extras.Turret.angleMin (min -90)", -45);
 		if(getConfig().get("Paintball.Extras.Turret.angleMax (max 90)") == null)getConfig().set("Paintball.Extras.Turret.angleMax (max 90)", 45);
@@ -269,9 +287,19 @@ public class Paintball extends JavaPlugin{
 		if(getConfig().get("Paintball.Extras.Turret.shots per salve") == null)getConfig().set("Paintball.Extras.Turret.shots per salve", 15);
 		if(getConfig().get("Paintball.Extras.Turret.cooldown in seconds") == null)getConfig().set("Paintball.Extras.Turret.cooldown in seconds", 3);
 		if(getConfig().get("Paintball.Extras.Turret.lives") == null)getConfig().set("Paintball.Extras.Turret.lives", 10);
+		if(getConfig().get("Paintball.Extras.Turret.Match Limit") == null)getConfig().set("Paintball.Extras.Turret.Match Limit", 15);
+		if(getConfig().get("Paintball.Extras.Turret.Player Limit") == null)getConfig().set("Paintball.Extras.Turret.Player Limit", 3);
 		if(getConfig().get("Paintball.Extras.Rocket.enabled") == null)getConfig().set("Paintball.Extras.Rocket.enabled", true);
 		if(getConfig().get("Paintball.Extras.Rocket.Range in Seconds") == null)getConfig().set("Paintball.Extras.Airstrike.Range in Seconds", 4);
-		if(getConfig().get("Paintball.Extras.Rocket.Speed Multi") == null)getConfig().set("Paintball.Extras.Airstrike.Speed Multi", 1.5);
+		if(getConfig().get("Paintball.Extras.Rocket.Speed Multi") == null)getConfig().set("Paintball.Extras.Rocket.Speed Multi", 1.5);
+		if(getConfig().get("Paintball.Extras.Rocket.Explosion-Time-Radius in Ticks") == null)getConfig().set("Paintball.Extras.Rocket.Explosion-Time-Radius in Ticks", 60);
+		if(getConfig().get("Paintball.Extras.Rocket.Match Limit") == null)getConfig().set("Paintball.Extras.Rocket.Match Limit", 100);
+		if(getConfig().get("Paintball.Extras.Rocket.Player Limit") == null)getConfig().set("Paintball.Extras.Rocket.Player Limit", 20);
+		if(getConfig().get("Paintball.Extras.Mine.enabled") == null)getConfig().set("Paintball.Extras.Mine.enabled", true);
+		if(getConfig().get("Paintball.Extras.Mine.Range") == null)getConfig().set("Paintball.Extras.Mine.Range", 4.0);
+		if(getConfig().get("Paintball.Extras.Mine.Explosion-Time-Radius in Ticks") == null)getConfig().set("Paintball.Extras.Mine.Explosion-Time-Radius in Ticks", 60);
+		if(getConfig().get("Paintball.Extras.Mine.Match Limit") == null)getConfig().set("Paintball.Extras.Mine.Match Limit", 50);
+		if(getConfig().get("Paintball.Extras.Mine.Player Limit") == null)getConfig().set("Paintball.Extras.Mine.Player Limit", 7);
 		if(getConfig().get("Paintball.Shop.enabled") == null)getConfig().set("Paintball.Shop.enabled", true);
 		if(getConfig().get("Paintball.Shop.Goods (amount-name-id-subid-price)") == null)getConfig().set("Paintball.Shop.Goods (amount-name-id-subid-price)", goodsDef);
 		saveConfig();
@@ -358,8 +386,8 @@ public class Paintball extends JavaPlugin{
 
 		//Extras
 		grenades = getConfig().getBoolean("Paintball.Extras.Grenades.enabled", true);
-		grenadeTime = getConfig().getInt("Paintball.Extras.Grenades.Time-Radius in Ticks (= 1/20 sec)", 60);
-		if(grenadeTime < 0) grenadeTime = 0;
+		grenadeTime = getConfig().getInt("Paintball.Extras.Grenades.Explosion-Time-Radius in Ticks", 60);
+		if(grenadeTime < 1) grenadeTime = 1;
 		grenadeSpeed = getConfig().getDouble("Paintball.Extras.Grenades.Speed multi", 1.0);
 		grenadeAmount = getConfig().getInt("Paintball.Extras.Grenades.Amount", 0);
 		if(grenadeAmount < -1) grenadeAmount = -1;
@@ -372,6 +400,10 @@ public class Paintball extends JavaPlugin{
 		if(airstrikeBombs < 0) airstrikeBombs = 0;
 		airstrikeAmount = getConfig().getInt("Paintball.Extras.Airstrike.Amount", 0);
 		if(airstrikeAmount < -1) airstrikeAmount = -1;
+		airstrikeMatchLimit = getConfig().getInt("Paintball.Extras.Airstrike.Match Limit", 3);
+		if(airstrikeMatchLimit < 0) airstrikeMatchLimit = 0;
+		airstrikePlayerLimit = getConfig().getInt("Paintball.Extras.Airstrike.Player Limit", 1);
+		if(airstrikePlayerLimit < 0) airstrikePlayerLimit = 0;
 		
 		turret = getConfig().getBoolean("Paintball.Extras.Turret.enabled", true);
 		turretAngleMin = getConfig().getInt("Paintball.Extras.Turret.angleMin (min -90)", -45);
@@ -392,11 +424,32 @@ public class Paintball extends JavaPlugin{
 		if(turretCooldown < 0) turretCooldown = 0;
 		turretLives = getConfig().getInt("Paintball.Extras.Turret.lives", 10);
 		if(turretLives < 0) turretLives = 0;
+		turretMatchLimit = getConfig().getInt("Paintball.Extras.Turret.Match Limit", 15);
+		if(turretMatchLimit < 0) turretMatchLimit = 0;
+		turretPlayerLimit = getConfig().getInt("Paintball.Extras.Turret.Player Limit", 3);
+		if(turretPlayerLimit < 0) turretPlayerLimit = 0;
 		
 		rocket = getConfig().getBoolean("Paintball.Extras.Rocket.enabled", true);
-		rocketRange = getConfig().getInt("Paintball.Extras.Airstrike.Range in Seconds", 4);
-		if(rocketRange < 1) rocketRange = 1;
-		rocketSpeedMulti = getConfig().getDouble("Paintball.Extras.Airstrike.Speed Multi", 1.5);
+		rocketRange = getConfig().getInt("Paintball.Extras.Rocket.Range in Seconds", 4);
+		if(rocketRange < 0) rocketRange = 0;
+		rocketSpeedMulti = getConfig().getDouble("Paintball.Extras.Rocket.Speed Multi", 1.5);
+		rocketTime = getConfig().getInt("Paintball.Extras.Rocket.Explosion-Time-Radius in Ticks", 60);
+		if(rocketTime < 1) rocketTime = 1;
+		rocketMatchLimit = getConfig().getInt("Paintball.Extras.Rocket.Match Limit", 100);
+		if(rocketMatchLimit < 0) rocketMatchLimit = 0;
+		rocketPlayerLimit = getConfig().getInt("Paintball.Extras.Rocket.Player Limit", 20);
+		if(rocketPlayerLimit < 0) rocketPlayerLimit = 0;
+		
+		mine = getConfig().getBoolean("Paintball.Extras.Mine.enabled", true);
+		mineRange = getConfig().getDouble("Paintball.Extras.Mine.Range", 4.0);
+		if(mineRange < 0) mineRange = 0;
+		mineTime = getConfig().getInt("Paintball.Extras.Mine.Explosion-Time-Radius in Ticks", 60);
+		if(mineTime < 1) mineTime = 1;
+		mineMatchLimit = getConfig().getInt("Paintball.Extras.Mine.Match Limit", 30);
+		if(mineMatchLimit < 0) mineMatchLimit = 0;
+		minePlayerLimit = getConfig().getInt("Paintball.Extras.Mine.Player Limit", 5);
+		if(minePlayerLimit < 0) minePlayerLimit = 0;
+		
 
 		//SQLite with version: 110
 		sql = new BlaSQLite(new File(this.getDataFolder().toString()+"/"+"pbdata_110"+".db"), this);

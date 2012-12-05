@@ -56,7 +56,7 @@ public class Grenade{
 			
 			@Override
 			public void run() {
-				if(!s.isDead()) s.remove();
+				if(!s.isDead() || s.isValid()) s.remove();
 			}
 		}, (long) plugin.grenadeTime);
 	}

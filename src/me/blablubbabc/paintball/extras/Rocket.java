@@ -152,10 +152,10 @@ public class Rocket {
 
 					@Override
 					public void run() {
-						if (!s.isDead())
+						if (!s.isDead() || s.isValid())
 							s.remove();
 					}
-				}, (long) plugin.grenadeTime);
+				}, (long) plugin.rocketTime);
 	}
 
 	private static ArrayList<Vector> directions() {

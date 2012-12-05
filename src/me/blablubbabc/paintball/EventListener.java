@@ -339,39 +339,45 @@ public class EventListener implements Listener {
 		Player player = (Player) event.getPlayer();
 		if (Lobby.getTeam(player) != null) {
 			Match match = mm.getMatch(player);
-			if (match != null && Lobby.isPlaying(player)
-					&& match.started
+			if (match != null && Lobby.isPlaying(player) && match.started
 					&& match.isSurvivor(player)) {
 				// AIRSTRIKE
 				if (player.getItemInHand().getTypeId() == 280) {
 					if (event.getAction().equals(Action.LEFT_CLICK_AIR)
 							|| event.getAction().equals(Action.RIGHT_CLICK_AIR)) {
 						if (Airstrike.marked(player)) {
-							if (!Airstrike.active) {
-								Airstrike.call(plugin, player);
-								// zählen
-								match.airstrike(player);
-								// remove stick if not infinite
-								if (match.setting_airstrikes != -1) {
-									ItemStack i = player.getItemInHand();
-									if (i.getAmount() <= 1)
-										player.setItemInHand(null);
-									else {
-										i.setAmount(i.getAmount() - 1);
-										player.setItemInHand(i);
+							if (Airstrike.getAirstrikes(match).size() < plugin.airstrikeMatchLimit) {
+								if (Airstrike.getAirstrikes(player).size() < plugin.airstrikePlayerLimit) {
+									Airstrike.call(plugin, player, match);
+									// zählen
+									match.airstrike(player);
+									// remove stick if not infinite
+									if (match.setting_airstrikes != -1) {
+										ItemStack i = player.getItemInHand();
+										if (i.getAmount() <= 1)
+											player.setItemInHand(null);
+										else {
+											i.setAmount(i.getAmount() - 1);
+											player.setItemInHand(i);
+										}
+										/*
+										 * int amount = (player.getInventory()
+										 * .getItemInHand().getAmount() - 1); if
+										 * (amount > 0)
+										 * player.getInventory().setItemInHand(
+										 * new ItemStack(280, amount)); else
+										 * player.getInventory().setItemInHand(
+										 * null);
+										 */
 									}
-									/*int amount = (player.getInventory()
-											.getItemInHand().getAmount() - 1);
-									if (amount > 0)
-										player.getInventory().setItemInHand(
-												new ItemStack(280, amount));
-									else
-										player.getInventory().setItemInHand(
-												null);*/
+								} else {
+									player.sendMessage(plugin.t
+											.getString("AIRSTRIKE_PLAYER_LIMIT_REACHED"));
 								}
+
 							} else {
 								player.sendMessage(plugin.t
-										.getString("ALREADY_AIRSTRIKE"));
+										.getString("AIRSTRIK_MATCH_LIMIT_REACHED"));
 							}
 						}
 					}
@@ -389,22 +395,32 @@ public class EventListener implements Listener {
 					if (event.getAction().equals(Action.RIGHT_CLICK_AIR)
 							|| event.getAction().equals(
 									Action.RIGHT_CLICK_BLOCK)) {
-						player.playSound(player.getLocation(),
-								Sound.SILVERFISH_IDLE, 100L, 1L);
-						Fireball rocket = player
-								.launchProjectile(Fireball.class);
-						rocket.setShooter(player);
-						rocket.setVelocity(player.getLocation().getDirection()
-								.clone().normalize().multiply(plugin.rocketSpeedMulti));
-						new Rocket(player, rocket, plugin);
-						ItemStack i = player.getItemInHand();
-						if (i.getAmount() <= 1)
-							player.setItemInHand(null);
-						else {
-							i.setAmount(i.getAmount() - 1);
-							player.setItemInHand(i);
+						if (Rocket.getRockets(player).size() < plugin.rocketMatchLimit) {
+							if (Rocket.getRockets(player).size() < plugin.rocketPlayerLimit) {
+								player.playSound(player.getLocation(),
+										Sound.SILVERFISH_IDLE, 100L, 1L);
+								Fireball rocket = player
+										.launchProjectile(Fireball.class);
+								rocket.setShooter(player);
+								rocket.setVelocity(player.getLocation()
+										.getDirection().clone().normalize()
+										.multiply(plugin.rocketSpeedMulti));
+								new Rocket(player, rocket, plugin);
+								ItemStack i = player.getItemInHand();
+								if (i.getAmount() <= 1)
+									player.setItemInHand(null);
+								else {
+									i.setAmount(i.getAmount() - 1);
+									player.setItemInHand(i);
+								}
+							} else {
+								player.sendMessage(plugin.t
+										.getString("ROCKET_PLAYER_LIMIT_REACHED"));
+							}
+						} else {
+							player.sendMessage(plugin.t
+									.getString("ROCKET_MATCH_LIMIT_REACHED"));
 						}
-						
 					}
 				}
 			}
@@ -462,20 +478,22 @@ public class EventListener implements Listener {
 				if (mm.getMatch(player) != null) {
 					Match match = mm.getMatch(player);
 					Location loc = shot.getLocation();
-					//mine
+					// mine
 					Block block = loc.getBlock();
 					Mine mine = Mine.isMine(block);
-					if(mine != null) {
+					if (mine != null) {
 						mine.explode(true);
 					}
-					BlockIterator iterator = new BlockIterator(loc.getWorld(), loc.toVector(), shot.getVelocity().normalize(), 0, 2);
-					while(iterator.hasNext()) {
+					BlockIterator iterator = new BlockIterator(loc.getWorld(),
+							loc.toVector(), shot.getVelocity().normalize(), 0,
+							2);
+					if (iterator.hasNext()) {
 						Mine m = Mine.isMine(iterator.next());
-						if(m != null) {
+						if (m != null) {
 							m.explode(true);
 						}
 					}
-					//effect
+					// effect
 					if (plugin.effects) {
 						if (match.isBlue(player)) {
 							loc.getWorld().playEffect(loc, Effect.POTION_BREAK,
@@ -546,38 +564,64 @@ public class EventListener implements Listener {
 				if (block.getType() == Material.PUMPKIN) {
 					// turret:
 					event.setCancelled(true);
-					Snowman snowman = (Snowman) block
-							.getLocation()
-							.getWorld()
-							.spawnEntity(block.getLocation(),
-									EntityType.SNOWMAN);
-					new Turret(player, snowman, plugin.mm.getMatch(player),
-							plugin);
-					ItemStack i = player.getItemInHand();
-					if (i.getAmount() <= 1)
-						player.setItemInHand(null);
-					else {
-						i.setAmount(i.getAmount() - 1);
-						player.setItemInHand(i);
+					if (Turret.getTurrets(player).size() < plugin.turretMatchLimit) {
+						if (Turret.getTurrets(player).size() < plugin.turretPlayerLimit) {
+							Snowman snowman = (Snowman) block
+									.getLocation()
+									.getWorld()
+									.spawnEntity(block.getLocation(),
+											EntityType.SNOWMAN);
+							new Turret(player, snowman,
+									plugin.mm.getMatch(player), plugin);
+							ItemStack i = player.getItemInHand();
+							if (i.getAmount() <= 1)
+								player.setItemInHand(null);
+							else {
+								i.setAmount(i.getAmount() - 1);
+								player.setItemInHand(i);
+							}
+						} else {
+							player.sendMessage(plugin.t
+									.getString("TURRET_PLAYER_LIMIT_REACHED"));
+						}
+					} else {
+						player.sendMessage(plugin.t
+								.getString("TURRET_MATCH_LIMIT_REACHED"));
 					}
+
 				} else if (block.getType() == Material.FLOWER_POT) {
 					// mine:
 					event.setCancelled(true);
-					plugin.getServer().getScheduler().scheduleSyncDelayedTask(this.plugin, new Runnable() {
+					if (Mine.getMines(player).size() < plugin.mineMatchLimit) {
+						if (Mine.getMines(player).size() < plugin.minePlayerLimit) {
+							plugin.getServer()
+									.getScheduler()
+									.scheduleSyncDelayedTask(this.plugin,
+											new Runnable() {
 
-						@Override
-						public void run() {
-							block.setType(Material.FLOWER_POT);
+												@Override
+												public void run() {
+													block.setType(Material.FLOWER_POT);
+												}
+											}, 1L);
+							new Mine(player, block, plugin.mm.getMatch(player),
+									plugin);
+							ItemStack i = player.getItemInHand();
+							if (i.getAmount() <= 1)
+								player.setItemInHand(null);
+							else {
+								i.setAmount(i.getAmount() - 1);
+								player.setItemInHand(i);
+							}
+						} else {
+							player.sendMessage(plugin.t
+									.getString("MINE_PLAYER_LIMIT_REACHED"));
 						}
-					}, 1L);
-					new Mine(player, block, plugin.mm.getMatch(player), plugin);
-					ItemStack i = player.getItemInHand();
-					if (i.getAmount() <= 1)
-						player.setItemInHand(null);
-					else {
-						i.setAmount(i.getAmount() - 1);
-						player.setItemInHand(i);
+					} else {
+						player.sendMessage(plugin.t
+								.getString("MINE_MATCH_LIMIT_REACHED"));
 					}
+
 				}
 			}
 		}
