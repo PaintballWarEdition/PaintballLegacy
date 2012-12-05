@@ -14,6 +14,7 @@ import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.Sound;
 import org.bukkit.block.Block;
+import org.bukkit.block.BlockFace;
 import org.bukkit.block.BlockState;
 import org.bukkit.block.Sign;
 import org.bukkit.entity.Egg;
@@ -462,9 +463,12 @@ public class EventListener implements Listener {
 					Match match = mm.getMatch(player);
 					Location loc = shot.getLocation();
 					//mine
-					Mine mine = Mine.isMine(loc.add(shot.getVelocity().clone().normalize().multiply(0.2)).getBlock());
-					if(mine != null) {
-						mine.explode(true);
+					Block block = loc.getBlock();
+					for(BlockFace f : BlockFace.values()) {
+						Mine mine = Mine.isMine(block.getRelative(f));
+						if(mine != null) {
+							mine.explode(true);
+						}
 					}
 					//effect
 					if (plugin.effects) {
