@@ -58,10 +58,6 @@ public class Airstrike{
 		addAirstrike(this);
 	}
 	
-	
-	
-	
-	
 	private static HashMap<Player, Block> marks = new HashMap<Player, Block>();
 	private static HashMap<Player, Block> finalmarks = new HashMap<Player, Block>();
 	private static int task;

@@ -299,7 +299,7 @@ public class Paintball extends JavaPlugin{
 		if(getConfig().get("Paintball.Extras.Mine.Range") == null)getConfig().set("Paintball.Extras.Mine.Range", 4.0);
 		if(getConfig().get("Paintball.Extras.Mine.Explosion-Time-Radius in Ticks") == null)getConfig().set("Paintball.Extras.Mine.Explosion-Time-Radius in Ticks", 60);
 		if(getConfig().get("Paintball.Extras.Mine.Match Limit") == null)getConfig().set("Paintball.Extras.Mine.Match Limit", 50);
-		if(getConfig().get("Paintball.Extras.Mine.Player Limit") == null)getConfig().set("Paintball.Extras.Mine.Player Limit", 7);
+		if(getConfig().get("Paintball.Extras.Mine.Player Limit") == null)getConfig().set("Paintball.Extras.Mine.Player Limit", 10);
 		if(getConfig().get("Paintball.Shop.enabled") == null)getConfig().set("Paintball.Shop.enabled", true);
 		if(getConfig().get("Paintball.Shop.Goods (amount-name-id-subid-price)") == null)getConfig().set("Paintball.Shop.Goods (amount-name-id-subid-price)", goodsDef);
 		saveConfig();
@@ -445,9 +445,9 @@ public class Paintball extends JavaPlugin{
 		if(mineRange < 0) mineRange = 0;
 		mineTime = getConfig().getInt("Paintball.Extras.Mine.Explosion-Time-Radius in Ticks", 60);
 		if(mineTime < 1) mineTime = 1;
-		mineMatchLimit = getConfig().getInt("Paintball.Extras.Mine.Match Limit", 30);
+		mineMatchLimit = getConfig().getInt("Paintball.Extras.Mine.Match Limit", 50);
 		if(mineMatchLimit < 0) mineMatchLimit = 0;
-		minePlayerLimit = getConfig().getInt("Paintball.Extras.Mine.Player Limit", 5);
+		minePlayerLimit = getConfig().getInt("Paintball.Extras.Mine.Player Limit", 10);
 		if(minePlayerLimit < 0) minePlayerLimit = 0;
 		
 
