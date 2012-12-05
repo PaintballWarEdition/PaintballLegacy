@@ -16,6 +16,18 @@ import org.bukkit.entity.Snowball;
 import org.bukkit.util.Vector;
 
 public class Mine {
+	private static int explosions = 0;
+	private static synchronized void addExplosion() {
+		explosions++;
+	}
+	private static synchronized void removeExplosion() {
+		explosions--;
+	}
+	private static synchronized int getExplosion() {
+		return explosions;
+	}
+	
+	
 	private static ArrayList<Mine> mines = new ArrayList<Mine>();
 
 	public static synchronized void addMine(Mine mine) {
@@ -90,8 +102,8 @@ public class Mine {
 										if (ploc.getWorld().equals(
 												block.getWorld())) {
 											double dist = ploc.distance(loc);
-											if (dist < 20) {
-												float vol = (float) (0.2-(dist*0.01));
+											if (dist < 15) {
+												float vol = (float) (0.2-(dist*0.013));
 												p.playSound(loc, Sound.CLICK, vol, 2F);
 											}
 										}
@@ -129,36 +141,49 @@ public class Mine {
 				Vec3D.a(loc2.getX(), loc2.getY(), loc2.getZ())) == null;
 	}
 
-	public synchronized void explode(boolean effect) {
-		if (!exploded) {
-			exploded = true;
-			if (tickTask != -1)
-				plugin.getServer().getScheduler().cancelTask(tickTask);
-			if (block.getType() == Material.FLOWER_POT)
-				block.setType(Material.AIR);
-			removeMine(this);
-
-			if (effect) {
-				// some effect here:
-				if (plugin.effects) {
-					// effect
-					loc.getWorld().playEffect(loc, Effect.SMOKE, 1);
-					loc.getWorld().playEffect(loc, Effect.SMOKE, 2);
-					loc.getWorld().playEffect(loc, Effect.SMOKE, 3);
-					loc.getWorld().playEffect(loc, Effect.SMOKE, 4);
-					loc.getWorld().playEffect(loc, Effect.SMOKE, 5);
-					loc.getWorld().playEffect(loc, Effect.SMOKE, 6);
-					loc.getWorld().playEffect(loc, Effect.SMOKE, 7);
-					loc.getWorld().playEffect(loc, Effect.SMOKE, 8);
-					loc.getWorld().playEffect(loc, Effect.MOBSPAWNER_FLAMES, 4);
+	public synchronized void explode(final boolean effect) {
+		if(getExplosion() > 2) {
+			plugin.getServer().getScheduler()
+			.scheduleSyncDelayedTask(plugin, new Runnable() {
+				
+				@Override
+				public void run() {
+					explode(effect);
 				}
+			}, 1L);
+		} else {
+			addExplosion();
+			if (!exploded) {
+				exploded = true;
+				if (tickTask != -1)
+					plugin.getServer().getScheduler().cancelTask(tickTask);
+				if (block.getType() == Material.FLOWER_POT)
+					block.setType(Material.AIR);
+				removeMine(this);
 
-				loc.getWorld().createExplosion(loc, 0.0F);
-				for (Vector v : directions()) {
-					moveExpSnow(loc.getWorld().spawn(loc, Snowball.class), v,
-							player, plugin);
+				if (effect) {
+					// some effect here:
+					if (plugin.effects) {
+						// effect
+						loc.getWorld().playEffect(loc, Effect.SMOKE, 1);
+						loc.getWorld().playEffect(loc, Effect.SMOKE, 2);
+						loc.getWorld().playEffect(loc, Effect.SMOKE, 3);
+						loc.getWorld().playEffect(loc, Effect.SMOKE, 4);
+						loc.getWorld().playEffect(loc, Effect.SMOKE, 5);
+						loc.getWorld().playEffect(loc, Effect.SMOKE, 6);
+						loc.getWorld().playEffect(loc, Effect.SMOKE, 7);
+						loc.getWorld().playEffect(loc, Effect.SMOKE, 8);
+						loc.getWorld().playEffect(loc, Effect.MOBSPAWNER_FLAMES, 4);
+					}
+
+					loc.getWorld().createExplosion(loc, 0.0F);
+					for (Vector v : directions()) {
+						moveExpSnow(loc.getWorld().spawn(loc, Snowball.class), v,
+								player, plugin);
+					}
 				}
 			}
+			removeExplosion();
 		}
 	}
 
