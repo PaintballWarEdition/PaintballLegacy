@@ -487,7 +487,7 @@ public class EventListener implements Listener {
 					BlockIterator iterator = new BlockIterator(loc.getWorld(),
 							loc.toVector(), shot.getVelocity().normalize(), 0,
 							2);
-					if (iterator.hasNext()) {
+					while (iterator.hasNext()) {
 						Mine m = Mine.isMine(iterator.next());
 						if (m != null) {
 							m.explode(true);
