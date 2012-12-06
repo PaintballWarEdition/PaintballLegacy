@@ -40,6 +40,7 @@ public class CmdShop {
 				//Goods-List
 				player.sendMessage(plugin.t.getString("SHOP_HEADER"));
 				player.sendMessage("");
+				if(plugin.happyhour) player.sendMessage(plugin.t.getString("HAPPYHOUR"));
 				int i = 1;
 				HashMap<String, String> vars = new HashMap<String, String>();
 				for(ShopGood good : goods) {

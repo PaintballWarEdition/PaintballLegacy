@@ -78,7 +78,7 @@ public class Newsfeeder {
 		vars.put("plugin", pluginName);
 		vars.put("time", String.valueOf(seconds));
 		for(Player player : Lobby.LOBBY.getMembers()) {
-			player.sendMessage(plugin.t.getString("HAPPYHOUR", vars));
+			player.sendMessage(plugin.t.getString("HAPPYHOUR_TIME", vars));
 		}
 	}
 	
