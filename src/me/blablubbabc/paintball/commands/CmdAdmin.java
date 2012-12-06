@@ -9,10 +9,23 @@ import me.blablubbabc.paintball.Paintball;
 
 public class CmdAdmin {
 	private Paintball plugin;
-
+	private int happyTaskId;
+	private int happyhour;
+	
+	private synchronized void setHappyhour(int seconds) {
+		happyhour = seconds;
+	}
+	private synchronized int getHappyhour() {
+		return happyhour;
+	}
+	private synchronized void happyhourMinus() {
+		happyhour--;
+	}
 
 	public CmdAdmin(Paintball pl) {
 		plugin = pl;
+		happyhour = 0;
+		happyTaskId = -1;
 	}
 
 	public boolean command(final CommandSender sender, String[] args) {
@@ -250,11 +263,58 @@ public class CmdAdmin {
 			}
 			return true;
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+		} else if (args[1].equalsIgnoreCase("happy")) {
+			if(args.length == 3) {
+				try {
+					int seconds = Integer.parseInt(args[2]);
+					if(seconds < 0) seconds = 0;
+					// Set happyhour:
+					plugin.happyhour = true;
+					setHappyhour(seconds);
+					plugin.nf.happyhour(seconds);
+					if(happyTaskId == -1) happyTask();
+				} catch(Exception e) {	
+					sender.sendMessage(plugin.t.getString("INVALID_NUMBER"));
+				}
+				return true;
+			}
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 		} else {
 			if(sender instanceof Player) return false;
 			else sender.sendMessage(plugin.t.getString("COMMAND_UNKNOWN_OR_NOT_CONSOLE"));
 			return true;
 		}
 		return false;
-	}	
+	}
+	
+	private void happyTask() {
+		happyTaskId = plugin.getServer().getScheduler().scheduleAsyncDelayedTask(plugin, new Runnable() {
+			
+			@Override
+			public void run() {
+				happyhourMinus();
+				int happy = getHappyhour();
+				if( happy < 1) {
+					setHappyhour(0);
+					plugin.happyhour = false;
+					happyTaskId = -1;
+					plugin.nf.text(plugin.t.getString("HAPPYHOUR_END"));
+					return;
+				}
+				if(( happy % 10 ) == 0)
+				{
+					plugin.nf.happyhour(happy);
+				}
+				
+				if( happy < 6 && happy > 0)
+				{
+					//if below 6 message here (regardless of divisibility)
+					plugin.nf.happyhour(happy);
+				}
+				//start again:
+				happyTask();
+				
+			}
+		}, 20L);	
+	}
 }

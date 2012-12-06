@@ -68,28 +68,34 @@ public class CmdShop {
 						}
 						int price = good.getPrice();
 						int amount = good.getAmount();
-						int cash = (Integer) plugin.pm.getStats(player.getName()).get("money");
-						if(cash < price) {
-							player.sendMessage(plugin.t.getString("NOT_ENOUGH_MONEY"));
-							return true;
+						if(!plugin.happyhour) {
+							int cash = (Integer) plugin.pm.getStats(player.getName()).get("money");
+							if(cash < price) {
+								player.sendMessage(plugin.t.getString("NOT_ENOUGH_MONEY"));
+								return true;
+							}
 						}
+						
 						if(player.getInventory().firstEmpty() == -1) {
 							player.sendMessage(plugin.t.getString("INVENTORY_FULL"));
 							return true;
 						}
 						//money
-						HashMap<String, Integer> pStats = new HashMap<String, Integer>();
-						pStats.put("money", -price);
-						pStats.put("money_spent", price);
-						plugin.pm.addStats(player.getName(), pStats);
-						plugin.stats.addGeneralStats(pStats);
+						if(!plugin.happyhour) {
+							HashMap<String, Integer> pStats = new HashMap<String, Integer>();
+							pStats.put("money", -price);
+							pStats.put("money_spent", price);
+							plugin.pm.addStats(player.getName(), pStats);
+							plugin.stats.addGeneralStats(pStats);
+						}
 						//item
 						player.getInventory().addItem(good.getItemStack());
 						
 						HashMap<String, String> vars = new HashMap<String, String>();
 						vars.put("amount", String.valueOf(amount));
 						vars.put("good", good.getName());
-						vars.put("price", String.valueOf(price));
+						if(!plugin.happyhour) vars.put("price", String.valueOf(price));
+						else vars.put("price", plugin.t.getString("FOR_FREE"));
 						player.sendMessage(plugin.t.getString("YOU_BOUGHT", vars));
 						
 						return true;

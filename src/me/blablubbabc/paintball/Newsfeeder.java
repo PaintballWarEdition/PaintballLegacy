@@ -73,6 +73,15 @@ public class Newsfeeder {
 		}
 	}
 	
+	public void happyhour(int seconds) {
+		HashMap<String, String> vars = new HashMap<String, String>();
+		vars.put("plugin", pluginName);
+		vars.put("time", String.valueOf(seconds));
+		for(Player player : Lobby.LOBBY.getMembers()) {
+			player.sendMessage(plugin.t.getString("HAPPYHOUR", vars));
+		}
+	}
+	
 	public void status(CommandSender sender, String message) {
 		HashMap<String, String> vars = new HashMap<String, String>();
 		vars.put("plugin", pluginName);

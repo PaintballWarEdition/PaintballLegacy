@@ -32,6 +32,7 @@ public class Paintball extends JavaPlugin{
 	public Stats stats;
 	public InSignsFeature isf;
 	public boolean active;
+	public boolean happyhour;
 	public boolean softreload;
 	public boolean nometrics = false;
 
@@ -209,7 +210,7 @@ public class Paintball extends JavaPlugin{
 		goodsDef.add("100-Balls-332-0-120");
 		goodsDef.add("1-Grenade-344-0-20");
 		goodsDef.add("1-Mine-390-0-15");
-		goodsDef.add("1-Rocket Launcher-356-0-40");
+		goodsDef.add("1-Rocket Launcher-356-0-20");
 		goodsDef.add("1-Airstrike-280-0-100");
 		goodsDef.add("1-Turret-86-0-200");
 		goodsDef.add("1-Speed-373-16482-35");
@@ -483,6 +484,7 @@ public class Paintball extends JavaPlugin{
 		getCommand("pb").setExecutor(ce);
 
 		active = true;
+		happyhour = false;
 		softreload = false;
 		lobbyspawn = 0;
 		afkMatchCount = new HashMap<String, Integer>();
