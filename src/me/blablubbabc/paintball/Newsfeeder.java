@@ -60,6 +60,12 @@ public class Newsfeeder {
 		}
 	}
 	
+	public void textUntoggled(String message) {
+		for(Player player : Lobby.LOBBY.getMembers()) {
+			text(player, message);
+		}
+	}
+	
 	public void text(CommandSender sender, String message) {
 		HashMap<String, String> vars = new HashMap<String, String>();
 		vars.put("plugin", pluginName);
@@ -73,13 +79,11 @@ public class Newsfeeder {
 		}
 	}
 	
-	public void happyhour(int seconds) {
+	public String happyhour(int seconds) {
 		HashMap<String, String> vars = new HashMap<String, String>();
 		vars.put("plugin", pluginName);
 		vars.put("time", String.valueOf(seconds));
-		for(Player player : Lobby.LOBBY.getMembers()) {
-			player.sendMessage(plugin.t.getString("HAPPYHOUR_TIME", vars));
-		}
+		return plugin.t.getString("HAPPYHOUR_TIME", vars);
 	}
 	
 	public void status(CommandSender sender, String message) {

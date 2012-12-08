@@ -285,8 +285,8 @@ public class Paintball extends JavaPlugin{
 		if(getConfig().get("Paintball.Extras.Turret.calculated ticks") == null)getConfig().set("Paintball.Extras.Turret.calculated ticks", 100);
 		if(getConfig().get("Paintball.Extras.Turret.calculated range x") == null)getConfig().set("Paintball.Extras.Turret.calculated range x", 100);
 		if(getConfig().get("Paintball.Extras.Turret.calculated range y (half)") == null)getConfig().set("Paintball.Extras.Turret.calculated range y (half)", 50);
-		if(getConfig().get("Paintball.Extras.Turret.shots per salve") == null)getConfig().set("Paintball.Extras.Turret.shots per salve", 15);
-		if(getConfig().get("Paintball.Extras.Turret.cooldown in seconds") == null)getConfig().set("Paintball.Extras.Turret.cooldown in seconds", 3);
+		if(getConfig().get("Paintball.Extras.Turret.shots per salve") == null)getConfig().set("Paintball.Extras.Turret.shots per salve", 10);
+		if(getConfig().get("Paintball.Extras.Turret.cooldown in seconds") == null)getConfig().set("Paintball.Extras.Turret.cooldown in seconds", 2);
 		if(getConfig().get("Paintball.Extras.Turret.lives") == null)getConfig().set("Paintball.Extras.Turret.lives", 10);
 		if(getConfig().get("Paintball.Extras.Turret.Match Limit") == null)getConfig().set("Paintball.Extras.Turret.Match Limit", 15);
 		if(getConfig().get("Paintball.Extras.Turret.Player Limit") == null)getConfig().set("Paintball.Extras.Turret.Player Limit", 3);
@@ -295,7 +295,7 @@ public class Paintball extends JavaPlugin{
 		if(getConfig().get("Paintball.Extras.Rocket.Speed Multi") == null)getConfig().set("Paintball.Extras.Rocket.Speed Multi", 1.5);
 		if(getConfig().get("Paintball.Extras.Rocket.Explosion-Time-Radius in Ticks") == null)getConfig().set("Paintball.Extras.Rocket.Explosion-Time-Radius in Ticks", 60);
 		if(getConfig().get("Paintball.Extras.Rocket.Match Limit") == null)getConfig().set("Paintball.Extras.Rocket.Match Limit", 100);
-		if(getConfig().get("Paintball.Extras.Rocket.Player Limit") == null)getConfig().set("Paintball.Extras.Rocket.Player Limit", 20);
+		if(getConfig().get("Paintball.Extras.Rocket.Player Limit") == null)getConfig().set("Paintball.Extras.Rocket.Player Limit", 25);
 		if(getConfig().get("Paintball.Extras.Mine.enabled") == null)getConfig().set("Paintball.Extras.Mine.enabled", true);
 		if(getConfig().get("Paintball.Extras.Mine.Range") == null)getConfig().set("Paintball.Extras.Mine.Range", 4.0);
 		if(getConfig().get("Paintball.Extras.Mine.Explosion-Time-Radius in Ticks") == null)getConfig().set("Paintball.Extras.Mine.Explosion-Time-Radius in Ticks", 60);

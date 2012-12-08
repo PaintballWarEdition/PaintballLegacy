@@ -163,22 +163,22 @@ public class MatchManager{
 			else draws.put(p.getName(), 0);
 		}
 		
-		if(!draw) {
-			for(Player p : match.winners) {
-				//stats
-				wins.put(p.getName(), 1);
-				defeats.put(p.getName(), 0);
-				//bonus
-				points.put(p.getName(), points.get(p.getName())+plugin.pointsPerWin);
-				money.put(p.getName(), points.get(p.getName())+plugin.cashPerWin);
+		//if(!draw) {
+		for(Player p : match.winners) {
+			//stats
+			wins.put(p.getName(), 1);
+			defeats.put(p.getName(), 0);
+			//bonus
+			points.put(p.getName(), points.get(p.getName())+plugin.pointsPerWin);
+			money.put(p.getName(), points.get(p.getName())+plugin.cashPerWin);
 
-			}
-			for(Player p :  match.loosers) {
-				//stats
-				wins.put(p.getName(), 0);
-				defeats.put(p.getName(), 1);
-			}
 		}
+		for(Player p :  match.loosers) {
+			//stats
+			wins.put(p.getName(), 0);
+			defeats.put(p.getName(), 1);
+		}
+		//}
 
 		//Teleport all remaining players back to lobby:
 		for(Player p : match.getAll()) {
@@ -333,6 +333,25 @@ public class MatchManager{
 		plugin.nf.text(plugin.t.getString("MATCH_TEAMATTACKS", vars));
 		plugin.nf.text(plugin.t.getString("MATCH_KILLS", vars));
 		plugin.nf.text("-------------------------------------------------");
+		if(!draw) {
+			for(Player p : match.winners) {
+				if(Lobby.getTeam(p) != null) {
+					p.sendMessage(plugin.t.getString("YOU_WON"));
+				}
+
+			}
+			for(Player p :  match.loosers) {
+				if(Lobby.getTeam(p) != null) {
+					p.sendMessage(plugin.t.getString("YOU_LOST"));
+				}
+			}
+		} else {
+			for(Player p : match.getAllPlayer()) {
+				if(Lobby.getTeam(p) != null) {
+					p.sendMessage(plugin.t.getString("YOU_DRAW"));
+				}
+			}
+		}
 
 		//close match
 		plugin.am.setNotActive(match.getArena());

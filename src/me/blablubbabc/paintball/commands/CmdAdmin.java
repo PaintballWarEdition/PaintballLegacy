@@ -271,7 +271,11 @@ public class CmdAdmin {
 					// Set happyhour:
 					plugin.happyhour = true;
 					setHappyhour(seconds);
-					plugin.nf.happyhour(seconds);
+					//sender nicht in der lobby?
+					if(!(sender instanceof Player) || Lobby.getTeam((Player) sender) == null) {
+						sender.sendMessage(plugin.nf.happyhour(seconds));
+					}
+					plugin.nf.textUntoggled(plugin.nf.happyhour(seconds));
 					if(happyTaskId == -1) happyTask();
 				} catch(Exception e) {	
 					sender.sendMessage(plugin.t.getString("INVALID_NUMBER"));
@@ -298,18 +302,18 @@ public class CmdAdmin {
 					setHappyhour(0);
 					plugin.happyhour = false;
 					happyTaskId = -1;
-					plugin.nf.text(plugin.t.getString("HAPPYHOUR_END"));
+					plugin.nf.textUntoggled(plugin.t.getString("HAPPYHOUR_END"));
 					return;
 				}
 				if(( happy % 10 ) == 0)
 				{
-					plugin.nf.happyhour(happy);
+					plugin.nf.text(plugin.nf.happyhour(happy));
 				}
 				
 				if( happy < 6 && happy > 0)
 				{
 					//if below 6 message here (regardless of divisibility)
-					plugin.nf.happyhour(happy);
+					plugin.nf.text(plugin.nf.happyhour(happy));
 				}
 				//start again:
 				happyTask();
