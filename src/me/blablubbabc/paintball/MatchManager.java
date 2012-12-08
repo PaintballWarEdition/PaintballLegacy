@@ -336,19 +336,19 @@ public class MatchManager{
 		if(!draw) {
 			for(Player p : match.winners) {
 				if(Lobby.getTeam(p) != null) {
-					p.sendMessage(plugin.t.getString("YOU_WON"));
+					plugin.nf.status(p, plugin.t.getString("YOU_WON"));
 				}
 
 			}
 			for(Player p :  match.loosers) {
 				if(Lobby.getTeam(p) != null) {
-					p.sendMessage(plugin.t.getString("YOU_LOST"));
+					plugin.nf.status(p, plugin.t.getString("YOU_LOST"));
 				}
 			}
 		} else {
 			for(Player p : match.getAllPlayer()) {
 				if(Lobby.getTeam(p) != null) {
-					p.sendMessage(plugin.t.getString("YOU_DRAW"));
+					plugin.nf.status(p, plugin.t.getString("YOU_DRAW"));
 				}
 			}
 		}
