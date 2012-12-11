@@ -7,7 +7,6 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.util.Scanner;
 import org.bukkit.Instrument;
-import org.bukkit.Location;
 import org.bukkit.Note;
 import org.bukkit.entity.Player;
 import org.bukkit.plugin.Plugin;
@@ -20,28 +19,41 @@ public class Musiker {
 
 	private Melodie def_winMel;
 	private Melodie def_defeatMel;
+	private Melodie def_drawMel;
+
 	private Melodie winMel;
 	private Melodie defeatMel;
+	private Melodie drawMel;
+
 	private boolean use_defWin;
 	private boolean use_defDefeat;
+	private boolean use_defDraw;
 
-	public Musiker(Plugin plugin, String winFilename, String defeatFilename) {
+	public Musiker(Plugin plugin, String winFilename, String defeatFilename, String drawFilename) {
 		this.plugin = plugin;
 		this.success = false;
-		
+
 		this.def_winMel = new Melodie();
 		this.def_defeatMel = new Melodie();
+		this.def_drawMel = new Melodie();
+
 		this.winMel = new Melodie();
 		this.defeatMel = new Melodie();
-		
+		this.drawMel = new Melodie();
+
 		this.use_defWin = false;
 		this.use_defDefeat = false;
-		
+		this.use_defDraw = false;
+
 		File path;
 		File def_winFile;
 		File def_defeatFile;
+		File def_drawFile;
+
 		File winFile;
 		File defeatFile;
+		File drawFile;
+
 
 		path = new File(plugin.getDataFolder().toString());
 		if (!path.exists())
@@ -124,6 +136,44 @@ public class Musiker {
 				}
 			}
 		}
+		//default draw:
+		def_drawFile = new File(path + "/draw.txt");
+		in = null;
+		out = null;
+		try {
+			in = plugin.getResource("draw.txt");
+			if (in != null) {
+				out = new FileOutputStream(def_drawFile);
+				byte[] buffer = new byte[10240];
+				int len = in.read(buffer);
+				while (len != -1) {
+					out.write(buffer, 0, len);
+					len = in.read(buffer);
+				}
+			} else {
+				log("ERROR: Couldn't load the default draw melody file from jar!");
+				return;
+			}
+		} catch (Exception e) {
+			log("ERROR: Couldn't write the default draw melody file!");
+			e.printStackTrace();
+			return;
+		} finally {
+			if (out != null) {
+				try {
+					out.close();
+				} catch (IOException e) {
+					e.printStackTrace();
+				}
+			}
+			if (in != null) {
+				try {
+					in.close();
+				} catch (IOException e) {
+					e.printStackTrace();
+				}
+			}
+		}
 		////// get melodies:
 		//default win
 		log("Loading the default win melody: " + def_winFile.getName());
@@ -184,23 +234,61 @@ public class Musiker {
 				use_defDefeat = true;
 			}
 		}
+
+		//default draw
+		log("Loading the default draw melody: " + def_drawFile.getName());
+		def_drawMel = loadMelodie(def_drawFile);
+		if (def_drawMel == null) {
+			return;
+		}
+
+		//// get default melodie:
+		drawFile = new File(path + "/" + drawFilename + ".txt");
+		if (!drawFile.exists()) {
+			log("ERROR: Couldn't find the specified draw melody file.");
+			log("Using the default draw melody now: " + def_drawFile.getName());
+			use_defDraw = true;
+		} else {
+			if (!drawFile.equals(def_drawFile)) {
+				log("Loading the specified draw melody now: "
+						+ drawFile.getName());
+				drawMel = loadMelodie(drawFile);
+				if (drawMel == null) {
+					log("ERROR: Couldn't load the specified draw melody file!");
+					log("Do you use a valid draw melody?");
+					log("Using the default draw melody now: " + def_drawFile.getName());
+					use_defDraw = true;
+				}
+			} else {
+				log("Using the default draw melody now: " + def_drawFile.getName());
+				use_defDraw = true;
+			}
+		}
 		//
 		this.success = true;
 	}
 
-	public void playWin(final Plugin plugin, final Player p, final Location loc) {
+	public void playWin(final Plugin plugin, final Player p) {
 		if(use_defWin) {
-			def_winMel.play(plugin, p, loc);
+			def_winMel.play(plugin, p);
 		}else {
-			winMel.play(plugin, p, loc);
+			winMel.play(plugin, p);
 		}
 	}
 
-	public void playDefeat(final Plugin plugin, final Player p, final Location loc) {
+	public void playDefeat(final Plugin plugin, final Player p) {
 		if(use_defDefeat) {
-			def_defeatMel.play(plugin, p, loc);
+			def_defeatMel.play(plugin, p);
 		}else {
-			defeatMel.play(plugin, p, loc);
+			defeatMel.play(plugin, p);
+		}
+	}
+	
+	public void playDraw(final Plugin plugin, final Player p) {
+		if(use_defDraw) {
+			def_drawMel.play(plugin, p);
+		}else {
+			drawMel.play(plugin, p);
 		}
 	}
 
@@ -253,11 +341,11 @@ public class Musiker {
 		}
 
 	}
-	
+
 	private enum Instrus {
 		PI, BG, BD, SD, ST
 	}
-	
+
 	private Instrument getInstrument(String s) {
 		try {
 			Instrus i = Instrus.valueOf(s.toUpperCase());
@@ -273,7 +361,7 @@ public class Musiker {
 			return null;
 		}
 	}
-	
+
 	private Integer getNoteId(String s) {
 		try {
 			Integer id = Integer.parseInt(s);

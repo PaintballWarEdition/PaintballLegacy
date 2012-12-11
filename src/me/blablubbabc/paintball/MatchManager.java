@@ -334,18 +334,21 @@ public class MatchManager{
 			for(Player p : match.winners) {
 				if(Lobby.getTeam(p) != null) {
 					plugin.nf.status(p, plugin.t.getString("YOU_WON"));
+					plugin.musik.playWin(plugin, p);
 				}
 
 			}
 			for(Player p :  match.loosers) {
 				if(Lobby.getTeam(p) != null) {
 					plugin.nf.status(p, plugin.t.getString("YOU_LOST"));
+					plugin.musik.playDefeat(plugin, p);
 				}
 			}
 		} else {
 			for(Player p : match.getAllPlayer()) {
 				if(Lobby.getTeam(p) != null) {
 					plugin.nf.status(p, plugin.t.getString("YOU_DRAW"));
+					plugin.musik.playDraw(plugin, p);
 				}
 			}
 		}

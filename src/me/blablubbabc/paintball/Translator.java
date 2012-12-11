@@ -14,14 +14,15 @@ public class Translator {
 	public boolean success;
 
 	private Plugin plugin;
-	private File path;
-	private File localisationFile;
-	private File def_file;
 	private HashMap<String, String> translation;
 	private HashMap<String, String> def_language;
 	private boolean use_def;
 
 	public Translator(Plugin plugin, String filename) {
+		File path;
+		File localisationFile;
+		File def_file;
+		
 		this.use_def = false;
 		this.success = false;
 		this.plugin = plugin;

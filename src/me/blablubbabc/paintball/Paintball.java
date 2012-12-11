@@ -29,6 +29,7 @@ public class Paintball extends JavaPlugin{
 	public Newsfeeder nf;
 	public ArenaManager am;
 	public Translator t;
+	public Musiker musik;
 	public Stats stats;
 	public InSignsFeature isf;
 	public boolean active;
@@ -460,6 +461,13 @@ public class Paintball extends JavaPlugin{
 		t = new Translator(this, local);
 		if(!t.success) {
 			log("ERROR: Couldn't find/load the default language file. Disables now..");
+			getServer().getPluginManager().disablePlugin(this);
+			return;
+		}
+		//MUSIKER
+		musik = new Musiker(this, "win", "defeat", "draw");
+		if(!musik.success) {
+			log("ERROR: Couldn't find/load the default melody file/s. Disables now..");
 			getServer().getPluginManager().disablePlugin(this);
 			return;
 		}

@@ -1,7 +1,6 @@
 package me.blablubbabc.paintball;
 
 import java.util.ArrayList;
-import org.bukkit.Location;
 import org.bukkit.entity.Player;
 import org.bukkit.plugin.Plugin;
 
@@ -16,9 +15,9 @@ public class Melodie {
 		melodie.add(ton);
 	}
 	
-	public synchronized void play(final Plugin plugin, final Player p, final Location loc) {
+	public synchronized void play(final Plugin plugin, final Player p) {
 		for(Ton ton : melodie) {
-			ton.play(plugin, p, loc);
+			ton.play(plugin, p);
 		}
 	}
 	
