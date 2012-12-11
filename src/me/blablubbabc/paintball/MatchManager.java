@@ -1,14 +1,11 @@
 package me.blablubbabc.paintball;
 
-//import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map.Entry;
 import java.util.Set;
-
 import me.blablubbabc.paintball.extras.Mine;
 import me.blablubbabc.paintball.extras.Turret;
-
 import org.bukkit.Location;
 import org.bukkit.entity.Player;
 
