@@ -196,45 +196,46 @@ public class EventListener implements Listener {
 			Projectile shot = (Projectile) event.getDamager();
 			if (shot.getShooter() instanceof Player) {
 				Player shooter = (Player) shot.getShooter();
-				if (event.getEntity() instanceof Player) {
-					Player target = (Player) event.getEntity();
-					if (!shooter.equals(target)) {
-						if (mm.getMatch(shooter) != null
-								&& mm.getMatch(target) != null) {
-							if (mm.getMatch(shooter)
-									.equals(mm.getMatch(target))) {
-								Match match = mm.getMatch(shooter);
-								if (!match.isSpec(shooter)
-										&& !match.isSpec(target)
-										&& match.isSurvivor(shooter)
-										&& match.isSurvivor(target)
-										&& match.started) {
-									// Geschoss?
-									if (shot instanceof Snowball) {
-										// match
-										match.hitSnow(target, shooter);
+				Match match = mm.getMatch(shooter);
+				if(match != null) {
+					if (event.getEntity() instanceof Player) {
+						Player target = (Player) event.getEntity();						
+						if (shooter != target) {
+							if (mm.getMatch(shooter) != null
+									&& mm.getMatch(target) != null) {
+								if (mm.getMatch(shooter) == mm.getMatch(target)) {
+									if (!match.isSpec(shooter)
+											&& !match.isSpec(target)
+											&& match.isSurvivor(shooter)
+											&& match.isSurvivor(target)
+											&& match.started) {
+										// Geschoss?
+										if (shot instanceof Snowball) {
+											// match
+											match.hitSnow(target, shooter);
+										}
 									}
 								}
 							}
 						}
-					}
-				} else if (event.getEntityType() == EntityType.SNOWMAN) {
-					Snowman snowman = (Snowman) event.getEntity();
-					Turret turret = Turret.isTurret(snowman);
-					if (turret != null) {
-						turret.hit();
+					} else if (event.getEntityType() == EntityType.SNOWMAN) {
+						Snowman snowman = (Snowman) event.getEntity();
+						Turret turret = Turret.isTurret(snowman);
+						if (turret != null && match == turret.match && match.enemys(shooter, turret.player)) {
+							turret.hit();
+						}
 					}
 				}
-			}
+				}
 		} else if (event.getDamager() instanceof Player
 				&& event.getEntity() instanceof Player
-				&& event.getCause().equals(DamageCause.ENTITY_ATTACK)) {
+				&& event.getCause() == DamageCause.ENTITY_ATTACK) {
 			Player attacker = (Player) event.getDamager();
 			Player target = (Player) event.getEntity();
-			if (!attacker.equals(target)) {
+			if (attacker != target) {
 				if (mm.getMatch(attacker) != null
 						&& mm.getMatch(target) != null) {
-					if (mm.getMatch(attacker).equals(mm.getMatch(target))) {
+					if (mm.getMatch(attacker) == mm.getMatch(target)) {
 						Match match = mm.getMatch(attacker);
 						if (match.enemys(attacker, target)
 								&& match.isSurvivor(attacker)
@@ -325,9 +326,9 @@ public class EventListener implements Listener {
 		if (event.getWhoClicked() instanceof Player) {
 			Player player = (Player) event.getWhoClicked();
 			if (Lobby.getTeam(player) != null) {
-				if (!event.getSlotType().equals(SlotType.CONTAINER)
-						&& !event.getSlotType().equals(SlotType.QUICKBAR)
-						&& !event.getSlotType().equals(SlotType.OUTSIDE)) {
+				if (event.getSlotType() != SlotType.CONTAINER
+						&& event.getSlotType() != SlotType.QUICKBAR
+						&& event.getSlotType() != SlotType.OUTSIDE) {
 					event.setCancelled(true);
 				}
 			}
@@ -343,8 +344,8 @@ public class EventListener implements Listener {
 					&& match.isSurvivor(player)) {
 				// AIRSTRIKE
 				if (player.getItemInHand().getTypeId() == 280) {
-					if (event.getAction().equals(Action.LEFT_CLICK_AIR)
-							|| event.getAction().equals(Action.RIGHT_CLICK_AIR)) {
+					if (event.getAction() == Action.LEFT_CLICK_AIR
+							|| event.getAction() == Action.RIGHT_CLICK_AIR) {
 						if (Airstrike.marked(player)) {
 							if (Airstrike.getAirstrikes(match).size() < plugin.airstrikeMatchLimit) {
 								if (Airstrike.getAirstrikes(player).size() < plugin.airstrikePlayerLimit) {
@@ -383,18 +384,16 @@ public class EventListener implements Listener {
 					}
 					// GRENADE
 				} else if (player.getItemInHand().getTypeId() == 344) {
-					if (event.getAction().equals(Action.RIGHT_CLICK_AIR)
-							|| event.getAction().equals(
-									Action.RIGHT_CLICK_BLOCK)) {
+					if (event.getAction() == Action.RIGHT_CLICK_AIR
+							|| event.getAction() == Action.RIGHT_CLICK_BLOCK) {
 						player.sendMessage(plugin.t.getString("GRENADE_THROW"));
 						player.playSound(player.getLocation(),
 								Sound.SILVERFISH_IDLE, 100L, 1L);
 					}
 					// ROCKET
 				} else if (player.getItemInHand().getTypeId() == 356) {
-					if (event.getAction().equals(Action.RIGHT_CLICK_AIR)
-							|| event.getAction().equals(
-									Action.RIGHT_CLICK_BLOCK)) {
+					if (event.getAction() == Action.RIGHT_CLICK_AIR
+							|| event.getAction() == Action.RIGHT_CLICK_BLOCK) {
 						if (Rocket.getRockets(player).size() < plugin.rocketMatchLimit) {
 							if (Rocket.getRockets(player).size() < plugin.rocketPlayerLimit) {
 								player.playSound(player.getLocation(),
@@ -489,7 +488,7 @@ public class EventListener implements Listener {
 							2);
 					while (iterator.hasNext()) {
 						Mine m = Mine.isMine(iterator.next());
-						if (m != null) {
+						if (m != null && match == m.match && match.enemys(player, m.player)) {
 							m.explode(true);
 						}
 					}
@@ -524,9 +523,9 @@ public class EventListener implements Listener {
 			Player target = (Player) event.getEntity();
 			if (Lobby.getTeam(target) != null) {
 				if (plugin.mm.getMatch(target) != null && plugin.damage
-						&& !Lobby.getTeam(target).equals(Lobby.SPECTATE)
+						&& Lobby.getTeam(target) != Lobby.SPECTATE
 						&& plugin.mm.getMatch(target).isSurvivor(target)
-						&& !event.getCause().equals(DamageCause.ENTITY_ATTACK)
+						&& event.getCause() != DamageCause.ENTITY_ATTACK
 						&& plugin.mm.getMatch(target).started) {
 					if (target.getHealth() <= event.getDamage()) {
 						event.setDamage(0);
