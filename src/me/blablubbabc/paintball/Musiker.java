@@ -304,33 +304,38 @@ public class Musiker {
 				// Spaces entfernen
 				text.replaceAll(" ", "");
 				//get tones:
-				String[] tones = text.split("|");
+				String[] tones = text.split("-");
 				for(String ts : tones) {
-					String[] ton = ts.split(":");
-					if(ton.length != 2) {
-						log("ERROR: Couldn't get the note in line: "+line);
-						return null;
+					if(!ts.isEmpty()) {
+						String[] ton = ts.split(":");
+						if(ton.length != 2) {
+							log(""+ton.length);
+							log(""+ts);
+							log(ton.toString());
+							log("ERROR: Couldn't get the note in line: "+line);
+							return null;
+						}
+						//instrument
+						Instrument instrument = getInstrument(ton[0]);
+						if(instrument == null) {
+							log("ERROR: Couldn't get the instrument in line: "+line);
+							return null;
+						}
+						//note (id between 0-24)
+						Integer id = getNoteId(ton[1]);
+						if(id == null) {
+							log("ERROR: Couldn't get a valid note id in line: "+line);
+							return null;
+						}
+						Note note = new Note(id);
+						//delay in ticks (line * 2 ticks):
+						long delay = (line-1)*2;
+						//add note to melodie:
+						melodie.addTon(new Ton(instrument, note, delay));
 					}
-					//instrument
-					Instrument instrument = getInstrument(ton[0]);
-					if(instrument == null) {
-						log("ERROR: Couldn't get the instrument in line: "+line);
-						return null;
-					}
-					//note (id between 0-24)
-					Integer id = getNoteId(ton[1]);
-					if(id == null) {
-						log("ERROR: Couldn't get a valid note id in line: "+line);
-						return null;
-					}
-					Note note = new Note(id);
-					//delay in ticks (line * 5 ticks):
-					long delay = (line-1)*5;
-					//add note to melodie:
-					melodie.addTon(new Ton(instrument, note, delay));
 				}
 			}
-			log("Scanned melody. Duration: " + line + " lines x 5 ticks => " +(line*5));
+			log("Scanned melody. Duration: " + line + " lines x 2 ticks => " +(line*2));
 			return melodie;
 		} catch (Exception e) {
 			log("ERROR: Couldn't load the specified melody file.");

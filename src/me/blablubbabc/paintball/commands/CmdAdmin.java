@@ -283,6 +283,14 @@ public class CmdAdmin {
 				return true;
 			}
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+		} else if (args[1].equalsIgnoreCase("test")) {
+			if(sender instanceof Player) {
+				Player p = (Player) sender;
+				plugin.musik.playDefeat(plugin, p);
+				
+			}
+			return true;
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 		} else {
 			if(sender instanceof Player) return false;
 			else sender.sendMessage(plugin.t.getString("COMMAND_UNKNOWN_OR_NOT_CONSOLE"));
