@@ -6,7 +6,6 @@ import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.Note;
 import org.bukkit.block.Block;
-import org.bukkit.block.NoteBlock;
 import org.bukkit.entity.Player;
 import org.bukkit.plugin.Plugin;
 
