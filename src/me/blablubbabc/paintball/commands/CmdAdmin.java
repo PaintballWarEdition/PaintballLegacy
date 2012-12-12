@@ -31,10 +31,10 @@ public class CmdAdmin {
 	public boolean command(final CommandSender sender, String[] args) {
 		if(sender instanceof Player) {
 			//PERMISSION CHECK
-			if(!sender.isOp() && !sender.hasPermission("paintball.admin")) {
+			/*if(!sender.isOp() && !sender.hasPermission("paintball.admin")) {
 				sender.sendMessage(plugin.t.getString("NO_PERMISSION"));
 				return true;
-			}
+			}*/
 			Player player = (Player) sender;
 			//player commands:
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////

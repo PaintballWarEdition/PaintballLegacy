@@ -21,10 +21,10 @@ public class CmdArena {
 	public boolean command(CommandSender sender, String[] args) {
 		if(sender instanceof Player) {
 			//PERMISSION CHECK
-			if(!sender.isOp() && !sender.hasPermission("paintball.arena")) {
+			/*if(!sender.isOp() && !sender.hasPermission("paintball.arena")) {
 				sender.sendMessage(plugin.t.getString("NO_PERMISSION"));
 				return true;
-			}
+			}*/
 			Player player = (Player) sender;
 			if(args[1].equalsIgnoreCase("list")) {
 				//list

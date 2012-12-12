@@ -53,6 +53,10 @@ public class CommandManager implements CommandExecutor{
 				}
 
 				if(args[0].equalsIgnoreCase("arena")) {
+					if(!sender.isOp() && !sender.hasPermission("paintball.arena")) {
+						sender.sendMessage(plugin.t.getString("NO_PERMISSION"));
+						return true;
+					}
 					if(args.length == 1) {
 						arenahelp(sender);
 						return true;
@@ -61,6 +65,10 @@ public class CommandManager implements CommandExecutor{
 						return cmdArena.command(sender, args);
 					}
 				} else if(args[0].equalsIgnoreCase("admin")) {
+					if(!sender.isOp() && !sender.hasPermission("paintball.admin")) {
+						sender.sendMessage(plugin.t.getString("NO_PERMISSION"));
+						return true;
+					}
 					if(args.length == 1) {
 						adminhelp(sender);
 						return true;
@@ -199,9 +207,6 @@ public class CommandManager implements CommandExecutor{
 		sender.sendMessage(plugin.red+"* Commercial usage of this plugin in any kind is not allowed.");
 		sender.sendMessage(plugin.red+"* Modifying code is not allowed.");
 		sender.sendMessage(plugin.gold+"You can find a complete list of usage condition on the bukkit dev page.");
-		//sender.sendMessage(plugin.dark_green+"If you think your servers admins violate against this rule,");
-		//sender.sendMessage(plugin.dark_green+"feel free to report them to us so we can take legal action.");
-		//sender.sendMessage(plugin.green+"Thank you.");
 	}
 	
 	public void pbhelp(CommandSender sender) {
@@ -275,6 +280,7 @@ public class CommandManager implements CommandExecutor{
 		sender.sendMessage(plugin.t.getString("COMMAND_ADMIN_RANK"));
 		sender.sendMessage(plugin.t.getString("COMMAND_ADMIN_NEXT"));
 		sender.sendMessage(plugin.t.getString("COMMAND_ADMIN_RANDOM"));
+		sender.sendMessage(plugin.t.getString("COMMAND_ADMIN_HAPPY"));
 	}
 
 	public boolean joinTeam(Player player, Lobby team) {
