@@ -85,14 +85,18 @@ public class Mine {
 								if (plugin.effects) {
 									// effect
 									for (Player p : match.getAllPlayer()) {
-										Location ploc = p.getLocation();
-										if (ploc.getWorld().equals(
-												block.getWorld())) {
-											double dist = ploc.distance(loc);
-											if (dist < 15) {
-												float vol = (float) (0.2 - (dist * 0.013));
-												p.playSound(loc, Sound.CLICK,
-														vol, 2F);
+										if (match.isSurvivor(p)) {
+											Location ploc = p.getLocation();
+											if (ploc.getWorld().equals(
+													block.getWorld())) {
+												double dist = ploc
+														.distance(loc);
+												if (dist < 15) {
+													float vol = (float) (0.15 - (dist * 0.01));
+													p.playSound(loc,
+															Sound.CLICK, vol,
+															2F);
+												}
 											}
 										}
 									}
@@ -113,7 +117,8 @@ public class Mine {
 	private boolean nearEnemy() {
 		for (Player p : match.getEnemyTeam(player)) {
 			if (match.isSurvivor(p)) {
-				if (loc.distance(p.getLocation()) < plugin.mineRange && canSee(p, loc)) {
+				if (loc.distance(p.getLocation()) < plugin.mineRange
+						&& canSee(p, loc)) {
 					return true;
 				}
 			}
