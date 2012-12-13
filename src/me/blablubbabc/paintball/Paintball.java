@@ -18,7 +18,7 @@ import org.bukkit.plugin.Plugin;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.bukkit.potion.PotionEffect;
 
-//This file is part of blablubbabc's paintball-Plugin. Do not redistribute or modify. Use it as it is. Usage on own risk. No warranties. No commercial usage!
+//This file is part of blablubbabc's paintball-plugin. Do not redistribute or modify. Use it as it is. Usage on own risk. No warranties. No commercial usage!
 
 public class Paintball extends JavaPlugin{
 	public PlayerManager pm;
