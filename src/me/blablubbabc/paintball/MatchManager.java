@@ -61,6 +61,7 @@ public class MatchManager{
 			//close match
 			plugin.am.setNotActive(match.getArena());
 			match.endSchedulers();
+			match.updateTags();
 			matches.remove(match);	
 		}
 		//messages:
@@ -383,6 +384,7 @@ public class MatchManager{
 
 		//close match
 		plugin.am.setNotActive(match.getArena());
+		match.updateTags();
 		matches.remove(match);
 		//ready? countdown?
 		plugin.nf.status(plugin.t.getString("CHOOSE_TEAM"));
