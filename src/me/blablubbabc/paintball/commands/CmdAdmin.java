@@ -283,10 +283,12 @@ public class CmdAdmin {
 				return true;
 			}
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-		} else if (args[1].equalsIgnoreCase("test")) {
-			/*if(sender instanceof Player) {
+		/*} else if (args[1].equalsIgnoreCase("test")) {
+			if(sender instanceof Player) {
 				Player p = (Player) sender;
-				plugin.musik.playDefeat(plugin, p);
+				float id = Float.parseFloat(args[2]);
+				new Ton(Instrument.PIANO, new Note(1), 20).play(plugin, p, id);
+				//plugin.musik.playDefeat(plugin, p);
 				
 			}
 			return true;*/

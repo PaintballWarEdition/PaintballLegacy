@@ -6,8 +6,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.util.Scanner;
-import org.bukkit.Instrument;
-import org.bukkit.Note;
+import org.bukkit.Sound;
 import org.bukkit.entity.Player;
 import org.bukkit.plugin.Plugin;
 
@@ -315,23 +314,22 @@ public class Musiker {
 							log("ERROR: Couldn't get the note in line: "+line);
 							return null;
 						}
-						//instrument
-						Instrument instrument = getInstrument(ton[0]);
-						if(instrument == null) {
+						//sound
+						Sound sound = getSound(ton[0]);
+						if(sound == null) {
 							log("ERROR: Couldn't get the instrument in line: "+line);
 							return null;
 						}
 						//note (id between 0-24)
 						Integer id = getNoteId(ton[1]);
-						if(id == null) {
+						if(id == null || id < 0 || id > 24) {
 							log("ERROR: Couldn't get a valid note id in line: "+line);
 							return null;
 						}
-						Note note = new Note(id);
 						//delay in ticks (line * 2 ticks):
 						long delay = (line-1)*2;
 						//add note to melodie:
-						melodie.addTon(new Ton(instrument, note, delay));
+						melodie.addTon(new Ton(sound, id, delay));
 					}
 				}
 			}
@@ -348,18 +346,19 @@ public class Musiker {
 	}
 
 	private enum Instrus {
-		PI, BG, BD, SD, ST
+		PI, BG, BD, SD, ST, PL
 	}
 
-	private Instrument getInstrument(String s) {
+	private Sound getSound(String s) {
 		try {
 			Instrus i = Instrus.valueOf(s.toUpperCase());
 			switch (i) {
-			case PI: return Instrument.PIANO;
-			case BG: return Instrument.BASS_GUITAR;
-			case BD: return Instrument.BASS_DRUM;
-			case SD: return Instrument.SNARE_DRUM;
-			case ST: return Instrument.STICKS;
+			case PI: return Sound.NOTE_PIANO;
+			case BG: return Sound.NOTE_BASS_GUITAR;
+			case BD: return Sound.NOTE_BASS_DRUM;
+			case SD: return Sound.NOTE_SNARE_DRUM;
+			case ST: return Sound.NOTE_STICKS;
+			case PL: return Sound.NOTE_PLING;
 			default: return null;
 			}
 		} catch(Exception e) {
