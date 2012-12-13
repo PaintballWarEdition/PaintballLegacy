@@ -308,9 +308,6 @@ public class Musiker {
 					if(!ts.isEmpty()) {
 						String[] ton = ts.split(":");
 						if(ton.length != 2) {
-							log(""+ton.length);
-							log(""+ts);
-							log(ton.toString());
 							log("ERROR: Couldn't get the note in line: "+line);
 							return null;
 						}
@@ -333,7 +330,7 @@ public class Musiker {
 					}
 				}
 			}
-			log("Scanned melody. Duration: " + line + " lines x 2 ticks => " +(line*2));
+			log("Scanned melody. Lines: " + line);
 			return melodie;
 		} catch (Exception e) {
 			log("ERROR: Couldn't load the specified melody file.");

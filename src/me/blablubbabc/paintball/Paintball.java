@@ -266,9 +266,9 @@ public class Paintball extends JavaPlugin{
 		//melody:
 		if(getConfig().get("Paintball.Melodies.enable") == null)getConfig().set("Paintball.Melodies.enable", true);
 		if(getConfig().get("Paintball.Melodies.delay") == null)getConfig().set("Paintball.Melodies.delay", 10);
-		if(getConfig().get("Paintball.Melodies.win") == null)getConfig().set("Paintball.Melodies.enable", "win");
-		if(getConfig().get("Paintball.Melodies.defeat") == null)getConfig().set("Paintball.Melodies.enable", "defeat");
-		if(getConfig().get("Paintball.Melodies.draw") == null)getConfig().set("Paintball.Melodies.enable", "draw");
+		if(getConfig().get("Paintball.Melodies.win") == null)getConfig().set("Paintball.Melodies.win", "win");
+		if(getConfig().get("Paintball.Melodies.defeat") == null)getConfig().set("Paintball.Melodies.defeat", "defeat");
+		if(getConfig().get("Paintball.Melodies.draw") == null)getConfig().set("Paintball.Melodies.draw", "draw");
 		//lobby join checks
 		if(getConfig().get("Paintball.Lobby join.Checks.Inventory") == null)getConfig().set("Paintball.Lobby join.Checks.Inventory", true);
 		if(getConfig().get("Paintball.Lobby join.Checks.Inventory Save") == null)getConfig().set("Paintball.Lobby join.Checks.Inventory Save", true);
@@ -397,9 +397,9 @@ public class Paintball extends JavaPlugin{
 		//melody
 		melody = getConfig().getBoolean("Paintball.Melodies.enable", true);
 		melodyDelay = getConfig().getInt("Paintball.Melodies.delay", 10);
-		melodyWin = getConfig().getString("Paintball.Melodies.enable", "win");
-		melodyDefeat = getConfig().getString("Paintball.Melodies.enable", "defeat");
-		melodyDraw = getConfig().getString("Paintball.Melodies.enable", "draw");
+		melodyWin = getConfig().getString("Paintball.Melodies.win", "win");
+		melodyDefeat = getConfig().getString("Paintball.Melodies.defeat", "defeat");
+		melodyDraw = getConfig().getString("Paintball.Melodies.draw", "draw");
 		
 		//shop:
 		shop = getConfig().getBoolean("Paintball.Shop.enabled", true);
