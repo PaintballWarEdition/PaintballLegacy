@@ -283,8 +283,8 @@ public class CmdAdmin {
 				return true;
 			}
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-		/*} else if (args[1].equalsIgnoreCase("test")) {
-			if(sender instanceof Player) {
+		} else if (args[1].equalsIgnoreCase("test")) {
+			/*if(sender instanceof Player) {
 				Player p = (Player) sender;
 				plugin.musik.playDefeat(plugin, p);
 				

@@ -5,6 +5,7 @@ import org.bukkit.Instrument;
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.Note;
+import org.bukkit.Sound;
 import org.bukkit.block.Block;
 import org.bukkit.entity.Player;
 import org.bukkit.plugin.Plugin;
@@ -66,12 +67,11 @@ public class Ton {
 			public void run() {
 				
 				final Location loc = p.getLocation().add(0, 5, 0);
-				
-				final Block block = loc.getBlock();
-				addNoteBlock(p, loc, block);
+				//final Block block = loc.getBlock();
+				//addNoteBlock(p, loc, block);
 				//final Material mat = block.getType();
 				//final byte data = block.getData();
-				block.setType(Material.NOTE_BLOCK);
+				//block.setType(Material.NOTE_BLOCK);
 				//p.sendBlockChange(loc, Material.NOTE_BLOCK, (byte) 1);
 				
 				
@@ -80,9 +80,10 @@ public class Ton {
 					@Override
 					public void run() {
 						//NoteBlock n = (NoteBlock)block.getState();
+						p.playSound(loc, Sound.NOTE_PIANO, 1, 2);
 						//n.play(instrument, note);
-						p.playNote(loc, instrument, note);
-						plugin.getServer().getScheduler().scheduleSyncDelayedTask(plugin, new Runnable() {
+						//p.playNote(loc, instrument, note);
+						/*plugin.getServer().getScheduler().scheduleSyncDelayedTask(plugin, new Runnable() {
 							
 							@Override
 							public void run() {
@@ -95,7 +96,7 @@ public class Ton {
 									removeOriginalBlock(loc);
 								}
 							}
-						}, 20L);
+						}, 20L);*/
 					}
 				}, 1L);
 			}
