@@ -1,5 +1,6 @@
 package me.blablubbabc.paintball;
 
+import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map.Entry;
@@ -141,7 +142,7 @@ public class MatchManager{
 			HashMap<String, Integer> shots, HashMap<String, Integer> hits, HashMap<String, Integer> kills, HashMap<String, Integer> deaths,
 			HashMap<String, Integer> teamattacks, HashMap<String, Integer> grenades, HashMap<String, Integer> airstrikes) {
 		//TIME
-		//long time1 = System.nanoTime();
+		long time1 = System.nanoTime();
 		//STATS
 		HashMap<String, Integer> wins = new HashMap<String, Integer>();
 		HashMap<String, Integer> defeats = new HashMap<String, Integer>();
@@ -334,21 +335,21 @@ public class MatchManager{
 			for(Player p : match.winners) {
 				if(Lobby.getTeam(p) != null) {
 					plugin.nf.status(p, plugin.t.getString("YOU_WON"));
-					//plugin.musik.playWin(plugin, p);
+					plugin.musik.playWin(plugin, p);
 				}
 
 			}
 			for(Player p :  match.loosers) {
 				if(Lobby.getTeam(p) != null) {
 					plugin.nf.status(p, plugin.t.getString("YOU_LOST"));
-					//plugin.musik.playDefeat(plugin, p);
+					plugin.musik.playDefeat(plugin, p);
 				}
 			}
 		} else {
 			for(Player p : match.getAllPlayer()) {
 				if(Lobby.getTeam(p) != null) {
 					plugin.nf.status(p, plugin.t.getString("YOU_DRAW"));
-					//plugin.musik.playDraw(plugin, p);
+					plugin.musik.playDraw(plugin, p);
 				}
 			}
 		}
@@ -368,10 +369,10 @@ public class MatchManager{
 			plugin.nf.status(ready());
 		}
 		//TIME
-		//long time2 = System.nanoTime();
-		//Double delta = (time2 - time1)/10E6;
-		//DecimalFormat dec = new DecimalFormat("##########.###");
-		//plugin.nf.text("Took " + dec.format(delta) + " ms");
+		long time2 = System.nanoTime();
+		Double delta = (time2 - time1)/10E6;
+		DecimalFormat dec = new DecimalFormat("##########.###");
+		if(plugin.debug) plugin.nf.text("Took " + dec.format(delta) + " ms");
 	}
 
 	public synchronized Match getMatch(Player player) {

@@ -29,7 +29,7 @@ public class Paintball extends JavaPlugin{
 	public Newsfeeder nf;
 	public ArenaManager am;
 	public Translator t;
-	//public Musiker musik;
+	public Musiker musik;
 	public Stats stats;
 	public InSignsFeature isf;
 	public boolean active;
@@ -96,6 +96,7 @@ public class Paintball extends JavaPlugin{
 	public int afkMatchAmount;
 	public boolean autoSpecLobby;
 	public boolean effects;
+	public boolean debug;
 	//unused
 	//public boolean autoSpecDeadPlayers;
 	//public int repsawns;
@@ -228,6 +229,7 @@ public class Paintball extends JavaPlugin{
 		if(getConfig().get("Paintball.AFK Detection.Amount of Matches") == null)getConfig().set("Paintball.AFK Detection.Amount of Matches", 3);
 		if(getConfig().get("Paintball.Language") == null)getConfig().set("Paintball.Language", "enUS");
 		if(getConfig().get("Paintball.No Permissions") == null)getConfig().set("Paintball.No Permissions", false);
+		if(getConfig().get("Paintball.Debug") == null)getConfig().set("Paintball.Debug", false);
 		if(getConfig().get("Paintball.Auto Lobby") == null)getConfig().set("Paintball.Auto Lobby", false);
 		if(getConfig().get("Paintball.Auto Team") == null)getConfig().set("Paintball.Auto Team", false);
 		if(getConfig().get("Paintball.Points per Kill") == null)getConfig().set("Paintball.Points per Kill", 2);
@@ -335,6 +337,7 @@ public class Paintball extends JavaPlugin{
 		if(meleeDamage < 1) meleeDamage = 1;
 		local = getConfig().getString("Paintball.Language", "enUS");
 		noPerms = getConfig().getBoolean("Paintball.No Permissions", false);
+		debug = getConfig().getBoolean("Paintball.Debug", false);
 		autoLobby = getConfig().getBoolean("Paintball.Auto Lobby", false);
 		autoTeam = getConfig().getBoolean("Paintball.Auto Team", false);
 		allowedCommands = (ArrayList<String>) getConfig().getList("Paintball.Allowed Commands", allowedCommands);
@@ -465,12 +468,12 @@ public class Paintball extends JavaPlugin{
 			return;
 		}
 		//MUSIKER
-		/*musik = new Musiker(this, "win", "defeat", "draw");
+		musik = new Musiker(this, "win", "defeat", "draw");
 		if(!musik.success) {
 			log("ERROR: Couldn't find/load the default melody file/s. Disables now..");
 			getServer().getPluginManager().disablePlugin(this);
 			return;
-		}*/
+		}
 		//WAKE TEAM-ENUMS
 		Lobby.values();
 		//PLAYERMANAGER
