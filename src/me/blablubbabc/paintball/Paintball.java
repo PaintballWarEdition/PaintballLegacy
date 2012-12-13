@@ -25,6 +25,7 @@ public class Paintball extends JavaPlugin{
 	public CommandManager cm;
 	public MatchManager mm;
 	public EventListener listener;
+	public TagAPIListener tagAPI;
 	public Newsfeeder nf;
 	public ArenaManager am;
 	public Translator t;
@@ -95,6 +96,12 @@ public class Paintball extends JavaPlugin{
 	public boolean autoSpecLobby;
 	public boolean effects;
 	public boolean debug;
+	
+	//player tags
+	public boolean tags;
+	public boolean tagsColor;
+	public boolean tagsInvis;
+	public boolean tagsRemainingInvis;
 	
 	//melody
 	public boolean melody;
@@ -251,6 +258,11 @@ public class Paintball extends JavaPlugin{
 		if(getConfig().get("Paintball.Auto Spec Lobby") == null)getConfig().set("Paintball.Auto Spec Lobby", false);
 		if(getConfig().get("Paintball.Effects") == null)getConfig().set("Paintball.Effects", true);
 		if(getConfig().get("Paintball.Allowed Commands") == null)getConfig().set("Paintball.Allowed Commands", allowedCommands);
+		//player tags
+		if(getConfig().get("Paintball.Tags.enabled") == null)getConfig().set("Paintball.Tags.enabled", true);
+		if(getConfig().get("Paintball.Tags.colored") == null)getConfig().set("Paintball.Tags.colored", true);
+		if(getConfig().get("Paintball.Tags.invisible") == null)getConfig().set("Paintball.Tags.invisible", true);
+		if(getConfig().get("Paintball.Tags.remaining invisible") == null)getConfig().set("Paintball.Tags.remaining invisible", true);
 		//melody:
 		if(getConfig().get("Paintball.Melodies.enable") == null)getConfig().set("Paintball.Melodies.enable", true);
 		if(getConfig().get("Paintball.Melodies.delay") == null)getConfig().set("Paintball.Melodies.delay", 10);
@@ -375,6 +387,12 @@ public class Paintball extends JavaPlugin{
 		autoRandom = getConfig().getBoolean("Paintball.Auto Random", true);
 		autoSpecLobby = getConfig().getBoolean("Paintball.Auto Spec Lobby", false);
 		effects = getConfig().getBoolean("Paintball.Effects", true);
+		
+		//player tags
+		tags = getConfig().getBoolean("Paintball.Tags.enabled", true);
+		tagsColor = getConfig().getBoolean("Paintball.Tags.colored", true);
+		tagsInvis = getConfig().getBoolean("Paintball.Tags.invisible", true);
+		tagsRemainingInvis = getConfig().getBoolean("Paintball.Tags.remaining invisible", true);
 
 		//melody
 		melody = getConfig().getBoolean("Paintball.Melodies.enable", true);
@@ -594,6 +612,15 @@ public class Paintball extends JavaPlugin{
 			log("Plugin 'InSigns' found. Using it now.");
 		} else {
 			log("Plugin 'InSigns' not found. Additional sign features disabled.");
+		}
+		//TagAPI:
+		Plugin tagAPIPlugin = getServer().getPluginManager().getPlugin("TagAPI");
+		if((tagAPIPlugin != null) && tagAPIPlugin.isEnabled()) {
+			tagAPI = new TagAPIListener(this);
+			getServer().getPluginManager().registerEvents(tagAPI, this);
+			log("Plugin 'TagAPI' found. Using it now.");
+		} else {
+			log("Plugin 'TagAPI' not found. Additional tag features disabled.");
 		}
 		
 		//calculating turret angles:
