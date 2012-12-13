@@ -332,24 +332,51 @@ public class MatchManager{
 		plugin.nf.text(plugin.t.getString("MATCH_KILLS", vars));
 		plugin.nf.text("-------------------------------------------------");
 		if(!draw) {
-			for(Player p : match.winners) {
+			for(final Player p : match.winners) {
 				if(Lobby.getTeam(p) != null) {
 					plugin.nf.status(p, plugin.t.getString("YOU_WON"));
-					plugin.musik.playWin(plugin, p);
+					if(plugin.melody) {
+						plugin.getServer().getScheduler().scheduleSyncDelayedTask(plugin, new Runnable() {
+							
+							@Override
+							public void run() {
+								plugin.musik.playWin(plugin, p);
+							}
+						}, plugin.melodyDelay);
+						
+					}
 				}
 
 			}
-			for(Player p :  match.loosers) {
+			for(final Player p :  match.loosers) {
 				if(Lobby.getTeam(p) != null) {
 					plugin.nf.status(p, plugin.t.getString("YOU_LOST"));
-					plugin.musik.playDefeat(plugin, p);
+					if(plugin.melody) {
+						plugin.getServer().getScheduler().scheduleSyncDelayedTask(plugin, new Runnable() {
+							
+							@Override
+							public void run() {
+								plugin.musik.playDefeat(plugin, p);
+							}
+						}, plugin.melodyDelay);
+						
+					}
 				}
 			}
 		} else {
-			for(Player p : match.getAllPlayer()) {
+			for(final Player p : match.getAllPlayer()) {
 				if(Lobby.getTeam(p) != null) {
 					plugin.nf.status(p, plugin.t.getString("YOU_DRAW"));
-					plugin.musik.playDraw(plugin, p);
+					if(plugin.melody) {
+						plugin.getServer().getScheduler().scheduleSyncDelayedTask(plugin, new Runnable() {
+							
+							@Override
+							public void run() {
+								plugin.musik.playDraw(plugin, p);
+							}
+						}, plugin.melodyDelay);
+						
+					}
 				}
 			}
 		}

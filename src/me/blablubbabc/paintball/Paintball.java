@@ -97,9 +97,15 @@ public class Paintball extends JavaPlugin{
 	public boolean autoSpecLobby;
 	public boolean effects;
 	public boolean debug;
+	
+	//melody
+	public boolean melody;
+	public int melodyDelay;
+	public String melodyWin;
+	public String melodyDefeat;
+	public String melodyDraw;
 	//unused
 	//public boolean autoSpecDeadPlayers;
-	//public int repsawns;
 
 	//lobby join checks
 	public boolean checkInventory;
@@ -249,6 +255,12 @@ public class Paintball extends JavaPlugin{
 		if(getConfig().get("Paintball.Auto Spec Lobby") == null)getConfig().set("Paintball.Auto Spec Lobby", false);
 		if(getConfig().get("Paintball.Effects") == null)getConfig().set("Paintball.Effects", true);
 		if(getConfig().get("Paintball.Allowed Commands") == null)getConfig().set("Paintball.Allowed Commands", allowedCommands);
+		//melody:
+		if(getConfig().get("Paintball.Melodies.enable") == null)getConfig().set("Paintball.Melodies.enable", true);
+		if(getConfig().get("Paintball.Melodies.delay") == null)getConfig().set("Paintball.Melodies.delay", 10);
+		if(getConfig().get("Paintball.Melodies.win") == null)getConfig().set("Paintball.Melodies.enable", "win");
+		if(getConfig().get("Paintball.Melodies.defeat") == null)getConfig().set("Paintball.Melodies.enable", "defeat");
+		if(getConfig().get("Paintball.Melodies.draw") == null)getConfig().set("Paintball.Melodies.enable", "draw");
 		//lobby join checks
 		if(getConfig().get("Paintball.Lobby join.Checks.Inventory") == null)getConfig().set("Paintball.Lobby join.Checks.Inventory", true);
 		if(getConfig().get("Paintball.Lobby join.Checks.Inventory Save") == null)getConfig().set("Paintball.Lobby join.Checks.Inventory Save", true);
@@ -375,6 +387,13 @@ public class Paintball extends JavaPlugin{
 		autoSpecLobby = getConfig().getBoolean("Paintball.Auto Spec Lobby", false);
 		effects = getConfig().getBoolean("Paintball.Effects", true);
 
+		//melody
+		melody = getConfig().getBoolean("Paintball.Melodies.enable", true);
+		melodyDelay = getConfig().getInt("Paintball.Melodies.delay", 10);
+		melodyWin = getConfig().getString("Paintball.Melodies.enable", "win");
+		melodyDefeat = getConfig().getString("Paintball.Melodies.enable", "defeat");
+		melodyDraw = getConfig().getString("Paintball.Melodies.enable", "draw");
+		
 		//shop:
 		shop = getConfig().getBoolean("Paintball.Shop.enabled", true);
 		shopGoods = (ArrayList<String>) getConfig().getList("Paintball.Shop.Goods (amount-name-id-subid-price)", goodsDef);
@@ -468,7 +487,7 @@ public class Paintball extends JavaPlugin{
 			return;
 		}
 		//MUSIKER
-		musik = new Musiker(this, "win", "defeat", "draw");
+		musik = new Musiker(this, melodyWin, melodyDefeat, melodyDraw);
 		if(!musik.success) {
 			log("ERROR: Couldn't find/load the default melody file/s. Disables now..");
 			getServer().getPluginManager().disablePlugin(this);

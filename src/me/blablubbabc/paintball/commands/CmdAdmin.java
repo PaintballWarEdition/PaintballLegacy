@@ -283,15 +283,14 @@ public class CmdAdmin {
 				return true;
 			}
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-		/*} else if (args[1].equalsIgnoreCase("test")) {
+		} else if (args[1].equalsIgnoreCase("play")) {
 			if(sender instanceof Player) {
 				Player p = (Player) sender;
-				float id = Float.parseFloat(args[2]);
-				new Ton(Instrument.PIANO, new Note(1), 20).play(plugin, p, id);
-				//plugin.musik.playDefeat(plugin, p);
-				
+				if(args[2].equalsIgnoreCase("defeat")) plugin.musik.playDefeat(plugin, p);
+				else if(args[2].equalsIgnoreCase("win")) plugin.musik.playWin(plugin, p);
+				else if(args[2].equalsIgnoreCase("draw")) plugin.musik.playDraw(plugin, p);	
 			}
-			return true;*/
+			return true;
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 		} else {
 			if(sender instanceof Player) return false;
