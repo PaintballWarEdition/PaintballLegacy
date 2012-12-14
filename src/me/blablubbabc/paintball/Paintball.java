@@ -265,7 +265,7 @@ public class Paintball extends JavaPlugin{
 		if(getConfig().get("Paintball.Tags.remaining invisible") == null)getConfig().set("Paintball.Tags.remaining invisible", true);
 		//melody:
 		if(getConfig().get("Paintball.Melodies.enable") == null)getConfig().set("Paintball.Melodies.enable", true);
-		if(getConfig().get("Paintball.Melodies.delay") == null)getConfig().set("Paintball.Melodies.delay", 10);
+		if(getConfig().get("Paintball.Melodies.delay") == null)getConfig().set("Paintball.Melodies.delay", 20);
 		if(getConfig().get("Paintball.Melodies.win") == null)getConfig().set("Paintball.Melodies.win", "win");
 		if(getConfig().get("Paintball.Melodies.defeat") == null)getConfig().set("Paintball.Melodies.defeat", "defeat");
 		if(getConfig().get("Paintball.Melodies.draw") == null)getConfig().set("Paintball.Melodies.draw", "draw");
@@ -396,7 +396,7 @@ public class Paintball extends JavaPlugin{
 
 		//melody
 		melody = getConfig().getBoolean("Paintball.Melodies.enable", true);
-		melodyDelay = getConfig().getInt("Paintball.Melodies.delay", 10);
+		melodyDelay = getConfig().getInt("Paintball.Melodies.delay", 20);
 		melodyWin = getConfig().getString("Paintball.Melodies.win", "win");
 		melodyDefeat = getConfig().getString("Paintball.Melodies.defeat", "defeat");
 		melodyDraw = getConfig().getString("Paintball.Melodies.draw", "draw");
