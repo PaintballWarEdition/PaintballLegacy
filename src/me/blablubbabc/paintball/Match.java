@@ -280,7 +280,7 @@ public class Match {
 		HashMap<String, String> vars = new HashMap<String, String>();
 		vars.put("seconds", String.valueOf(counter));
 		for (Player player : getAll()) {
-			player.sendMessage(plugin.t.getString("COUNTDOWN", vars));
+			player.sendMessage(plugin.t.getString("COUNTDOWN_START", vars));
 		}
 	}
 
