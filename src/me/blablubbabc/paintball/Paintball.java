@@ -267,8 +267,11 @@ public class Paintball extends JavaPlugin{
 		if(getConfig().get("Paintball.Melodies.enable") == null)getConfig().set("Paintball.Melodies.enable", true);
 		if(getConfig().get("Paintball.Melodies.delay") == null)getConfig().set("Paintball.Melodies.delay", 20);
 		if(getConfig().get("Paintball.Melodies.win") == null)getConfig().set("Paintball.Melodies.win", "win");
+		if(getConfig().get("Paintball.Melodies.win.nbs") == null)getConfig().set("Paintball.Melodies.win.nbs", false);
 		if(getConfig().get("Paintball.Melodies.defeat") == null)getConfig().set("Paintball.Melodies.defeat", "defeat");
+		if(getConfig().get("Paintball.Melodies.defeat.nbs") == null)getConfig().set("Paintball.Melodies.defeat.nbs", false);
 		if(getConfig().get("Paintball.Melodies.draw") == null)getConfig().set("Paintball.Melodies.draw", "draw");
+		if(getConfig().get("Paintball.Melodies.draw.nbs") == null)getConfig().set("Paintball.Melodies.draw.nbs", false);
 		//lobby join checks
 		if(getConfig().get("Paintball.Lobby join.Checks.Inventory") == null)getConfig().set("Paintball.Lobby join.Checks.Inventory", true);
 		if(getConfig().get("Paintball.Lobby join.Checks.Inventory Save") == null)getConfig().set("Paintball.Lobby join.Checks.Inventory Save", true);
@@ -400,6 +403,9 @@ public class Paintball extends JavaPlugin{
 		melodyWin = getConfig().getString("Paintball.Melodies.win", "win");
 		melodyDefeat = getConfig().getString("Paintball.Melodies.defeat", "defeat");
 		melodyDraw = getConfig().getString("Paintball.Melodies.draw", "draw");
+		boolean winNbs = getConfig().getBoolean("Paintball.Melodies.win.nbs", false);
+		boolean defeatNbs = getConfig().getBoolean("Paintball.Melodies.defeat.nbs", false);
+		boolean drawNbs = getConfig().getBoolean("Paintball.Melodies.draw.nbs", false);
 		
 		//shop:
 		shop = getConfig().getBoolean("Paintball.Shop.enabled", true);
@@ -494,7 +500,7 @@ public class Paintball extends JavaPlugin{
 			return;
 		}
 		//MELODIES
-		musik = new Musiker(this, melodyWin, melodyDefeat, melodyDraw);
+		musik = new Musiker(this, melodyWin, winNbs, melodyDefeat, defeatNbs, melodyDraw, drawNbs);
 		if(!musik.success) {
 			log("ERROR: Couldn't find/load the default melodies. Disables now..");
 			getServer().getPluginManager().disablePlugin(this);

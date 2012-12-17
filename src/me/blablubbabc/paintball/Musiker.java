@@ -25,12 +25,12 @@ public class Musiker {
 	public Melody defeat;
 	public Melody draw;
 
-	public Musiker(Plugin plugin, String winFile, String defeatFile,
-			String drawFile) {
+	public Musiker(Plugin plugin, String winFile, boolean winNbs, String defeatFile, boolean defeatNbs,
+			String drawFile, boolean drawNbs) {
 		// init
 		this.plugin = plugin;
 		success = true;
-		path = new File(plugin.getDataFolder().toString());
+		path = new File(plugin.getDataFolder().toString() + "/melodies/");
 		if (!path.exists())
 			path.mkdirs();
 		
@@ -46,20 +46,20 @@ public class Musiker {
 		if(!success) return;
 		
 		// speziell
-		if (!winFile.equals("win")) {
-			win = loadMelody(winFile, true);
+		if (!winFile.equals("win") || winNbs) {
+			win = loadMelody(winFile, winNbs);
 			if (win == null) {
 				log("ERROR: Something went wrong with the win melody scanning. Using the default melody now.");
 			}
 		}
-		if (!defeatFile.equals("defeat")) {
-			defeat = loadMelody(defeatFile, true);
+		if (!defeatFile.equals("defeat") || defeatNbs) {
+			defeat = loadMelody(defeatFile, defeatNbs);
 			if (defeat == null) {
 				log("ERROR: Something went wrong with the defeat melody scanning. Using the default melody now.");
 			}
 		}
-		if (!drawFile.equals("draw")) {
-			draw = loadMelody(drawFile, true);
+		if (!drawFile.equals("draw") || drawNbs) {
+			draw = loadMelody(drawFile, drawNbs);
 			if (draw == null) {
 				log("ERROR: Something went wrong with the draw melody scanning. Using the default melody now.");
 			}
