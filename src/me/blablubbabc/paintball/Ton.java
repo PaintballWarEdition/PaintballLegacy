@@ -22,10 +22,24 @@ public class Ton {
 			
 			@Override
 			public void run() {
-				Location loc = p.getEyeLocation();
-				p.playSound(loc, sound, 1, pitch);
+				if(p.isOnline()) {
+					play(p);
+				}
 			}
 		}, delay);
+	}
+	
+	public void play(Player p) {
+		Location loc = p.getEyeLocation();
+		p.playSound(loc, sound, 1, pitch);
+	}
+	
+	public long getDelay() {
+		return delay;
+	}
+	
+	public String toString() {
+		return "NOTE:"+sound.toString()+";"+pitch+";"+delay;
 	}
 	
 	private static float getPitch(int id) {

@@ -1,380 +1,271 @@
 package me.blablubbabc.paintball;
 
 import java.io.File;
-import java.io.FileOutputStream;
+import java.io.FileInputStream;
 import java.io.IOException;
-import java.io.InputStream;
-import java.io.OutputStream;
 import java.util.Scanner;
 import org.bukkit.Sound;
-import org.bukkit.entity.Player;
 import org.bukkit.plugin.Plugin;
 
-
 public class Musiker {
-	public boolean success;
+	private static Plugin plugin;
+	private static File path;
 
-	private Plugin plugin;
+	public Musiker() {
+	}
 
-	private Melodie def_winMel;
-	private Melodie def_defeatMel;
-	private Melodie def_drawMel;
-
-	private Melodie winMel;
-	private Melodie defeatMel;
-	private Melodie drawMel;
-
-	private boolean use_defWin;
-	private boolean use_defDefeat;
-	private boolean use_defDraw;
-
-	public Musiker(Plugin plugin, String winFilename, String defeatFilename, String drawFilename) {
-		this.plugin = plugin;
-		this.success = false;
-
-		this.def_winMel = new Melodie();
-		this.def_defeatMel = new Melodie();
-		this.def_drawMel = new Melodie();
-
-		this.winMel = new Melodie();
-		this.defeatMel = new Melodie();
-		this.drawMel = new Melodie();
-
-		this.use_defWin = false;
-		this.use_defDefeat = false;
-		this.use_defDraw = false;
-
-		File path;
-		File def_winFile;
-		File def_defeatFile;
-		File def_drawFile;
-
-		File winFile;
-		File defeatFile;
-		File drawFile;
-
-
+	public static Melody loadMelody(Plugin plugin, String fileName, boolean nbs) {
+		// init
+		Musiker.plugin = plugin;
 		path = new File(plugin.getDataFolder().toString());
 		if (!path.exists())
 			path.mkdirs();
 
-		///// write default melodie files:
-		// Default win:
-		def_winFile = new File(path + "/win.txt");
-		InputStream in = null;
-		OutputStream out = null;
-		try {
-			in = plugin.getResource("win.txt");
-			if (in != null) {
-				out = new FileOutputStream(def_winFile);
-				byte[] buffer = new byte[10240];
-				int len = in.read(buffer);
-				while (len != -1) {
-					out.write(buffer, 0, len);
-					len = in.read(buffer);
-				}
-			} else {
-				log("ERROR: Couldn't load the default win melody file from jar!");
-				return;
+		File melodyFile;
+		// get melody:
+		if (!nbs) {
+			// .txt
+			melodyFile = new File(path + "/" + fileName + ".txt");
+			if (!melodyFile.exists()) {
+				log("ERROR: Couldn't find the specified melody file.");
+				return null;
 			}
-		} catch (Exception e) {
-			log("ERROR: Couldn't write the default win melody file!");
-			e.printStackTrace();
-			return;
-		} finally {
-			if (out != null) {
-				try {
-					out.close();
-				} catch (IOException e) {
-					e.printStackTrace();
-				}
-			}
-			if (in != null) {
-				try {
-					in.close();
-				} catch (IOException e) {
-					e.printStackTrace();
-				}
-			}
-		}
-		//default defeat:
-		def_defeatFile = new File(path + "/defeat.txt");
-		in = null;
-		out = null;
-		try {
-			in = plugin.getResource("defeat.txt");
-			if (in != null) {
-				out = new FileOutputStream(def_defeatFile);
-				byte[] buffer = new byte[10240];
-				int len = in.read(buffer);
-				while (len != -1) {
-					out.write(buffer, 0, len);
-					len = in.read(buffer);
-				}
-			} else {
-				log("ERROR: Couldn't load the default defeat melody file from jar!");
-				return;
-			}
-		} catch (Exception e) {
-			log("ERROR: Couldn't write the default defeat melody file!");
-			e.printStackTrace();
-			return;
-		} finally {
-			if (out != null) {
-				try {
-					out.close();
-				} catch (IOException e) {
-					e.printStackTrace();
-				}
-			}
-			if (in != null) {
-				try {
-					in.close();
-				} catch (IOException e) {
-					e.printStackTrace();
-				}
-			}
-		}
-		//default draw:
-		def_drawFile = new File(path + "/draw.txt");
-		in = null;
-		out = null;
-		try {
-			in = plugin.getResource("draw.txt");
-			if (in != null) {
-				out = new FileOutputStream(def_drawFile);
-				byte[] buffer = new byte[10240];
-				int len = in.read(buffer);
-				while (len != -1) {
-					out.write(buffer, 0, len);
-					len = in.read(buffer);
-				}
-			} else {
-				log("ERROR: Couldn't load the default draw melody file from jar!");
-				return;
-			}
-		} catch (Exception e) {
-			log("ERROR: Couldn't write the default draw melody file!");
-			e.printStackTrace();
-			return;
-		} finally {
-			if (out != null) {
-				try {
-					out.close();
-				} catch (IOException e) {
-					e.printStackTrace();
-				}
-			}
-			if (in != null) {
-				try {
-					in.close();
-				} catch (IOException e) {
-					e.printStackTrace();
-				}
-			}
-		}
-		////// get melodies:
-		//default win
-		log("Loading the default win melody: " + def_winFile.getName());
-		def_winMel = loadMelodie(def_winFile);
-		if (def_winMel == null) {
-			return;
-		}
-
-		//// get win melodie:
-		winFile = new File(path + "/" + winFilename + ".txt");
-		if (!winFile.exists()) {
-			log("ERROR: Couldn't find the specified win melody file.");
-			log("Using the default win melody now: " + def_winFile.getName());
-			use_defWin = true;
 		} else {
-			if (!winFile.equals(def_winFile)) {
-				log("Loading the specified win melody now: "
-						+ winFile.getName());
-				winMel = loadMelodie(winFile);
-				if (winMel == null) {
-					log("ERROR: Couldn't load the specified win melody file!");
-					log("Do you use a valid win melody file?");
-					log("Using the default win melodie now: " + def_winFile.getName());
-					use_defWin = true;
-				}
-			} else {
-				log("Using the default win melody now: " + def_winFile.getName());
-				use_defWin = true;
+			// .nbs
+			melodyFile = new File(path + "/" + fileName + ".nbs");
+			if (!melodyFile.exists()) {
+				log("ERROR: Couldn't find the specified melody file.");
+				return null;
 			}
 		}
-
-		//default defeat
-		log("Loading the default defeat melody: " + def_defeatFile.getName());
-		def_defeatMel = loadMelodie(def_defeatFile);
-		if (def_defeatMel == null) {
-			return;
-		}
-
-		//// get default melodie:
-		defeatFile = new File(path + "/" + defeatFilename + ".txt");
-		if (!defeatFile.exists()) {
-			log("ERROR: Couldn't find the specified defeat melody file.");
-			log("Using the default defeat melody now: " + def_defeatFile.getName());
-			use_defDefeat = true;
-		} else {
-			if (!defeatFile.equals(def_defeatFile)) {
-				log("Loading the specified defeat melody now: "
-						+ defeatFile.getName());
-				defeatMel = loadMelodie(defeatFile);
-				if (defeatMel == null) {
-					log("ERROR: Couldn't load the specified defeat melody file!");
-					log("Do you use a valid defeat melody?");
-					log("Using the default defeat melody now: " + def_defeatFile.getName());
-					use_defDefeat = true;
-				}
-			} else {
-				log("Using the default defeat melody now: " + def_defeatFile.getName());
-				use_defDefeat = true;
-			}
-		}
-
-		//default draw
-		log("Loading the default draw melody: " + def_drawFile.getName());
-		def_drawMel = loadMelodie(def_drawFile);
-		if (def_drawMel == null) {
-			return;
-		}
-
-		//// get default melodie:
-		drawFile = new File(path + "/" + drawFilename + ".txt");
-		if (!drawFile.exists()) {
-			log("ERROR: Couldn't find the specified draw melody file.");
-			log("Using the default draw melody now: " + def_drawFile.getName());
-			use_defDraw = true;
-		} else {
-			if (!drawFile.equals(def_drawFile)) {
-				log("Loading the specified draw melody now: "
-						+ drawFile.getName());
-				drawMel = loadMelodie(drawFile);
-				if (drawMel == null) {
-					log("ERROR: Couldn't load the specified draw melody file!");
-					log("Do you use a valid draw melody?");
-					log("Using the default draw melody now: " + def_drawFile.getName());
-					use_defDraw = true;
-				}
-			} else {
-				log("Using the default draw melody now: " + def_drawFile.getName());
-				use_defDraw = true;
-			}
-		}
-		//
-		this.success = true;
+		log("Loading the specified melody now: " + melodyFile.getName());
+		Melody melody = loadMelody(melodyFile, true);
+		if (melody == null) {
+			log("ERROR: Couldn't load the specified melody file!");
+			log("Do you use a valid melody file?");
+			return null;
+		} else
+			return melody;
 	}
 
-	public void playWin(final Plugin plugin, final Player p) {
-		if(use_defWin) {
-			def_winMel.play(plugin, p);
-		}else {
-			winMel.play(plugin, p);
-		}
-	}
+	@SuppressWarnings("unused")
+	private static Melody loadMelody(File file, boolean nbs) {
+		if (!nbs) {
+			// .txt
+			Melody melody = new Melody();
+			Scanner scanner = null;
+			try {
+				scanner = new Scanner(file);
+				int line = 0;
+				while (scanner.hasNextLine()) {
+					line++;
+					String text = scanner.nextLine();
+					// Spaces entfernen
+					text.replaceAll(" ", "");
+					// get tones:
+					String[] tones = text.split("-");
+					for (String ts : tones) {
+						if (!ts.isEmpty()) {
+							String[] ton = ts.split(":");
+							if (ton.length != 2) {
+								log("ERROR: Couldn't get the note in line: "
+										+ line);
+								return null;
+							}
+							// sound
+							Sound sound = getSound(ton[0]);
+							if (sound == null) {
+								log("ERROR: Couldn't get the instrument in line: "
+										+ line);
+								return null;
+							}
+							// note (id between 0-24)
+							Integer id = getNoteId(ton[1]);
+							if (id == null || id < 0 || id > 24) {
+								log("ERROR: Couldn't get a valid note id in line: "
+										+ line);
+								return null;
+							}
+							// delay in ticks (line * 2 ticks):
+							long delay = (line - 1) * 2;
+							// add note to melodie:
+							melody.addTon(new Ton(sound, id, delay));
+						}
+					}
+				}
+				log("Scanned .txt melody sucessfully. Lines: " + line);
+				return melody;
+			} catch (Exception e) {
+				log("ERROR: Couldn't load the specified melody file.");
+				e.printStackTrace();
+				return null;
+			} finally {
+				if (scanner != null)
+					scanner.close();
+			}
+		} else {
+			// ./nbs
+			Melody melodie = new Melody();
+			LEDataInputStream scanner = null;
+			try {
+				scanner = new LEDataInputStream(new FileInputStream(file));
+				// header
+				short length = scanner.readShort();
+				short height = scanner.readShort();
+				String name = scanner.readString();
+				String author = scanner.readString();
+				String origAuthor = scanner.readString();
+				String description = scanner.readString();
+				short tempo = scanner.readShort();
+				//tempo
+				if(tempo != 1000 && tempo != 500 && tempo != 250) {
+					log("ERROR: Not supported tempo: "+tempo);
+					return null;
+				}
+					
+				byte autoSaving = scanner.readByte();
+				byte autoSaveDuration = scanner.readByte();
+				byte timeSignature = scanner.readByte();
+				int minutesSpent = scanner.readInt();
+				int leftClicks = scanner.readInt();
+				int rightClicks = scanner.readInt();
+				int blocksAdded = scanner.readInt();
+				int blocksRemoved = scanner.readInt();
+				String midiName = scanner.readString();
 
-	public void playDefeat(final Plugin plugin, final Player p) {
-		if(use_defDefeat) {
-			def_defeatMel.play(plugin, p);
-		}else {
-			defeatMel.play(plugin, p);
+				// log them:
+				/*
+				 * log("length: " + length); log("height: " + height);
+				 * log("name: " + name); log("author: " + author);
+				 * log("origAuthor: " + origAuthor); log("description: " +
+				 * description); log("tempo: " + tempo); log("autoSaving: " +
+				 * autoSaving); log("autoSaveDuration: " + autoSaving);
+				 * log("timeSignature: " + timeSignature); log("minutesSpent: "
+				 * + minutesSpent); log("leftClicks: " + leftClicks);
+				 * log("rightClicks: " + rightClicks); log("blocksAdded: " +
+				 * blocksAdded); log("blocksRemoved: " + blocksRemoved);
+				 * log("midiName: " + midiName);
+				 */
+
+				// notes
+				short tick = -1;
+				short jumps = 0;
+				while (true) {
+					jumps = scanner.readShort();
+					if (jumps == 0) {
+						break;
+					}
+					tick += jumps;
+					while (true) {
+						jumps = scanner.readShort();
+						if (jumps == 0) {
+							break;
+						}
+						byte inst = scanner.readByte();
+						Sound sound = getSound(inst);
+						if (sound == null) {
+							log("ERROR: Couldn't get a instrument right: "+inst);
+							return null;
+						}
+						byte key = scanner.readByte();
+						key -= 33;
+						if (key < 0 || key > 24) {
+							log("ERROR: Couldn't get a note right: "+key);
+							return null;
+						}
+						// System.out.print(sound.toString() + " / " + key +
+						// " / " + tick);
+						melodie.addTon(new Ton(sound, key, (tick * getDelay(tempo))));
+					}
+				}
+				log("Scanned .nbt melody sucessfully.");
+				return melodie;
+			} catch (Exception e) {
+				log("ERROR: Couldn't load the specified melody file.");
+				e.printStackTrace();
+				return null;
+			} finally {
+				if (scanner != null)
+					try {
+						scanner.close();
+					} catch (IOException e) {
+						e.printStackTrace();
+					}
+			}
 		}
 	}
 	
-	public void playDraw(final Plugin plugin, final Player p) {
-		if(use_defDraw) {
-			def_drawMel.play(plugin, p);
-		}else {
-			drawMel.play(plugin, p);
+	private static int getDelay(int tempo) {
+		switch(tempo) {
+		case 1000: return 2;
+		case 500: return 4;
+		case 250: return 8;
+		default: return 0;
 		}
 	}
-
-	private Melodie loadMelodie(File file) {
-		Melodie melodie = new Melodie();
-		Scanner scanner = null;
-		try {
-			scanner = new Scanner(file);
-			int line = 0;
-			while (scanner.hasNextLine()) {
-				line++;
-				String text = scanner.nextLine();
-				// Spaces entfernen
-				text.replaceAll(" ", "");
-				//get tones:
-				String[] tones = text.split("-");
-				for(String ts : tones) {
-					if(!ts.isEmpty()) {
-						String[] ton = ts.split(":");
-						if(ton.length != 2) {
-							log("ERROR: Couldn't get the note in line: "+line);
-							return null;
-						}
-						//sound
-						Sound sound = getSound(ton[0]);
-						if(sound == null) {
-							log("ERROR: Couldn't get the instrument in line: "+line);
-							return null;
-						}
-						//note (id between 0-24)
-						Integer id = getNoteId(ton[1]);
-						if(id == null || id < 0 || id > 24) {
-							log("ERROR: Couldn't get a valid note id in line: "+line);
-							return null;
-						}
-						//delay in ticks (line * 2 ticks):
-						long delay = (line-1)*2;
-						//add note to melodie:
-						melodie.addTon(new Ton(sound, id, delay));
-					}
-				}
-			}
-			log("Scanned melody. Lines: " + line);
-			return melodie;
-		} catch (Exception e) {
-			log("ERROR: Couldn't load the specified melody file.");
-			e.printStackTrace();
-			return null;
-		} finally {
-			if(scanner != null) scanner.close();
-		}
-
-	}
-
-	private enum Instrus {
+	
+	private static enum Instrus {
 		PI, BG, BD, SD, ST, PL
 	}
 
-	private Sound getSound(String s) {
+	private static Sound getSound(String s) {
 		try {
 			Instrus i = Instrus.valueOf(s.toUpperCase());
 			switch (i) {
-			case PI: return Sound.NOTE_PIANO;
-			case BG: return Sound.NOTE_BASS_GUITAR;
-			case BD: return Sound.NOTE_BASS_DRUM;
-			case SD: return Sound.NOTE_SNARE_DRUM;
-			case ST: return Sound.NOTE_STICKS;
-			case PL: return Sound.NOTE_PLING;
-			default: return null;
+			case PI:
+				return Sound.NOTE_PIANO;
+			case BG:
+				return Sound.NOTE_BASS_GUITAR;
+			case BD:
+				return Sound.NOTE_BASS_DRUM;
+			case SD:
+				return Sound.NOTE_SNARE_DRUM;
+			case ST:
+				return Sound.NOTE_STICKS;
+			case PL:
+				return Sound.NOTE_PLING;
+			default:
+				return null;
 			}
-		} catch(Exception e) {
+		} catch (Exception e) {
 			return null;
 		}
 	}
 
-	private Integer getNoteId(String s) {
+	private static Sound getSound(byte b) {
+		try {
+			switch (b) {
+			case 0:
+				return Sound.NOTE_PIANO;
+			case 1:
+				return Sound.NOTE_BASS_GUITAR;
+			case 2:
+				return Sound.NOTE_BASS_DRUM;
+			case 3:
+				return Sound.NOTE_SNARE_DRUM;
+			case 4:
+				return Sound.NOTE_STICKS;
+			default:
+				return null;
+			}
+		} catch (Exception e) {
+			return null;
+		}
+	}
+
+	private static Integer getNoteId(String s) {
 		try {
 			Integer id = Integer.parseInt(s);
-			if(id < 0 || id > 24) return null;
-			else return id;
-		} catch(Exception e) {
+			if (id < 0 || id > 24)
+				return null;
+			else
+				return id;
+		} catch (Exception e) {
 			return null;
 		}
 	}
 
-	private void log(String message) {
+	private static void log(String message) {
 		System.out.println("[" + plugin.getName() + "] " + message);
 	}
-
 }

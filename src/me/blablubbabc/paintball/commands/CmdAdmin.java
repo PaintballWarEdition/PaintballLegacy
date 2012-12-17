@@ -286,9 +286,9 @@ public class CmdAdmin {
 		} else if (args[1].equalsIgnoreCase("play")) {
 			if(sender instanceof Player) {
 				Player p = (Player) sender;
-				if(args[2].equalsIgnoreCase("defeat")) plugin.musik.playDefeat(plugin, p);
-				else if(args[2].equalsIgnoreCase("win")) plugin.musik.playWin(plugin, p);
-				else if(args[2].equalsIgnoreCase("draw")) plugin.musik.playDraw(plugin, p);	
+				if(args[2].equalsIgnoreCase("defeat")) plugin.defeat.play(plugin, p);
+				else if(args[2].equalsIgnoreCase("win")) plugin.win.play(plugin, p);
+				else if(args[2].equalsIgnoreCase("draw")) plugin.draw.play(plugin, p);	
 			}
 			return true;
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////

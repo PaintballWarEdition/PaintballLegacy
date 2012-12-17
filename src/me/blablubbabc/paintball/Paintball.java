@@ -37,6 +37,9 @@ public class Paintball extends JavaPlugin{
 	public boolean happyhour;
 	public boolean softreload;
 	public boolean nometrics = false;
+	public Melody win;
+	public Melody defeat;
+	public Melody draw;
 
 	//LOBBYSPAWNS
 	public int lobbyspawn;
@@ -493,12 +496,21 @@ public class Paintball extends JavaPlugin{
 			getServer().getPluginManager().disablePlugin(this);
 			return;
 		}
-		//MUSIKER
-		musik = new Musiker(this, melodyWin, melodyDefeat, melodyDraw);
-		if(!musik.success) {
-			log("ERROR: Couldn't find/load the default melody file/s. Disables now..");
+		//MELODIES
+		win = Musiker.loadMelody(this,"win", true);
+		if(win == null) {
+			log("ERROR: Something went wrong with the win melody scanning. Disabling now.");
 			getServer().getPluginManager().disablePlugin(this);
-			return;
+		}
+		defeat = Musiker.loadMelody(this,"defeat", true);
+		if(defeat == null) {
+			log("ERROR: Something went wrong with the defeat melody scanning. Disabling now.");
+			getServer().getPluginManager().disablePlugin(this);
+		}
+		draw = Musiker.loadMelody(this,"draw", true);
+		if(draw == null) {
+			log("ERROR: Something went wrong with the draw melody scanning. Disabling now.");
+			getServer().getPluginManager().disablePlugin(this);
 		}
 		//SERVERLISTER CONFIG:
 		slist = new Serverlister();
