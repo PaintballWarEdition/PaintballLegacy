@@ -18,6 +18,7 @@ public class Melody {
 	
 	public synchronized void addTon(Ton ton) {
 		melody.add(ton);
+		if(ton.getDelay() > maxDelay) maxDelay = ton.getDelay();
 	}
 	
 	public synchronized void printNotes() {
@@ -32,13 +33,14 @@ public class Melody {
 			long delay = 0;
 			@Override
 			public void run() {
-				delay += 2;
+				if(delay > maxDelay) {
+					stop(plugin, p);
+					return;
+				}
 				for(Ton ton : melody) {
 					if(delay == ton.getDelay()) ton.play(p);
 				}
-				if(delay > maxDelay) {
-					stop(plugin, p);
-				}
+				delay += 2;
 			}
 		}, 1L, 2L));
 	}

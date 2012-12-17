@@ -341,7 +341,7 @@ public class MatchManager{
 							
 							@Override
 							public void run() {
-								plugin.win.play(plugin, p);
+								plugin.musik.playWin(p);
 							}
 						}, plugin.melodyDelay);
 						
@@ -357,7 +357,7 @@ public class MatchManager{
 							
 							@Override
 							public void run() {
-								plugin.defeat.play(plugin, p);
+								plugin.musik.playDefeat(p);
 							}
 						}, plugin.melodyDelay);
 						
@@ -373,7 +373,7 @@ public class MatchManager{
 							
 							@Override
 							public void run() {
-								plugin.draw.play(plugin, p);
+								plugin.musik.playDraw(p);
 							}
 						}, plugin.melodyDelay);
 						
