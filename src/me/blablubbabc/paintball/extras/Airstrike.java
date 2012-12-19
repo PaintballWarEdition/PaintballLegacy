@@ -3,7 +3,6 @@ package me.blablubbabc.paintball.extras;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.LinkedList;
-
 import me.blablubbabc.paintball.Match;
 import me.blablubbabc.paintball.Paintball;
 import org.bukkit.Location;

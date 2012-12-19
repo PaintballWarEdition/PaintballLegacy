@@ -480,7 +480,7 @@ public class EventListener implements Listener {
 					// mine
 					Block block = loc.getBlock();
 					Mine mine = Mine.isMine(block);
-					if (mine != null) {
+					if (mine != null && match == mine.match && match.enemys(player, mine.player)) {
 						mine.explode(true);
 					}
 					BlockIterator iterator = new BlockIterator(loc.getWorld(),

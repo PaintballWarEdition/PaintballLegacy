@@ -1,20 +1,16 @@
 package me.blablubbabc.paintball.extras;
 
 import java.util.ArrayList;
-
 import me.blablubbabc.paintball.Match;
 import me.blablubbabc.paintball.Paintball;
-import net.minecraft.server.v1_4_5.Vec3D;
-//import net.minecraft.server.Vec3D;
 import org.bukkit.Effect;
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.Sound;
 import org.bukkit.block.Block;
-import org.bukkit.craftbukkit.v1_4_5.CraftWorld;
-//import org.bukkit.craftbukkit.CraftWorld;
 import org.bukkit.entity.Player;
 import org.bukkit.entity.Snowball;
+import org.bukkit.util.BlockIterator;
 import org.bukkit.util.Vector;
 
 public class Mine {
@@ -120,7 +116,7 @@ public class Mine {
 		for (Player p : match.getEnemyTeam(player)) {
 			if (match.isSurvivor(p)) {
 				if (loc.distance(p.getLocation()) < plugin.mineRange
-						&& canSee(p, loc)) {
+						&& canSeeLoc(p, loc)) {
 					return true;
 				}
 			}
@@ -128,13 +124,22 @@ public class Mine {
 		return false;
 	}
 
-	private boolean canSee(Player player, Location loc2) {
+	private boolean canSeeLoc(Player player, Location loc2) {
+		Vector loc1 = player.getEyeLocation().toVector();
+		Vector dir = loc1.clone().subtract(loc2.toVector()).normalize();
+		BlockIterator iterator = new BlockIterator(loc.getWorld(),
+				loc1, dir, 0,
+				2);
+		return !iterator.hasNext();
+	}
+	
+	/*private boolean canSee(Player player, Location loc2) {
 		Location loc1 = player.getLocation();
 		return ((CraftWorld) loc1.getWorld()).getHandle().a(
 				Vec3D.a(loc1.getX(), loc1.getY() + player.getEyeHeight(),
 						loc1.getZ()),
 				Vec3D.a(loc2.getX(), loc2.getY(), loc2.getZ())) == null;
-	}
+	}*/
 
 	public synchronized void explode(final boolean effect) {
 		if (!exploded) {

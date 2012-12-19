@@ -2,7 +2,6 @@ package me.blablubbabc.paintball;
 
 import java.util.HashMap;
 import java.util.Random;
-
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
