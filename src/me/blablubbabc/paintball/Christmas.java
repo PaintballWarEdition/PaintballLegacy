@@ -1,0 +1,79 @@
+package me.blablubbabc.paintball;
+
+import java.util.HashMap;
+import java.util.Random;
+
+import org.bukkit.ChatColor;
+import org.bukkit.Material;
+import org.bukkit.entity.Player;
+import org.bukkit.inventory.ItemStack;
+
+public class Christmas {
+	private HashMap<String, Long> wishes;
+	private final long time;
+	private Paintball plugin;
+	private Random random;
+	
+	public Christmas(Paintball plugin) {
+		this.plugin = plugin;
+		wishes = new HashMap<String, Long>();
+		time = 1000*60*plugin.wishesDelay;
+		this.random = new Random();
+	}
+	
+	public synchronized void setWishes(String player) {
+		wishes.put(player, System.currentTimeMillis());
+	}
+	
+	public synchronized boolean alreadyWished(String player) {
+		update();
+		return wishes.containsKey(player);
+	}
+	
+	private void update() {
+		for(String player: wishes.keySet()) {
+			if(wishes.get(player)+time < System.currentTimeMillis()) wishes.remove(player);
+		}
+	}
+	
+	public void receiveGift(Player player, int amount, boolean all) {
+		if(all) player.sendMessage(plugin.t.getString("ALL_RECEIVED_GIFT"));
+		else player.sendMessage(plugin.t.getString("RECEIVED_GIFT")) ;
+		
+		if(player.getInventory().firstEmpty() != -1) {
+			player.getInventory().addItem(new ItemStack(Material.CHEST, amount));
+		} else {
+			plugin.t.getString("INVENTORY_FULL");
+		}
+	}
+	
+	public void unwrapGift(Player player) {
+		//wishes
+		String name = player.getName();
+		if (plugin.wishes && !plugin.christmas.alreadyWished(name)) {
+			player.sendMessage(plugin.t.getString("MERRY_CHRISTMAS"));
+			plugin.christmas.setWishes(name);
+		}
+		//remove chest from hand
+		ItemStack i = player.getItemInHand();
+		if (i.getAmount() <= 1)
+			player.setItemInHand(null);
+		else {
+			i.setAmount(i.getAmount() - 1);
+			player.setItemInHand(i);
+		}
+		if(!plugin.gifts.isEmpty()) {
+			//gift:
+			double r = (random.nextInt(1000)/10);
+			int chance = 0;
+			for(Gift g : plugin.gifts) {
+				chance += (g.chance*plugin.giftChanceFactor);
+				if(r < chance) {
+					player.sendMessage(ChatColor.GREEN+g.message);
+					player.getInventory().addItem(g.item);
+					break;
+				}
+			}
+		}
+	}
+}

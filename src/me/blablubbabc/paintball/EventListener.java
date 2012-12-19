@@ -339,6 +339,13 @@ public class EventListener implements Listener {
 	public void onPlayerInteract(PlayerInteractEvent event) {
 		Player player = (Player) event.getPlayer();
 		if (Lobby.getTeam(player) != null) {
+			if(player.getItemInHand().getType() == Material.CHEST) {
+				//to prevent placing:
+				event.setCancelled(true);
+				if(event.getAction() == Action.RIGHT_CLICK_AIR || event.getAction() == Action.RIGHT_CLICK_BLOCK) {
+					plugin.christmas.unwrapGift(player);
+				}	
+			}
 			Match match = mm.getMatch(player);
 			if (match != null && Lobby.isPlaying(player) && match.started
 					&& match.isSurvivor(player)) {
@@ -361,15 +368,6 @@ public class EventListener implements Listener {
 											i.setAmount(i.getAmount() - 1);
 											player.setItemInHand(i);
 										}
-										/*
-										 * int amount = (player.getInventory()
-										 * .getItemInHand().getAmount() - 1); if
-										 * (amount > 0)
-										 * player.getInventory().setItemInHand(
-										 * new ItemStack(280, amount)); else
-										 * player.getInventory().setItemInHand(
-										 * null);
-										 */
 									}
 								} else {
 									player.sendMessage(plugin.t
@@ -394,6 +392,8 @@ public class EventListener implements Listener {
 				} else if (player.getItemInHand().getTypeId() == 356) {
 					if (event.getAction() == Action.RIGHT_CLICK_AIR
 							|| event.getAction() == Action.RIGHT_CLICK_BLOCK) {
+						//tp prevent placing:
+						event.setCancelled(true);
 						if (Rocket.getRockets(player).size() < plugin.rocketMatchLimit) {
 							if (Rocket.getRockets(player).size() < plugin.rocketPlayerLimit) {
 								player.playSound(player.getLocation(),

@@ -35,6 +35,8 @@ public class Match {
 	private HashMap<String, Integer> teamattacks = new HashMap<String, Integer>();
 	private HashMap<String, Integer> grenades = new HashMap<String, Integer>();
 	private HashMap<String, Integer> airstrikes = new HashMap<String, Integer>();
+	//
+	private Random random;
 
 	// private ArrayList<Player> players = new ArrayList<Player>();
 	private HashMap<String, Location> playersLoc = new HashMap<String, Location>();;
@@ -76,6 +78,7 @@ public class Match {
 		this.plugin = plugin;
 		this.arena = arena;
 		this.started = false;
+		this.random = new Random();
 
 		this.redspawns = plugin.am.getRedSpawns(arena);
 		this.bluespawns = plugin.am.getBlueSpawns(arena);
@@ -287,25 +290,23 @@ public class Match {
 	// SPAWNS
 
 	public synchronized void spawnPlayer(Player player) {
+		Location loc;
 		if (redT.contains(player)) {
 			if (spawnRed > (redspawns.size() - 1))
 				spawnRed = 0;
-			Location loc = redspawns.get(spawnRed);
-			player.teleport(loc);
+			loc = redspawns.get(spawnRed);
 			spawnRed++;
-			// afk Location
-			playersLoc.put(player.getName(), loc);
 		} else if (blueT.contains(player)) {
 			if (spawnBlue > (bluespawns.size() - 1))
 				spawnBlue = 0;
-			Location loc = bluespawns.get(spawnBlue);
-			player.teleport(loc);
-			spawnBlue++;
-			// afk Location
-			playersLoc.put(player.getName(), loc);
+			loc = bluespawns.get(spawnBlue);
+			spawnBlue++;		
 		} else {
 			return;
 		}
+		player.teleport(loc);
+		// afk Location
+		playersLoc.put(player.getName(), loc);
 		// PLAYER
 		plugin.checks(player, false);
 		// INVENTORY
@@ -344,6 +345,13 @@ public class Match {
 				.toString());
 		vars.put("team", getTeamName(player));
 		player.sendMessage(plugin.t.getString("BE_IN_TEAM", vars));
+		//gifts
+		if(plugin.giftsEnabled) {
+			int r = random.nextInt(1000);
+			if(plugin.giftOnSpawnChance > (r/10)) {
+				plugin.christmas.receiveGift(player, 1, false);
+			}
+		}	
 	}
 
 	public synchronized void spawnSpec(Player player) {

@@ -3,7 +3,6 @@ package me.blablubbabc.paintball;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
-
 import org.bukkit.Location;
 
 public class ArenaManager {

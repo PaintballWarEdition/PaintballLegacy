@@ -4,7 +4,6 @@ import java.util.HashMap;
 import me.blablubbabc.paintball.commands.CmdAdmin;
 import me.blablubbabc.paintball.commands.CmdArena;
 import me.blablubbabc.paintball.commands.CmdShop;
-
 import org.bukkit.ChatColor;
 import org.bukkit.GameMode;
 import org.bukkit.command.Command;

@@ -12,14 +12,24 @@ import org.bukkit.ChatColor;
 import org.bukkit.GameMode;
 import org.bukkit.Location;
 import org.bukkit.command.CommandExecutor;
+import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.plugin.Plugin;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.bukkit.potion.PotionEffect;
 
-//This file is part of blablubbabc's paintball-plugin. Do not redistribute or modify. Use it as it is. Usage on own risk. No warranties. No commercial usage!
-
+/**
+ * This file is part of blablubbabc's paintball-plugin.
+ * Do not redistribute or modify it in any way. Use it as it is.
+ * Do not copy, redistribute or give away.
+ * Usage on own risk. I give no warranties.
+ * Commercial usage in any way is not allowed!
+ * These terms of use apply to every part of the plugin.
+ * 
+ * @author blablubbabc
+ *
+ */
 public class Paintball extends JavaPlugin{
 	public PlayerManager pm;
 	public CommandManager cm;
@@ -30,6 +40,7 @@ public class Paintball extends JavaPlugin{
 	public ArenaManager am;
 	public Translator t;
 	public Musiker musik;
+	public Christmas christmas;
 	public Stats stats;
 	public Serverlister slist;
 	public InSignsFeature isf;
@@ -96,6 +107,14 @@ public class Paintball extends JavaPlugin{
 	public boolean autoSpecLobby;
 	public boolean effects;
 	public boolean debug;
+	
+	//gifts
+	public boolean giftsEnabled;
+	public double giftOnSpawnChance;
+	public ArrayList<Gift> gifts;
+	public double giftChanceFactor;
+	public boolean wishes;
+	public int wishesDelay;
 	
 	//player tags
 	public boolean tags;
@@ -204,19 +223,6 @@ public class Paintball extends JavaPlugin{
 	public void onEnable(){	
 		//CONFIG
 		ArrayList<String> goodsDef = new ArrayList<String>();
-		//ALT
-		/*goodsDef.add("10-Balls-15");
-		goodsDef.add("50-Balls-65");
-		goodsDef.add("100-Balls-120");
-		goodsDef.add("1-Grenade-20");
-		goodsDef.add("1-Airstrike-100");*/
-		//OLD 2
-		/*goodsDef.add("10-Balls-332-15");
-		goodsDef.add("50-Balls-332-65");
-		goodsDef.add("100-Balls-332-120");
-		goodsDef.add("1-Grenade-344-20");
-		goodsDef.add("1-Airstrike-280-100");
-		goodsDef.add("1-Turret-86-200");*/
 		
 		goodsDef.add("10-Balls-332-0-15");
 		goodsDef.add("50-Balls-332-0-65");
@@ -227,8 +233,21 @@ public class Paintball extends JavaPlugin{
 		goodsDef.add("1-Airstrike-280-0-100");
 		goodsDef.add("1-Turret-86-0-200");
 		goodsDef.add("1-Speed-373-16482-35");
-
+		
+		ArrayList<Gift> giftsDef = new ArrayList<Gift>();
+		giftsDef.add(new Gift(332, (short)0, 50, 30.0, "Hope you have luck with these balls!"));
+		giftsDef.add(new Gift(344, (short)0, 2, 15.0, "May these grenades be with you!"));
+		giftsDef.add(new Gift(390, (short)0, 2, 15.0, "I knew you ever wanted to be a sneaky killer!"));
+		giftsDef.add(new Gift(356, (short)0, 2, 15.0, "Heat them with these rocket launchers!"));
+		giftsDef.add(new Gift(280, (short)0, 1, 15.0, "I knew you ever wanted to order a airstrike at least once!"));
+		giftsDef.add(new Gift(54, (short)0, 2, 5.0, "I got some more gifts for you!"));
+		giftsDef.add(new Gift(86, (short)0, 1, 3.0, "They survived the apocalypse? But the will not survive this!"));
+		giftsDef.add(new Gift(0, (short)0, 0, 2.0, "Were you not well-behaved? Santa hasn't anything for you :("));
+		
 		allowedCommands = new ArrayList<String>();
+		allowedCommands.add("/list");
+		allowedCommands.add("/login *");
+		allowedCommands.add("/register *");
 
 
 		getConfig().options().header("Use a value of -1 to give the players infinite balls or extras. If you insert a not possible value/wrong value in a section the plugin will use the default value or the nearest possible value (Example: your value at section balls: -3 -> plugin will use -1). 1 Tick = 1/20 seconds.");
@@ -272,6 +291,20 @@ public class Paintball extends JavaPlugin{
 		if(getConfig().get("Paintball.Melodies.defeat.nbs") == null)getConfig().set("Paintball.Melodies.defeat.nbs", false);
 		if(getConfig().get("Paintball.Melodies.draw") == null)getConfig().set("Paintball.Melodies.draw", "draw");
 		if(getConfig().get("Paintball.Melodies.draw.nbs") == null)getConfig().set("Paintball.Melodies.draw.nbs", false);
+		//gifts
+		if(getConfig().get("Paintball.Gifts.enabled") == null)getConfig().set("Paintball.Gifts.enabled", true);
+		if(getConfig().get("Paintball.Gifts.onSpawnChance") == null)getConfig().set("Paintball.Gifts.onSpawnChance", 5.0);
+		if(getConfig().get("Paintball.Gifts.wishes") == null)getConfig().set("Paintball.Gifts.wishes", true);
+		if(getConfig().get("Paintball.Gifts.wishes delay in minutes") == null)getConfig().set("Paintball.Gifts.wishes delay in minutes", 60);
+		if(getConfig().get("Paintball.Gifts.gifts") == null) {
+			for(Gift g : giftsDef) {
+				getConfig().set("Paintball.Gifts.gifts."+giftsDef.indexOf(g)+".message", g.message);
+				getConfig().set("Paintball.Gifts.gifts."+giftsDef.indexOf(g)+".id", g.item.getTypeId());
+				getConfig().set("Paintball.Gifts.gifts."+giftsDef.indexOf(g)+".subid", g.item.getDurability());
+				getConfig().set("Paintball.Gifts.gifts."+giftsDef.indexOf(g)+".amount", g.item.getAmount());
+				getConfig().set("Paintball.Gifts.gifts."+giftsDef.indexOf(g)+".chance", g.chance);
+			}
+		}
 		//lobby join checks
 		if(getConfig().get("Paintball.Lobby join.Checks.Inventory") == null)getConfig().set("Paintball.Lobby join.Checks.Inventory", true);
 		if(getConfig().get("Paintball.Lobby join.Checks.Inventory Save") == null)getConfig().set("Paintball.Lobby join.Checks.Inventory Save", true);
@@ -406,6 +439,34 @@ public class Paintball extends JavaPlugin{
 		boolean winNbs = getConfig().getBoolean("Paintball.Melodies.win.nbs", false);
 		boolean defeatNbs = getConfig().getBoolean("Paintball.Melodies.defeat.nbs", false);
 		boolean drawNbs = getConfig().getBoolean("Paintball.Melodies.draw.nbs", false);
+		
+		//gifts
+		giftsEnabled = getConfig().getBoolean("Paintball.Gifts.enabled", true);
+		giftOnSpawnChance = getConfig().getDouble("Paintball.Gifts.onSpawnChance", 5.0);
+		giftOnSpawnChance = (giftOnSpawnChance < 0.0 ? 0.0 : giftOnSpawnChance);
+		giftOnSpawnChance = (giftOnSpawnChance > 100.0 ? 100.0 : giftOnSpawnChance);
+		wishes = getConfig().getBoolean("Paintball.Gifts.wishes", true);
+		wishesDelay = getConfig().getInt("Paintball.Gifts.wishes delay in minutes", 60);
+		wishesDelay = (wishesDelay < 0 ? 0 : wishesDelay);
+		
+		ConfigurationSection giftsEntries = getConfig().getConfigurationSection("Paintball.Gifts.gifts");
+		int allChances = 0;
+		for(String key : giftsEntries.getKeys(false)) {
+			int id = giftsEntries.getConfigurationSection(key).getInt("id", 0);
+			id = (id < 0 ? 0 : id);
+			int subI = giftsEntries.getConfigurationSection(key).getInt("subid", 0);
+			subI = (subI < 0 ? 0 : subI);
+			short sub = (subI > Short.MAX_VALUE ? Short.MAX_VALUE : (short) subI);
+			int amount = giftsEntries.getConfigurationSection(key).getInt("amount", 0);
+			amount = (amount < 0 ? 0 : amount);
+			double chance = giftsEntries.getConfigurationSection(key).getDouble("chance", 0.0);
+			chance = (chance < 0.0 ? 0.0 : chance);
+			chance = (chance > 100.0 ? 100.0 : chance);
+			allChances += chance;
+			String message = giftsEntries.getConfigurationSection(key).getString("message", "Have fun with this!");
+			gifts.add(new Gift(id, sub, amount, chance, message));
+		}
+		giftChanceFactor = (100/allChances);
 		
 		//shop:
 		shop = getConfig().getBoolean("Paintball.Shop.enabled", true);

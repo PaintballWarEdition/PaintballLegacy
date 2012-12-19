@@ -283,6 +283,31 @@ public class CmdAdmin {
 				return true;
 			}
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+		} else if (args[1].equalsIgnoreCase("gifts")) {
+			if(args.length == 2 || args.length == 3) {
+				int amount = 1;
+				if(args.length == 3) {
+					try {
+						amount = Integer.parseInt(args[2]);
+						if (amount < 0) amount = 0;
+					} catch (Exception e) {
+						sender.sendMessage(plugin.t.getString("INVALID_NUMBER"));
+					}
+				}
+				if(amount > 0) {
+					//sender nicht in der lobby?
+					if(!(sender instanceof Player) || Lobby.getTeam((Player) sender) == null) {
+						sender.sendMessage(plugin.t.getString("YOU_GAVE_ALL_GIFT"));
+					}
+					for(Player p : Lobby.LOBBY.getMembers()) {
+						if(Lobby.isPlaying(p)) {
+							plugin.christmas.receiveGift(p, amount, true);
+						}
+					}	
+				}
+				return true;
+			}
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 		} else if (args[1].equalsIgnoreCase("play")) {
 			if(sender instanceof Player) {
 				Player p = (Player) sender;
