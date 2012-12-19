@@ -1,4 +1,4 @@
-package me.blablubbabc.paintball.extras;
+package unused;
 
 import java.util.ArrayList;
 import me.blablubbabc.paintball.Paintball;
