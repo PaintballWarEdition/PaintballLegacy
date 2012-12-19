@@ -4,13 +4,15 @@ import java.util.ArrayList;
 
 import me.blablubbabc.paintball.Match;
 import me.blablubbabc.paintball.Paintball;
-import net.minecraft.server.Vec3D;
+import net.minecraft.server.v1_4_5.Vec3D;
+//import net.minecraft.server.Vec3D;
 import org.bukkit.Effect;
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.Sound;
 import org.bukkit.block.Block;
-import org.bukkit.craftbukkit.CraftWorld;
+import org.bukkit.craftbukkit.v1_4_5.CraftWorld;
+//import org.bukkit.craftbukkit.CraftWorld;
 import org.bukkit.entity.Player;
 import org.bukkit.entity.Snowball;
 import org.bukkit.util.Vector;

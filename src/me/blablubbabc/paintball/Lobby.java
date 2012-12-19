@@ -4,24 +4,32 @@ import java.util.HashMap;
 import java.util.Set;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
+import org.bukkit.Color;
 import org.bukkit.entity.Player;
 
 public enum Lobby {
 
-	RED			("red", 0xCC4C4C, ChatColor.RED),
+	/*RED			("red", 0xCC4C4C, ChatColor.RED),
 	BLUE		("blue", 0x3366CC, ChatColor.BLUE),
 	RANDOM		("random", 0x7FCC19, ChatColor.GREEN),
 	SPECTATE	("spectator", 0xE5E533, ChatColor.YELLOW),
-	LOBBY		("lobby", 0xFFFFFF, ChatColor.WHITE);
+	LOBBY		("lobby", 0xFFFFFF, ChatColor.WHITE);*/
+	
+	RED			("red", Color.RED, ChatColor.RED),
+	BLUE		("blue", Color.BLUE, ChatColor.BLUE),
+	RANDOM		("random", Color.GREEN, ChatColor.GREEN),
+	SPECTATE	("spectator", Color.YELLOW, ChatColor.YELLOW),
+	LOBBY		("lobby", Color.WHITE, ChatColor.WHITE);
 	
 	private Paintball plugin;
 	private HashMap<Player, Boolean> players;	//members of a team: true: playing, false: waiting; Lobby: true/false toggle messages
 	private int maxPlayers;
 	private String name;
 	private ChatColor color;
-	private int colorA;
+	//private int colorA;
+	private Color colorA;
 	
-	private Lobby(String name, int colorA, ChatColor color) {
+	private Lobby(String name, Color colorA, ChatColor color) {
 		this.plugin = (Paintball) Bukkit.getServer().getPluginManager().getPlugin("Paintball");
 		this.name = plugin.t.getString(name);
 		this.color = color;
@@ -81,7 +89,7 @@ public enum Lobby {
 	public ChatColor color() {
 		return color;
 	}
-	public int colorA() {
+	public Color colorA() {
 		return colorA;
 	}
 	//STATIC

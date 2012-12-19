@@ -326,7 +326,7 @@ public class CmdAdmin {
 	}
 	
 	private void happyTask() {
-		happyTaskId = plugin.getServer().getScheduler().scheduleAsyncDelayedTask(plugin, new Runnable() {
+		happyTaskId = plugin.getServer().getScheduler().runTaskLaterAsynchronously(plugin, new Runnable() {
 			
 			@Override
 			public void run() {
@@ -353,6 +353,6 @@ public class CmdAdmin {
 				happyTask();
 				
 			}
-		}, 20L);	
+		}, 20L).getTaskId();	
 	}
 }

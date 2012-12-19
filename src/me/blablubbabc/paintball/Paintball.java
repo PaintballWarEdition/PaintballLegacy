@@ -711,7 +711,7 @@ public class Paintball extends JavaPlugin{
 	}
 
 	public void delayedInfo() {
-		getServer().getScheduler().scheduleAsyncDelayedTask(this, new Runnable() {
+		getServer().getScheduler().runTaskLaterAsynchronously(this, new Runnable() {
 
 			@Override
 			public void run() {

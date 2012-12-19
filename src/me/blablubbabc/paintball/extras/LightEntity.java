@@ -2,9 +2,11 @@ package me.blablubbabc.paintball.extras;
 
 import java.util.ArrayList;
 import me.blablubbabc.paintball.Paintball;
-import net.minecraft.server.EnumSkyBlock;
+import net.minecraft.server.v1_4_5.EnumSkyBlock;
+//import net.minecraft.server.EnumSkyBlock;
 import org.bukkit.Location;
-import org.bukkit.craftbukkit.CraftWorld;
+//import org.bukkit.craftbukkit.CraftWorld;
+import org.bukkit.craftbukkit.v1_4_5.CraftWorld;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
 

@@ -1,4 +1,4 @@
-package me.blablubbabc.paintball;
+package unused;
 
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;

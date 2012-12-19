@@ -7,17 +7,15 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Random;
 import java.util.Set;
-
 import me.blablubbabc.paintball.extras.Mine;
 import me.blablubbabc.paintball.extras.Turret;
-import net.minecraft.server.NBTTagCompound;
-
+import org.bukkit.Color;
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.Sound;
-import org.bukkit.craftbukkit.inventory.CraftItemStack;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
+import org.bukkit.inventory.meta.LeatherArmorMeta;
 import org.kitteh.tag.TagAPI;
 
 public class Match {
@@ -148,7 +146,7 @@ public class Match {
 		startCount = plugin.countdownStart;
 
 		startTaskId = plugin.getServer().getScheduler()
-				.scheduleAsyncRepeatingTask(plugin, new Runnable() {
+				.runTaskTimerAsynchronously(plugin, new Runnable() {
 
 					@Override
 					public void run() {
@@ -194,7 +192,7 @@ public class Match {
 							startRoundTimer();
 						}
 					}
-				}, 0L, 20L);
+				}, 0L, 20L).getTaskId();
 	}
 
 	public void endSchedulers() {
@@ -418,7 +416,13 @@ public class Match {
 		}
 	}
 
-	public ItemStack setColor(ItemStack item, int color) {
+	public ItemStack setColor(ItemStack item, Color color) {
+		LeatherArmorMeta meta = (LeatherArmorMeta)item.getItemMeta();
+		meta.setColor(color);
+		item.setItemMeta(meta);
+
+		
+		/*1.4.5 R0.2
 		CraftItemStack craftStack = null;
 		net.minecraft.server.ItemStack itemStack = null;
 		if (item instanceof CraftItemStack) {
@@ -438,7 +442,8 @@ public class Match {
 		tag = itemStack.tag.getCompound("display");
 		tag.setInt("color", color);
 		itemStack.tag.setCompound("display", tag);
-		return craftStack;
+		return craftStack;*/
+		return item;
 	}
 
 	public void changeAllColors() {
