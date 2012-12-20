@@ -146,7 +146,7 @@ public class Match {
 		startCount = plugin.countdownStart;
 
 		startTaskId = plugin.getServer().getScheduler()
-				.runTaskTimerAsynchronously(plugin, new Runnable() {
+				.scheduleSyncRepeatingTask(plugin, new Runnable() {
 
 					@Override
 					public void run() {
@@ -156,14 +156,14 @@ public class Match {
 							startCount--;
 							return;
 						}
-						if ((startCount % 10) == 0 && startCount > 3) {
-							// if above 3 and divisable by 10 message here
+						if ((startCount % 30) == 0 && startCount > 30) {
+							sendCountdown(startCount);
+						}
+						if ((startCount % 10) == 0 && startCount > 3 && startCount <= 30) {
 							sendCountdown(startCount);
 						}
 
 						if (startCount < 4 && startCount > 0) {
-							// if below 4 message here (regardless of
-							// divisibility)
 							sendCountdown(startCount);
 						}
 						startCount--;
@@ -192,7 +192,7 @@ public class Match {
 							startRoundTimer();
 						}
 					}
-				}, 0L, 20L).getTaskId();
+				}, 0L, 20L);
 	}
 
 	public void endSchedulers() {
@@ -226,14 +226,13 @@ public class Match {
 							minusRoundTime();
 							return;
 						}
-						if ((time % 10) == 0 && time > 5) {
-							// if above 5 and divisable by 10 message here
+						if ((time % 15) == 0 && time > 20) {
 							sendRoundTime(time);
 						}
-
+						if ((time % 10) == 0 && time > 5 && time <= 20) {
+							sendRoundTime(time);
+						}
 						if (time < 6 && time > 0) {
-							// if below 6 message here (regardless of
-							// divisibility)
 							sendRoundTime(time);
 						}
 						minusRoundTime();
@@ -802,15 +801,7 @@ public class Match {
 				for (Mine m : Mine.getMines(target)) {
 					m.explode(false);
 				}
-				plugin.getServer().getScheduler()
-						.scheduleSyncDelayedTask(plugin, new Runnable() {
-
-							@Override
-							public void run() {
-								plugin.joinLobby(target);
-
-							}
-						}, 1L);
+				plugin.joinLobby(target);
 
 				Lobby.getTeam(target).removeMember(target);
 				plugin.nf.afkLeave(target, this);
@@ -826,15 +817,7 @@ public class Match {
 			for (Mine m : Mine.getMines(target)) {
 				m.explode(false);
 			}
-			plugin.getServer().getScheduler()
-					.scheduleSyncDelayedTask(plugin, new Runnable() {
-
-						@Override
-						public void run() {
-							plugin.joinLobby(target);
-
-						}
-					}, 1L);
+			plugin.joinLobby(target);
 		}
 
 		// survivors?->endGame
