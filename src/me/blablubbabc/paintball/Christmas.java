@@ -1,5 +1,6 @@
 package me.blablubbabc.paintball;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Random;
 import org.bukkit.ChatColor;
@@ -29,9 +30,13 @@ public class Christmas {
 		return wishes.containsKey(player);
 	}
 	
-	private void update() {
-		for(String player: wishes.keySet()) {
-			if(wishes.get(player)+time < System.currentTimeMillis()) wishes.remove(player);
+	private synchronized void update() {
+		ArrayList<String> names = new ArrayList<String>();
+		for(String n : wishes.keySet()) {
+			names.add(n);
+		}
+		for(String player: names) {
+			if((wishes.get(player)+time) < System.currentTimeMillis()) wishes.remove(player);
 		}
 	}
 	
