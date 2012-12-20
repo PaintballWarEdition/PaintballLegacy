@@ -8,12 +8,6 @@ import org.bukkit.Color;
 import org.bukkit.entity.Player;
 
 public enum Lobby {
-
-	/*RED			("red", 0xCC4C4C, ChatColor.RED),
-	BLUE		("blue", 0x3366CC, ChatColor.BLUE),
-	RANDOM		("random", 0x7FCC19, ChatColor.GREEN),
-	SPECTATE	("spectator", 0xE5E533, ChatColor.YELLOW),
-	LOBBY		("lobby", 0xFFFFFF, ChatColor.WHITE);*/
 	
 	RED			("red", Color.RED, ChatColor.RED),
 	BLUE		("blue", Color.BLUE, ChatColor.BLUE),

@@ -313,9 +313,9 @@ public class Musiker {
 			return 0;
 		}
 	}
-
+	
 	private enum Instrus {
-		PI, BG, BD, SD, ST, PL
+		PI, BG, BD, SD, ST, PL;
 	}
 
 	private Sound getSound(String s) {
