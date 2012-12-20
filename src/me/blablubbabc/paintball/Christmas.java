@@ -48,12 +48,6 @@ public class Christmas {
 	}
 	
 	public void unwrapGift(Player player) {
-		//wishes
-		String name = player.getName();
-		if (plugin.wishes && !plugin.christmas.alreadyWished(name)) {
-			player.sendMessage(plugin.t.getString("MERRY_CHRISTMAS"));
-			plugin.christmas.setWishes(name);
-		}
 		//remove chest from hand
 		ItemStack i = player.getItemInHand();
 		if (i.getAmount() <= 1)
@@ -75,12 +69,21 @@ public class Christmas {
 				}
 			}
 		}
+		//wishes
+		String name = player.getName();
+		if (plugin.wishes && !plugin.christmas.alreadyWished(name)) {
+			player.sendMessage(plugin.t.getString("MERRY_CHRISTMAS"));
+			plugin.christmas.setWishes(name);
+		}
 	}
 	
 	public void giveGift(Player goodGuy, Player receiver) {
 		HashMap<String, String> vars = new HashMap<String, String>();
 		vars.put("from", goodGuy.getDisplayName());
+		vars.put("to", receiver.getDisplayName());
 		receiver.sendMessage(plugin.t.getString("RECEIVED_GIFT_FROM", vars)) ;
+		goodGuy.sendMessage(plugin.t.getString("GAVE_GIFT_TO", vars)) ;
+		
 		receiver.getInventory().addItem(new ItemStack(Material.CHEST, 1));
 		
 		ItemStack i = goodGuy.getItemInHand();

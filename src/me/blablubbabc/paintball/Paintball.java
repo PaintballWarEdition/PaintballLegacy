@@ -107,6 +107,7 @@ public class Paintball extends JavaPlugin{
 	public boolean autoSpecLobby;
 	public boolean effects;
 	public boolean debug;
+	public boolean teleportFix;
 	
 	//gifts
 	public boolean giftsEnabled;
@@ -276,6 +277,7 @@ public class Paintball extends JavaPlugin{
 		if(getConfig().get("Paintball.Auto Random") == null)getConfig().set("Paintball.Auto Random", true);
 		if(getConfig().get("Paintball.Auto Spec Lobby") == null)getConfig().set("Paintball.Auto Spec Lobby", false);
 		if(getConfig().get("Paintball.Effects") == null)getConfig().set("Paintball.Effects", true);
+		if(getConfig().get("Paintball.Teleport Fix") == null)getConfig().set("Paintball.Teleport Fix", true);
 		if(getConfig().get("Paintball.Allowed Commands") == null)getConfig().set("Paintball.Allowed Commands", allowedCommands);
 		//player tags
 		if(getConfig().get("Paintball.Tags.enabled") == null)getConfig().set("Paintball.Tags.enabled", true);
@@ -387,6 +389,7 @@ public class Paintball extends JavaPlugin{
 		local = getConfig().getString("Paintball.Language", "enUS");
 		noPerms = getConfig().getBoolean("Paintball.No Permissions", false);
 		debug = getConfig().getBoolean("Paintball.Debug", false);
+		teleportFix = getConfig().getBoolean("Paintball.Teleport Fix", true);
 		autoLobby = getConfig().getBoolean("Paintball.Auto Lobby", false);
 		autoTeam = getConfig().getBoolean("Paintball.Auto Team", false);
 		allowedCommands = (ArrayList<String>) getConfig().getList("Paintball.Allowed Commands", allowedCommands);
@@ -584,7 +587,7 @@ public class Paintball extends JavaPlugin{
 		//STATS
 		stats = new Stats(this);
 		getServer().getPluginManager().registerEvents(listener, this);
-		//getServer().getPluginManager().registerEvents(new InvisibleFix(this), this);
+		getServer().getPluginManager().registerEvents(new TeleportFix(this), this);
 		//GIFTS
 		christmas = new Christmas(this);
 		//COMMANDS
