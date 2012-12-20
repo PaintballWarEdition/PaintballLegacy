@@ -142,7 +142,7 @@ public class Musiker {
 			}
 		}
 		log("Loading the specified melody now: " + melodyFile.getName());
-		Melody melody = loadMelody(melodyFile, true);
+		Melody melody = loadMelody(melodyFile, nbs);
 		if (melody == null) {
 			log("ERROR: Couldn't load the specified melody file!");
 			log("Do you use a valid melody file?");

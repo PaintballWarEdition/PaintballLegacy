@@ -722,8 +722,7 @@ public class Paintball extends JavaPlugin{
 				logBlank(ChatColor.YELLOW+" ----------------- PAINTBALL INFO -----------------");
 				logBlank(" ");
 				logBlank(ChatColor.RED+" License stuff:");
-				logBlank(ChatColor.GOLD+"   - Usage on own risk.");
-				logBlank(ChatColor.GOLD+"   - I give no warranties for anything.");
+				logBlank(ChatColor.GOLD+"   - Usage on own risk. I give no warranties for anything.");
 				logBlank(ChatColor.GOLD+"   - Do not modify. Use it as it is!");
 				logBlank(ChatColor.GOLD+"   - Do not redistribute/upload/copy/give away.");
 				logBlank(ChatColor.GOLD+"   - Do not copy or use parts of it.");
