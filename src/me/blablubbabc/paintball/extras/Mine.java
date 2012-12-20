@@ -90,7 +90,7 @@ public class Mine {
 												double dist = ploc
 														.distance(loc);
 												if (dist < 15) {
-													float vol = (float) (0.15 - (dist * 0.01));
+													float vol = (float) (0.18 - (dist * 0.012));
 													p.playSound(loc,
 															Sound.CLICK, vol,
 															2F);
@@ -125,11 +125,9 @@ public class Mine {
 	}
 
 	private boolean canSeeMine(Player player) {
-		Vector loc1 = player.getEyeLocation().toVector();
-		Vector dir = loc1.clone().subtract(loc.toVector()).normalize();
+		Vector dir = player.getEyeLocation().toVector().clone().subtract(loc.toVector()).normalize();
 		BlockIterator iterator = new BlockIterator(loc.getWorld(),
-				loc1, dir, 0,
-				2);
+				loc.toVector(), dir, 0, 2);
 		while(iterator.hasNext()) {
 			Block b = iterator.next();
 			if(b != block && b.getType() != Material.AIR) return false;
