@@ -448,6 +448,7 @@ public class Paintball extends JavaPlugin{
 		wishes = getConfig().getBoolean("Paintball.Gifts.wishes", true);
 		wishesDelay = getConfig().getInt("Paintball.Gifts.wishes delay in minutes", 60);
 		wishesDelay = (wishesDelay < 0 ? 0 : wishesDelay);
+		gifts = new ArrayList<Gift>();
 		
 		ConfigurationSection giftsEntries = getConfig().getConfigurationSection("Paintball.Gifts.gifts");
 		int allChances = 0;
