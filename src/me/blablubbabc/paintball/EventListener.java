@@ -46,6 +46,7 @@ import org.bukkit.event.player.AsyncPlayerChatEvent;
 import org.bukkit.event.player.PlayerCommandPreprocessEvent;
 import org.bukkit.event.player.PlayerDropItemEvent;
 import org.bukkit.event.player.PlayerEggThrowEvent;
+import org.bukkit.event.player.PlayerInteractEntityEvent;
 import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.event.player.PlayerItemHeldEvent;
 import org.bukkit.event.player.PlayerJoinEvent;
@@ -336,15 +337,30 @@ public class EventListener implements Listener {
 	}
 
 	@EventHandler(priority = EventPriority.NORMAL)
+	public void onPlayerInteractPlayer(PlayerInteractEntityEvent event) {
+		Player player = (Player) event.getPlayer();
+		if (plugin.giftsEnabled && Lobby.getTeam(player) != null) {
+			if(player.getItemInHand().getType() == Material.CHEST) {
+				if(event.getRightClicked() instanceof Player) {
+					Player receiver = (Player) event.getRightClicked();
+					if(Lobby.getTeam(receiver) != null) {
+						plugin.christmas.giveGift(player, receiver);
+					}
+				}
+			}
+		}
+	}
+	
+	@EventHandler(priority = EventPriority.NORMAL)
 	public void onPlayerInteract(PlayerInteractEvent event) {
 		Player player = (Player) event.getPlayer();
 		if (Lobby.getTeam(player) != null) {
-			if(player.getItemInHand().getType() == Material.CHEST) {
+			if(player.getItemInHand().getType() == Material.CHEST && plugin.giftsEnabled) {
 				//to prevent placing:
 				event.setCancelled(true);
 				if(event.getAction() == Action.RIGHT_CLICK_AIR || event.getAction() == Action.RIGHT_CLICK_BLOCK) {
 					plugin.christmas.unwrapGift(player);
-				}	
+				}
 			}
 			Match match = mm.getMatch(player);
 			if (match != null && Lobby.isPlaying(player) && match.started
@@ -687,7 +703,7 @@ public class EventListener implements Listener {
 		return false;
 	}
 
-	@EventHandler(priority = EventPriority.LOWEST)
+	@EventHandler(priority = EventPriority.HIGHEST)
 	public void onPbCommands(PlayerCommandPreprocessEvent event) {
 		Player player = event.getPlayer();
 		String[] m = event.getMessage().split(" ");

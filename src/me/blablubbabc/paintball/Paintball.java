@@ -285,11 +285,11 @@ public class Paintball extends JavaPlugin{
 		//melody:
 		if(getConfig().get("Paintball.Melodies.enable") == null)getConfig().set("Paintball.Melodies.enable", true);
 		if(getConfig().get("Paintball.Melodies.delay") == null)getConfig().set("Paintball.Melodies.delay", 20);
-		if(getConfig().get("Paintball.Melodies.win") == null)getConfig().set("Paintball.Melodies.win", "win");
+		if(getConfig().get("Paintball.Melodies.win.file") == null)getConfig().set("Paintball.Melodies.win.file", "win");
 		if(getConfig().get("Paintball.Melodies.win.nbs") == null)getConfig().set("Paintball.Melodies.win.nbs", false);
-		if(getConfig().get("Paintball.Melodies.defeat") == null)getConfig().set("Paintball.Melodies.defeat", "defeat");
+		if(getConfig().get("Paintball.Melodies.defeat.file") == null)getConfig().set("Paintball.Melodies.defeat.file", "defeat");
 		if(getConfig().get("Paintball.Melodies.defeat.nbs") == null)getConfig().set("Paintball.Melodies.defeat.nbs", false);
-		if(getConfig().get("Paintball.Melodies.draw") == null)getConfig().set("Paintball.Melodies.draw", "draw");
+		if(getConfig().get("Paintball.Melodies.draw.file") == null)getConfig().set("Paintball.Melodies.draw.file", "draw");
 		if(getConfig().get("Paintball.Melodies.draw.nbs") == null)getConfig().set("Paintball.Melodies.draw.nbs", false);
 		//gifts
 		if(getConfig().get("Paintball.Gifts.enabled") == null)getConfig().set("Paintball.Gifts.enabled", true);
@@ -433,9 +433,9 @@ public class Paintball extends JavaPlugin{
 		//melody
 		melody = getConfig().getBoolean("Paintball.Melodies.enable", true);
 		melodyDelay = getConfig().getInt("Paintball.Melodies.delay", 20);
-		melodyWin = getConfig().getString("Paintball.Melodies.win", "win");
-		melodyDefeat = getConfig().getString("Paintball.Melodies.defeat", "defeat");
-		melodyDraw = getConfig().getString("Paintball.Melodies.draw", "draw");
+		melodyWin = getConfig().getString("Paintball.Melodies.win.file", "win");
+		melodyDefeat = getConfig().getString("Paintball.Melodies.defeat.file", "defeat");
+		melodyDraw = getConfig().getString("Paintball.Melodies.draw.file", "draw");
 		boolean winNbs = getConfig().getBoolean("Paintball.Melodies.win.nbs", false);
 		boolean defeatNbs = getConfig().getBoolean("Paintball.Melodies.defeat.nbs", false);
 		boolean drawNbs = getConfig().getBoolean("Paintball.Melodies.draw.nbs", false);
@@ -585,6 +585,8 @@ public class Paintball extends JavaPlugin{
 		stats = new Stats(this);
 		getServer().getPluginManager().registerEvents(listener, this);
 		//getServer().getPluginManager().registerEvents(new InvisibleFix(this), this);
+		//GIFTS
+		christmas = new Christmas(this);
 		//COMMANDS
 		cm = new CommandManager(this);
 		CommandExecutor ce = cm;

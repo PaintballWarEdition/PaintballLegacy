@@ -116,7 +116,7 @@ public class Mine {
 		for (Player p : match.getEnemyTeam(player)) {
 			if (match.isSurvivor(p)) {
 				if (loc.distance(p.getLocation()) < plugin.mineRange
-						&& canSeeLoc(p, loc)) {
+						&& canSeeMine(p)) {
 					return true;
 				}
 			}
@@ -124,13 +124,17 @@ public class Mine {
 		return false;
 	}
 
-	private boolean canSeeLoc(Player player, Location loc2) {
+	private boolean canSeeMine(Player player) {
 		Vector loc1 = player.getEyeLocation().toVector();
-		Vector dir = loc1.clone().subtract(loc2.toVector()).normalize();
+		Vector dir = loc1.clone().subtract(loc.toVector()).normalize();
 		BlockIterator iterator = new BlockIterator(loc.getWorld(),
 				loc1, dir, 0,
 				2);
-		return !iterator.hasNext();
+		while(iterator.hasNext()) {
+			Block b = iterator.next();
+			if(b != block && b.getType() != Material.AIR) return false;
+		}
+		return true;
 	}
 	
 	/*private boolean canSee(Player player, Location loc2) {

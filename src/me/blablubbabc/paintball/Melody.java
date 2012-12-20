@@ -47,7 +47,7 @@ public class Melody {
 	
 	public synchronized void stop(Plugin plugin, Player p) {
 		if(isPlaying(p)) {
-			plugin.getServer().getScheduler().cancelTask(playing.get(p));
+			plugin.getServer().getScheduler().cancelTask(playing.get(p.getName()));
 			playing.remove(p.getName());
 		}
 	}

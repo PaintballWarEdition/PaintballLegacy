@@ -39,11 +39,12 @@ public class Christmas {
 		if(all) player.sendMessage(plugin.t.getString("ALL_RECEIVED_GIFT"));
 		else player.sendMessage(plugin.t.getString("RECEIVED_GIFT")) ;
 		
-		if(player.getInventory().firstEmpty() != -1) {
+		player.getInventory().addItem(new ItemStack(Material.CHEST, amount));
+		/*if(player.getInventory().firstEmpty() != -1) {
 			player.getInventory().addItem(new ItemStack(Material.CHEST, amount));
 		} else {
 			plugin.t.getString("INVENTORY_FULL");
-		}
+		}*/
 	}
 	
 	public void unwrapGift(Player player) {
@@ -73,6 +74,21 @@ public class Christmas {
 					break;
 				}
 			}
+		}
+	}
+	
+	public void giveGift(Player goodGuy, Player receiver) {
+		HashMap<String, String> vars = new HashMap<String, String>();
+		vars.put("from", goodGuy.getDisplayName());
+		receiver.sendMessage(plugin.t.getString("RECEIVED_GIFT_FROM", vars)) ;
+		receiver.getInventory().addItem(new ItemStack(Material.CHEST, 1));
+		
+		ItemStack i = goodGuy.getItemInHand();
+		if (i.getAmount() <= 1)
+			goodGuy.setItemInHand(null);
+		else {
+			i.setAmount(i.getAmount() - 1);
+			goodGuy.setItemInHand(i);
 		}
 	}
 }

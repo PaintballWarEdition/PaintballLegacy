@@ -283,7 +283,7 @@ public class CmdAdmin {
 				return true;
 			}
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-		} else if (args[1].equalsIgnoreCase("gifts")) {
+		} else if (args[1].equalsIgnoreCase("gifts") || args[1].equalsIgnoreCase("gift")) {
 			if(args.length == 2 || args.length == 3) {
 				int amount = 1;
 				if(args.length == 3) {

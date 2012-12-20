@@ -290,12 +290,13 @@ public class Musiker {
 				e.printStackTrace();
 				return null;
 			} finally {
-				if (scanner != null)
+				if (scanner != null) {
 					try {
 						scanner.close();
 					} catch (IOException e) {
 						e.printStackTrace();
 					}
+				}
 			}
 		}
 	}
