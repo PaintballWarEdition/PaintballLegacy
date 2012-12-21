@@ -313,10 +313,6 @@ public class Musiker {
 			return 0;
 		}
 	}
-	
-	public enum Instrus {
-		PI, BG, BD, SD, ST, PL;
-	}
 
 	private Sound getSound(String s) {
 		try {
