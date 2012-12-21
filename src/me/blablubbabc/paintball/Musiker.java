@@ -314,7 +314,7 @@ public class Musiker {
 		}
 	}
 	
-	private enum Instrus {
+	public enum Instrus {
 		PI, BG, BD, SD, ST, PL;
 	}
 
