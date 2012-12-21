@@ -127,7 +127,7 @@ public class Mine {
 	private boolean canSeeMine(Player player) {
 		Vector dir = (player.getEyeLocation().toVector().subtract(loc.toVector())).normalize();
 		BlockIterator iterator = new BlockIterator(loc.getWorld(),
-				loc.toVector(), dir, 0.1, (int) Math.ceil(player.getEyeLocation().distance(loc)));
+				loc.toVector(), dir, 0, (int) Math.ceil(player.getEyeLocation().distance(loc)));
 		
 		while(iterator.hasNext()) {
 			Block b = iterator.next();
