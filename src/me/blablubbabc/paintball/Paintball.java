@@ -750,6 +750,7 @@ public class Paintball extends JavaPlugin{
 	public void onDisable(){
 		if(mm != null) mm.forceReload();
 		sql.closeConnection();
+		getServer().getScheduler().cancelTasks(this);
 		log("Disabled!");
 	}
 
