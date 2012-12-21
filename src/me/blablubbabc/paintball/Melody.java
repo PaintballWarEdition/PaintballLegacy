@@ -37,6 +37,10 @@ public class Melody {
 					stop(plugin, p);
 					return;
 				}
+				if(!p.isOnline() || p.isDead()) {
+					stop(plugin, p);
+					return;
+				}
 				for(Ton ton : melody) {
 					if(delay == ton.getDelay()) ton.play(p);
 				}
