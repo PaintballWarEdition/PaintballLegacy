@@ -13,11 +13,12 @@ public class TeleportFix implements Listener {
 	private Server server;
 	private Paintball plugin;
 	private final int TELEPORT_FIX_DELAY = 15; // ticks
-	final int visibleDistance = server.getViewDistance() * 16;
+	final int visibleDistance;
 	
 	public TeleportFix(Paintball plugin) {
 		this.plugin = plugin;
 		this.server = plugin.getServer();
+		visibleDistance = server.getViewDistance() * 16;
 	}
 
 	@EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
