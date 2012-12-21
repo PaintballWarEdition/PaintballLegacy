@@ -286,6 +286,7 @@ public class Match {
 
 	// SPAWNS
 
+	@SuppressWarnings("deprecation")
 	public synchronized void spawnPlayer(Player player) {
 		Location loc;
 		if (redT.contains(player)) {
@@ -336,6 +337,7 @@ public class Match {
 					new ItemStack(Material.STICK, setting_airstrikes));
 		else if (setting_airstrikes == -1)
 			player.getInventory().addItem(new ItemStack(Material.STICK, 10));
+		player.updateInventory();
 		// MESSAGE
 		HashMap<String, String> vars = new HashMap<String, String>();
 		vars.put("team_color", Lobby.getTeam(getTeamName(player)).color()
@@ -351,6 +353,7 @@ public class Match {
 		}	
 	}
 
+	@SuppressWarnings("deprecation")
 	public synchronized void spawnSpec(Player player) {
 		if (spawnSpec > (specspawns.size() - 1))
 			spawnSpec = 0;
@@ -369,6 +372,7 @@ public class Match {
 		player.getInventory().setBoots(
 				setColor(new ItemStack(Material.LEATHER_BOOTS, 1),
 						Lobby.SPECTATE.colorA()));
+		player.updateInventory();
 		// MESSAGE
 		HashMap<String, String> vars = new HashMap<String, String>();
 		vars.put("team_color", Lobby.getTeam(player).color().toString());

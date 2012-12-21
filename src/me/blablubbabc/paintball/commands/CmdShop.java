@@ -20,6 +20,7 @@ public class CmdShop {
 		}
 	}
 	
+	@SuppressWarnings("deprecation")
 	public boolean command(CommandSender sender, String[] args) {
 		if(sender instanceof Player) {
 			//PERMISSION CHECK
@@ -91,6 +92,7 @@ public class CmdShop {
 						}
 						//item
 						player.getInventory().addItem(good.getItemStack());
+						player.updateInventory();
 						
 						HashMap<String, String> vars = new HashMap<String, String>();
 						vars.put("amount", String.valueOf(amount));

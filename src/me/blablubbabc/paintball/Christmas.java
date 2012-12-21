@@ -52,6 +52,7 @@ public class Christmas {
 		}*/
 	}
 	
+	@SuppressWarnings("deprecation")
 	public void unwrapGift(Player player) {
 		//remove chest from hand
 		ItemStack i = player.getItemInHand();
@@ -70,6 +71,7 @@ public class Christmas {
 				if(r < chance) {
 					player.sendMessage(ChatColor.GREEN+g.message);
 					player.getInventory().addItem(g.item);
+					player.updateInventory();
 					break;
 				}
 			}
