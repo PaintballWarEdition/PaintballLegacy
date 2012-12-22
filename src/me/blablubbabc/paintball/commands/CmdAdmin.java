@@ -296,7 +296,7 @@ public class CmdAdmin {
 				}
 				if(amount > 0) {
 					//sender nicht in der lobby?
-					if(!(sender instanceof Player) || Lobby.getTeam((Player) sender) == null) {
+					if(!(sender instanceof Player) || !Lobby.isPlaying((Player)sender)) {
 						sender.sendMessage(plugin.t.getString("YOU_GAVE_ALL_GIFT"));
 					}
 					for(Player p : Lobby.LOBBY.getMembers()) {
