@@ -423,29 +423,6 @@ public class Match {
 		LeatherArmorMeta meta = (LeatherArmorMeta)item.getItemMeta();
 		meta.setColor(color);
 		item.setItemMeta(meta);
-
-		
-		/*1.4.5 R0.2
-		CraftItemStack craftStack = null;
-		net.minecraft.server.ItemStack itemStack = null;
-		if (item instanceof CraftItemStack) {
-			craftStack = (CraftItemStack) item;
-			itemStack = craftStack.getHandle();
-		} else if (item instanceof ItemStack) {
-			craftStack = new CraftItemStack(item);
-			itemStack = craftStack.getHandle();
-		}
-		NBTTagCompound tag = itemStack.tag;
-		if (tag == null) {
-			tag = new NBTTagCompound();
-			tag.setCompound("display", new NBTTagCompound());
-			itemStack.tag = tag;
-		}
-
-		tag = itemStack.tag.getCompound("display");
-		tag.setInt("color", color);
-		itemStack.tag.setCompound("display", tag);
-		return craftStack;*/
 		return item;
 	}
 
@@ -805,7 +782,12 @@ public class Match {
 				for (Mine m : Mine.getMines(target)) {
 					m.explode(false);
 				}
-				plugin.joinLobby(target);
+				plugin.getServer().getScheduler().scheduleSyncDelayedTask(plugin, new Runnable() {
+					@Override
+					public void run() {
+						plugin.joinLobby(target);
+					}
+				}, 1L);
 
 				Lobby.getTeam(target).removeMember(target);
 				plugin.nf.afkLeave(target, this);
@@ -821,7 +803,12 @@ public class Match {
 			for (Mine m : Mine.getMines(target)) {
 				m.explode(false);
 			}
-			plugin.joinLobby(target);
+			plugin.getServer().getScheduler().scheduleSyncDelayedTask(plugin, new Runnable() {
+				@Override
+				public void run() {
+					plugin.joinLobby(target);
+				}
+			}, 1L);
 		}
 
 		// survivors?->endGame
@@ -832,7 +819,7 @@ public class Match {
 
 	}
 
-	public synchronized void death(Player target) {
+	public synchronized void death(final Player target) {
 		// math over already?
 		if (matchOver)
 			return;
@@ -871,7 +858,12 @@ public class Match {
 				for (Turret t : Turret.getTurrets(target)) {
 					t.die(true);
 				}
-				plugin.joinLobby(target);
+				plugin.getServer().getScheduler().scheduleSyncDelayedTask(plugin, new Runnable() {
+					@Override
+					public void run() {
+						plugin.joinLobby(target);
+					}
+				}, 1L);
 
 				Lobby.getTeam(target).removeMember(target);
 				plugin.nf.afkLeave(target, this);
@@ -887,7 +879,12 @@ public class Match {
 			for (Mine m : Mine.getMines(target)) {
 				m.explode(false);
 			}
-			plugin.joinLobby(target);
+			plugin.getServer().getScheduler().scheduleSyncDelayedTask(plugin, new Runnable() {
+				@Override
+				public void run() {
+					plugin.joinLobby(target);
+				}
+			}, 1L);
 		}
 
 		// survivors?->endGame
@@ -897,7 +894,7 @@ public class Match {
 		}
 	}
 
-	private synchronized void gameEnd(boolean draw, ArrayList<Player> winnerS,
+	private synchronized void gameEnd(final boolean draw, ArrayList<Player> winnerS,
 			ArrayList<Player> looserS, String winS, String looseS) {
 		matchOver = true;
 		endSchedulers();
@@ -922,8 +919,15 @@ public class Match {
 			this.win = winS;
 			this.loose = looseS;
 		}
-		plugin.mm.gameEnd(this, draw, playersLoc, spec, shots, hits, kills,
-				deaths, teamattacks, grenades, airstrikes);
+		final Match this2 = this;
+		plugin.getServer().getScheduler().scheduleSyncDelayedTask(plugin, new Runnable() {
+			
+			@Override
+			public void run() {
+				plugin.mm.gameEnd(this2, draw, playersLoc, spec, shots, hits, kills,
+						deaths, teamattacks, grenades, airstrikes);
+			}
+		}, 1L);
 	}
 
 }
