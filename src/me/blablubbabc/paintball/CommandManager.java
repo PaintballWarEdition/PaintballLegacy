@@ -31,13 +31,13 @@ public class CommandManager implements CommandExecutor{
 	public boolean onCommand(CommandSender sender, Command cmd, String label, String[] args) {
 		if(label.equalsIgnoreCase("pb")) {
 			if(args.length == 0) {
-				//pbhelp(sender);
+				pbhelp(sender);
 				return true;
 			} else if(args[0].equalsIgnoreCase("help") || args[0].equalsIgnoreCase("?")) {
-				//pbhelp(sender);
+				pbhelp(sender);
 				return true;
 			} else if(args[0].equalsIgnoreCase("info")) {
-				//pbinfo(sender);
+				pbinfo(sender);
 				return true;
 			} else {
 

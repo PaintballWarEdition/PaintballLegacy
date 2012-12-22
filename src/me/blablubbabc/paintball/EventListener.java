@@ -703,7 +703,7 @@ public class EventListener implements Listener {
 		return false;
 	}
 
-	@EventHandler(priority = EventPriority.HIGHEST)
+	/*@EventHandler(priority = EventPriority.HIGHEST)
 	public void onPbCommands(PlayerCommandPreprocessEvent event) {
 		Player player = event.getPlayer();
 		String[] m = event.getMessage().split(" ");
@@ -718,7 +718,7 @@ public class EventListener implements Listener {
 				plugin.cm.pbinfo(player);
 			}
 		}
-	}
+	}*/
 
 	@EventHandler(priority = EventPriority.LOWEST)
 	public void onPlayerChat(AsyncPlayerChatEvent event) {
