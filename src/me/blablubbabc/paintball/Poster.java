@@ -20,7 +20,6 @@ public class Poster {
 	public Poster(Paintball plugin) {
 		this.plugin = plugin;
 		serverid = (String) plugin.slist.get("serverid");
-		plugin.logBlank("--------- Checking version ----------");
 		if(plugin.versioncheck) {
 			try {
 				post();
@@ -29,11 +28,12 @@ public class Poster {
 			}
 		}
 		else {
+			plugin.logBlank("--------- Checking version ----------");
 			plugin.log("You denied version checking. :(");
 			plugin.log("If you want to be informed about a new version of paintball");
 			plugin.log("-> enable it in the config.");
+			plugin.logBlank("--------- ---------------- ----------");
 		}
-		plugin.logBlank("--------- ---------------- ----------");
 	}
 
 	private void post() throws IOException {
@@ -99,12 +99,14 @@ public class Poster {
 			throw new IOException(response); 
 		} else {
 			//version check:
-				if(!description.getVersion().equals(response)) {
-					plugin.log("There is a new version of paintball available: "+response);
-					plugin.log("Download at the bukkit dev page.");
-				}else{
-					plugin.log("You are running the latest version. :)");
-				}
+			plugin.logBlank("--------- Checking version ----------");
+			if(!description.getVersion().equals(response)) {
+				plugin.log("There is a new version of paintball available: "+response);
+				plugin.log("Download at the bukkit dev page.");
+			}else{
+				plugin.log("You are running the latest version. :)");
+			}
+			plugin.logBlank("--------- ---------------- ----------");
 		}
 	}
 
