@@ -105,7 +105,7 @@ public class Airstrike{
 					//plugin.getServer().getPluginManager().callEvent(event);
 					chick.setVelocity(bpr.clone().multiply(bombDiff/5));
 					i++;
-					if(i > bombs.size() - 1) {
+					if(i > (bombs.size() - 1)) {
 						plugin.getServer().getScheduler().cancelTask(task);
 						definalMark(player);
 						chick.remove();
