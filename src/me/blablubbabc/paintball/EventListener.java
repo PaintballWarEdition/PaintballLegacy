@@ -468,7 +468,7 @@ public class EventListener implements Listener {
 									} else {
 										plugin.getServer()
 												.getScheduler()
-												.cancelTask(taskIds.get(player));
+												.cancelTask(taskIds.get(name));
 										taskIds.remove(name);
 										Airstrike.demark(player);
 									}
