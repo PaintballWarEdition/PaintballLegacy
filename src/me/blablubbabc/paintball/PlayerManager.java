@@ -18,101 +18,118 @@ public class PlayerManager {
 		locations = new HashMap<Player, Location>();
 		invContent = new HashMap<Player, ItemStack[]>();
 		invArmor = new HashMap<Player, ItemStack[]>();
-		
-		for(Player p : plugin.getServer().getOnlinePlayers()) {
+
+		for (Player p : plugin.getServer().getOnlinePlayers()) {
 			addPlayer(p.getName());
 		}
 	}
 
-	//METHODS
-	//SETTER
+	// METHODS
+	// SETTER
 	public void addPlayer(final String name) {
-		plugin.getServer().getScheduler().runTaskAsynchronously(plugin, new Runnable() {
-			
-			@Override
-			public void run() {
-				if(!plugin.sql.sqlPlayers.isPlayerExisting(name)) {
-					plugin.sql.sqlPlayers.addNewPlayer(name);
-				}
-			}
-		});	
+		plugin.getServer().getScheduler()
+				.runTaskAsynchronously(plugin, new Runnable() {
+
+					@Override
+					public void run() {
+						if (!plugin.sql.sqlPlayers.isPlayerExisting(name)) {
+							plugin.sql.sqlPlayers.addNewPlayer(name);
+						}
+					}
+				});
 	}
 
 	public void resetData() {
-		plugin.getServer().getScheduler().runTaskAsynchronously(plugin, new Runnable() {
-			
-			@Override
-			public void run() {
-				plugin.sql.sqlPlayers.resetAllPlayerStats();
-			}
-		});
+		plugin.getServer().getScheduler()
+				.runTaskAsynchronously(plugin, new Runnable() {
+
+					@Override
+					public void run() {
+						plugin.sql.sqlPlayers.resetAllPlayerStats();
+					}
+				});
 	}
-	
+
 	public void resetDataSameThread() {
 		plugin.sql.sqlPlayers.resetAllPlayerStats();
 	}
-	
+
 	public void resetData(final String player) {
-		plugin.getServer().getScheduler().runTaskAsynchronously(plugin, new Runnable() {
-			
-			@Override
-			public void run() {
-				plugin.sql.sqlPlayers.resetPlayerStats(player);
-			}
-		});
+		plugin.getServer().getScheduler()
+				.runTaskAsynchronously(plugin, new Runnable() {
+
+					@Override
+					public void run() {
+						plugin.sql.sqlPlayers.resetPlayerStats(player);
+					}
+				});
 	}
 
 	public boolean exists(String player) {
 		return plugin.sql.sqlPlayers.isPlayerExisting(player);
 	}
 
-	//STATS
-	public void addStats(final String player, final HashMap<String, Integer> stats) {
-		plugin.getServer().getScheduler().runTaskAsynchronously(plugin, new Runnable() {
-			
-			@Override
-			public void run() {
-				plugin.sql.sqlPlayers.addPlayerStats(player, stats);
-				plugin.sql.sqlPlayers.calculateStats(player);
-			}
-		});
+	// STATS
+	public void addStatsAsync(final String player,
+			final HashMap<String, Integer> stats) {
+		plugin.getServer().getScheduler()
+				.runTaskAsynchronously(plugin, new Runnable() {
+
+					@Override
+					public void run() {
+						plugin.sql.sqlPlayers.addPlayerStats(player, stats);
+						plugin.sql.sqlPlayers.calculateStats(player);
+					}
+				});
 	}
 
-	public void setStats(final String player, final HashMap<String, Integer> stats) {
-		plugin.getServer().getScheduler().runTaskAsynchronously(plugin, new Runnable() {
-			
-			@Override
-			public void run() {
-				plugin.sql.sqlPlayers.setPlayerStats(player, stats);
-				plugin.sql.sqlPlayers.calculateStats(player);
-			}
-		});
+	public void addStats(final String player,
+			final HashMap<String, Integer> stats) {
+		plugin.sql.sqlPlayers.addPlayerStats(player, stats);
+		plugin.sql.sqlPlayers.calculateStats(player);
 	}
-	
-	//GETTER
+
+	public void setStats(final String player,
+			final HashMap<String, Integer> stats) {
+		plugin.getServer().getScheduler()
+				.runTaskAsynchronously(plugin, new Runnable() {
+
+					@Override
+					public void run() {
+						plugin.sql.sqlPlayers.setPlayerStats(player, stats);
+						plugin.sql.sqlPlayers.calculateStats(player);
+					}
+				});
+	}
+
+	// GETTER
 	public ArrayList<String> getAllPlayerNames() {
 		return plugin.sql.sqlPlayers.getAllPlayerNames();
 	}
+
 	public int getPlayerCount() {
 		return plugin.sql.sqlPlayers.getPlayerCount();
 	}
+
 	public HashMap<String, Integer> getStats(String player) {
 		return plugin.sql.sqlPlayers.getPlayerStats(player);
 	}
 
 	public synchronized Location getLoc(Player player) {
-		if(locations.get(player) != null) {
+		if (locations.get(player) != null) {
 			Location loc = locations.get(player);
 			locations.remove(player);
 			return loc;
-		}
-		else return null;
+		} else
+			return null;
 	}
+
 	public synchronized ItemStack[] getInvContent(Player player) {
 		ItemStack[] inv = invContent.get(player);
 		invContent.remove(player);
 		return inv;
 	}
+
 	public synchronized ItemStack[] getInvArmor(Player player) {
 		ItemStack[] inv = invArmor.get(player);
 		invArmor.remove(player);

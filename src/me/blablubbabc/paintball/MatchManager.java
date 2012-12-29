@@ -139,17 +139,17 @@ public class MatchManager{
 		matches.add(match);
 	}
 	
-	public synchronized void gameEnd(Match match, boolean draw, HashMap<String, Location> playersLoc, Set<Player> specs, 
-			HashMap<String, Integer> shots, HashMap<String, Integer> hits, HashMap<String, Integer> kills, HashMap<String, Integer> deaths,
-			HashMap<String, Integer> teamattacks, HashMap<String, Integer> grenades, HashMap<String, Integer> airstrikes) {
+	public synchronized void gameEnd(final Match match, boolean draw, HashMap<String, Location> playersLoc, Set<Player> specs, 
+			final HashMap<String, Integer> shots, final HashMap<String, Integer> hits, final HashMap<String, Integer> kills, final HashMap<String, Integer> deaths,
+			final HashMap<String, Integer> teamattacks, final HashMap<String, Integer> grenades, final HashMap<String, Integer> airstrikes) {
 		//TIME
 		long time1 = System.nanoTime();
 		//STATS
-		HashMap<String, Integer> wins = new HashMap<String, Integer>();
-		HashMap<String, Integer> defeats = new HashMap<String, Integer>();
-		HashMap<String, Integer> draws = new HashMap<String, Integer>();
-		HashMap<String, Integer> points = new HashMap<String, Integer>();
-		HashMap<String, Integer> money = new HashMap<String, Integer>();
+		final HashMap<String, Integer> wins = new HashMap<String, Integer>();
+		final HashMap<String, Integer> defeats = new HashMap<String, Integer>();
+		final HashMap<String, Integer> draws = new HashMap<String, Integer>();
+		final HashMap<String, Integer> points = new HashMap<String, Integer>();
+		final HashMap<String, Integer> money = new HashMap<String, Integer>();
 
 		for(Player p : match.getAllPlayer()) {
 			points.put(p.getName(), plugin.pointsPerRound);
@@ -260,24 +260,36 @@ public class MatchManager{
 		}
 		
 		//PLAYER STATS
-		for(Player p : match.getAllPlayer()) {
-			final HashMap<String, Integer> pStats = new HashMap<String, Integer>();
-			final String name = p.getName();
-			pStats.put("shots", shots.get(name));
-			pStats.put("hits", hits.get(name));
-			pStats.put("kills", kills.get(name));
-			pStats.put("deaths", deaths.get(name));
-			pStats.put("teamattacks", teamattacks.get(name));
-			pStats.put("grenades", grenades.get(name));
-			pStats.put("airstrikes", airstrikes.get(name));
-			pStats.put("points", points.get(name));
-			pStats.put("money", money.get(name));
-			pStats.put("wins", wins.get(name));
-			pStats.put("defeats", defeats.get(name));
-			pStats.put("draws", draws.get(name));
+		plugin.getServer().getScheduler().runTaskAsynchronously(plugin, new Runnable() {
 			
-			plugin.pm.addStats(name, pStats);
-		}
+			@Override
+			public void run() {
+				boolean auto = plugin.sql.getAutoCommit();
+				plugin.sql.setAutoCommit(false);
+				
+				for(Player p : match.getAllPlayer()) {
+					final HashMap<String, Integer> pStats = new HashMap<String, Integer>();
+					final String name = p.getName();
+					pStats.put("shots", shots.get(name));
+					pStats.put("hits", hits.get(name));
+					pStats.put("kills", kills.get(name));
+					pStats.put("deaths", deaths.get(name));
+					pStats.put("teamattacks", teamattacks.get(name));
+					pStats.put("grenades", grenades.get(name));
+					pStats.put("airstrikes", airstrikes.get(name));
+					pStats.put("points", points.get(name));
+					pStats.put("money", money.get(name));
+					pStats.put("wins", wins.get(name));
+					pStats.put("defeats", defeats.get(name));
+					pStats.put("draws", draws.get(name));
+					
+					plugin.pm.addStats(name, pStats);
+				}
+				plugin.sql.commit();
+				plugin.sql.setAutoCommit(auto);
+			}
+		});
+		
 		//ARENA STATS
 		HashMap<String, Integer> aStats = new HashMap<String, Integer>();
 		aStats.put("shots", shotsAll);

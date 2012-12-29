@@ -87,7 +87,7 @@ public class CmdShop {
 							HashMap<String, Integer> pStats = new HashMap<String, Integer>();
 							pStats.put("money", -price);
 							pStats.put("money_spent", price);
-							plugin.pm.addStats(player.getName(), pStats);
+							plugin.pm.addStatsAsync(player.getName(), pStats);
 							plugin.stats.addGeneralStats(pStats);
 						}
 						//item

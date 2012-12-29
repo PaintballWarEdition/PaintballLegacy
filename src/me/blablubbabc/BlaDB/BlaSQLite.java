@@ -102,6 +102,32 @@ public class BlaSQLite {
 		}
 		return row;
 	}
+	
+	public synchronized boolean getAutoCommit() {
+		boolean r = true;
+		try {
+			r = this.connection.getAutoCommit();
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
+		return r;
+	}
+	
+	public synchronized void setAutoCommit(boolean b) {
+		try {
+			this.connection.setAutoCommit(b);
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
+	}
+	
+	public synchronized void commit() {
+		try {
+			this.connection.commit();
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
+	}
 
 	public synchronized Result resultQuery(String query) {
 		this.refreshConnection();

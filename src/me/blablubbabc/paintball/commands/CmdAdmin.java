@@ -156,7 +156,7 @@ public class CmdAdmin {
 							int value = Integer.parseInt(args[4]);
 							HashMap<String, Integer> setStat = new HashMap<String, Integer>();
 							setStat.put(args[3], value);
-							plugin.pm.addStats(args[2], setStat);
+							plugin.pm.addStatsAsync(args[2], setStat);
 							HashMap<String,String> vars = new HashMap<String, String>();
 							vars.put("player", args[2]);
 							vars.put("stat", stat);
