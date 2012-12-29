@@ -3,7 +3,6 @@ package me.blablubbabc.paintball.extras;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.LinkedList;
-import java.util.concurrent.ConcurrentHashMap;
 import me.blablubbabc.paintball.Match;
 import me.blablubbabc.paintball.Paintball;
 import org.bukkit.Location;
@@ -50,6 +49,7 @@ public class Airstrike{
 	public final Player player;
 	public final Match match;
 	public final Paintball plugin;
+	public int task;
 
 	public Airstrike(Player player, Match match, Paintball plugin) {
 		this.match = match;
@@ -60,7 +60,6 @@ public class Airstrike{
 	
 	private static HashMap<String, Block> marks = new HashMap<String, Block>();
 	private static HashMap<String, Block> finalmarks = new HashMap<String, Block>();
-	private static ConcurrentHashMap<String, Integer> tasks = new ConcurrentHashMap<String, Integer>();
 	//public static boolean active = false;
 	
 	public static void call(final Paintball plugin, final Player player, final Match match) {
@@ -91,7 +90,7 @@ public class Airstrike{
 			//chicken
 			Location lc = new Location(player.getWorld(), bombs.getFirst().getX(), bombs.getFirst().getY(), bombs.getFirst().getZ(), 0, getLookAtYaw(bpr));
 			final Entity chick = player.getWorld().spawnEntity(lc.add(new Vector(0,5,0)), EntityType.CHICKEN);
-			tasks.put(name, plugin.getServer().getScheduler().scheduleSyncRepeatingTask(plugin, new Runnable() {
+			a.task = plugin.getServer().getScheduler().scheduleSyncRepeatingTask(plugin, new Runnable() {
 				int i = 0;
 				@Override
 				public void run() {
@@ -108,14 +107,14 @@ public class Airstrike{
 					chick.setVelocity(bpr.clone().multiply(bombDiff/5));
 					i++;
 					if(i > (bombs.size() - 1)) {
-						plugin.getServer().getScheduler().cancelTask(tasks.get(name));
+						plugin.getServer().getScheduler().cancelTask(a.task);
 						definalMark(player);
 						chick.remove();
 						//active = false;
 						removeAirstrike(a);		
 					}
 				}
-			}, 0L, 5L));
+			}, 0L, 5L);
 		}
 	}
 	
