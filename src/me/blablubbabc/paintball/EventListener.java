@@ -3,6 +3,8 @@ package me.blablubbabc.paintball;
 import java.text.DecimalFormat;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.concurrent.ConcurrentHashMap;
+
 import me.blablubbabc.paintball.extras.Airstrike;
 import me.blablubbabc.paintball.extras.Grenade;
 import me.blablubbabc.paintball.extras.Mine;
@@ -62,7 +64,7 @@ public class EventListener implements Listener {
 	private Paintball plugin;
 	private MatchManager mm;
 
-	private HashMap<Player, Integer> taskIds;
+	private ConcurrentHashMap<String, Integer> taskIds;
 	private HashSet<Byte> transparent;
 	private long lastSignUpdate = 0;
 
@@ -71,7 +73,7 @@ public class EventListener implements Listener {
 	public EventListener(Paintball pl) {
 		plugin = pl;
 		mm = plugin.mm;
-		taskIds = new HashMap<Player, Integer>();
+		taskIds = new ConcurrentHashMap<String, Integer>();
 		// chatMessages = new HashMap<Player, String>();
 
 		transparent = new HashSet<Byte>();
@@ -369,7 +371,7 @@ public class EventListener implements Listener {
 				if (player.getItemInHand().getTypeId() == 280) {
 					if (event.getAction() == Action.LEFT_CLICK_AIR
 							|| event.getAction() == Action.RIGHT_CLICK_AIR) {
-						if (Airstrike.marked(player)) {
+						if (Airstrike.marked(player.getName())) {
 							if (Airstrike.getAirstrikes(match).size() < plugin.airstrikeMatchLimit) {
 								if (Airstrike.getAirstrikes(player).size() < plugin.airstrikePlayerLimit) {
 									Airstrike.call(plugin, player, match);
@@ -445,11 +447,12 @@ public class EventListener implements Listener {
 	@EventHandler(priority = EventPriority.NORMAL)
 	public void onItemInHand(PlayerItemHeldEvent event) {
 		final Player player = event.getPlayer();
+		final String name = player.getName();
 		if (Lobby.getTeam(player) != null) {
 			if (player.getInventory().getItem(event.getNewSlot()) != null
 					&& player.getInventory().getItem(event.getNewSlot())
 							.getTypeId() == 280) {
-				if (!taskIds.containsKey(player)) {
+				if (!taskIds.containsKey(name)) {
 					int taskId = plugin.getServer().getScheduler()
 							.scheduleSyncRepeatingTask(plugin, new Runnable() {
 
@@ -458,7 +461,7 @@ public class EventListener implements Listener {
 									if (player.getItemInHand().getTypeId() == 280) {
 										Block block = player.getTargetBlock(
 												transparent, 1000);
-										if (!Airstrike.isBlock(block, player)) {
+										if (!Airstrike.isBlock(block, name)) {
 											Airstrike.demark(player);
 											Airstrike.mark(block, player);
 										}
@@ -466,18 +469,18 @@ public class EventListener implements Listener {
 										plugin.getServer()
 												.getScheduler()
 												.cancelTask(taskIds.get(player));
-										taskIds.remove(player);
+										taskIds.remove(name);
 										Airstrike.demark(player);
 									}
 								}
 							}, 0L, 1L);
-					taskIds.put(player, taskId);
+					taskIds.put(name, taskId);
 				}
 			} else {
-				if (taskIds.containsKey(player)) {
+				if (taskIds.containsKey(name)) {
 					plugin.getServer().getScheduler()
-							.cancelTask(taskIds.get(player));
-					taskIds.remove(player);
+							.cancelTask(taskIds.get(name));
+					taskIds.remove(name);
 					Airstrike.demark(player);
 				}
 			}

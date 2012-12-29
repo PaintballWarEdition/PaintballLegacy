@@ -3,6 +3,7 @@ package me.blablubbabc.paintball.extras;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.LinkedList;
+import java.util.concurrent.ConcurrentHashMap;
 import me.blablubbabc.paintball.Match;
 import me.blablubbabc.paintball.Paintball;
 import org.bukkit.Location;
@@ -57,17 +58,18 @@ public class Airstrike{
 		addAirstrike(this);
 	}
 	
-	private static HashMap<Player, Block> marks = new HashMap<Player, Block>();
-	private static HashMap<Player, Block> finalmarks = new HashMap<Player, Block>();
-	private static int task;
+	private static HashMap<String, Block> marks = new HashMap<String, Block>();
+	private static HashMap<String, Block> finalmarks = new HashMap<String, Block>();
+	private static ConcurrentHashMap<String, Integer> tasks = new ConcurrentHashMap<String, Integer>();
 	//public static boolean active = false;
 	
 	public static void call(final Paintball plugin, final Player player, final Match match) {
-		if(marked(player)) {
+		final String name = player.getName();
+		if(marked(name)) {
 			//active = true;
 			final Airstrike a = new Airstrike(player, match, plugin);
 			
-			Block block = marks.get(player);
+			Block block = marks.get(name);
 			demark(player);
 			finalMark(block, player);
 			//airstrike
@@ -89,7 +91,7 @@ public class Airstrike{
 			//chicken
 			Location lc = new Location(player.getWorld(), bombs.getFirst().getX(), bombs.getFirst().getY(), bombs.getFirst().getZ(), 0, getLookAtYaw(bpr));
 			final Entity chick = player.getWorld().spawnEntity(lc.add(new Vector(0,5,0)), EntityType.CHICKEN);
-			task = plugin.getServer().getScheduler().scheduleSyncRepeatingTask(plugin, new Runnable() {
+			tasks.put(name, plugin.getServer().getScheduler().scheduleSyncRepeatingTask(plugin, new Runnable() {
 				int i = 0;
 				@Override
 				public void run() {
@@ -106,14 +108,14 @@ public class Airstrike{
 					chick.setVelocity(bpr.clone().multiply(bombDiff/5));
 					i++;
 					if(i > (bombs.size() - 1)) {
-						plugin.getServer().getScheduler().cancelTask(task);
+						plugin.getServer().getScheduler().cancelTask(tasks.get(name));
 						definalMark(player);
 						chick.remove();
 						//active = false;
 						removeAirstrike(a);		
 					}
 				}
-			}, 0L, 5L);
+			}, 0L, 5L));
 		}
 	}
 	
@@ -137,7 +139,8 @@ public class Airstrike{
     }
 	
 	private static void finalMark(Block block, Player player) {
-		finalmarks.put(player, block);
+		String name = player.getName();
+		finalmarks.put(name, block);
 		LinkedList<Block> blocks = new LinkedList<Block>();
 		blocks.add(block.getRelative(BlockFace.UP));
 		for(int i = 0; i < 10; i++) {
@@ -151,8 +154,9 @@ public class Airstrike{
 	}
 	
 	private static void definalMark(Player player) {
-		if (finalmarks.get(player) != null) {
-			Block block = finalmarks.get(player);
+		String name = player.getName();
+		if (finalmarks.get(name) != null) {
+			Block block = finalmarks.get(name);
 			LinkedList<Block> blocks = new LinkedList<Block>();
 			blocks.add(block.getRelative(BlockFace.UP));
 			for(int i = 0; i < 11; i++) {
@@ -162,12 +166,13 @@ public class Airstrike{
 				Location loc = b.getLocation();
 				player.sendBlockChange(loc, player.getWorld().getBlockAt(loc).getType(), player.getWorld().getBlockAt(loc).getData());
 			}
-			finalmarks.remove(player);
+			finalmarks.remove(name);
 		}
 	}
 	
 	public static void mark(Block block, Player player) {
-		marks.put(player, block);
+		String name = player.getName();
+		marks.put(name, block);
 		LinkedList<Block> blocks = new LinkedList<Block>();
 		blocks.add(block.getRelative(BlockFace.UP));
 		for(int i = 0; i < 10; i++) {
@@ -180,9 +185,9 @@ public class Airstrike{
 	}
 	
 	public static void demark(Player player) {
-		
-		if (marked(player)) {
-			Block block = marks.get(player);
+		String name = player.getName();
+		if (marked(name)) {
+			Block block = marks.get(name);
 			LinkedList<Block> blocks = new LinkedList<Block>();
 			blocks.add(block.getRelative(BlockFace.UP));
 			for(int i = 0; i < 10; i++) {
@@ -192,18 +197,18 @@ public class Airstrike{
 				Location loc = b.getLocation();
 				player.sendBlockChange(loc, player.getWorld().getBlockAt(loc).getType(), player.getWorld().getBlockAt(loc).getData());
 			}
-			marks.remove(player);
+			marks.remove(name);
 		}
 	}
 	
-	public static boolean isBlock(Block block, Player player) {
-		if(!marked(player)) return false;
-		if(marks.get(player).equals(block)) return true;
+	public static boolean isBlock(Block block, String name) {
+		if(!marked(name)) return false;
+		if(marks.get(name).equals(block)) return true;
 		return false;
 	}
 	
-	public static boolean marked(Player player) {
-		if(marks.get(player) != null) return true;
+	public static boolean marked(String name) {
+		if(marks.get(name) != null) return true;
 		return false;
 	}
 	
