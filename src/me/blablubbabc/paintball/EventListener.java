@@ -497,18 +497,22 @@ public class EventListener implements Listener {
 					Match match = mm.getMatch(player);
 					Location loc = shot.getLocation();
 					// mine
-					Block block = loc.getBlock();
-					Mine mine = Mine.isMine(block);
-					if (mine != null && match == mine.match && (match.enemys(player, mine.player) || player.equals(mine.player))) {
-						mine.explode(true);
-					}
-					BlockIterator iterator = new BlockIterator(loc.getWorld(),
-							loc.toVector(), shot.getVelocity().normalize(), 0,
-							2);
-					while (iterator.hasNext()) {
-						Mine m = Mine.isMine(iterator.next());
-						if (m != null && match == m.match && (match.enemys(player, m.player) || player.equals(mine.player))) {
-							m.explode(true);
+					if(plugin.mine) {
+						Block block = loc.getBlock();
+						Mine mine = Mine.isMine(block);
+						if (mine != null && match == mine.match && (match.enemys(player, mine.player) || player.equals(mine.player))) {
+							mine.explode(true);
+						}
+						BlockIterator iterator = new BlockIterator(loc.getWorld(),
+								loc.toVector(), shot.getVelocity().normalize(), 0,
+								2);
+						while (iterator.hasNext()) {
+							Mine m = Mine.isMine(iterator.next());
+							if (m != null) {
+								if(match == m.match && (match.enemys(player, m.player) || player.equals(mine.player))) {
+									m.explode(true);
+								}
+							}
 						}
 					}
 					// effect
