@@ -842,7 +842,7 @@ public class Paintball extends JavaPlugin{
 			for(PotionEffect eff : player.getActivePotionEffects()) {
 				effects.add(eff);
 			}
-			for(PotionEffect eff :effects) {
+			for(PotionEffect eff : effects) {
 				player.removePotionEffect(eff.getType());
 			}	
 		}

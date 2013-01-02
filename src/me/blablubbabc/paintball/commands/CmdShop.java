@@ -1,7 +1,6 @@
 package me.blablubbabc.paintball.commands;
 
 import java.util.HashMap;
-import java.util.LinkedList;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 import me.blablubbabc.paintball.Match;
@@ -10,14 +9,15 @@ import me.blablubbabc.paintball.ShopGood;
 
 public class CmdShop {
 	private Paintball plugin;
-	private LinkedList<ShopGood> goods;
+	private ShopGood[] goods;
 	
 	public CmdShop(Paintball pl) {
 		plugin = pl;
-		goods = new LinkedList<ShopGood>();
-		for(String s : plugin.shopGoods) {
-			goods.add(new ShopGood(s, pl));
+		goods = new ShopGood[plugin.shopGoods.size()];
+		for(int i = 0; i < plugin.shopGoods.size(); i++) {
+			goods[i] = new ShopGood(plugin.shopGoods.get(i), pl);
 		}
+		
 	}
 	
 	@SuppressWarnings("deprecation")
@@ -30,7 +30,6 @@ public class CmdShop {
 					return true;
 				}
 			}
-			// else anyone is allowed..
 			
 			Player player = (Player) sender;
 			if(!plugin.shop) {
@@ -42,15 +41,14 @@ public class CmdShop {
 				player.sendMessage(plugin.t.getString("SHOP_HEADER"));
 				player.sendMessage("");
 				if(plugin.happyhour) player.sendMessage(plugin.t.getString("HAPPYHOUR"));
-				int i = 1;
 				HashMap<String, String> vars = new HashMap<String, String>();
-				for(ShopGood good : goods) {
+				boolean admin = (player.isOp() || player.hasPermission("paintball.admin"));
+				for(int i = 0; i < goods.length; i++) {
 					vars.put("id", String.valueOf(i));
-					vars.put("good", good.getSlot());
+					vars.put("good", goods[i].getSlot());
 					String msg = plugin.t.getString("SHOP_ENTRY", vars);
-					if(player.hasPermission("paintball.shop.not"+String.valueOf(i)) && !player.isOp() && !player.hasPermission("paintball.admin")) msg = msg.concat(" "+plugin.red+"X");
+					if(player.hasPermission("paintball.shop.not"+String.valueOf(i)) && !admin) msg = msg.concat(" "+plugin.red+"X");
 					player.sendMessage(msg);
-					i++;
 				}
 				player.sendMessage("");
 				player.sendMessage(plugin.t.getString("SHOP_BUY"));
@@ -62,8 +60,8 @@ public class CmdShop {
 				Match match = plugin.mm.getMatch(player);
 				if(match != null && match.isSurvivor(player)) {
 					Integer id = isNumber(args[1]);
-					if(id != null && id > 0 && id <= goods.size()) {
-						ShopGood good = goods.get(id-1);
+					if(id != null && id > 0 && id <= goods.length) {
+						ShopGood good = goods[id-1];
 						if(good.isEmpty() || (player.hasPermission("paintball.shop.not"+String.valueOf(id)) && !player.isOp() && !player.hasPermission("paintball.admin")) ) {
 							player.sendMessage(plugin.t.getString("GOOD_NOT_AVAILABLE"));
 							return true;
