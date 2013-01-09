@@ -94,8 +94,8 @@ public class EventListener implements Listener {
 	@EventHandler(ignoreCancelled = true)
 	public void onPlayerMove(PlayerMoveEvent event) {
 		Player player = event.getPlayer();
-		if (mm.getMatch(player) != null) {
-			Match match = mm.getMatch(player);
+		Match match = mm.getMatch(player);
+		if (match != null) {
 			if (!match.started) {
 				if (event.getFrom().getX() != event.getTo().getX()
 						|| event.getFrom().getZ() != event.getTo().getZ()) {
@@ -105,10 +105,8 @@ public class EventListener implements Listener {
 		}
 	}
 
-	@EventHandler(priority = EventPriority.NORMAL)
+	@EventHandler(priority = EventPriority.NORMAL, ignoreCancelled = true)
 	public void onSignCreate(SignChangeEvent event) {
-		if (event.isCancelled())
-			return;
 		Player player = event.getPlayer();
 		String l = ChatColor.stripColor(event.getLine(0));
 
@@ -200,13 +198,13 @@ public class EventListener implements Listener {
 			if (shot.getShooter() instanceof Player) {
 				Player shooter = (Player) shot.getShooter();
 				Match match = mm.getMatch(shooter);
-				if(match != null) {
+				if (match != null) {
 					if (event.getEntity() instanceof Player) {
-						Player target = (Player) event.getEntity();						
+						Player target = (Player) event.getEntity();
 						if (shooter != target) {
-							if (mm.getMatch(shooter) != null
-									&& mm.getMatch(target) != null) {
-								if (mm.getMatch(shooter) == mm.getMatch(target)) {
+							Match matchTarget = mm.getMatch(target);
+							if (match != null && matchTarget != null) {
+								if (match == matchTarget) {
 									if (!match.isSpec(shooter)
 											&& !match.isSpec(target)
 											&& match.isSurvivor(shooter)
@@ -224,12 +222,13 @@ public class EventListener implements Listener {
 					} else if (event.getEntityType() == EntityType.SNOWMAN) {
 						Snowman snowman = (Snowman) event.getEntity();
 						Turret turret = Turret.isTurret(snowman);
-						if (turret != null && match == turret.match && match.enemys(shooter, turret.player)) {
+						if (turret != null && match == turret.match
+								&& match.enemys(shooter, turret.player)) {
 							turret.hit();
 						}
 					}
 				}
-				}
+			}
 		} else if (event.getDamager() instanceof Player
 				&& event.getEntity() instanceof Player
 				&& event.getCause() == DamageCause.ENTITY_ATTACK) {
@@ -272,9 +271,7 @@ public class EventListener implements Listener {
 	public void onPlayerShoot(ProjectileLaunchEvent event) {
 		if (event.getEntity().getShooter() instanceof Player) {
 			Player player = (Player) event.getEntity().getShooter();
-			// TEST lights
-			// LightEntity.addEntity(event.getEntity(), plugin);
-			if (Lobby.getTeam(player) != null) {
+			if (Lobby.LOBBY.isMember(player)) {
 				if (mm.getMatch(player) != null && Lobby.isPlaying(player)
 						&& mm.getMatch(player).isSurvivor(player)) {
 					if (mm.getMatch(player).started) {
@@ -318,7 +315,7 @@ public class EventListener implements Listener {
 	public void onEggThrow(PlayerEggThrowEvent event) {
 		if (event.getEgg().getShooter() instanceof Player) {
 			Player player = (Player) event.getEgg().getShooter();
-			if (Lobby.getTeam(player) != null) {
+			if (Lobby.LOBBY.isMember(player)) {
 				event.setHatching(false);
 			}
 		}
@@ -328,7 +325,7 @@ public class EventListener implements Listener {
 	public void onPlayerInventory(InventoryClickEvent event) {
 		if (event.getWhoClicked() instanceof Player) {
 			Player player = (Player) event.getWhoClicked();
-			if (Lobby.getTeam(player) != null) {
+			if (Lobby.LOBBY.isMember(player)) {
 				if (event.getSlotType() != SlotType.CONTAINER
 						&& event.getSlotType() != SlotType.QUICKBAR
 						&& event.getSlotType() != SlotType.OUTSIDE) {
@@ -341,26 +338,28 @@ public class EventListener implements Listener {
 	@EventHandler(priority = EventPriority.NORMAL)
 	public void onPlayerInteractPlayer(PlayerInteractEntityEvent event) {
 		Player player = (Player) event.getPlayer();
-		if (plugin.giftsEnabled && Lobby.getTeam(player) != null) {
-			if(player.getItemInHand().getType() == Material.CHEST) {
-				if(event.getRightClicked() instanceof Player) {
+		if (plugin.giftsEnabled && Lobby.LOBBY.isMember(player)) {
+			if (player.getItemInHand().getType() == Material.CHEST) {
+				if (event.getRightClicked() instanceof Player) {
 					Player receiver = (Player) event.getRightClicked();
-					if(Lobby.getTeam(receiver) != null) {
+					if (Lobby.getTeam(receiver) != null) {
 						plugin.christmas.giveGift(player, receiver);
 					}
 				}
 			}
 		}
 	}
-	
+
 	@EventHandler(priority = EventPriority.NORMAL)
 	public void onPlayerInteract(PlayerInteractEvent event) {
 		Player player = (Player) event.getPlayer();
-		if (Lobby.getTeam(player) != null) {
-			if(player.getItemInHand().getType() == Material.CHEST && plugin.giftsEnabled) {
-				//to prevent placing:
+		if (Lobby.LOBBY.isMember(player)) {
+			if (player.getItemInHand().getType() == Material.CHEST
+					&& plugin.giftsEnabled) {
+				// to prevent placing:
 				event.setCancelled(true);
-				if(event.getAction() == Action.RIGHT_CLICK_AIR || event.getAction() == Action.RIGHT_CLICK_BLOCK) {
+				if (event.getAction() == Action.RIGHT_CLICK_AIR
+						|| event.getAction() == Action.RIGHT_CLICK_BLOCK) {
 					plugin.christmas.unwrapGift(player);
 				}
 			}
@@ -410,7 +409,7 @@ public class EventListener implements Listener {
 				} else if (player.getItemInHand().getTypeId() == 356) {
 					if (event.getAction() == Action.RIGHT_CLICK_AIR
 							|| event.getAction() == Action.RIGHT_CLICK_BLOCK) {
-						//tp prevent placing:
+						// tp prevent placing:
 						event.setCancelled(true);
 						if (Rocket.getRockets(player).size() < plugin.rocketMatchLimit) {
 							if (Rocket.getRockets(player).size() < plugin.rocketPlayerLimit) {
@@ -448,7 +447,7 @@ public class EventListener implements Listener {
 	public void onItemInHand(PlayerItemHeldEvent event) {
 		final Player player = event.getPlayer();
 		final String name = player.getName();
-		if (Lobby.getTeam(player) != null) {
+		if (Lobby.LOBBY.isMember(player)) {
 			if (player.getInventory().getItem(event.getNewSlot()) != null
 					&& player.getInventory().getItem(event.getNewSlot())
 							.getTypeId() == 280) {
@@ -466,8 +465,7 @@ public class EventListener implements Listener {
 											Airstrike.mark(block, player);
 										}
 									} else {
-										plugin.getServer()
-												.getScheduler()
+										plugin.getServer().getScheduler()
 												.cancelTask(taskIds.get(name));
 										taskIds.remove(name);
 										Airstrike.demark(player);
@@ -497,19 +495,24 @@ public class EventListener implements Listener {
 					Match match = mm.getMatch(player);
 					Location loc = shot.getLocation();
 					// mine
-					if(plugin.mine) {
+					if (plugin.mine) {
 						Block block = loc.getBlock();
 						Mine mine = Mine.isMine(block);
-						if (mine != null && match == mine.match && (match.enemys(player, mine.player) || player.equals(mine.player))) {
+						if (mine != null
+								&& match == mine.match
+								&& (match.enemys(player, mine.player) || player
+										.equals(mine.player))) {
 							mine.explode(true);
 						}
-						BlockIterator iterator = new BlockIterator(loc.getWorld(),
-								loc.toVector(), shot.getVelocity().normalize(), 0,
-								2);
+						BlockIterator iterator = new BlockIterator(
+								loc.getWorld(), loc.toVector(), shot
+										.getVelocity().normalize(), 0, 2);
 						while (iterator.hasNext()) {
 							Mine m = Mine.isMine(iterator.next());
 							if (m != null) {
-								if(match == m.match && (match.enemys(player, m.player) || player.equals(mine.player))) {
+								if (match == m.match
+										&& (match.enemys(player, m.player) || player
+												.equals(mine.player))) {
 									m.explode(true);
 								}
 							}
@@ -544,16 +547,16 @@ public class EventListener implements Listener {
 	public void onPlayerDamage(EntityDamageEvent event) {
 		if (event.getEntity() instanceof Player) {
 			Player target = (Player) event.getEntity();
-			if (Lobby.getTeam(target) != null) {
-				if (plugin.mm.getMatch(target) != null && plugin.damage
-						&& Lobby.getTeam(target) != Lobby.SPECTATE
-						&& plugin.mm.getMatch(target).isSurvivor(target)
-						&& event.getCause() != DamageCause.ENTITY_ATTACK
-						&& plugin.mm.getMatch(target).started) {
+			Lobby team = Lobby.getTeam(target);
+			if (team != null) {
+				Match match = plugin.mm.getMatch(target);
+				if (match != null && plugin.damage && team != Lobby.SPECTATE
+						&& match.isSurvivor(target) && match.started
+						&& event.getCause() != DamageCause.ENTITY_ATTACK) {
 					if (target.getHealth() <= event.getDamage()) {
 						event.setDamage(0);
 						event.setCancelled(true);
-						plugin.mm.getMatch(target).death(target);
+						match.death(target);
 					}
 				} else {
 					event.setDamage(0);
@@ -566,7 +569,7 @@ public class EventListener implements Listener {
 	@EventHandler(priority = EventPriority.NORMAL)
 	public void onPlayerBreak(BlockBreakEvent event) {
 		Player player = event.getPlayer();
-		if (Lobby.getTeam(player) != null) {
+		if (Lobby.LOBBY.isMember(player)) {
 			if (!player.isOp() && !player.hasPermission("paintball.admin")) {
 				event.setCancelled(true);
 			}
@@ -576,7 +579,7 @@ public class EventListener implements Listener {
 	@EventHandler(priority = EventPriority.LOWEST)
 	public void onPlayerPlace(BlockPlaceEvent event) {
 		Player player = event.getPlayer();
-		if (Lobby.getTeam(player) != null) {
+		if (Lobby.LOBBY.isMember(player)) {
 			if (!player.isOp() && !player.hasPermission("paintball.admin")) {
 				event.setCancelled(true);
 			}
@@ -653,7 +656,7 @@ public class EventListener implements Listener {
 	public void onPlayerHunger(FoodLevelChangeEvent event) {
 		if (event.getEntity() instanceof Player) {
 			Player player = (Player) event.getEntity();
-			if (Lobby.getTeam(player) != null) {
+			if (Lobby.LOBBY.isMember(player)) {
 				event.setCancelled(true);
 			}
 		}
@@ -662,7 +665,7 @@ public class EventListener implements Listener {
 	@EventHandler(priority = EventPriority.NORMAL)
 	public void onPlayerItemsI(PlayerPickupItemEvent event) {
 		Player player = event.getPlayer();
-		if (Lobby.getTeam(player) != null) {
+		if (Lobby.LOBBY.isMember(player)) {
 			if (!player.isOp() && !player.hasPermission("paintball.admin"))
 				event.setCancelled(true);
 		}
@@ -671,15 +674,15 @@ public class EventListener implements Listener {
 	@EventHandler(priority = EventPriority.NORMAL)
 	public void onPlayerItemsII(PlayerDropItemEvent event) {
 		Player player = event.getPlayer();
-		if (Lobby.getTeam(player) != null) {
+		if (Lobby.LOBBY.isMember(player)) {
 			if (!player.isOp() && !player.hasPermission("paintball.admin"))
 				event.setCancelled(true);
 		}
 	}
 
-	@EventHandler(priority = EventPriority.HIGHEST)
+	@EventHandler(priority = EventPriority.NORMAL)
 	public void onPlayerCommand(PlayerCommandPreprocessEvent event) {
-		if (Lobby.getTeam(event.getPlayer()) != null
+		if (Lobby.LOBBY.isMember(event.getPlayer())
 				&& !event.getMessage().startsWith("/pb")
 				&& !isAllowedCommand(event.getMessage())) {
 			if (!event.getPlayer().hasPermission("paintball.admin")
@@ -710,38 +713,30 @@ public class EventListener implements Listener {
 		return false;
 	}
 
-	/*@EventHandler(priority = EventPriority.HIGHEST)
-	public void onPbCommands(PlayerCommandPreprocessEvent event) {
-		Player player = event.getPlayer();
-		String[] m = event.getMessage().split(" ");
-		// basic commands
-		if (m[0].equalsIgnoreCase("/pb")) {
-			if (m.length == 1) {
-				plugin.cm.pbhelp(player);
-			} else if (m[1].equalsIgnoreCase("help")
-					|| m[1].equalsIgnoreCase("?")) {
-				plugin.cm.pbhelp(player);
-			} else if (m[1].equalsIgnoreCase("info")) {
-				plugin.cm.pbinfo(player);
-			}
-		}
-	}*/
+	/*
+	 * @EventHandler(priority = EventPriority.HIGHEST) public void
+	 * onPbCommands(PlayerCommandPreprocessEvent event) { Player player =
+	 * event.getPlayer(); String[] m = event.getMessage().split(" "); // basic
+	 * commands if (m[0].equalsIgnoreCase("/pb")) { if (m.length == 1) {
+	 * plugin.cm.pbhelp(player); } else if (m[1].equalsIgnoreCase("help") ||
+	 * m[1].equalsIgnoreCase("?")) { plugin.cm.pbhelp(player); } else if
+	 * (m[1].equalsIgnoreCase("info")) { plugin.cm.pbinfo(player); } } }
+	 */
 
 	@EventHandler(priority = EventPriority.LOWEST)
 	public void onPlayerChat(AsyncPlayerChatEvent event) {
-		Player player = event.getPlayer();
-
-		if (Lobby.getTeam(player) != null) {
-			if (plugin.chatnames) {
+		if (plugin.chatnames) {
+			Player player = event.getPlayer();
+			if (Lobby.LOBBY.isMember(player)) {
 				ChatColor farbe = Lobby.LOBBY.color();
 				if (Lobby.isPlaying(player) || Lobby.isSpectating(player)) {
-
+					Match match = plugin.mm.getMatch(player);
 					// Color:
-					if (plugin.mm.getMatch(player).isRed(player))
+					if (match.isRed(player))
 						farbe = Lobby.RED.color();
-					else if (plugin.mm.getMatch(player).isBlue(player))
+					else if (match.isBlue(player))
 						farbe = Lobby.BLUE.color();
-					else if (plugin.mm.getMatch(player).isSpec(player))
+					else if (match.isSpec(player))
 						farbe = Lobby.SPECTATE.color();
 				}
 				event.setMessage(farbe + event.getMessage());
@@ -752,7 +747,7 @@ public class EventListener implements Listener {
 	@EventHandler(priority = EventPriority.MONITOR)
 	public void onPlayerDead(PlayerDeathEvent event) {
 		Player player = (Player) event.getEntity();
-		if (Lobby.getTeam(player) != null) {
+		if(Lobby.LOBBY.isMember(player)) {
 			if (Lobby.isPlaying(player) || Lobby.isSpectating(player))
 				mm.getMatch(player).left(player);
 			plugin.leaveLobby(player, true, false, false);
@@ -796,7 +791,7 @@ public class EventListener implements Listener {
 	}
 
 	private void onPlayerDisconnect(final Player player) {
-		if (Lobby.getTeam(player) != null) {
+		if (Lobby.LOBBY.isMember(player)) {
 			// plugin.nf.leave(player.getName());
 			// exit game
 			if (Lobby.isPlaying(player) || Lobby.isSpectating(player))

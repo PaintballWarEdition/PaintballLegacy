@@ -53,7 +53,8 @@ public enum Lobby {
 	public synchronized Set<Player> getMembers() {
 		return players.keySet();
 	}
-	public synchronized boolean isMember(Player player) {
+	//TEST unsynchronised:
+	public boolean isMember(Player player) {
 		if(players.containsKey(player)) return true;
 		return false;
 	}
