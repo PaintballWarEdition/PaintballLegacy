@@ -782,29 +782,16 @@ public class EventListener implements Listener {
 		this.onPlayerDisconnect(event.getPlayer());
 	}
 
-	@EventHandler(priority = EventPriority.HIGHEST)
+	@EventHandler(priority = EventPriority.NORMAL, ignoreCancelled = true)
 	public void onPlayerKick(PlayerKickEvent event) {
-		// EVENT IS CANCELLED? => RETURN
-		if (event.isCancelled())
-			return;
 		this.onPlayerDisconnect(event.getPlayer());
 	}
 
-	private void onPlayerDisconnect(final Player player) {
+	private void onPlayerDisconnect(Player player) {
 		if (Lobby.LOBBY.isMember(player)) {
-			// plugin.nf.leave(player.getName());
-			// exit game
 			if (Lobby.isPlaying(player) || Lobby.isSpectating(player))
 				mm.getMatch(player).left(player);
 			plugin.leaveLobby(player, true, true, true);
-			// player.kickPlayer("You disconnected already.");
-
-			/*
-			 * //clear inventory plugin.clearInv(player); //Exit lobby
-			 * Lobby.remove(player); //Teleport back
-			 * player.teleport(plugin.pm.getLoc(player));
-			 */
-
 		}
 
 	}
