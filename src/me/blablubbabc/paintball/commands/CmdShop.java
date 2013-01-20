@@ -44,7 +44,7 @@ public class CmdShop {
 				HashMap<String, String> vars = new HashMap<String, String>();
 				boolean admin = (player.isOp() || player.hasPermission("paintball.admin"));
 				for(int i = 0; i < goods.length; i++) {
-					vars.put("id", String.valueOf(i));
+					vars.put("id", String.valueOf(i+1));
 					vars.put("good", goods[i].getSlot());
 					String msg = plugin.t.getString("SHOP_ENTRY", vars);
 					if(player.hasPermission("paintball.shop.not"+String.valueOf(i)) && !admin) msg = msg.concat(" "+plugin.red+"X");
