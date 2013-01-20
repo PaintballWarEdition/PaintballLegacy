@@ -38,8 +38,7 @@ public class ShopGood {
 			}
 			else if(amount < 0 || id < 0 || subid < 0 || price < 0 || this.name.isEmpty()) {
 				this.empty = true;
-			}
-			else {
+			} else {
 				this.itemstack = new ItemStack(id, amount, subid);
 				
 				HashMap<String, String> vars = new HashMap<String, String>();
@@ -56,7 +55,7 @@ public class ShopGood {
 		try {
 			Integer a = Integer.parseInt(s);
 			return a;
-		}catch(Exception e) {
+		} catch(Exception e) {
 			return null;
 		}
 	}
@@ -75,7 +74,7 @@ public class ShopGood {
 	}
 	
 	public ItemStack getItemStack() {
-		return this.itemstack;
+		return this.itemstack.clone();
 	}
 	
 	public String getSlot() {
