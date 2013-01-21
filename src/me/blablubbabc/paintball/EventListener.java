@@ -504,15 +504,14 @@ public class EventListener implements Listener {
 										.equals(mine.player))) {
 							mine.explode(true);
 						}
+						
 						BlockIterator iterator = new BlockIterator(
 								loc.getWorld(), loc.toVector(), shot
 										.getVelocity().normalize(), 0, 2);
 						while (iterator.hasNext()) {
 							Mine m = Mine.isMine(iterator.next());
-							if (m != null) {
-								if (match == m.match
-										&& (match.enemys(player, m.player) || player
-												.equals(mine.player))) {
+							if (m != null) {							
+								if (match == m.match && (match.enemys(player, m.player) || player.equals(m.player))) {
 									m.explode(true);
 								}
 							}
