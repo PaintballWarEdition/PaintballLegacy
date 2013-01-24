@@ -263,4 +263,3 @@ ALL_RECEIVED_GIFT = "&aEveryone received a &cgift&a! &6Right-click to unwrap or 
 RECEIVED_GIFT = "&aYou received a &cgift&a! &6Right-click to unwrap or give away!"
 RECEIVED_GIFT_FROM = "&aYou received a &cgift &afrom &c{from}&a! &6Say thank you and right-click to unwrap!"
 GAVE_GIFT_TO = "&aYou made &c{to} &aa &cgift!"
-MERRY_CHRISTMAS = "&cblablubbabc&5, &cAlphaX &5and &cthe server team &5are wishing you a merry christmas and a happy new year!"

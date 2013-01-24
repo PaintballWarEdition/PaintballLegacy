@@ -78,8 +78,8 @@ public class Christmas {
 		}
 		//wishes
 		String name = player.getName();
-		if (plugin.wishes && !plugin.christmas.alreadyWished(name)) {
-			player.sendMessage(plugin.t.getString("MERRY_CHRISTMAS"));
+		if (plugin.bWishes && !plugin.christmas.alreadyWished(name)) {
+			player.sendMessage(plugin.wishes);
 			plugin.christmas.setWishes(name);
 		}
 	}

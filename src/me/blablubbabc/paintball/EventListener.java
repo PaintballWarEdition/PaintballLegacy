@@ -690,24 +690,20 @@ public class EventListener implements Listener {
 						plugin.t.getString("COMMAND_NOT_ALLOWED"));
 				event.setCancelled(true);
 			}
+		} else {
+			
 		}
 	}
 
 	private boolean isAllowedCommand(String cmd) {
-		String[] split = cmd.split(" ");
 		if (plugin.allowedCommands.contains(cmd))
 			return true;
+		String[] split = cmd.split(" ");
+		String cmds = "";
 		for (int i = 0; i < split.length; i++) {
-			String cmds = "";
-			for (int a = 0; a <= i; a++) {
-				if (a == i)
-					cmds += split[a];
-				else
-					cmds += split[a] + " ";
-			}
-			if (plugin.allowedCommands.contains(cmds)
-					|| plugin.allowedCommands.contains(cmds + " *"))
-				return true;
+			cmds += split[i];
+			if (plugin.allowedCommands.contains(cmds) || plugin.allowedCommands.contains(cmds + " *")) return true;
+			cmds += " ";
 		}
 		return false;
 	}

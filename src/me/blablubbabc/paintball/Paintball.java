@@ -114,7 +114,8 @@ public class Paintball extends JavaPlugin{
 	public double giftOnSpawnChance;
 	public ArrayList<Gift> gifts;
 	public double giftChanceFactor;
-	public boolean wishes;
+	public boolean bWishes;
+	public String wishes;
 	public int wishesDelay;
 	
 	//player tags
@@ -297,6 +298,7 @@ public class Paintball extends JavaPlugin{
 		if(getConfig().get("Paintball.Gifts.enabled") == null)getConfig().set("Paintball.Gifts.enabled", true);
 		if(getConfig().get("Paintball.Gifts.onSpawnChance") == null)getConfig().set("Paintball.Gifts.onSpawnChance", 5.0);
 		if(getConfig().get("Paintball.Gifts.wishes") == null)getConfig().set("Paintball.Gifts.wishes", true);
+		if(getConfig().get("Paintball.Gifts.wishes text") == null)getConfig().set("Paintball.Gifts.wishes text", "&cblablubbabc&5, &cAlphaX &5and &cthe server team &5are wishing you a lot of fun!");
 		if(getConfig().get("Paintball.Gifts.wishes delay in minutes") == null)getConfig().set("Paintball.Gifts.wishes delay in minutes", 60);
 		if(getConfig().get("Paintball.Gifts.gifts") == null) {
 			for(Gift g : giftsDef) {
@@ -448,7 +450,8 @@ public class Paintball extends JavaPlugin{
 		giftOnSpawnChance = getConfig().getDouble("Paintball.Gifts.onSpawnChance", 5.0);
 		giftOnSpawnChance = (giftOnSpawnChance < 0.0 ? 0.0 : giftOnSpawnChance);
 		giftOnSpawnChance = (giftOnSpawnChance > 100.0 ? 100.0 : giftOnSpawnChance);
-		wishes = getConfig().getBoolean("Paintball.Gifts.wishes", true);
+		bWishes = getConfig().getBoolean("Paintball.Gifts.wishes", true);
+		wishes = getConfig().getString("Paintball.Gifts.wishes text", "&cblablubbabc&5, &cAlphaX &5and &cthe server team &5are wishing you a merry christmas and a happy new year!");
 		wishesDelay = getConfig().getInt("Paintball.Gifts.wishes delay in minutes", 60);
 		wishesDelay = (wishesDelay < 0 ? 0 : wishesDelay);
 		gifts = new ArrayList<Gift>();
