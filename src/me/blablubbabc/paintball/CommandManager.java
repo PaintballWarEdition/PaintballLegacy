@@ -109,6 +109,9 @@ public class CommandManager implements CommandExecutor{
 					} else if(args[0].equalsIgnoreCase("random")) {
 						return joinTeam(player, Lobby.RANDOM);
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+					} else if(args[0].equalsIgnoreCase("join")) {
+						return joinTeam(player, Lobby.RANDOM);
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 					} else if(args[0].equalsIgnoreCase("spec")) {
 						return joinTeam(player, Lobby.SPECTATE);
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -204,6 +207,7 @@ public class CommandManager implements CommandExecutor{
 		sender.sendMessage(plugin.dark_green+"Website: "+plugin.gold+"dev.bukkit.org/server-mods/paintball_pure_war/");
 		sender.sendMessage(plugin.dark_red+"Basic license hints: ");
 		sender.sendMessage(plugin.red+"* Commercial usage of this plugin in any kind is not allowed.");
+		sender.sendMessage(plugin.red+"* Example: No benefits for payed ranks/vip and donors.");
 		sender.sendMessage(plugin.red+"* Modifying code is not allowed.");
 		sender.sendMessage(plugin.gold+"You can find a complete list of usage condition on the bukkit dev page.");
 	}
