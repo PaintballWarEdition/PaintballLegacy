@@ -233,6 +233,8 @@ public class Match {
 						    if(t <= 0) {
 								if(p.isOnline() && isSurvivor(p)) p.sendMessage(plugin.t.getString("PROTECTION_OVER"));
 								iter.remove();
+							} else {
+								protection.put(p, t);
 							}
 						}
 						//timer
@@ -731,9 +733,9 @@ public class Match {
 				//protection
 				if(isProtected(target)) {
 					shooter.playSound(shooter.getLocation(), Sound.ANVIL_LAND,
-							100F, 2F);
+							70F, 2F);
 					target.playSound(shooter.getLocation(), Sound.ANVIL_LAND,
-							100F, 0F);
+							60F, 0F);
 					shooter.sendMessage(plugin.t.getString("YOU_HIT_PROTECTED"));
 					target.sendMessage(plugin.t.getString("YOU_WERE_HIT_PROTECTED"));
 				} else {
