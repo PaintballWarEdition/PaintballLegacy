@@ -1,9 +1,13 @@
 package me.blablubbabc.paintball;
 
 import java.text.DecimalFormat;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.regex.Pattern;
 
 import me.blablubbabc.paintball.extras.Airstrike;
 import me.blablubbabc.paintball.extras.Grenade;
@@ -683,18 +687,50 @@ public class EventListener implements Listener {
 	public void onPlayerCommand(PlayerCommandPreprocessEvent event) {
 		if (Lobby.LOBBY.isMember(event.getPlayer())
 				&& !event.getMessage().startsWith("/pb")
-				&& !isAllowedCommand(event.getMessage())) {
+				&& (!plugin.allowedCommands.isEmpty() ? !isAllowedCommand(event.getMessage()):true)) {
 			if (!event.getPlayer().hasPermission("paintball.admin")
 					&& !event.getPlayer().isOp()) {
 				event.getPlayer().sendMessage(
 						plugin.t.getString("COMMAND_NOT_ALLOWED"));
 				event.setCancelled(true);
 			}
-		} else {
-			
+		} else if(!event.getMessage().startsWith("/pb") && (!plugin.blacklistedCommands.isEmpty() ? isBlacklistedCommand(event.getMessage()):false)) {
+			if (!event.getPlayer().hasPermission("paintball.admin") && !event.getPlayer().isOp()) {
+				event.getPlayer().sendMessage(plugin.t.getString("COMMAND_NOT_ALLOWED"));
+				event.setCancelled(true);
+			}
 		}
 	}
 
+	private boolean isBlacklistedCommand(String cmd) {
+		Set<Player> players = Lobby.LOBBY.getMembers();
+		List<String> playernames = new ArrayList<String>();
+		for(Player p : players) {
+			playernames.add(p.getName());
+		}
+		for(String black : plugin.blacklistedCommands) {
+			String[] split = black.split(" ");
+			if(split.length == 0) continue;
+			String regex = Pattern.quote(split[0]);
+			for (int i = 1; i < split.length; i++) {
+				String s = split[i];
+				if(s.equals("{args}")) {
+					regex += " [.^ ]*";
+				} else if(s.equals("{player}")) {
+					regex += " {player}";
+				} else {
+					regex += Pattern.quote(" "+s);
+				}
+			}
+			for(String name : playernames) {
+				if(cmd.matches(regex.replace("{player}", Pattern.quote(name)))) {
+					return true;
+				}
+			}
+		}
+		return false;
+	}
+	
 	private boolean isAllowedCommand(String cmd) {
 		if (plugin.allowedCommands.contains(cmd))
 			return true;

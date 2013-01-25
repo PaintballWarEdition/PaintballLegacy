@@ -5,6 +5,7 @@ AIRSTRIKE_MATCH_LIMIT_REACHED = "&7There are already too much airstrikes going o
 GRENADE_THROW = "&aFire in the hole!"
 AIRSTRKE_CALLED = "&aLet it rain BOMBS! UGAGAGA"
 COMMAND_NOT_ALLOWED = "&7This command is not allowed while playing paintball."
+COMMAND_BLACKLISTED = "&7This command is not allowed while the player is playing paintball."
 BE_IN_TEAM = "&bYou are in Team {team_color}{team}"
 BE_SPECTATOR = "&bYou are {team_color}{team}"
 MATCH_SETTINGS_INFO = "&aLives: &6{lives} &aRespawns: &6{respawns} &aRound Time: &6{round_time} seconds"

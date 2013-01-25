@@ -92,6 +92,7 @@ public class Paintball extends JavaPlugin{
 	public boolean shop;
 	public ArrayList<String> shopGoods;
 	public ArrayList<String> allowedCommands;
+	public ArrayList<String> blacklistedCommands;
 	public boolean saveInventory;
 	public boolean onlyRandom;
 	public boolean autoRandom;
@@ -250,6 +251,11 @@ public class Paintball extends JavaPlugin{
 		allowedCommands.add("/list");
 		allowedCommands.add("/login *");
 		allowedCommands.add("/register *");
+		
+		blacklistedCommands = new ArrayList<String>();
+		blacklistedCommands.add("/ptp {player}");
+		blacklistedCommands.add("/tp {args} {player}");
+		blacklistedCommands.add("/tp {player} {args}");
 
 
 		getConfig().options().header("Use a value of -1 to give the players infinite balls or extras. If you insert a not possible value/wrong value in a section the plugin will use the default value or the nearest possible value (Example: your value at section balls: -3 -> plugin will use -1). 1 Tick = 1/20 seconds.");
@@ -280,6 +286,7 @@ public class Paintball extends JavaPlugin{
 		if(getConfig().get("Paintball.Effects") == null)getConfig().set("Paintball.Effects", true);
 		if(getConfig().get("Paintball.Teleport Fix") == null)getConfig().set("Paintball.Teleport Fix", true);
 		if(getConfig().get("Paintball.Allowed Commands") == null)getConfig().set("Paintball.Allowed Commands", allowedCommands);
+		if(getConfig().get("Paintball.Blacklisted Commands") == null)getConfig().set("Paintball.Blacklisted Commands", blacklistedCommands);
 		//player tags
 		if(getConfig().get("Paintball.Tags.enabled") == null)getConfig().set("Paintball.Tags.enabled", true);
 		if(getConfig().get("Paintball.Tags.colored") == null)getConfig().set("Paintball.Tags.colored", true);
@@ -395,6 +402,8 @@ public class Paintball extends JavaPlugin{
 		autoLobby = getConfig().getBoolean("Paintball.Auto Lobby", false);
 		autoTeam = getConfig().getBoolean("Paintball.Auto Team", false);
 		allowedCommands = (ArrayList<String>) getConfig().getList("Paintball.Allowed Commands", allowedCommands);
+		blacklistedCommands = (ArrayList<String>) getConfig().getList("Paintball.Blacklisted Commands", blacklistedCommands);
+		
 		afkDetection = getConfig().getBoolean("Paintball.AFK Detection.enabled", true);
 		afkMatchAmount = getConfig().getInt("Paintball.AFK Detection.Amount of Matches", 3);
 		if(afkMatchAmount < 1) afkMatchAmount = 1;
