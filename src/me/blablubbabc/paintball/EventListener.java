@@ -695,8 +695,8 @@ public class EventListener implements Listener {
 				event.setCancelled(true);
 			}
 		} else if(!event.getMessage().startsWith("/pb") && (!plugin.blacklistedCommands.isEmpty() ? isBlacklistedCommand(event.getMessage()):false)) {
-			if (!event.getPlayer().hasPermission("paintball.admin") && !event.getPlayer().isOp()) {
-				event.getPlayer().sendMessage(plugin.t.getString("COMMAND_NOT_ALLOWED"));
+			if (!plugin.blacklistAdminOverride && !event.getPlayer().hasPermission("paintball.admin") && !event.getPlayer().isOp()) {
+				event.getPlayer().sendMessage(plugin.t.getString("COMMAND_BLACKLISTED"));
 				event.setCancelled(true);
 			}
 		}
@@ -715,7 +715,7 @@ public class EventListener implements Listener {
 			for (int i = 1; i < split.length; i++) {
 				String s = split[i];
 				if(s.equals("{args}")) {
-					regex += " [.^ ]*";
+					regex += " \\S*";
 				} else if(s.equals("{player}")) {
 					regex += " {player}";
 				} else {
