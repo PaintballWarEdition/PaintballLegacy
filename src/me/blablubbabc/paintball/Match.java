@@ -4,7 +4,9 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
 import java.util.Random;
 import java.util.Set;
 import me.blablubbabc.paintball.extras.Mine;
@@ -25,6 +27,7 @@ public class Match {
 	private HashMap<Player, Integer> respawnsLeft = new HashMap<Player, Integer>();
 	private ArrayList<Player> redT = new ArrayList<Player>();
 	private ArrayList<Player> blueT = new ArrayList<Player>();
+	private HashMap<Player, Integer> protection = new HashMap<Player, Integer>();
 	// STATS
 	private HashMap<String, Integer> shots = new HashMap<String, Integer>();
 	private HashMap<String, Integer> hits = new HashMap<String, Integer>();
@@ -221,6 +224,18 @@ public class Match {
 
 					@Override
 					public void run() {
+						//Spawn protection:
+						Iterator<Map.Entry<Player, Integer>> iter = protection.entrySet().iterator();
+						while (iter.hasNext()) {
+						    Map.Entry<Player, Integer> entry = iter.next();
+						    Player p = entry.getKey();
+						    int t = entry.getValue() - 1;
+						    if(t <= 0) {
+								if(p.isOnline() && isSurvivor(p)) p.sendMessage(plugin.t.getString("PROTECTION_OVER"));
+								iter.remove();
+							}
+						}
+						//timer
 						int time = getRoundTime();
 						if (time == setting_round_time) {
 							minusRoundTime();
@@ -287,7 +302,7 @@ public class Match {
 	// SPAWNS
 
 	@SuppressWarnings("deprecation")
-	public synchronized void spawnPlayer(Player player) {
+	public synchronized void spawnPlayer(final Player player) {
 		Location loc;
 		if (redT.contains(player)) {
 			if (spawnRed > (redspawns.size() - 1))
@@ -337,13 +352,6 @@ public class Match {
 					new ItemStack(Material.STICK, setting_airstrikes));
 		else if (setting_airstrikes == -1)
 			player.getInventory().addItem(new ItemStack(Material.STICK, 10));
-		player.updateInventory();
-		// MESSAGE
-		HashMap<String, String> vars = new HashMap<String, String>();
-		vars.put("team_color", Lobby.getTeam(getTeamName(player)).color()
-				.toString());
-		vars.put("team", getTeamName(player));
-		player.sendMessage(plugin.t.getString("BE_IN_TEAM", vars));
 		//gifts
 		if(plugin.giftsEnabled) {
 			int r = random.nextInt(1000);
@@ -351,6 +359,19 @@ public class Match {
 				plugin.christmas.receiveGift(player, 1, false);
 			}
 		}	
+		player.updateInventory();
+		// MESSAGE
+		HashMap<String, String> vars = new HashMap<String, String>();
+		vars.put("team_color", Lobby.getTeam(getTeamName(player)).color()
+				.toString());
+		vars.put("team", getTeamName(player));
+		player.sendMessage(plugin.t.getString("BE_IN_TEAM", vars));
+		//SPAWN PROTECTION
+		if(plugin.protectionTime > 0) {
+			vars.put("protection", String.valueOf(plugin.protectionTime));
+			protection.put(player, plugin.protectionTime);
+			player.sendMessage(plugin.t.getString("PROTECTION", vars));
+		}
 	}
 
 	@SuppressWarnings("deprecation")
@@ -620,6 +641,10 @@ public class Match {
 		}
 		return list;
 	}
+	
+	public boolean isProtected(Player player) {
+		return protection.containsKey(player);
+	}
 
 	// AKTIONS
 
@@ -629,6 +654,8 @@ public class Match {
 			// 0 leben aka tot
 			livesLeft.put(player, 0);
 			respawnsLeft.put(player, 0);
+			//spawn protection
+			protection.remove(player);
 			// afk detection-> remove player
 			if (plugin.afkDetection) {
 				plugin.afkRemove(player.getName());
@@ -657,8 +684,6 @@ public class Match {
 		livesLeft.put(player, setting_lives);
 		if (setting_respawns != -1)
 			respawnsLeft.put(player, respawnsLeft.get(player) - 1);
-		// spawn
-		spawnPlayer(player);
 		// message
 		HashMap<String, String> vars = new HashMap<String, String>();
 		vars.put("lives", String.valueOf(setting_lives));
@@ -667,6 +692,10 @@ public class Match {
 		else
 			vars.put("respawns", String.valueOf(respawnsLeft.get(player)));
 		player.sendMessage(plugin.t.getString("RESPAWN", vars));
+		//spawn protection
+		protection.remove(player);
+		// spawn
+		spawnPlayer(player);
 	}
 
 	public synchronized void shot(Player player) {
@@ -699,20 +728,31 @@ public class Match {
 		if (enemys(target, shooter)) {
 			// player not dead already?
 			if (livesLeft.get(target) > 0) {
-				// -1 live
-				livesLeft.put(target, livesLeft.get(target) - 1);
-				// stats
-				hits.put(shooter.getName(), hits.get(shooter.getName()) + 1);
-				// effect
-				shooter.playSound(shooter.getLocation(), Sound.MAGMACUBE_WALK,
-						100F, 0F);
-				// dead?->frag
-				// message:
-				if (livesLeft.get(target) <= 0) {
-					frag(target, shooter);
+				//protection
+				if(isProtected(target)) {
+					shooter.playSound(shooter.getLocation(), Sound.ANVIL_LAND,
+							100F, 2F);
+					target.playSound(shooter.getLocation(), Sound.ANVIL_LAND,
+							100F, 0F);
+					shooter.sendMessage(plugin.t.getString("YOU_HIT_PROTECTED"));
+					target.sendMessage(plugin.t.getString("YOU_WERE_HIT_PROTECTED"));
 				} else {
-					shooter.sendMessage(plugin.t.getString("YOU_HIT"));
-					target.sendMessage(plugin.t.getString("YOU_WERE_HIT"));
+					// -1 live
+					livesLeft.put(target, livesLeft.get(target) - 1);
+					// stats
+					hits.put(shooter.getName(), hits.get(shooter.getName()) + 1);
+					// dead?->frag
+					// message:
+					if (livesLeft.get(target) <= 0) {
+						frag(target, shooter);
+					} else {
+						shooter.playSound(shooter.getLocation(), Sound.MAGMACUBE_WALK,
+								100F, 0F);
+						target.playSound(shooter.getLocation(), Sound.BAT_HURT,
+								100F, 2F);
+						shooter.sendMessage(plugin.t.getString("YOU_HIT"));
+						target.sendMessage(plugin.t.getString("YOU_WERE_HIT"));
+					}
 				}
 			}
 		} else if (friendly(target, shooter)) {
@@ -735,7 +775,8 @@ public class Match {
 		// math over already?
 		if (matchOver)
 			return;
-
+		killer.playSound(killer.getLocation(), Sound.MAGMACUBE_WALK,
+				100F, 2F);
 		target.playSound(target.getLocation(), Sound.GHAST_SCREAM2, 100F, 0F);
 
 		// STATS
@@ -832,6 +873,8 @@ public class Match {
 		// survivors?->endGame
 		// 0 leben aka tot
 		livesLeft.put(target, 0);
+		//spawn protection
+		protection.remove(target);
 
 		// afk detection on death
 		if (plugin.afkDetection) {

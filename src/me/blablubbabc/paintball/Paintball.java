@@ -110,6 +110,7 @@ public class Paintball extends JavaPlugin{
 	public boolean effects;
 	public boolean debug;
 	public boolean teleportFix;
+	public int protectionTime;
 	
 	//gifts
 	public boolean giftsEnabled;
@@ -341,6 +342,8 @@ public class Paintball extends JavaPlugin{
 		if(getConfig().get("Paintball.Match.Countdown.Delay") == null)getConfig().set("Paintball.Match.Countdown.Delay", 10);
 		if(getConfig().get("Paintball.Match.Countdown Round Start.Time") == null)getConfig().set("Paintball.Match.Countdown Round Start.Time", 5);
 		if(getConfig().get("Paintball.Match.Round Timer.Time (at least 30)") == null)getConfig().set("Paintball.Match.Round Timer.Time (at least 30)", 120);
+		if(getConfig().get("Paintball.Match.Spawn Protection Seconds") == null)getConfig().set("Paintball.Match.Spawn Protection Seconds", 3);
+		
 		if(getConfig().get("Paintball.Extras.Grenades.enabled") == null)getConfig().set("Paintball.Extras.Grenades.enabled", true);
 		if(getConfig().get("Paintball.Extras.Grenades.Explosion-Time-Radius in Ticks") == null)getConfig().set("Paintball.Extras.Grenades.Explosion-Time-Radius in Ticks", 60);
 		if(getConfig().get("Paintball.Extras.Grenades.Speed multi") == null)getConfig().set("Paintball.Extras.Grenades.Speed multi", 1.0);
@@ -433,6 +436,9 @@ public class Paintball extends JavaPlugin{
 		if(countdownStart < 0) countdownStart = 0;
 		roundTimer = getConfig().getInt("Paintball.Match.Round Timer.Time (at least 30)", 120);
 		if(roundTimer < 30) roundTimer = 30;
+		//spawn protection
+		protectionTime = getConfig().getInt("Paintball.Match.Spawn Protection Seconds", 3);
+		if(protectionTime < 0) protectionTime = 0;
 
 		speedmulti = getConfig().getDouble("Paintball.Ball speed multi", 1.5);
 		listnames = getConfig().getBoolean("Paintball.Colored listnames", true);
@@ -746,7 +752,7 @@ public class Paintball extends JavaPlugin{
 				logBlank(ChatColor.GOLD+"   - Usage on own risk. I give no warranties for anything.");
 				logBlank(ChatColor.GOLD+"   - Do not modify. Use it as it is!");
 				logBlank(ChatColor.GOLD+"   - Do not redistribute/upload/use parts of it/copy/give away.");
-				logBlank(ChatColor.GOLD+"   - Do not use for commercial purposes!");
+				logBlank(ChatColor.GOLD+"   - Do not use for commercial purposes! No benefits for paying players!");
 				logBlank(ChatColor.GOLD+"     ->This also applies to any kind of add-on you are using");
 				logBlank(ChatColor.GOLD+"       related to this plugin!");
 				logBlank(" ");
