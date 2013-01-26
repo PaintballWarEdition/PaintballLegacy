@@ -12,6 +12,7 @@ import java.util.regex.Pattern;
 import me.blablubbabc.paintball.extras.Airstrike;
 import me.blablubbabc.paintball.extras.Grenade;
 import me.blablubbabc.paintball.extras.Mine;
+import me.blablubbabc.paintball.extras.Pumpgun;
 import me.blablubbabc.paintball.extras.Rocket;
 import me.blablubbabc.paintball.extras.Turret;
 import org.bukkit.ChatColor;
@@ -408,6 +409,12 @@ public class EventListener implements Listener {
 						player.sendMessage(plugin.t.getString("GRENADE_THROW"));
 						player.playSound(player.getLocation(),
 								Sound.SILVERFISH_IDLE, 100L, 1L);
+					}
+					// PUMPGUN
+				} else if (player.getItemInHand().getTypeId() == 382) {
+					if (event.getAction() == Action.RIGHT_CLICK_AIR
+							|| event.getAction() == Action.RIGHT_CLICK_BLOCK) {
+						Pumpgun.shot(player, plugin);
 					}
 					// ROCKET
 				} else if (player.getItemInHand().getTypeId() == 356) {
