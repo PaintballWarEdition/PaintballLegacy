@@ -79,7 +79,7 @@ public class Christmas {
 		//wishes
 		String name = player.getName();
 		if (plugin.bWishes && !plugin.christmas.alreadyWished(name)) {
-			player.sendMessage(plugin.wishes);
+			player.sendMessage(ChatColor.translateAlternateColorCodes('&', plugin.wishes));
 			plugin.christmas.setWishes(name);
 		}
 	}
