@@ -62,8 +62,8 @@ import org.bukkit.event.player.PlayerKickEvent;
 import org.bukkit.event.player.PlayerMoveEvent;
 import org.bukkit.event.player.PlayerPickupItemEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
-import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
+import org.bukkit.inventory.PlayerInventory;
 import org.bukkit.util.BlockIterator;
 import org.bukkit.util.Vector;
 
@@ -417,7 +417,7 @@ public class EventListener implements Listener {
 					if (event.getAction() == Action.RIGHT_CLICK_AIR
 							|| event.getAction() == Action.RIGHT_CLICK_BLOCK) {
 						if(plugin.pumpgun) {
-							Inventory inv = player.getInventory();
+							PlayerInventory inv = player.getInventory();
 							ItemStack is = new ItemStack(332, 5);
 							if(inv.containsAtLeast(is, 1)) {
 								inv.remove(is);
