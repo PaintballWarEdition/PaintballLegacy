@@ -64,7 +64,7 @@ public class TeleportFix implements Listener {
 		int d2 = distance * distance;
 		for (Player p : server.getOnlinePlayers()) {
 			if (p != player && p.getWorld() == player.getWorld() && p.getLocation().distanceSquared(player.getLocation()) <= d2) {
-				res.add(p);
+				if(Lobby.LOBBY.isMember(p)) res.add(p);
 			}
 		}
 		return res;
