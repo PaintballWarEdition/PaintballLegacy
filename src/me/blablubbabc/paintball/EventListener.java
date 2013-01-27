@@ -15,7 +15,6 @@ import me.blablubbabc.paintball.extras.Mine;
 import me.blablubbabc.paintball.extras.Pumpgun;
 import me.blablubbabc.paintball.extras.Rocket;
 import me.blablubbabc.paintball.extras.Turret;
-import net.minecraft.server.v1_4_5.Item;
 
 import org.bukkit.ChatColor;
 import org.bukkit.Effect;
@@ -29,6 +28,7 @@ import org.bukkit.entity.Egg;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.EntityType;
 import org.bukkit.entity.Fireball;
+import org.bukkit.entity.Item;
 import org.bukkit.entity.Player;
 import org.bukkit.entity.Projectile;
 import org.bukkit.entity.Snowball;
@@ -419,7 +419,7 @@ public class EventListener implements Listener {
 							|| event.getAction() == Action.RIGHT_CLICK_BLOCK) {
 						if(plugin.pumpgun) {
 							Inventory inv = player.getInventory();
-							ItemStack is = new ItemStack(Item.SNOW_BALL.id, 5);
+							ItemStack is = new ItemStack(332, 5);
 							if(inv.containsAtLeast(is, 1)) {
 								inv.remove(is);
 								Pumpgun.shot(player, plugin);
