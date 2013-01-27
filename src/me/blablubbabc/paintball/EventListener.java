@@ -15,6 +15,8 @@ import me.blablubbabc.paintball.extras.Mine;
 import me.blablubbabc.paintball.extras.Pumpgun;
 import me.blablubbabc.paintball.extras.Rocket;
 import me.blablubbabc.paintball.extras.Turret;
+import net.minecraft.server.v1_4_5.Item;
+
 import org.bukkit.ChatColor;
 import org.bukkit.Effect;
 import org.bukkit.Location;
@@ -61,6 +63,7 @@ import org.bukkit.event.player.PlayerKickEvent;
 import org.bukkit.event.player.PlayerMoveEvent;
 import org.bukkit.event.player.PlayerPickupItemEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
+import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.util.BlockIterator;
 import org.bukkit.util.Vector;
@@ -414,7 +417,16 @@ public class EventListener implements Listener {
 				} else if (player.getItemInHand().getTypeId() == 382) {
 					if (event.getAction() == Action.RIGHT_CLICK_AIR
 							|| event.getAction() == Action.RIGHT_CLICK_BLOCK) {
-						Pumpgun.shot(player, plugin);
+						if(plugin.pumpgun) {
+							Inventory inv = player.getInventory();
+							ItemStack is = new ItemStack(Item.SNOW_BALL.id, 5);
+							if(inv.containsAtLeast(is, 1)) {
+								inv.remove(is);
+								Pumpgun.shot(player, plugin);
+							} else {
+								player.playSound(player.getEyeLocation(), Sound.FIRE_IGNITE, 100F, 2F);
+							}
+						}
 					}
 					// ROCKET
 				} else if (player.getItemInHand().getTypeId() == 356) {

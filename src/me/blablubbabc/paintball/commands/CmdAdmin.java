@@ -1,7 +1,11 @@
 package me.blablubbabc.paintball.commands;
 
 import java.util.HashMap;
+import java.util.List;
+
 import org.bukkit.command.CommandSender;
+import org.bukkit.entity.Entity;
+import org.bukkit.entity.EntityType;
 import org.bukkit.entity.Player;
 import me.blablubbabc.paintball.Lobby;
 import me.blablubbabc.paintball.Paintball;
@@ -54,6 +58,17 @@ public class CmdAdmin {
 						return true;
 					}
 				}
+			} else if(args[1].equalsIgnoreCase("check")) {
+				List<Entity> entities = player.getWorld().getEntities();
+				player.sendMessage("Entities: "+entities.size());
+				int snowballs = 0;
+				for(Entity e : entities) {
+					if(e.getType() == EntityType.SNOWBALL) {
+						snowballs++;
+					}
+				}
+				player.sendMessage("Snowballs: "+snowballs);
+				return true;
 			}
 		}
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////

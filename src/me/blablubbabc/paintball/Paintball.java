@@ -195,6 +195,11 @@ public class Paintball extends JavaPlugin{
 	public int mineMatchLimit;
 	public int minePlayerLimit;
 	
+	public boolean pumpgun;
+	public int pumpgunAngle1;
+	public int pumpgunAngle2;
+	public double pumpgunSpeedmulti;
+	
 	
 	//TODO
 	//shop-items
@@ -377,6 +382,10 @@ public class Paintball extends JavaPlugin{
 		if(getConfig().get("Paintball.Extras.Mine.Explosion-Time-Radius in Ticks") == null)getConfig().set("Paintball.Extras.Mine.Explosion-Time-Radius in Ticks", 60);
 		if(getConfig().get("Paintball.Extras.Mine.Match Limit") == null)getConfig().set("Paintball.Extras.Mine.Match Limit", 50);
 		if(getConfig().get("Paintball.Extras.Mine.Player Limit") == null)getConfig().set("Paintball.Extras.Mine.Player Limit", 10);
+		if(getConfig().get("Paintball.Extras.Pumpgun.enabled") == null)getConfig().set("Paintball.Extras.Pumpgun.enabled", true);
+		if(getConfig().get("Paintball.Extras.Pumpgun.Angle1") == null)getConfig().set("Paintball.Extras.Pumpgun.Angle1", 3);
+		if(getConfig().get("Paintball.Extras.Pumpgun.Angle2") == null)getConfig().set("Paintball.Extras.Pumpgun.Angle2", 6);
+		if(getConfig().get("Paintball.Extras.Pumpgun.Speedmulti") == null)getConfig().set("Paintball.Extras.Pumpgun.Speedmulti", 1.5);
 		if(getConfig().get("Paintball.Shop.enabled") == null)getConfig().set("Paintball.Shop.enabled", true);
 		if(getConfig().get("Paintball.Shop.Goods (amount-name-id-subid-price)") == null)getConfig().set("Paintball.Shop.Goods (amount-name-id-subid-price)", goodsDef);
 		saveConfig();
@@ -573,6 +582,11 @@ public class Paintball extends JavaPlugin{
 		if(mineMatchLimit < 0) mineMatchLimit = 0;
 		minePlayerLimit = getConfig().getInt("Paintball.Extras.Mine.Player Limit", 10);
 		if(minePlayerLimit < 0) minePlayerLimit = 0;
+		
+		pumpgun = getConfig().getBoolean("Paintball.Extras.Pumpgun.enabled", true);
+		pumpgunAngle1 = getConfig().getInt("Paintball.Extras.Pumpgun.Angle1", 3);
+		pumpgunAngle2 = getConfig().getInt("Paintball.Extras.Pumpgun.Angle2", 6);
+		pumpgunSpeedmulti = getConfig().getDouble("Paintball.Extras.Pumpgun.Speedmulti", 1.5);
 		
 
 		//SQLite with version: 110
