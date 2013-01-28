@@ -42,7 +42,7 @@ public class MatchManager{
 					//lobby
 					Lobby.getTeam(p).setWaiting(p);
 					//clear inventory
-					plugin.clearInv(p);
+					Utils.clearInv(p);
 					//noch im match:
 					if(match.isSurvivor(p)){
 						//teleport is survivor:

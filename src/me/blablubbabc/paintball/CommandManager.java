@@ -357,7 +357,7 @@ public class CommandManager implements CommandExecutor{
 			return false;
 		}
 		//inventory
-		if(!plugin.isEmpty(player) && plugin.checkInventory ) {
+		if(!Utils.isEmptyInventory(player) && plugin.checkInventory ) {
 			player.sendMessage(plugin.t.getString("NEED_CLEAR_INVENTORY"));
 			return false;
 		}

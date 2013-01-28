@@ -861,7 +861,7 @@ public class Paintball extends JavaPlugin{
 	}
 
 	public void checks(Player player, boolean checkListname) {
-		if(!isEmpty(player)) clearInv(player);
+		if(!Utils.isEmptyInventory(player)) Utils.clearInv(player);
 		//gamemode
 		if(!player.getGameMode().equals(GameMode.SURVIVAL)) player.setGameMode(GameMode.SURVIVAL);
 		//flymode (built-in)
@@ -923,23 +923,5 @@ public class Paintball extends JavaPlugin{
 			nf.leave(player.getName());
 		}
 	}
-
-	public boolean isEmpty(Player p) {
-		for(ItemStack i : p.getInventory()) {
-			if(i == null) continue;
-			if(i.getTypeId() != 0) return false;
-		}
-		for(ItemStack i : p.getInventory().getArmorContents()) {
-			if(i == null) continue;
-			if(i.getTypeId() != 0) return false;
-		}
-		return true;
-	}
-
-	public void clearInv(Player p) {
-		p.getInventory().clear();
-		p.getInventory().setArmorContents(null);
-	}
-
-
+	
 }
