@@ -10,6 +10,7 @@ import java.util.Map.Entry;
 import me.blablubbabc.paintball.Paintball;
 import org.bukkit.Location;
 import org.bukkit.World;
+import org.bukkit.WorldCreator;
 
 public class SQLArenaLobby {
 
@@ -141,15 +142,16 @@ public class SQLArenaLobby {
 			try {
 				if(rs != null) {
 					while (rs.next()) {
-						World world = plugin.getServer().getWorld(
-								rs.getString("world"));
-						if (world != null) {
-							Location loc = new Location(world,
-									rs.getDouble("x"), rs.getDouble("y"),
-									rs.getDouble("z"), rs.getFloat("yaw"),
-									rs.getFloat("pitch"));
-							locs.add(loc);
+						String worldName = rs.getString("world");
+						World world = plugin.getServer().getWorld(worldName);
+						if (world == null) {
+							world = plugin.getServer().createWorld(new WorldCreator(worldName));
 						}
+						Location loc = new Location(world,
+								rs.getDouble("x"), rs.getDouble("y"),
+								rs.getDouble("z"), rs.getFloat("yaw"),
+								rs.getFloat("pitch"));
+						locs.add(loc);
 					}
 				}
 			} catch (SQLException e) {
@@ -239,7 +241,7 @@ public class SQLArenaLobby {
 	}
 	
 	public int getLobbyspawnsSize() {
-		Result r = sql.resultQuery("SELECT COUNT(*) FROM lobbypawns;");
+		Result r = sql.resultQuery("SELECT COUNT(*) FROM lobbyspawns;");
 		ResultSet rs = r.getResultSet();
 		int a = 0;
 		try {
