@@ -357,6 +357,7 @@ public class EventListener implements Listener {
 		}
 	}
 
+	@SuppressWarnings("deprecation")
 	@EventHandler(priority = EventPriority.NORMAL)
 	public void onPlayerInteract(PlayerInteractEvent event) {
 		Player player = (Player) event.getPlayer();
@@ -420,6 +421,7 @@ public class EventListener implements Listener {
 							PlayerInventory inv = player.getInventory();
 							if(inv.contains(Material.SNOW_BALL, 5)) {
 								Utils.removeInventoryItems(inv, Material.SNOW_BALL, 5);
+								player.updateInventory();
 								Pumpgun.shot(player, plugin);
 							} else {
 								player.playSound(player.getEyeLocation(), Sound.FIRE_IGNITE, 100F, 2F);
