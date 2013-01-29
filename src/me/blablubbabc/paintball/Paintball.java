@@ -199,6 +199,7 @@ public class Paintball extends JavaPlugin{
 	public int pumpgunAngle1;
 	public int pumpgunAngle2;
 	public double pumpgunSpeedmulti;
+	public int pumpgunAmmo;
 	
 	
 	//TODO
@@ -386,6 +387,7 @@ public class Paintball extends JavaPlugin{
 		if(getConfig().get("Paintball.Extras.Pumpgun.Angle1") == null)getConfig().set("Paintball.Extras.Pumpgun.Angle1", 3);
 		if(getConfig().get("Paintball.Extras.Pumpgun.Angle2") == null)getConfig().set("Paintball.Extras.Pumpgun.Angle2", 6);
 		if(getConfig().get("Paintball.Extras.Pumpgun.Speedmulti") == null)getConfig().set("Paintball.Extras.Pumpgun.Speedmulti", 1.5);
+		if(getConfig().get("Paintball.Extras.Pumpgun.Needed Ammo") == null)getConfig().set("Paintball.Extras.Pumpgun.Needed Ammo", 5);
 		if(getConfig().get("Paintball.Shop.enabled") == null)getConfig().set("Paintball.Shop.enabled", true);
 		if(getConfig().get("Paintball.Shop.Goods (amount-name-id-subid-price)") == null)getConfig().set("Paintball.Shop.Goods (amount-name-id-subid-price)", goodsDef);
 		saveConfig();
@@ -587,6 +589,8 @@ public class Paintball extends JavaPlugin{
 		pumpgunAngle1 = getConfig().getInt("Paintball.Extras.Pumpgun.Angle1", 3);
 		pumpgunAngle2 = getConfig().getInt("Paintball.Extras.Pumpgun.Angle2", 6);
 		pumpgunSpeedmulti = getConfig().getDouble("Paintball.Extras.Pumpgun.Speedmulti", 1.5);
+		pumpgunAmmo = getConfig().getInt("Paintball.Extras.Pumpgun.Needed Ammo", 5);
+		if(pumpgunAmmo < 0) pumpgunAmmo = 0;
 		
 
 		//SQLite with version: 110

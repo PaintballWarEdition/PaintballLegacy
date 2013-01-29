@@ -419,8 +419,8 @@ public class EventListener implements Listener {
 							|| event.getAction() == Action.RIGHT_CLICK_BLOCK) {
 						if(plugin.pumpgun) {
 							PlayerInventory inv = player.getInventory();
-							if(inv.contains(Material.SNOW_BALL, 5)) {
-								Utils.removeInventoryItems(inv, Material.SNOW_BALL, 5);
+							if(inv.contains(Material.SNOW_BALL, plugin.pumpgunAmmo)) {
+								Utils.removeInventoryItems(inv, Material.SNOW_BALL, plugin.pumpgunAmmo);
 								player.updateInventory();
 								Pumpgun.shot(player, plugin);
 							} else {
