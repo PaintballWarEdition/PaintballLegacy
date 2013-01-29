@@ -749,9 +749,9 @@ public class Match {
 						frag(target, shooter);
 					} else {
 						shooter.playSound(shooter.getLocation(), Sound.MAGMACUBE_WALK,
-								100F, 0F);
+								100F, 1F);
 						target.playSound(shooter.getLocation(), Sound.BAT_HURT,
-								100F, 2F);
+								100F, 0F);
 						shooter.sendMessage(plugin.t.getString("YOU_HIT"));
 						target.sendMessage(plugin.t.getString("YOU_WERE_HIT"));
 					}
@@ -762,6 +762,8 @@ public class Match {
 			// -points
 			teamattacks.put(shooter.getName(),
 					teamattacks.get(shooter.getName()) + 1);
+			shooter.playSound(shooter.getLocation(), Sound.ANVIL_LAND,
+					70F, 2F);
 			if (plugin.pointsPerTeamattack != 0) {
 				HashMap<String, String> vars = new HashMap<String, String>();
 				vars.put("points", String.valueOf(plugin.pointsPerTeamattack));
@@ -778,7 +780,7 @@ public class Match {
 		if (matchOver)
 			return;
 		killer.playSound(killer.getLocation(), Sound.MAGMACUBE_WALK,
-				100F, 2F);
+				100F, 0F);
 		target.playSound(target.getLocation(), Sound.GHAST_SCREAM2, 100F, 0F);
 
 		// STATS
