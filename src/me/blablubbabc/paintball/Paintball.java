@@ -111,6 +111,7 @@ public class Paintball extends JavaPlugin{
 	public boolean debug;
 	public boolean teleportFix;
 	public int protectionTime;
+	public double teleportOffset;
 	
 	//gifts
 	public boolean giftsEnabled;
@@ -266,7 +267,6 @@ public class Paintball extends JavaPlugin{
 		blacklistedCommands.add("/tp {player} {args}");
 		blacklistedCommands.add("/tphere {player}");
 
-
 		getConfig().options().header("Use a value of -1 to give the players infinite balls or extras. If you insert a not possible value/wrong value in a section the plugin will use the default value or the nearest possible value (Example: your value at section balls: -3 -> plugin will use -1). 1 Tick = 1/20 seconds.");
 		if(getConfig().get("Server.Version Check") == null)getConfig().set("Server.Version Check", true);
 		if(getConfig().get("Paintball.AFK Detection.enabled") == null)getConfig().set("Paintball.AFK Detection.enabled", true);
@@ -294,6 +294,7 @@ public class Paintball extends JavaPlugin{
 		if(getConfig().get("Paintball.Auto Spec Lobby") == null)getConfig().set("Paintball.Auto Spec Lobby", false);
 		if(getConfig().get("Paintball.Effects") == null)getConfig().set("Paintball.Effects", true);
 		if(getConfig().get("Paintball.Teleport Fix") == null)getConfig().set("Paintball.Teleport Fix", true);
+		if(getConfig().get("Paintball.Teleport Offset") == null)getConfig().set("Paintball.Teleport Offset", 0.7);
 		if(getConfig().get("Paintball.Allowed Commands") == null)getConfig().set("Paintball.Allowed Commands", allowedCommands);
 		if(getConfig().get("Paintball.Blacklist.Commands") == null)getConfig().set("Paintball.Blacklist.Commands", blacklistedCommands);
 		if(getConfig().get("Paintball.Blacklist.Admin Override") == null)getConfig().set("Paintball.Blacklist.Admin Override", true);
@@ -416,6 +417,7 @@ public class Paintball extends JavaPlugin{
 		noPerms = getConfig().getBoolean("Paintball.No Permissions", false);
 		debug = getConfig().getBoolean("Paintball.Debug", false);
 		teleportFix = getConfig().getBoolean("Paintball.Teleport Fix", true);
+		teleportOffset = getConfig().getDouble("Paintball.Teleport Offset", 0.7);
 		autoLobby = getConfig().getBoolean("Paintball.Auto Lobby", false);
 		autoTeam = getConfig().getBoolean("Paintball.Auto Team", false);
 		allowedCommands = (ArrayList<String>) getConfig().getList("Paintball.Allowed Commands", allowedCommands);
@@ -770,9 +772,10 @@ public class Paintball extends JavaPlugin{
 				logBlank(ChatColor.GOLD+"   - Usage on own risk. I give no warranties for anything.");
 				logBlank(ChatColor.GOLD+"   - Do not modify. Use it as it is!");
 				logBlank(ChatColor.GOLD+"   - Do not redistribute/upload/use parts of it/copy/give away.");
-				logBlank(ChatColor.GOLD+"   - Do not use for commercial purposes! No benefits for paying players!");
-				logBlank(ChatColor.GOLD+"     ->This also applies to any kind of add-on you are using");
-				logBlank(ChatColor.GOLD+"       related to this plugin!");
+				logBlank(ChatColor.GOLD+"   - Do not use for commercial purposes!");
+				logBlank(ChatColor.GOLD+"     -> No benefits for paying players/donors!");
+				logBlank(ChatColor.GOLD+"     -> This also applies to any kind of add-on you are using");
+				logBlank(ChatColor.GOLD+"        related to this plugin!");
 				logBlank(" ");
 				logBlank(ChatColor.DARK_GREEN+" If you like this plugin: Give feedback and donate at");
 				logBlank(ChatColor.DARK_GREEN+" ->http://dev.bukkit.org/server-mods/paintball_pure_war/ ");
