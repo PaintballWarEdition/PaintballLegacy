@@ -162,11 +162,11 @@ public class Match {
 						if ((startCount % 30) == 0 && startCount > 30) {
 							sendCountdown(startCount);
 						}
-						if ((startCount % 10) == 0 && startCount > 3 && startCount <= 30) {
+						if ((startCount % 10) == 0 && startCount > 5 && startCount <= 30) {
 							sendCountdown(startCount);
 						}
 
-						if (startCount < 4 && startCount > 0) {
+						if (startCount <= 5 && startCount > 0) {
 							sendCountdown(startCount);
 						}
 						startCount--;
@@ -208,14 +208,6 @@ public class Match {
 			plugin.getServer().getScheduler().cancelTask(roundTimeTaskId);
 	}
 
-	public synchronized int getRoundTime() {
-		return roundTime;
-	}
-
-	private synchronized void minusRoundTime() {
-		roundTime--;
-	}
-
 	private void startRoundTimer() {
 		roundTime = setting_round_time;
 
@@ -238,22 +230,24 @@ public class Match {
 							}
 						}
 						//timer
-						int time = getRoundTime();
-						if (time == setting_round_time) {
-							minusRoundTime();
+						if (roundTime == setting_round_time) {
+							roundTime--;
 							return;
 						}
-						if ((time % 15) == 0 && time > 20) {
-							sendRoundTime(time);
+						if ((roundTime % 30) == 0 && roundTime >= 60) {
+							sendRoundTime(roundTime);
 						}
-						if ((time % 10) == 0 && time > 5 && time <= 20) {
-							sendRoundTime(time);
+						if ((roundTime % 15) == 0 && roundTime > 20 && roundTime < 60) {
+							sendRoundTime(roundTime);
 						}
-						if (time < 6 && time > 0) {
-							sendRoundTime(time);
+						if ((roundTime % 10) == 0 && roundTime > 5 && roundTime <= 20) {
+							sendRoundTime(roundTime);
 						}
-						minusRoundTime();
-						if (time < 1) {
+						if (roundTime < 6 && roundTime > 0) {
+							sendRoundTime(roundTime);
+						}
+						roundTime--;
+						if (roundTime < 1) {
 							plugin.getServer().getScheduler()
 									.cancelTask(roundTimeTaskId);
 							// END:

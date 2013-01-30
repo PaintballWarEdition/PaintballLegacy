@@ -448,15 +448,10 @@ public class MatchManager{
 
 				@Override
 				public void run() {
-					if(( count % 10 ) == 0 && count > 10 )
-					{
-						//if above 10 and divisable by 10 message here
+					if(( count % 10 ) == 0 && count >= 10 ) {
 						plugin.nf.counter(count);
 					}
-
-					if( count < 10 && count > 0)
-					{
-						//if below 10 message here (regardless of divisibility)
+					if( count <= 5 && count > 0) {
 						plugin.nf.counter(count);
 					}
 					count--;
