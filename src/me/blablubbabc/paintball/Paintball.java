@@ -894,6 +894,20 @@ public class Paintball extends JavaPlugin{
 
 	public synchronized void joinLobby(Player player) {
 		checks(player, true);
+		enterLobby(player);
+	}
+	
+	public synchronized void joinLobbyFresh(Player player) {
+		//inventory
+		if(saveInventory) {
+			pm.setInv(player, player.getInventory());
+			player.sendMessage(t.getString("INVENTORY_SAVED"));
+		}
+		enterLobby(player);
+		checks(player, true);
+	}
+	
+	private void enterLobby(Player player) {
 		//set waiting
 		if(Lobby.isPlaying(player) || Lobby.isSpectating(player)) Lobby.getTeam(player).setWaiting(player);
 		//Lobbyteleport

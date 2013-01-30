@@ -392,19 +392,13 @@ public class CommandManager implements CommandExecutor{
 			return false;
 		}
 
-		//inventory
-		if(plugin.saveInventory) {
-			plugin.pm.setInv(player, player.getInventory());
-			player.sendMessage(plugin.t.getString("INVENTORY_SAVED"));
-		}
-		
 		//save Location
 		plugin.pm.setLoc(player, player.getLocation());
 		//lobby add
 		Lobby.LOBBY.addMember(player);
 		plugin.nf.join(player.getName());
 
-		plugin.joinLobby(player);
+		plugin.joinLobbyFresh(player);
 
 		return true;
 	}
