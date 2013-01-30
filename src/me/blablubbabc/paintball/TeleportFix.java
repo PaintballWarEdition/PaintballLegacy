@@ -25,7 +25,6 @@ public class TeleportFix implements Listener {
 	public void onPlayerTeleport(PlayerTeleportEvent event) {
 		final Player player = event.getPlayer();
 		if(Lobby.LOBBY.isMember(player)) {
-			event.getTo().add(0, plugin.teleportOffset, 0);
 			if(plugin.teleportFix) {
 				// Fix the visibility issue one tick later
 				server.getScheduler().scheduleSyncDelayedTask(plugin, new Runnable() {
