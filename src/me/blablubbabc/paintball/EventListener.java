@@ -17,6 +17,7 @@ import me.blablubbabc.paintball.extras.Rocket;
 import me.blablubbabc.paintball.extras.Turret;
 
 import org.bukkit.ChatColor;
+import org.bukkit.Chunk;
 import org.bukkit.Effect;
 import org.bukkit.Location;
 import org.bukkit.Material;
@@ -98,11 +99,15 @@ public class EventListener implements Listener {
 
 	// /////////////////////////////////////////
 	// EVENTS
-	@EventHandler(priority = EventPriority.HIGH, ignoreCancelled = true)
+	@EventHandler(priority = EventPriority.NORMAL, ignoreCancelled = true)
 	public void onPlayerTeleport(PlayerTeleportEvent event) {
 		Player player = event.getPlayer();
 		if(Lobby.LOBBY.isMember(player)) {
 			event.setTo(event.getTo().add(0, plugin.teleportOffset, 0));
+			Chunk chunk = event.getTo().getChunk();
+			if(!chunk.isLoaded()) {
+				chunk.load();
+			}
 		}
 	}
 
