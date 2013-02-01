@@ -104,10 +104,10 @@ public class EventListener implements Listener {
 		Player player = event.getPlayer();
 		if(Lobby.LOBBY.isMember(player)) {
 			event.setTo(event.getTo().add(0, plugin.teleportOffset, 0));
-			Chunk chunk = event.getTo().getChunk();
+			/*Chunk chunk = event.getTo().getChunk();
 			if(!chunk.isLoaded()) {
 				chunk.load();
-			}
+			}*/
 		}
 	}
 
