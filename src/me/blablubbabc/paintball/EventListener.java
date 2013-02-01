@@ -99,7 +99,7 @@ public class EventListener implements Listener {
 
 	// /////////////////////////////////////////
 	// EVENTS
-	@EventHandler(priority = EventPriority.NORMAL, ignoreCancelled = true)
+	@EventHandler(priority = EventPriority.LOWEST, ignoreCancelled = true)
 	public void onPlayerTeleport(PlayerTeleportEvent event) {
 		Player player = event.getPlayer();
 		if(Lobby.LOBBY.isMember(player)) {

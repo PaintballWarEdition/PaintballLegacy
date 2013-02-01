@@ -24,26 +24,24 @@ public class TeleportFix implements Listener {
 	@EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
 	public void onPlayerTeleport(PlayerTeleportEvent event) {
 		final Player player = event.getPlayer();
-		if(Lobby.LOBBY.isMember(player)) {
-			if(plugin.teleportFix) {
-				// Fix the visibility issue one tick later
-				server.getScheduler().scheduleSyncDelayedTask(plugin, new Runnable() {
-					@Override
-					public void run() {
-						// Refresh nearby clients
-						final List<Player> nearby = getPlayersWithin(player, visibleDistance);
-						// Hide every player
-						updateEntities(player, nearby, false);
-						// Then show them again
-						server.getScheduler().scheduleSyncDelayedTask(plugin, new Runnable() {
-							@Override
-							public void run() {
-								updateEntities(player, nearby, true);
-							}
-						}, 1);
-					}
-				}, TELEPORT_FIX_DELAY);
-			}
+		if(plugin.teleportFix && Lobby.LOBBY.isMember(player)) {
+			// Fix the visibility issue one tick later
+			server.getScheduler().scheduleSyncDelayedTask(plugin, new Runnable() {
+				@Override
+				public void run() {
+					// Refresh nearby clients
+					final List<Player> nearby = getPlayersWithin(player, visibleDistance);
+					// Hide every player
+					updateEntities(player, nearby, false);
+					// Then show them again
+					server.getScheduler().scheduleSyncDelayedTask(plugin, new Runnable() {
+						@Override
+						public void run() {
+							updateEntities(player, nearby, true);
+						}
+					}, 1);
+				}
+			}, TELEPORT_FIX_DELAY);
 		}
 	}
 
