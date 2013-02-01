@@ -27,6 +27,8 @@ public class Match {
 	private HashMap<Player, Integer> respawnsLeft = new HashMap<Player, Integer>();
 	private ArrayList<Player> redT = new ArrayList<Player>();
 	private ArrayList<Player> blueT = new ArrayList<Player>();
+	private ArrayList<Player> bothTeams = new ArrayList<Player>();
+	private ArrayList<Player> allPlayers = new ArrayList<Player>();
 	private HashMap<Player, Integer> protection = new HashMap<Player, Integer>();
 	// STATS
 	private HashMap<String, Integer> shots = new HashMap<String, Integer>();
@@ -36,14 +38,13 @@ public class Match {
 	private HashMap<String, Integer> teamattacks = new HashMap<String, Integer>();
 	private HashMap<String, Integer> grenades = new HashMap<String, Integer>();
 	private HashMap<String, Integer> airstrikes = new HashMap<String, Integer>();
-	//
+	
 	private Random random;
 
-	// private ArrayList<Player> players = new ArrayList<Player>();
 	private HashMap<String, Location> playersLoc = new HashMap<String, Location>();;
 	private boolean matchOver = false;
 
-	private Set<Player> spec;
+	private ArrayList<Player> spec = new ArrayList<Player>();
 	private String arena;
 
 	private int startTaskId;
@@ -96,13 +97,19 @@ public class Match {
 		// TEAMS
 		for (Player p : red) {
 			this.redT.add(p);
-			// players.add(p);
+			this.allPlayers.add(p);
+			this.bothTeams.add(p);
 		}
 		for (Player p : blue) {
 			this.blueT.add(p);
-			// players.add(p);
+			this.allPlayers.add(p);
+			this.bothTeams.add(p);
 		}
-		this.spec = spec;
+		for (Player p : spec) {
+			this.spec.add(p);
+			this.allPlayers.add(p);
+		}
+		//this.spec = spec;
 
 		// randoms:
 		List<Player> rand = new ArrayList<Player>();
@@ -153,6 +160,10 @@ public class Match {
 
 					@Override
 					public void run() {
+						for(Player p : getAllPlayer()) {
+							p.teleport(playersLoc.get(p.getName()));
+						}
+						
 						if (startCount == plugin.countdownStart
 								&& startCount > 0) {
 							sendCountdown(startCount);
@@ -615,27 +626,29 @@ public class Match {
 	}
 
 	public ArrayList<Player> getAllPlayer() {
-		ArrayList<Player> players = new ArrayList<Player>();
-		players.addAll(redT);
-		players.addAll(blueT);
-		return players;
+		//ArrayList<Player> players = new ArrayList<Player>();
+		//players.addAll(redT);
+		//players.addAll(blueT);
+		return bothTeams;
 	}
 
 	public ArrayList<Player> getAllSpec() {
-		ArrayList<Player> list = new ArrayList<Player>();
+		/*ArrayList<Player> list = new ArrayList<Player>();
 		for (Player p : spec) {
 			list.add(p);
 		}
-		return list;
+		return list;*/
+		return spec;
 	}
 
 	public ArrayList<Player> getAll() {
-		// return players;
+		/*// return players;
 		ArrayList<Player> list = new ArrayList<Player>(getAllPlayer());
 		for (Player p : spec) {
 			list.add(p);
 		}
-		return list;
+		return list;*/
+		return allPlayers;
 	}
 	
 	public boolean isProtected(Player player) {

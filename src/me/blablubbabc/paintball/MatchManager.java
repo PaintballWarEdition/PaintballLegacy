@@ -4,7 +4,6 @@ import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map.Entry;
-import java.util.Set;
 import me.blablubbabc.paintball.extras.Mine;
 import me.blablubbabc.paintball.extras.Turret;
 import org.bukkit.Location;
@@ -139,7 +138,7 @@ public class MatchManager{
 		matches.add(match);
 	}
 	
-	public synchronized void gameEnd(final Match match, boolean draw, HashMap<String, Location> playersLoc, Set<Player> specs, 
+	public synchronized void gameEnd(final Match match, boolean draw, HashMap<String, Location> playersLoc, ArrayList<Player> specs, 
 			final HashMap<String, Integer> shots, final HashMap<String, Integer> hits, final HashMap<String, Integer> kills, final HashMap<String, Integer> deaths,
 			final HashMap<String, Integer> teamattacks, final HashMap<String, Integer> grenades, final HashMap<String, Integer> airstrikes) {
 		//TIME
