@@ -182,7 +182,6 @@ public class Match {
 						if (startCount <= 5 && startCount > 0) {
 							sendCountdown(startCount);
 						}
-						startCount--;
 						if (startCount < 1) {
 							plugin.getServer().getScheduler()
 									.cancelTask(startTaskId);
@@ -207,6 +206,7 @@ public class Match {
 							makeAllVisible();
 							startRoundTimer();
 						}
+						startCount--;
 					}
 				}, 0L, 20L);
 	}
