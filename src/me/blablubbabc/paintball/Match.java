@@ -97,13 +97,11 @@ public class Match {
 		// TEAMS
 		for (Player p : red) {
 			this.redT.add(p);
-			this.allPlayers.add(p);
-			this.bothTeams.add(p);
+			addToPlayerLists(p);
 		}
 		for (Player p : blue) {
 			this.blueT.add(p);
-			this.allPlayers.add(p);
-			this.bothTeams.add(p);
+			addToPlayerLists(p);
 		}
 		for (Player p : spec) {
 			this.spec.add(p);
@@ -121,10 +119,14 @@ public class Match {
 			// players.add(p);
 			if (this.blueT.size() < this.redT.size()) {
 				this.blueT.add(p);
+				addToPlayerLists(p);
 			} else if (this.redT.size() <= this.blueT.size()) {
 				this.redT.add(p);
+				addToPlayerLists(p);
 			}
 		}
+		
+		//LISTS FINISHED
 
 		for (Player p : getAllPlayer()) {
 			// LIVES + RESPAWNS
@@ -207,6 +209,11 @@ public class Match {
 						}
 					}
 				}, 0L, 20L);
+	}
+	
+	private void addToPlayerLists(Player p) {
+		this.allPlayers.add(p);
+		this.bothTeams.add(p);
 	}
 
 	public void endSchedulers() {
