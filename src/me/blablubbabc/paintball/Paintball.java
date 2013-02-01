@@ -245,6 +245,7 @@ public class Paintball extends JavaPlugin{
 		goodsDef.add("1-Airstrike-280-0-100");
 		goodsDef.add("1-Turret-86-0-200");
 		goodsDef.add("1-Speed-373-16482-35");
+		goodsDef.add("1-Pumpgun-382-0-20");
 		
 		ArrayList<Gift> giftsDef = new ArrayList<Gift>();
 		giftsDef.add(new Gift(332, (short)0, 50, 30.0, "Hope you have luck with these balls!"));
@@ -254,7 +255,7 @@ public class Paintball extends JavaPlugin{
 		giftsDef.add(new Gift(280, (short)0, 1, 15.0, "I knew you ever wanted to order a airstrike at least once!"));
 		giftsDef.add(new Gift(54, (short)0, 2, 5.0, "I got some more gifts for you!"));
 		giftsDef.add(new Gift(86, (short)0, 1, 3.0, "They survived the apocalypse? But the will not survive this!"));
-		giftsDef.add(new Gift(0, (short)0, 0, 2.0, "Were you not well-behaved? Santa hasn't anything for you :("));
+		giftsDef.add(new Gift(0, (short)0, 0, 2.0, "You had no luck this time :("));
 		
 		allowedCommands = new ArrayList<String>();
 		allowedCommands.add("/list");
