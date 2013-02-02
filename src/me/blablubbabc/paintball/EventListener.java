@@ -578,7 +578,7 @@ public class EventListener implements Listener {
 			//}
 			final Block block = event.getBlockPlaced();
 			Match m = plugin.mm.getMatch(player);
-			if (m != null && m.isSurvivor(player)) {
+			if (m != null && m.started && m.isSurvivor(player)) {
 				if (plugin.turret && block.getType() == Material.PUMPKIN) {
 					// turret:
 					if (Turret.getTurrets(player).size() < plugin.turretMatchLimit) {
