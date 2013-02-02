@@ -696,20 +696,7 @@ public class EventListener implements Listener {
 		for(Player p : players) {
 			playernames.add(p.getName());
 		}
-		for(String black : plugin.blacklistedCommands) {
-			String[] split = black.split(" ");
-			if(split.length == 0) continue;
-			String regex = Pattern.quote(split[0]);
-			for (int i = 1; i < split.length; i++) {
-				String s = split[i];
-				if(s.equals("{args}")) {
-					regex += " \\S*";
-				} else if(s.equals("{player}")) {
-					regex += " {player}";
-				} else {
-					regex += Pattern.quote(" "+s);
-				}
-			}
+		for(String regex : plugin.blacklistedCommandsRegex) {
 			for(String name : playernames) {
 				if(cmd.matches(regex.replace("{player}", Pattern.quote(name)))) {
 					return true;

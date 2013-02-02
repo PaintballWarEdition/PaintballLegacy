@@ -5,6 +5,8 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.LinkedList;
+import java.util.regex.Pattern;
+
 import me.blablubbabc.BlaDB.BlaSQLite;
 import me.blablubbabc.paintball.Metrics.Graph;
 import me.blablubbabc.paintball.extras.Turret;
@@ -93,6 +95,7 @@ public class Paintball extends JavaPlugin{
 	public ArrayList<String> shopGoods;
 	public ArrayList<String> allowedCommands;
 	public ArrayList<String> blacklistedCommands;
+	public ArrayList<String> blacklistedCommandsRegex;
 	public boolean blacklistAdminOverride;
 	public boolean saveInventory;
 	public boolean onlyRandom;
@@ -420,6 +423,25 @@ public class Paintball extends JavaPlugin{
 		autoTeam = getConfig().getBoolean("Paintball.Auto Team", false);
 		allowedCommands = (ArrayList<String>) getConfig().getList("Paintball.Allowed Commands", allowedCommands);
 		blacklistedCommands = (ArrayList<String>) getConfig().getList("Paintball.Blacklist.Commands", blacklistedCommands);
+		
+		blacklistedCommandsRegex = new ArrayList<String>();
+		for(String black : blacklistedCommands) {
+			String[] split = black.split(" ");
+			if(split.length == 0) continue;
+			String regex = Pattern.quote(split[0]);
+			for (int i = 1; i < split.length; i++) {
+				String s = split[i];
+				if(s.equals("{args}")) {
+					regex += " \\S*";
+				} else if(s.equals("{player}")) {
+					regex += " {player}";
+				} else {
+					regex += Pattern.quote(" "+s);
+				}
+			}
+			blacklistedCommandsRegex.add(regex);
+		}
+		
 		blacklistAdminOverride = getConfig().getBoolean("Paintball.Blacklist.Admin Override", false);
 		
 		afkDetection = getConfig().getBoolean("Paintball.AFK Detection.enabled", true);
