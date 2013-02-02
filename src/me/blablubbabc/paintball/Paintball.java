@@ -157,7 +157,7 @@ public class Paintball extends JavaPlugin{
 	public int cashPerRound;
 
 	//Extras:
-	public boolean grenades;
+	public boolean grenade;
 	public int grenadeTime;
 	public double grenadeSpeed;
 	public int grenadeAmount;
@@ -520,7 +520,7 @@ public class Paintball extends JavaPlugin{
 		checkEffects = getConfig().getBoolean("Paintball.Lobby join.Checks.Effects", true);
 
 		//Extras
-		grenades = getConfig().getBoolean("Paintball.Extras.Grenades.enabled", true);
+		grenade = getConfig().getBoolean("Paintball.Extras.Grenades.enabled", true);
 		grenadeTime = getConfig().getInt("Paintball.Extras.Grenades.Explosion-Time-Radius in Ticks", 60);
 		if(grenadeTime < 1) grenadeTime = 1;
 		grenadeSpeed = getConfig().getDouble("Paintball.Extras.Grenades.Speed multi", 1.0);

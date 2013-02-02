@@ -295,7 +295,7 @@ public class EventListener implements Listener {
 							// boosting:
 							shot.setVelocity(v.multiply(plugin.speedmulti));
 						} else if (shot instanceof Egg) {
-							if (plugin.grenades) {
+							if (plugin.grenade) {
 								Grenade.eggThrow(player, (Egg) shot);
 								// zählen
 								mm.getMatch(player).grenade(player);
@@ -361,22 +361,12 @@ public class EventListener implements Listener {
 	public void onPlayerInteract(PlayerInteractEvent event) {
 		Player player = (Player) event.getPlayer();
 		if (Lobby.LOBBY.isMember(player)) {
-			if (player.getItemInHand().getType() == Material.CHEST
-					&& plugin.giftsEnabled) {
-				// to prevent placing:
-				event.setCancelled(true);
-				if (event.getAction() == Action.RIGHT_CLICK_AIR
-						|| event.getAction() == Action.RIGHT_CLICK_BLOCK) {
-					plugin.christmas.unwrapGift(player);
-				}
-			}
 			Match match = mm.getMatch(player);
-			if (match != null && Lobby.isPlaying(player) && match.started
-					&& match.isSurvivor(player)) {
-				// AIRSTRIKE
-				if (player.getItemInHand().getTypeId() == 280) {
-					if (event.getAction() == Action.LEFT_CLICK_AIR
-							|| event.getAction() == Action.RIGHT_CLICK_AIR) {
+			if (match != null && Lobby.isPlaying(player) && match.isSurvivor(player)) {
+				event.setCancelled(true);
+				if(match.started && (event.getAction() == Action.LEFT_CLICK_AIR || event.getAction() == Action.RIGHT_CLICK_AIR)) {
+						// AIRSTRIKE
+					if (plugin.airstrike && player.getItemInHand().getType() == Material.STICK) {
 						if (Airstrike.marked(player.getName())) {
 							if (Airstrike.getAirstrikes(match).size() < plugin.airstrikeMatchLimit) {
 								if (Airstrike.getAirstrikes(player).size() < plugin.airstrikePlayerLimit) {
@@ -403,36 +393,23 @@ public class EventListener implements Listener {
 										.getString("AIRSTRIK_MATCH_LIMIT_REACHED"));
 							}
 						}
-					}
-					// GRENADE
-				} else if (player.getItemInHand().getTypeId() == 344) {
-					if (event.getAction() == Action.RIGHT_CLICK_AIR
-							|| event.getAction() == Action.RIGHT_CLICK_BLOCK) {
+						// GRENADE
+					} else if (plugin.grenade && player.getItemInHand().getType() == Material.EGG) {
 						player.sendMessage(plugin.t.getString("GRENADE_THROW"));
 						player.playSound(player.getLocation(),
 								Sound.SILVERFISH_IDLE, 100L, 1L);
-					}
-					// PUMPGUN
-				} else if (player.getItemInHand().getTypeId() == 382) {
-					if (event.getAction() == Action.RIGHT_CLICK_AIR
-							|| event.getAction() == Action.RIGHT_CLICK_BLOCK) {
-						if(plugin.pumpgun) {
-							PlayerInventory inv = player.getInventory();
-							if(inv.contains(Material.SNOW_BALL, plugin.pumpgunAmmo)) {
-								Utils.removeInventoryItems(inv, Material.SNOW_BALL, plugin.pumpgunAmmo);
-								player.updateInventory();
-								Pumpgun.shot(player, plugin);
-							} else {
-								player.playSound(player.getEyeLocation(), Sound.FIRE_IGNITE, 100F, 2F);
-							}
+						// PUMPGUN
+					} else if (plugin.pumpgun && player.getItemInHand().getType() == Material.SPECKLED_MELON) {
+						PlayerInventory inv = player.getInventory();
+						if(inv.contains(Material.SNOW_BALL, plugin.pumpgunAmmo)) {
+							Utils.removeInventoryItems(inv, Material.SNOW_BALL, plugin.pumpgunAmmo);
+							player.updateInventory();
+							Pumpgun.shot(player, plugin);
+						} else {
+							player.playSound(player.getEyeLocation(), Sound.FIRE_IGNITE, 100F, 2F);
 						}
-					}
-					// ROCKET
-				} else if (player.getItemInHand().getTypeId() == 356) {
-					if (event.getAction() == Action.RIGHT_CLICK_AIR
-							|| event.getAction() == Action.RIGHT_CLICK_BLOCK) {
-						// tp prevent placing:
-						event.setCancelled(true);
+						// ROCKET
+					} else if (plugin.rocket && player.getItemInHand().getType() == Material.DIODE) {
 						if (Rocket.getRockets(player).size() < plugin.rocketMatchLimit) {
 							if (Rocket.getRockets(player).size() < plugin.rocketPlayerLimit) {
 								player.playSound(player.getLocation(),
@@ -452,13 +429,13 @@ public class EventListener implements Listener {
 									player.setItemInHand(i);
 								}
 							} else {
-								player.sendMessage(plugin.t
-										.getString("ROCKET_PLAYER_LIMIT_REACHED"));
+								player.sendMessage(plugin.t.getString("ROCKET_PLAYER_LIMIT_REACHED"));
 							}
 						} else {
-							player.sendMessage(plugin.t
-									.getString("ROCKET_MATCH_LIMIT_REACHED"));
+							player.sendMessage(plugin.t.getString("ROCKET_MATCH_LIMIT_REACHED"));
 						}
+					} else if (plugin.giftsEnabled && player.getItemInHand().getType() == Material.CHEST) {
+						plugin.christmas.unwrapGift(player);
 					}
 				}
 			}
@@ -470,7 +447,7 @@ public class EventListener implements Listener {
 		final Player player = event.getPlayer();
 		final String name = player.getName();
 		if (Lobby.LOBBY.isMember(player)) {
-			if (player.getInventory().getItem(event.getNewSlot()) != null
+			if (plugin.airstrike && player.getInventory().getItem(event.getNewSlot()) != null
 					&& player.getInventory().getItem(event.getNewSlot())
 							.getTypeId() == 280) {
 				if (!taskIds.containsKey(name)) {
@@ -551,16 +528,11 @@ public class EventListener implements Listener {
 					}
 				}
 			}
-		} else if (shot instanceof Egg) {
-			if (plugin.grenades) {
-				Grenade.hit(shot, plugin);
-			}
-		} else if (shot instanceof Fireball) {
-			if (plugin.rocket) {
-				Rocket rocket = Rocket.isRocket((Fireball) shot);
-				if (rocket != null)
-					rocket.die();
-			}
+		} else if (plugin.grenade && shot instanceof Egg) {
+			Grenade.hit(shot, plugin);
+		} else if (plugin.rocket && shot instanceof Fireball) {
+			Rocket rocket = Rocket.isRocket((Fireball) shot);
+			if (rocket != null) rocket.die();
 		}
 	}
 
@@ -591,9 +563,9 @@ public class EventListener implements Listener {
 	public void onPlayerBreak(BlockBreakEvent event) {
 		Player player = event.getPlayer();
 		if (Lobby.LOBBY.isMember(player)) {
-			if (!player.isOp() && !player.hasPermission("paintball.admin")) {
-				event.setCancelled(true);
-			}
+			//if (!player.isOp() && !player.hasPermission("paintball.admin")) {
+			event.setCancelled(true);
+			//}
 		}
 	}
 
@@ -601,15 +573,14 @@ public class EventListener implements Listener {
 	public void onPlayerPlace(BlockPlaceEvent event) {
 		Player player = event.getPlayer();
 		if (Lobby.LOBBY.isMember(player)) {
-			if (!player.isOp() && !player.hasPermission("paintball.admin")) {
-				event.setCancelled(true);
-			}
+			//if (!player.isOp() && !player.hasPermission("paintball.admin")) {
+			event.setCancelled(true);
+			//}
 			final Block block = event.getBlockPlaced();
 			Match m = plugin.mm.getMatch(player);
 			if (m != null && m.isSurvivor(player)) {
-				if (block.getType() == Material.PUMPKIN) {
+				if (plugin.turret && block.getType() == Material.PUMPKIN) {
 					// turret:
-					event.setCancelled(true);
 					if (Turret.getTurrets(player).size() < plugin.turretMatchLimit) {
 						if (Turret.getTurrets(player).size() < plugin.turretPlayerLimit) {
 							Snowman snowman = (Snowman) block
@@ -635,9 +606,8 @@ public class EventListener implements Listener {
 								.getString("TURRET_MATCH_LIMIT_REACHED"));
 					}
 
-				} else if (block.getType() == Material.FLOWER_POT) {
+				} else if (plugin.mine && block.getType() == Material.FLOWER_POT) {
 					// mine:
-					event.setCancelled(true);
 					if (Mine.getMines(player).size() < plugin.mineMatchLimit) {
 						if (Mine.getMines(player).size() < plugin.minePlayerLimit) {
 							plugin.getServer()
@@ -687,8 +657,8 @@ public class EventListener implements Listener {
 	public void onPlayerItemsI(PlayerPickupItemEvent event) {
 		Player player = event.getPlayer();
 		if (Lobby.LOBBY.isMember(player)) {
-			if (!player.isOp() && !player.hasPermission("paintball.admin"))
-				event.setCancelled(true);
+			//if (!player.isOp() && !player.hasPermission("paintball.admin"))
+			event.setCancelled(true);
 		}
 	}
 
@@ -696,8 +666,8 @@ public class EventListener implements Listener {
 	public void onPlayerItemsII(PlayerDropItemEvent event) {
 		Player player = event.getPlayer();
 		if (Lobby.LOBBY.isMember(player)) {
-			if (!player.isOp() && !player.hasPermission("paintball.admin"))
-				event.setCancelled(true);
+			//if (!player.isOp() && !player.hasPermission("paintball.admin"))
+			event.setCancelled(true);
 		}
 	}
 
