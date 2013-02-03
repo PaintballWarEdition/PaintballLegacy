@@ -4,9 +4,6 @@ import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map.Entry;
-import me.blablubbabc.paintball.extras.Mine;
-import me.blablubbabc.paintball.extras.Sniper;
-import me.blablubbabc.paintball.extras.Turret;
 import org.bukkit.Location;
 import org.bukkit.entity.Player;
 
@@ -47,15 +44,7 @@ public class MatchManager{
 					if(match.isSurvivor(p)){
 						//teleport is survivor:
 						plugin.joinLobby(p);
-						//remove turrets
-						for(Turret t : Turret.getTurrets(p)) {
-							t.die(false);
-						}
-						for(Mine m : Mine.getMines(p)) {
-							m.explode(false);
-						}
-						//remove zooming
-						if(Sniper.isZooming(p)) Sniper.setNotZooming(p);
+						match.resetWeaponStuffEnd(p);
 					}
 				}
 			}
