@@ -932,7 +932,9 @@ public class Match {
 		for (Mine m : Mine.getMines(p)) {
 			m.explode(false);
 		}
-		resetWeaponStuffEnd(p);
+		// remove zooming
+		if (Sniper.isZooming(p))
+			Sniper.setNotZooming(p);
 	}
 
 	public void resetWeaponStuffDeath(Player p) {
