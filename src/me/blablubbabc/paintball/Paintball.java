@@ -204,6 +204,9 @@ public class Paintball extends JavaPlugin{
 	public double pumpgunSpeedmulti;
 	public int pumpgunAmmo;
 	
+	public boolean sniper;
+	public double sniperSpeedmulti;
+	
 	
 	//TODO
 	//shop-items
@@ -391,6 +394,8 @@ public class Paintball extends JavaPlugin{
 		if(getConfig().get("Paintball.Extras.Pumpgun.Angle2") == null)getConfig().set("Paintball.Extras.Pumpgun.Angle2", 6);
 		if(getConfig().get("Paintball.Extras.Pumpgun.Speedmulti") == null)getConfig().set("Paintball.Extras.Pumpgun.Speedmulti", 1.5);
 		if(getConfig().get("Paintball.Extras.Pumpgun.Needed Ammo") == null)getConfig().set("Paintball.Extras.Pumpgun.Needed Ammo", 5);
+		if(getConfig().get("Paintball.Extras.Sniper.enabled") == null)getConfig().set("Paintball.Extras.Sniper.enabled", true);
+		if(getConfig().get("Paintball.Extras.Sniper.Speedmulti") == null)getConfig().set("Paintball.Extras.Sniper.Speedmulti", 4.0);
 		if(getConfig().get("Paintball.Shop.enabled") == null)getConfig().set("Paintball.Shop.enabled", true);
 		if(getConfig().get("Paintball.Shop.Goods (amount-name-id-subid-price)") == null)getConfig().set("Paintball.Shop.Goods (amount-name-id-subid-price)", goodsDef);
 		saveConfig();
@@ -613,6 +618,9 @@ public class Paintball extends JavaPlugin{
 		pumpgunSpeedmulti = getConfig().getDouble("Paintball.Extras.Pumpgun.Speedmulti", 1.5);
 		pumpgunAmmo = getConfig().getInt("Paintball.Extras.Pumpgun.Needed Ammo", 5);
 		if(pumpgunAmmo < 0) pumpgunAmmo = 0;
+		
+		sniper = getConfig().getBoolean("Paintball.Extras.Sniper.enabled", true);
+		sniperSpeedmulti = getConfig().getDouble("Paintball.Extras.Sniper.Speedmulti", 4.0);
 		
 
 		//SQLite with version: 110
@@ -911,6 +919,8 @@ public class Paintball extends JavaPlugin{
 		}
 		//Vehicle
 		if(player.isInsideVehicle()) player.leaveVehicle();
+		//walkspeed
+		if(player.getWalkSpeed() != 0.2) player.setWalkSpeed(0.2F);
 		//listname
 		if(checkListname && listnames) player.setPlayerListName(null);
 	}

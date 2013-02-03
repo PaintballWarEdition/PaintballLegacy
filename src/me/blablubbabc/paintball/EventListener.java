@@ -14,6 +14,7 @@ import me.blablubbabc.paintball.extras.Grenade;
 import me.blablubbabc.paintball.extras.Mine;
 import me.blablubbabc.paintball.extras.Pumpgun;
 import me.blablubbabc.paintball.extras.Rocket;
+import me.blablubbabc.paintball.extras.Sniper;
 import me.blablubbabc.paintball.extras.Turret;
 
 import org.bukkit.ChatColor;
@@ -364,7 +365,8 @@ public class EventListener implements Listener {
 			Match match = mm.getMatch(player);
 			if (match != null && Lobby.isPlaying(player) && match.isSurvivor(player)) {
 				//event.setCancelled(true);
-				if(match.started && (event.getAction() == Action.LEFT_CLICK_AIR || event.getAction() == Action.RIGHT_CLICK_AIR)) {
+				Action action = event.getAction();
+				if(match.started && (action == Action.LEFT_CLICK_AIR || action == Action.RIGHT_CLICK_AIR)) {
 						// AIRSTRIKE
 					if (plugin.airstrike && player.getItemInHand().getType() == Material.STICK) {
 						if (Airstrike.marked(player.getName())) {
@@ -436,6 +438,20 @@ public class EventListener implements Listener {
 						}
 					} else if (plugin.giftsEnabled && player.getItemInHand().getType() == Material.CHEST) {
 						plugin.christmas.unwrapGift(player);
+					} else if (plugin.sniper && player.getItemInHand().getType() == Material.CARROT_STICK) {
+						if(action == Action.RIGHT_CLICK_AIR) {
+							Sniper.toggleZoom(player);
+						} else if (action == Action.LEFT_CLICK_AIR) {
+							PlayerInventory inv = player.getInventory();
+							if(inv.contains(Material.SNOW_BALL, 1)) {
+								Utils.removeInventoryItems(inv, Material.SNOW_BALL, 1);
+								player.updateInventory();
+								match.shot(player);
+								Sniper.shoot(player, plugin);
+							} else {
+								player.playSound(player.getEyeLocation(), Sound.FIRE_IGNITE, 100F, 2F);
+							}
+						}
 					}
 				}
 			}
