@@ -363,7 +363,7 @@ public class EventListener implements Listener {
 		if (Lobby.LOBBY.isMember(player)) {
 			Match match = mm.getMatch(player);
 			if (match != null && Lobby.isPlaying(player) && match.isSurvivor(player)) {
-				event.setCancelled(true);
+				//event.setCancelled(true);
 				if(match.started && (event.getAction() == Action.LEFT_CLICK_AIR || event.getAction() == Action.RIGHT_CLICK_AIR)) {
 						// AIRSTRIKE
 					if (plugin.airstrike && player.getItemInHand().getType() == Material.STICK) {
