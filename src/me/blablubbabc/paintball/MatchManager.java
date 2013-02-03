@@ -5,6 +5,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map.Entry;
 import me.blablubbabc.paintball.extras.Mine;
+import me.blablubbabc.paintball.extras.Sniper;
 import me.blablubbabc.paintball.extras.Turret;
 import org.bukkit.Location;
 import org.bukkit.entity.Player;
@@ -53,6 +54,8 @@ public class MatchManager{
 						for(Mine m : Mine.getMines(p)) {
 							m.explode(false);
 						}
+						//remove zooming
+						if(Sniper.isZooming(p)) Sniper.setNotZooming(p);
 					}
 				}
 			}

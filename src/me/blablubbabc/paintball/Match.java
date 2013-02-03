@@ -10,6 +10,7 @@ import java.util.Map;
 import java.util.Random;
 import java.util.Set;
 import me.blablubbabc.paintball.extras.Mine;
+import me.blablubbabc.paintball.extras.Sniper;
 import me.blablubbabc.paintball.extras.Turret;
 import org.bukkit.Color;
 import org.bukkit.Location;
@@ -969,6 +970,8 @@ public class Match {
 			for (Mine m : Mine.getMines(p)) {
 				m.explode(false);
 			}
+			//remove zooming
+			if(Sniper.isZooming(p)) Sniper.setNotZooming(p);
 		}
 		if (!draw) {
 			for (Player p : winnerS) {
