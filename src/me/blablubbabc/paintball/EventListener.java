@@ -10,8 +10,10 @@ import java.util.concurrent.ConcurrentHashMap;
 import java.util.regex.Pattern;
 
 import me.blablubbabc.paintball.extras.Airstrike;
+import me.blablubbabc.paintball.extras.FallingBlocks;
 import me.blablubbabc.paintball.extras.Grenade;
 import me.blablubbabc.paintball.extras.Mine;
+import me.blablubbabc.paintball.extras.PowerFist;
 import me.blablubbabc.paintball.extras.Pumpgun;
 import me.blablubbabc.paintball.extras.Rocket;
 import me.blablubbabc.paintball.extras.Sniper;
@@ -28,6 +30,7 @@ import org.bukkit.block.Sign;
 import org.bukkit.entity.Egg;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.EntityType;
+import org.bukkit.entity.FallingBlock;
 import org.bukkit.entity.Fireball;
 import org.bukkit.entity.Player;
 import org.bukkit.entity.Projectile;
@@ -40,6 +43,7 @@ import org.bukkit.event.block.Action;
 import org.bukkit.event.block.BlockBreakEvent;
 import org.bukkit.event.block.BlockPlaceEvent;
 import org.bukkit.event.block.SignChangeEvent;
+import org.bukkit.event.entity.EntityChangeBlockEvent;
 import org.bukkit.event.entity.EntityDamageByEntityEvent;
 import org.bukkit.event.entity.EntityDamageEvent;
 import org.bukkit.event.entity.EntityDeathEvent;
@@ -138,6 +142,19 @@ public class EventListener implements Listener {
 			Turret turret = Turret.isTurret(snowman);
 			if (turret != null) {
 				turret.die(true);
+			}
+		}
+	}
+	
+	@EventHandler(priority = EventPriority.NORMAL)
+	public void onFallingBlockLand(EntityChangeBlockEvent event) {
+		Entity ent = event.getEntity();
+		if(ent.getType() == EntityType.FALLING_BLOCK) {
+			FallingBlock f = (FallingBlock) ent;
+			if(FallingBlocks.containsFallingBlock(f)) {
+				event.setCancelled(true);
+				f.remove();
+				FallingBlocks.removeFallingBlock(f);
 			}
 		}
 	}
@@ -351,8 +368,7 @@ public class EventListener implements Listener {
 			if (match != null && Lobby.isPlaying(player) && match.isSurvivor(player)) {
 				// event.setCancelled(true);
 				Action action = event.getAction();
-				if (match.started
-						&& (action == Action.LEFT_CLICK_AIR || action == Action.RIGHT_CLICK_AIR)) {
+				if (match.started && (action == Action.LEFT_CLICK_AIR || action == Action.RIGHT_CLICK_AIR)) {
 					// AIRSTRIKE
 					if (plugin.airstrike && player.getItemInHand().getType() == Material.STICK) {
 						if (Airstrike.marked(player.getName())) {
@@ -424,6 +440,9 @@ public class EventListener implements Listener {
 					} else if (plugin.giftsEnabled
 							&& player.getItemInHand().getType() == Material.CHEST) {
 						plugin.christmas.unwrapGift(player);
+						//TODo
+					} else if (player.getItemInHand().getType() == Material.BREWING_STAND_ITEM) {
+						PowerFist.use(player);
 					} else if (plugin.sniper
 							&& player.getItemInHand().getType() == Material.CARROT_STICK) {
 						if (action == Action.RIGHT_CLICK_AIR) {
@@ -537,7 +556,19 @@ public class EventListener implements Listener {
 				}
 			}
 		} else if (plugin.grenade && shot instanceof Egg) {
-			Grenade.hit(shot, plugin);
+			//TEST
+			Location loc = shot.getLocation();
+			Material mat = Material.DIRT;
+			BlockIterator iterator = new BlockIterator(loc.getWorld(), loc.toVector(),
+					shot.getVelocity().normalize(), 0, 3);
+			while (iterator.hasNext()) {
+				Material m = iterator.next().getType();
+				if (m != null && m != Material.AIR) {
+					mat = m;
+					break;
+				}
+			}
+			Grenade.hit(shot, plugin, mat);
 		} else if (plugin.rocket && shot instanceof Fireball) {
 			Rocket rocket = Rocket.isRocket((Fireball) shot);
 			if (rocket != null)

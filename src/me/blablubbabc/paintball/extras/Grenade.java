@@ -4,7 +4,9 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import me.blablubbabc.paintball.Paintball;
 import org.bukkit.Location;
+import org.bukkit.Material;
 import org.bukkit.entity.Egg;
+import org.bukkit.entity.FallingBlock;
 import org.bukkit.entity.Player;
 import org.bukkit.entity.Projectile;
 import org.bukkit.entity.Snowball;
@@ -23,7 +25,7 @@ public class Grenade{
 		nades.put(player, n);
 	}
 	
-	public static synchronized void hit(Projectile nade, Paintball plugin) {
+	public static synchronized void hit(Projectile nade, Paintball plugin, Material mat) {
 		Egg id = (Egg) nade;
 		for(Player player : nades.keySet()) {
 			ArrayList<Egg> n = new ArrayList<Egg>();
@@ -31,18 +33,44 @@ public class Grenade{
 			if(n.contains(id)) {
 				n.remove(id);
 				nades.put(player, n);
-				explode(player, nade, plugin);
+				explodeBlocks(player, nade, plugin, mat);
 				break;
 			}
 		}
 	}
 	
-	public static void explode(Player player, Projectile nade, Paintball plugin) {
+	/*public static void explode(Player player, Projectile nade, Paintball plugin) {
 		Location loc = nade.getLocation();
 		loc.getWorld().createExplosion(loc, -1.0F);
 		for(Vector v : directions()) {
 			moveExpSnow(loc.getWorld().spawn(loc, Snowball.class), v, player, plugin);
 		}
+	}*/
+	
+	public static void explodeBlocks(Player player, Projectile nade, Paintball plugin, Material mat) {
+		Location loc = nade.getLocation();
+		loc.getWorld().createExplosion(loc, -1.0F);
+		for(Vector v : directions()) {
+			FallingBlock f = loc.getWorld().spawnFallingBlock(loc, mat, (byte)0);
+			FallingBlocks.addFallingBlock(f);
+			moveBlock(f, v, plugin);
+			moveExpSnow(loc.getWorld().spawn(loc, Snowball.class), v, player, plugin);
+		}
+	}
+	
+	private static void moveBlock(final FallingBlock f, Vector v, Paintball plugin) {
+		Vector v2 = v;
+		v2.setX(v.getX()+ Math.random()- Math.random());
+		v2.setY(v.getY()+ Math.random()- Math.random());
+		v2.setZ(v.getZ()+ Math.random()- Math.random());
+		f.setVelocity(v2.multiply(1));
+		plugin.getServer().getScheduler().scheduleSyncDelayedTask(plugin, new Runnable() {
+			
+			@Override
+			public void run() {
+				if(!f.isDead() || f.isValid()) f.remove();
+			}
+		}, 100L);
 	}
 	
 	private static void moveExpSnow(final Snowball s, Vector v, Player player, Paintball plugin) {
