@@ -65,12 +65,12 @@ public class Christmas {
 		if(!plugin.gifts.isEmpty()) {
 			//gift:
 			double r = (random.nextInt(1000)/10);
-			int chance = 0;
+			double chance = 0.0;
 			for(Gift g : plugin.gifts) {
-				chance += (g.chance*plugin.giftChanceFactor);
+				chance += (g.getChance()*plugin.giftChanceFactor);
 				if(r < chance) {
-					player.sendMessage(ChatColor.GREEN+g.message);
-					player.getInventory().addItem(g.item);
+					player.sendMessage(ChatColor.GREEN+g.getMessage());
+					player.getInventory().addItem(g.getItem(true));
 					player.updateInventory();
 					break;
 				}

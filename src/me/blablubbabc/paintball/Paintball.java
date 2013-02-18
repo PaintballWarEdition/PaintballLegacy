@@ -328,11 +328,11 @@ public class Paintball extends JavaPlugin{
 		if(getConfig().get("Paintball.Gifts.wishes delay in minutes") == null)getConfig().set("Paintball.Gifts.wishes delay in minutes", 60);
 		if(getConfig().get("Paintball.Gifts.gifts") == null) {
 			for(Gift g : giftsDef) {
-				getConfig().set("Paintball.Gifts.gifts."+giftsDef.indexOf(g)+".message", g.message);
-				getConfig().set("Paintball.Gifts.gifts."+giftsDef.indexOf(g)+".id", g.item.getTypeId());
-				getConfig().set("Paintball.Gifts.gifts."+giftsDef.indexOf(g)+".subid", g.item.getDurability());
-				getConfig().set("Paintball.Gifts.gifts."+giftsDef.indexOf(g)+".amount", g.item.getAmount());
-				getConfig().set("Paintball.Gifts.gifts."+giftsDef.indexOf(g)+".chance", g.chance);
+				getConfig().set("Paintball.Gifts.gifts."+giftsDef.indexOf(g)+".message", g.getMessage());
+				getConfig().set("Paintball.Gifts.gifts."+giftsDef.indexOf(g)+".id", g.getItem(false).getTypeId());
+				getConfig().set("Paintball.Gifts.gifts."+giftsDef.indexOf(g)+".subid", g.getItem(false).getDurability());
+				getConfig().set("Paintball.Gifts.gifts."+giftsDef.indexOf(g)+".amount", g.getItem(false).getAmount());
+				getConfig().set("Paintball.Gifts.gifts."+giftsDef.indexOf(g)+".chance", g.getChance());
 			}
 		}
 		//lobby join checks
