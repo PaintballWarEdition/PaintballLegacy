@@ -556,6 +556,7 @@ public class EventListener implements Listener {
 				}
 			}
 		} else if (plugin.grenade && shot instanceof Egg) {
+			/*
 			//TEST
 			Location loc = shot.getLocation();
 			Material mat = Material.DIRT;
@@ -567,8 +568,8 @@ public class EventListener implements Listener {
 					mat = m;
 					break;
 				}
-			}
-			Grenade.hit(shot, plugin, mat);
+			}*/
+			Grenade.hit(shot, plugin);
 		} else if (plugin.rocket && shot instanceof Fireball) {
 			Rocket rocket = Rocket.isRocket((Fireball) shot);
 			if (rocket != null)

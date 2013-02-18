@@ -2,13 +2,10 @@ package me.blablubbabc.paintball.extras;
 
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.Random;
 
 import me.blablubbabc.paintball.Paintball;
 import org.bukkit.Location;
-import org.bukkit.Material;
 import org.bukkit.entity.Egg;
-import org.bukkit.entity.FallingBlock;
 import org.bukkit.entity.Player;
 import org.bukkit.entity.Projectile;
 import org.bukkit.entity.Snowball;
@@ -16,7 +13,7 @@ import org.bukkit.util.Vector;
 
 public class Grenade{
 	
-	private static Random random = new Random();
+	//private static Random random = new Random();
 	private static HashMap<Player, ArrayList<Egg>> nades = new HashMap<Player, ArrayList<Egg>>();
 	
 	public static synchronized void eggThrow(Player player, Egg nade) {
@@ -28,7 +25,7 @@ public class Grenade{
 		nades.put(player, n);
 	}
 	
-	public static synchronized void hit(Projectile nade, Paintball plugin, Material mat) {
+	public static synchronized void hit(Projectile nade, Paintball plugin) {
 		Egg id = (Egg) nade;
 		for(Player player : nades.keySet()) {
 			ArrayList<Egg> n = new ArrayList<Egg>();
@@ -36,21 +33,21 @@ public class Grenade{
 			if(n.contains(id)) {
 				n.remove(id);
 				nades.put(player, n);
-				explodeBlocks(player, nade, plugin, mat);
+				explode(player, nade, plugin);
 				break;
 			}
 		}
 	}
 	
-	/*public static void explode(Player player, Projectile nade, Paintball plugin) {
+	public static void explode(Player player, Projectile nade, Paintball plugin) {
 		Location loc = nade.getLocation();
 		loc.getWorld().createExplosion(loc, -1.0F);
 		for(Vector v : directions()) {
 			moveExpSnow(loc.getWorld().spawn(loc, Snowball.class), v, player, plugin);
 		}
-	}*/
+	}
 	
-	public static void explodeBlocks(Player player, Projectile nade, Paintball plugin, Material mat) {
+	/*public static void explodeBlocks(Player player, Projectile nade, Paintball plugin, Material mat) {
 		Location loc = nade.getLocation();
 		loc.getWorld().createExplosion(loc, -1.0F);
 		
@@ -65,9 +62,9 @@ public class Grenade{
 				moveBlock(f, v, plugin);
 			}
 		}
-	}
+	}*/
 	
-	private static void moveBlock(final FallingBlock f, Vector v, Paintball plugin) {
+	/*private static void moveBlock(final FallingBlock f, Vector v, Paintball plugin) {
 		Vector v2 = v.clone();
 		v2.setX(v.getX()+ Math.random()- Math.random());
 		v2.setY(v.getY()+ Math.random()- Math.random());
@@ -80,7 +77,7 @@ public class Grenade{
 				if(!f.isDead() || f.isValid()) f.remove();
 			}
 		}, 100L);
-	}
+	}*/
 	
 	private static void moveExpSnow(final Snowball s, Vector v, Player player, Paintball plugin) {
 		s.setShooter(player);
