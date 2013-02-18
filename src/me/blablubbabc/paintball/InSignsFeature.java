@@ -1,8 +1,8 @@
 package me.blablubbabc.paintball;
 
 import java.text.DecimalFormat;
-import me.blablubbabc.insigns.Changer;
-import me.blablubbabc.insigns.InSigns;
+import de.blablubbabc.insigns.Changer;
+import de.blablubbabc.insigns.InSigns;
 import org.bukkit.plugin.Plugin;
 
 public class InSignsFeature {
