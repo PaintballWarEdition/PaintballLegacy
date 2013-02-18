@@ -66,7 +66,7 @@ public class Sniper {
 	private static void moveSnow(final Snowball s, Vector v, Player player) {
 		s.setShooter(player);
 		if (plugin.sniperNoGravity) {
-			NoGravity.addEntity(s, v.multiply(plugin.sniperSpeedmulti), plugin.sniperNoGravityDuration);
+			NoGravity.addEntity(s, v.multiply(plugin.sniperSpeedmulti), plugin.sniperNoGravityDuration*20);
 		} else {
 			s.setVelocity(v.multiply(plugin.sniperSpeedmulti));
 		}
