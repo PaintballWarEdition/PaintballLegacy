@@ -942,12 +942,12 @@ public class Paintball extends JavaPlugin{
 	}
 	
 	public synchronized void joinLobbyFresh(Player player) {
+		enterLobby(player);
 		//inventory
 		if(saveInventory) {
 			pm.setInv(player, player.getInventory());
 			player.sendMessage(t.getString("INVENTORY_SAVED"));
 		}
-		enterLobby(player);
 		checks(player, true);
 	}
 	
