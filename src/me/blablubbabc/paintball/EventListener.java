@@ -10,7 +10,6 @@ import java.util.concurrent.ConcurrentHashMap;
 import java.util.regex.Pattern;
 
 import me.blablubbabc.paintball.extras.Airstrike;
-import me.blablubbabc.paintball.extras.FallingBlocks;
 import me.blablubbabc.paintball.extras.Grenade;
 import me.blablubbabc.paintball.extras.Mine;
 import me.blablubbabc.paintball.extras.PowerFist;
@@ -30,7 +29,6 @@ import org.bukkit.block.Sign;
 import org.bukkit.entity.Egg;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.EntityType;
-import org.bukkit.entity.FallingBlock;
 import org.bukkit.entity.Fireball;
 import org.bukkit.entity.Player;
 import org.bukkit.entity.Projectile;
@@ -43,7 +41,6 @@ import org.bukkit.event.block.Action;
 import org.bukkit.event.block.BlockBreakEvent;
 import org.bukkit.event.block.BlockPlaceEvent;
 import org.bukkit.event.block.SignChangeEvent;
-import org.bukkit.event.entity.EntityChangeBlockEvent;
 import org.bukkit.event.entity.EntityDamageByEntityEvent;
 import org.bukkit.event.entity.EntityDamageEvent;
 import org.bukkit.event.entity.EntityDeathEvent;
@@ -142,19 +139,6 @@ public class EventListener implements Listener {
 			Turret turret = Turret.isTurret(snowman);
 			if (turret != null) {
 				turret.die(true);
-			}
-		}
-	}
-	
-	@EventHandler(priority = EventPriority.NORMAL)
-	public void onFallingBlockLand(EntityChangeBlockEvent event) {
-		Entity ent = event.getEntity();
-		if(ent.getType() == EntityType.FALLING_BLOCK) {
-			FallingBlock f = (FallingBlock) ent;
-			if(FallingBlocks.containsFallingBlock(f)) {
-				event.setCancelled(true);
-				f.remove();
-				FallingBlocks.removeFallingBlock(f);
 			}
 		}
 	}
@@ -347,14 +331,16 @@ public class EventListener implements Listener {
 	@EventHandler(priority = EventPriority.NORMAL)
 	public void onPlayerInteractPlayer(PlayerInteractEntityEvent event) {
 		Player player = (Player) event.getPlayer();
-		if (plugin.giftsEnabled && Lobby.LOBBY.isMember(player)) {
-			if (player.getItemInHand().getType() == Material.CHEST) {
+		if (Lobby.LOBBY.isMember(player)) {
+			if (plugin.giftsEnabled && player.getItemInHand().getType() == Material.CHEST) {
 				if (event.getRightClicked() instanceof Player) {
 					Player receiver = (Player) event.getRightClicked();
 					if (Lobby.getTeam(receiver) != null) {
 						plugin.christmas.giveGift(player, receiver);
 					}
 				}
+			} else if (player.getItemInHand().getType() == Material.BREWING_STAND_ITEM) {
+				PowerFist.use(player, event.getRightClicked());
 			}
 		}
 	}
@@ -440,9 +426,6 @@ public class EventListener implements Listener {
 					} else if (plugin.giftsEnabled
 							&& player.getItemInHand().getType() == Material.CHEST) {
 						plugin.christmas.unwrapGift(player);
-						//TODo
-					} else if (player.getItemInHand().getType() == Material.BREWING_STAND_ITEM) {
-						PowerFist.use(player);
 					} else if (plugin.sniper
 							&& player.getItemInHand().getType() == Material.CARROT_STICK) {
 						if (action == Action.RIGHT_CLICK_AIR) {

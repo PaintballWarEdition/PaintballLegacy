@@ -21,7 +21,7 @@ public class InSignsFeature {
 			if(s.equals("airstrikes")) s = "as";
 			if(s.equals("money_spent")) s = "spent";
 			
-			insigns.addChanger(new Changer("[PB_"+s.toUpperCase()+"]", "pb"+s) {
+			insigns.addChanger(new Changer("[PB_"+s.toUpperCase()+"]", "paintball.insigns."+s) {
 
 				@Override
 				public String getValue(String playerName) {
