@@ -1,12 +1,7 @@
 package me.blablubbabc.paintball;
 
-import java.util.ArrayList;
-import java.util.List;
-
-import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.block.BlockFace;
-import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
