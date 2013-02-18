@@ -2,6 +2,8 @@ package me.blablubbabc.paintball.extras;
 
 import java.util.ArrayList;
 
+import me.blablubbabc.paintball.Paintball;
+
 import org.bukkit.Location;
 import org.bukkit.Sound;
 import org.bukkit.entity.Player;
@@ -10,20 +12,16 @@ import org.bukkit.potion.PotionEffectType;
 import org.bukkit.util.Vector;
 
 public class Sniper {
-	private static boolean removeSpeed = false;
-	private static double speedmulti = 4.0;
+	private static Paintball plugin;
 	private static ArrayList<Player> zooming = new ArrayList<Player>();
 
-	public static void setRemoveSpeed(boolean remove) {
-		removeSpeed = remove;
-	}
-	public static void setSpeedmulti(double speed) {
-		speedmulti = speed;
+	public static void init(Paintball pl) {
+		plugin = pl;
 	}
 	
 	private static void setZoom(Player player) {
 		player.setWalkSpeed(-0.15F);
-		if(removeSpeed) player.removePotionEffect(PotionEffectType.SPEED);
+		if(plugin.sniperRemoveSpeed) player.removePotionEffect(PotionEffectType.SPEED);
 	}
 	
 	private static void setNoZoom(Player player) {
@@ -67,6 +65,11 @@ public class Sniper {
 
 	private static void moveSnow(final Snowball s, Vector v, Player player) {
 		s.setShooter(player);
-		s.setVelocity(v.multiply(speedmulti));
+		if (plugin.sniperNoGravity) {
+			NoGravity.addEntity(s, v.multiply(plugin.sniperSpeedmulti), plugin.sniperNoGravityDuration);
+		} else {
+			s.setVelocity(v.multiply(plugin.sniperSpeedmulti));
+		}
+		
 	}
 }

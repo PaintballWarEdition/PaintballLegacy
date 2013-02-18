@@ -209,6 +209,8 @@ public class Paintball extends JavaPlugin{
 	public double sniperSpeedmulti;
 	public boolean sniperOnlyUseIfZooming;
 	public boolean sniperRemoveSpeed;
+	public boolean sniperNoGravity;
+	public int sniperNoGravityDuration;
 	
 	
 	//TODO
@@ -399,8 +401,10 @@ public class Paintball extends JavaPlugin{
 		if(getConfig().get("Paintball.Extras.Pumpgun.Needed Ammo") == null)getConfig().set("Paintball.Extras.Pumpgun.Needed Ammo", 5);
 		if(getConfig().get("Paintball.Extras.Sniper.enabled") == null)getConfig().set("Paintball.Extras.Sniper.enabled", true);
 		if(getConfig().get("Paintball.Extras.Sniper.Speedmulti") == null)getConfig().set("Paintball.Extras.Sniper.Speedmulti", 4.0);
-		if(getConfig().get("Paintball.Extras.Sniper.Only useable if zooming") == null)getConfig().set("Paintball.Extras.Only useable if zooming", true);
-		if(getConfig().get("Paintball.Extras.Sniper.Remove speed potion effect on zoom") == null)getConfig().set("Paintball.Extras.Remove speed potion effect on zoom", true);
+		if(getConfig().get("Paintball.Extras.Sniper.Only useable if zooming") == null)getConfig().set("Paintball.Extras.Sniper.Only useable if zooming", true);
+		if(getConfig().get("Paintball.Extras.Sniper.Remove speed potion effect on zoom") == null)getConfig().set("Paintball.Extras.Sniper.Remove speed potion effect on zoom", true);
+		if(getConfig().get("Paintball.Extras.Sniper.No gravity on bullets") == null)getConfig().set("Paintball.Extras.Sniper.No gravity on bullets", false);
+		if(getConfig().get("Paintball.Extras.Sniper.No gravity duration") == null)getConfig().set("Paintball.Extras.Sniper.No gravity duration", 10);
 		if(getConfig().get("Paintball.Shop.enabled") == null)getConfig().set("Paintball.Shop.enabled", true);
 		if(getConfig().get("Paintball.Shop.Goods (amount-name-id-subid-price)") == null)getConfig().set("Paintball.Shop.Goods (amount-name-id-subid-price)", goodsDef);
 		saveConfig();
@@ -626,8 +630,12 @@ public class Paintball extends JavaPlugin{
 		
 		sniper = getConfig().getBoolean("Paintball.Extras.Sniper.enabled", true);
 		sniperSpeedmulti = getConfig().getDouble("Paintball.Extras.Sniper.Speedmulti", 4.0);
-		sniperOnlyUseIfZooming = getConfig().getBoolean("Paintball.Extras.Only useable if zooming", true);
-		sniperRemoveSpeed = getConfig().getBoolean("Paintball.Extras.Remove speed potion effect on zoom", true);
+		sniperOnlyUseIfZooming = getConfig().getBoolean("Paintball.Extras.Sniper.Only useable if zooming", true);
+		sniperRemoveSpeed = getConfig().getBoolean("Paintball.Extras.Sniper.Remove speed potion effect on zoom", true);
+		sniperNoGravity = getConfig().getBoolean("Paintball.Extras.Sniper.No gravity on bullets", false);
+		sniperNoGravityDuration = getConfig().getInt("Paintball.Extras.Sniper.No gravity duration", 10);
+		if (sniperNoGravityDuration < 1) sniperNoGravityDuration = 1;
+		
 		
 
 		//SQLite with version: 110
@@ -679,8 +687,7 @@ public class Paintball extends JavaPlugin{
 		afkMatchCount = new HashMap<String, Integer>();
 		
 		//WEAPONS
-		Sniper.setSpeedmulti(sniperSpeedmulti);
-		Sniper.setRemoveSpeed(sniperRemoveSpeed);
+		Sniper.init(this);
 
 		//autoLobby
 		if(autoLobby) {
