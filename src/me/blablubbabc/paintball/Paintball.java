@@ -9,6 +9,7 @@ import java.util.regex.Pattern;
 
 import me.blablubbabc.BlaDB.BlaSQLite;
 import me.blablubbabc.paintball.Metrics.Graph;
+import me.blablubbabc.paintball.extras.NoGravity;
 import me.blablubbabc.paintball.extras.Sniper;
 import me.blablubbabc.paintball.extras.Turret;
 import org.bukkit.ChatColor;
@@ -696,6 +697,9 @@ public class Paintball extends JavaPlugin{
 				else cm.joinLobbyPre(player);
 			}
 		}
+		
+		//start no gravity task
+		if (sniperNoGravity) NoGravity.run(this);
 
 		//METRICS
 		try {
