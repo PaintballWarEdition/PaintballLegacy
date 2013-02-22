@@ -208,9 +208,8 @@ public class EventListener implements Listener {
 							Match matchTarget = mm.getMatch(target);
 							if (match != null && matchTarget != null) {
 								if (match == matchTarget) {
-									if (!match.isSpec(shooter) && !match.isSpec(target)
-											&& match.isSurvivor(shooter)
-											&& match.isSurvivor(target) && match.started) {
+									if (!match.isSpec(shooter) && !match.isSpec(target) && match.isSurvivor(shooter) && match.isSurvivor(target)
+											&& match.started) {
 										// Geschoss?
 										if (shot instanceof Snowball) {
 											// match
@@ -223,23 +222,20 @@ public class EventListener implements Listener {
 					} else if (event.getEntityType() == EntityType.SNOWMAN) {
 						Snowman snowman = (Snowman) event.getEntity();
 						Turret turret = Turret.isTurret(snowman);
-						if (turret != null && match == turret.match
-								&& match.enemys(shooter, turret.player)) {
+						if (turret != null && match == turret.match && match.enemys(shooter, turret.player)) {
 							turret.hit();
 						}
 					}
 				}
 			}
-		} else if (event.getDamager() instanceof Player && event.getEntity() instanceof Player
-				&& event.getCause() == DamageCause.ENTITY_ATTACK) {
+		} else if (event.getDamager() instanceof Player && event.getEntity() instanceof Player && event.getCause() == DamageCause.ENTITY_ATTACK) {
 			Player attacker = (Player) event.getDamager();
 			Player target = (Player) event.getEntity();
 			if (attacker != target) {
 				if (mm.getMatch(attacker) != null && mm.getMatch(target) != null) {
 					if (mm.getMatch(attacker) == mm.getMatch(target)) {
 						Match match = mm.getMatch(attacker);
-						if (match.enemys(attacker, target) && match.isSurvivor(attacker)
-								&& match.isSurvivor(target) && match.started) {
+						if (match.enemys(attacker, target) && match.isSurvivor(attacker) && match.isSurvivor(target) && match.started) {
 							if (plugin.allowMelee) {
 								if (target.getHealth() > plugin.meleeDamage)
 									target.setHealth(target.getHealth() - plugin.meleeDamage);
@@ -269,8 +265,7 @@ public class EventListener implements Listener {
 		if (event.getEntity().getShooter() instanceof Player) {
 			Player player = (Player) event.getEntity().getShooter();
 			if (Lobby.LOBBY.isMember(player)) {
-				if (mm.getMatch(player) != null && Lobby.isPlaying(player)
-						&& mm.getMatch(player).isSurvivor(player)) {
+				if (mm.getMatch(player) != null && Lobby.isPlaying(player) && mm.getMatch(player).isSurvivor(player)) {
 					if (mm.getMatch(player).started) {
 						Projectile shot = (Projectile) event.getEntity();
 						Vector v = shot.getVelocity();
@@ -320,9 +315,7 @@ public class EventListener implements Listener {
 		if (event.getWhoClicked() instanceof Player) {
 			Player player = (Player) event.getWhoClicked();
 			if (Lobby.LOBBY.isMember(player)) {
-				if (event.getSlotType() != SlotType.CONTAINER
-						&& event.getSlotType() != SlotType.QUICKBAR
-						&& event.getSlotType() != SlotType.OUTSIDE) {
+				if (event.getSlotType() != SlotType.CONTAINER && event.getSlotType() != SlotType.QUICKBAR && event.getSlotType() != SlotType.OUTSIDE) {
 					event.setCancelled(true);
 				}
 			}
@@ -355,101 +348,95 @@ public class EventListener implements Listener {
 			if (match != null && Lobby.isPlaying(player) && match.isSurvivor(player)) {
 				// event.setCancelled(true);
 				Action action = event.getAction();
-				if (match.started && (action == Action.LEFT_CLICK_AIR || action == Action.RIGHT_CLICK_AIR)) {
-					// AIRSTRIKE
-					if (plugin.airstrike && player.getItemInHand().getType() == Material.STICK) {
-						if (Airstrike.marked(player.getName())) {
-							if (Airstrike.getAirstrikes(match).size() < plugin.airstrikeMatchLimit) {
-								if (Airstrike.getAirstrikes(player).size() < plugin.airstrikePlayerLimit) {
-									Airstrike.call(plugin, player, match);
-									// zählen
-									match.airstrike(player);
-									// remove stick if not infinite
-									if (match.setting_airstrikes != -1) {
-										ItemStack i = player.getItemInHand();
-										if (i.getAmount() <= 1)
-											player.setItemInHand(null);
-										else {
-											i.setAmount(i.getAmount() - 1);
-											player.setItemInHand(i);
-										}
+				// AIRSTRIKE
+				if (plugin.airstrike && isAirClick(action) && player.getItemInHand().getType() == Material.STICK) {
+					if (Airstrike.marked(player.getName())) {
+						if (Airstrike.getAirstrikes(match).size() < plugin.airstrikeMatchLimit) {
+							if (Airstrike.getAirstrikes(player).size() < plugin.airstrikePlayerLimit) {
+								Airstrike.call(plugin, player, match);
+								// zählen
+								match.airstrike(player);
+								// remove stick if not infinite
+								if (match.setting_airstrikes != -1) {
+									ItemStack i = player.getItemInHand();
+									if (i.getAmount() <= 1)
+										player.setItemInHand(null);
+									else {
+										i.setAmount(i.getAmount() - 1);
+										player.setItemInHand(i);
 									}
-								} else {
-									player.sendMessage(plugin.t
-											.getString("AIRSTRIKE_PLAYER_LIMIT_REACHED"));
 								}
+							} else {
+								player.sendMessage(plugin.t.getString("AIRSTRIKE_PLAYER_LIMIT_REACHED"));
+							}
 
-							} else {
-								player.sendMessage(plugin.t
-										.getString("AIRSTRIK_MATCH_LIMIT_REACHED"));
-							}
-						}
-						// GRENADE
-					} else if (plugin.grenade && player.getItemInHand().getType() == Material.EGG) {
-						player.sendMessage(plugin.t.getString("GRENADE_THROW"));
-						player.playSound(player.getLocation(), Sound.SILVERFISH_IDLE, 100L, 1L);
-						// PUMPGUN
-					} else if (plugin.pumpgun
-							&& player.getItemInHand().getType() == Material.SPECKLED_MELON) {
-						PlayerInventory inv = player.getInventory();
-						if (inv.contains(Material.SNOW_BALL, plugin.pumpgunAmmo)) {
-							Utils.removeInventoryItems(inv, Material.SNOW_BALL, plugin.pumpgunAmmo);
-							player.updateInventory();
-							Pumpgun.shot(player, plugin);
 						} else {
-							player.playSound(player.getEyeLocation(), Sound.FIRE_IGNITE, 100F, 2F);
+							player.sendMessage(plugin.t.getString("AIRSTRIK_MATCH_LIMIT_REACHED"));
 						}
-						// ROCKET
-					} else if (plugin.rocket && player.getItemInHand().getType() == Material.DIODE) {
-						if (Rocket.getRockets(player).size() < plugin.rocketMatchLimit) {
-							if (Rocket.getRockets(player).size() < plugin.rocketPlayerLimit) {
-								player.playSound(player.getLocation(), Sound.SILVERFISH_IDLE, 100L,
-										1L);
-								Fireball rocket = player.launchProjectile(Fireball.class);
-								rocket.setShooter(player);
-								rocket.setVelocity(player.getLocation().getDirection().clone()
-										.normalize().multiply(plugin.rocketSpeedMulti));
-								new Rocket(player, rocket, plugin);
-								ItemStack i = player.getItemInHand();
-								if (i.getAmount() <= 1)
-									player.setItemInHand(null);
-								else {
-									i.setAmount(i.getAmount() - 1);
-									player.setItemInHand(i);
-								}
-							} else {
-								player.sendMessage(plugin.t
-										.getString("ROCKET_PLAYER_LIMIT_REACHED"));
+					}
+					// GRENADE
+				} else if (plugin.grenade && (action == Action.RIGHT_CLICK_AIR || action == Action.RIGHT_CLICK_BLOCK) && player.getItemInHand().getType() == Material.EGG) {
+					player.sendMessage(plugin.t.getString("GRENADE_THROW"));
+					player.playSound(player.getLocation(), Sound.SILVERFISH_IDLE, 100L, 1L);
+					// PUMPGUN
+				} else if (plugin.pumpgun && isAirClick(action) && player.getItemInHand().getType() == Material.SPECKLED_MELON) {
+					PlayerInventory inv = player.getInventory();
+					if (inv.contains(Material.SNOW_BALL, plugin.pumpgunAmmo)) {
+						Utils.removeInventoryItems(inv, Material.SNOW_BALL, plugin.pumpgunAmmo);
+						player.updateInventory();
+						Pumpgun.shot(player, plugin);
+					} else {
+						player.playSound(player.getEyeLocation(), Sound.FIRE_IGNITE, 100F, 2F);
+					}
+					// ROCKET
+				} else if (plugin.rocket && isAirClick(action) && player.getItemInHand().getType() == Material.DIODE) {
+					if (Rocket.getRockets(player).size() < plugin.rocketMatchLimit) {
+						if (Rocket.getRockets(player).size() < plugin.rocketPlayerLimit) {
+							player.playSound(player.getLocation(), Sound.SILVERFISH_IDLE, 100L, 1L);
+							Fireball rocket = player.launchProjectile(Fireball.class);
+							rocket.setShooter(player);
+							rocket.setVelocity(player.getLocation().getDirection().clone().normalize().multiply(plugin.rocketSpeedMulti));
+							new Rocket(player, rocket, plugin);
+							ItemStack i = player.getItemInHand();
+							if (i.getAmount() <= 1)
+								player.setItemInHand(null);
+							else {
+								i.setAmount(i.getAmount() - 1);
+								player.setItemInHand(i);
 							}
 						} else {
-							player.sendMessage(plugin.t.getString("ROCKET_MATCH_LIMIT_REACHED"));
+							player.sendMessage(plugin.t.getString("ROCKET_PLAYER_LIMIT_REACHED"));
 						}
-					} else if (plugin.giftsEnabled
-							&& player.getItemInHand().getType() == Material.CHEST) {
-						plugin.christmas.unwrapGift(player);
-					} else if (plugin.sniper
-							&& player.getItemInHand().getType() == Material.CARROT_STICK) {
-						if (action == Action.RIGHT_CLICK_AIR) {
-							Sniper.toggleZoom(player);
-						} else if (action == Action.LEFT_CLICK_AIR) {
-							if(Sniper.isZooming(player)) {
-								PlayerInventory inv = player.getInventory();
-								if (inv.contains(Material.SNOW_BALL, 1)) {
-									Utils.removeInventoryItems(inv, Material.SNOW_BALL, 1);
-									player.updateInventory();
-									match.shot(player);
-									Sniper.shoot(player);
-								} else {
-									player.playSound(player.getEyeLocation(), Sound.FIRE_IGNITE, 100F, 2F);
-								}
+					} else {
+						player.sendMessage(plugin.t.getString("ROCKET_MATCH_LIMIT_REACHED"));
+					}
+				} else if (plugin.giftsEnabled && player.getItemInHand().getType() == Material.CHEST) {
+					plugin.christmas.unwrapGift(player);
+				} else if (plugin.sniper && isAirClick(action) && player.getItemInHand().getType() == Material.CARROT_STICK) {
+					if (action == Action.RIGHT_CLICK_AIR) {
+						Sniper.toggleZoom(player);
+					} else if (action == Action.LEFT_CLICK_AIR) {
+						if (Sniper.isZooming(player)) {
+							PlayerInventory inv = player.getInventory();
+							if (inv.contains(Material.SNOW_BALL, 1)) {
+								Utils.removeInventoryItems(inv, Material.SNOW_BALL, 1);
+								player.updateInventory();
+								match.shot(player);
+								Sniper.shoot(player);
 							} else {
 								player.playSound(player.getEyeLocation(), Sound.FIRE_IGNITE, 100F, 2F);
 							}
+						} else {
+							player.playSound(player.getEyeLocation(), Sound.FIRE_IGNITE, 100F, 2F);
 						}
 					}
 				}
 			}
 		}
+	}
+
+	private boolean isAirClick(Action action) {
+		return (action == Action.RIGHT_CLICK_AIR || action == Action.LEFT_CLICK_AIR);
 	}
 
 	@EventHandler(priority = EventPriority.NORMAL)
@@ -465,25 +452,23 @@ public class EventListener implements Listener {
 			if (item != null) {
 				if (plugin.airstrike && item.getType() == Material.STICK) {
 					if (!taskIds.containsKey(name)) {
-						int taskId = plugin.getServer().getScheduler()
-								.scheduleSyncRepeatingTask(plugin, new Runnable() {
+						int taskId = plugin.getServer().getScheduler().scheduleSyncRepeatingTask(plugin, new Runnable() {
 
-									@Override
-									public void run() {
-										if (player.getItemInHand().getTypeId() == 280) {
-											Block block = player.getTargetBlock(transparent, 1000);
-											if (!Airstrike.isBlock(block, name)) {
-												Airstrike.demark(player);
-												Airstrike.mark(block, player);
-											}
-										} else {
-											plugin.getServer().getScheduler()
-													.cancelTask(taskIds.get(name));
-											taskIds.remove(name);
-											Airstrike.demark(player);
-										}
+							@Override
+							public void run() {
+								if (player.getItemInHand().getTypeId() == 280) {
+									Block block = player.getTargetBlock(transparent, 1000);
+									if (!Airstrike.isBlock(block, name)) {
+										Airstrike.demark(player);
+										Airstrike.mark(block, player);
 									}
-								}, 0L, 1L);
+								} else {
+									plugin.getServer().getScheduler().cancelTask(taskIds.get(name));
+									taskIds.remove(name);
+									Airstrike.demark(player);
+								}
+							}
+						}, 0L, 1L);
 						taskIds.put(name, taskId);
 					}
 				} else {
@@ -510,20 +495,15 @@ public class EventListener implements Listener {
 					if (plugin.mine) {
 						Block block = loc.getBlock();
 						Mine mine = Mine.isMine(block);
-						if (mine != null
-								&& match == mine.match
-								&& (match.enemys(player, mine.player) || player.equals(mine.player))) {
+						if (mine != null && match == mine.match && (match.enemys(player, mine.player) || player.equals(mine.player))) {
 							mine.explode(true);
 						}
 
-						BlockIterator iterator = new BlockIterator(loc.getWorld(), loc.toVector(),
-								shot.getVelocity().normalize(), 0, 2);
+						BlockIterator iterator = new BlockIterator(loc.getWorld(), loc.toVector(), shot.getVelocity().normalize(), 0, 2);
 						while (iterator.hasNext()) {
 							Mine m = Mine.isMine(iterator.next());
 							if (m != null) {
-								if (match == m.match
-										&& (match.enemys(player, m.player) || player
-												.equals(m.player))) {
+								if (match == m.match && (match.enemys(player, m.player) || player.equals(m.player))) {
 									m.explode(true);
 								}
 							}
@@ -541,18 +521,13 @@ public class EventListener implements Listener {
 			}
 		} else if (plugin.grenade && shot instanceof Egg) {
 			/*
-			//TEST
-			Location loc = shot.getLocation();
-			Material mat = Material.DIRT;
-			BlockIterator iterator = new BlockIterator(loc.getWorld(), loc.toVector(),
-					shot.getVelocity().normalize(), 0, 3);
-			while (iterator.hasNext()) {
-				Material m = iterator.next().getType();
-				if (m != null && m != Material.AIR) {
-					mat = m;
-					break;
-				}
-			}*/
+			 * //TEST Location loc = shot.getLocation(); Material mat =
+			 * Material.DIRT; BlockIterator iterator = new
+			 * BlockIterator(loc.getWorld(), loc.toVector(),
+			 * shot.getVelocity().normalize(), 0, 3); while (iterator.hasNext())
+			 * { Material m = iterator.next().getType(); if (m != null && m !=
+			 * Material.AIR) { mat = m; break; } }
+			 */
 			Grenade.hit(shot, plugin);
 		} else if (plugin.rocket && shot instanceof Fireball) {
 			Rocket rocket = Rocket.isRocket((Fireball) shot);
@@ -568,8 +543,7 @@ public class EventListener implements Listener {
 			Lobby team = Lobby.getTeam(target);
 			if (team != null) {
 				Match match = plugin.mm.getMatch(target);
-				if (match != null && plugin.damage && team != Lobby.SPECTATE
-						&& match.isSurvivor(target) && match.started
+				if (match != null && plugin.damage && team != Lobby.SPECTATE && match.isSurvivor(target) && match.started
 						&& event.getCause() != DamageCause.ENTITY_ATTACK) {
 					if (target.getHealth() <= event.getDamage()) {
 						event.setDamage(0);
@@ -588,7 +562,8 @@ public class EventListener implements Listener {
 	public void onPlayerBreak(BlockBreakEvent event) {
 		Player player = event.getPlayer();
 		if (Lobby.LOBBY.isMember(player)) {
-			if (player.getGameMode() != GameMode.CREATIVE) event.setCancelled(true);
+			if (player.getGameMode() != GameMode.CREATIVE)
+				event.setCancelled(true);
 		}
 	}
 
@@ -597,8 +572,10 @@ public class EventListener implements Listener {
 		Player player = event.getPlayer();
 		if (Lobby.LOBBY.isMember(player)) {
 			// if (!player.isOp() && !player.hasPermission("paintball.admin")) {
-			if (player.getGameMode() != GameMode.CREATIVE) event.setCancelled(true);
-			else return;
+			if (player.getGameMode() != GameMode.CREATIVE)
+				event.setCancelled(true);
+			else
+				return;
 			// }
 			final Block block = event.getBlockPlaced();
 			Match m = plugin.mm.getMatch(player);
@@ -607,8 +584,7 @@ public class EventListener implements Listener {
 					// turret:
 					if (Turret.getTurrets(player).size() < plugin.turretMatchLimit) {
 						if (Turret.getTurrets(player).size() < plugin.turretPlayerLimit) {
-							Snowman snowman = (Snowman) block.getLocation().getWorld()
-									.spawnEntity(block.getLocation(), EntityType.SNOWMAN);
+							Snowman snowman = (Snowman) block.getLocation().getWorld().spawnEntity(block.getLocation(), EntityType.SNOWMAN);
 							new Turret(player, snowman, plugin.mm.getMatch(player), plugin);
 							ItemStack i = player.getItemInHand();
 							if (i.getAmount() <= 1)
@@ -628,14 +604,13 @@ public class EventListener implements Listener {
 					// mine:
 					if (Mine.getMines(player).size() < plugin.mineMatchLimit) {
 						if (Mine.getMines(player).size() < plugin.minePlayerLimit) {
-							plugin.getServer().getScheduler()
-									.scheduleSyncDelayedTask(this.plugin, new Runnable() {
+							plugin.getServer().getScheduler().scheduleSyncDelayedTask(this.plugin, new Runnable() {
 
-										@Override
-										public void run() {
-											block.setType(Material.FLOWER_POT);
-										}
-									}, 1L);
+								@Override
+								public void run() {
+									block.setType(Material.FLOWER_POT);
+								}
+							}, 1L);
 							new Mine(player, block, plugin.mm.getMatch(player), plugin);
 							ItemStack i = player.getItemInHand();
 							if (i.getAmount() <= 1)
@@ -686,20 +661,15 @@ public class EventListener implements Listener {
 
 	@EventHandler(priority = EventPriority.NORMAL)
 	public void onPlayerCommand(PlayerCommandPreprocessEvent event) {
-		if (Lobby.LOBBY.isMember(event.getPlayer())
-				&& !event.getMessage().startsWith("/pb")
-				&& (!plugin.allowedCommands.isEmpty() ? !isAllowedCommand(event.getMessage())
-						: true)) {
+		if (Lobby.LOBBY.isMember(event.getPlayer()) && !event.getMessage().startsWith("/pb")
+				&& (!plugin.allowedCommands.isEmpty() ? !isAllowedCommand(event.getMessage()) : true)) {
 			if (!event.getPlayer().hasPermission("paintball.admin") && !event.getPlayer().isOp()) {
 				event.getPlayer().sendMessage(plugin.t.getString("COMMAND_NOT_ALLOWED"));
 				event.setCancelled(true);
 			}
 		} else if (!event.getMessage().startsWith("/pb")
-				&& (!plugin.blacklistedCommands.isEmpty() ? isBlacklistedCommand(event.getMessage())
-						: false)) {
-			if (!plugin.blacklistAdminOverride
-					&& !event.getPlayer().hasPermission("paintball.admin")
-					&& !event.getPlayer().isOp()) {
+				&& (!plugin.blacklistedCommands.isEmpty() ? isBlacklistedCommand(event.getMessage()) : false)) {
+			if (!plugin.blacklistAdminOverride && !event.getPlayer().hasPermission("paintball.admin") && !event.getPlayer().isOp()) {
 				event.getPlayer().sendMessage(plugin.t.getString("COMMAND_BLACKLISTED"));
 				event.setCancelled(true);
 			}
@@ -729,8 +699,7 @@ public class EventListener implements Listener {
 		String cmds = "";
 		for (int i = 0; i < split.length; i++) {
 			cmds += split[i];
-			if (plugin.allowedCommands.contains(cmds)
-					|| plugin.allowedCommands.contains(cmds + " *"))
+			if (plugin.allowedCommands.contains(cmds) || plugin.allowedCommands.contains(cmds + " *"))
 				return true;
 			cmds += " ";
 		}
