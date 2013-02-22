@@ -74,18 +74,6 @@ public class MatchManager{
 		}
 	}
 
-	public void softCheck() {
-		if(plugin.softreload) {
-			if(countdownStarted) {
-				plugin.getServer().getScheduler().cancelTask(taskID);
-				countdownStarted = false;
-			}
-			if(matches.size() <= 0) {
-				plugin.reload();
-			}
-		}
-	}
-
 	public synchronized void gameStart() {
 		//auto spec lobby
 		if(plugin.autoSpecLobby) {
@@ -134,7 +122,7 @@ public class MatchManager{
 			final HashMap<String, Integer> shots, final HashMap<String, Integer> hits, final HashMap<String, Integer> kills, final HashMap<String, Integer> deaths,
 			final HashMap<String, Integer> teamattacks, final HashMap<String, Integer> grenades, final HashMap<String, Integer> airstrikes) {
 		//TIME
-		long time1 = System.nanoTime();
+		final long time1 = System.nanoTime();
 		//STATS
 		final HashMap<String, Integer> wins = new HashMap<String, Integer>();
 		final HashMap<String, Integer> defeats = new HashMap<String, Integer>();
@@ -278,6 +266,32 @@ public class MatchManager{
 				}
 				plugin.sql.commit();
 				plugin.sql.setAutoCommit(auto);
+				
+				//Finished. Let's go on:
+				plugin.getServer().getScheduler().runTask(plugin, new Runnable() {
+					public void run() {
+						//close match
+						plugin.am.setNotActive(match.getArena());
+						match.updateTags();
+						matches.remove(match);
+						//ready? countdown?
+						plugin.nf.status(plugin.t.getString("CHOOSE_TEAM"));
+
+						//players:
+						plugin.nf.players();
+
+						if(ready().equalsIgnoreCase(plugin.t.getString("READY"))) {
+							countdown(plugin.countdown, plugin.countdownInit);
+						} else {
+							plugin.nf.status(ready());
+						}
+						//TIME
+						long time2 = System.nanoTime();
+						Double delta = (time2 - time1)/10E6;
+						DecimalFormat dec = new DecimalFormat("#.###");
+						if(plugin.debug) plugin.nf.text("+Async Stats Saving: Took " + dec.format(delta) + " ms");
+					}
+				});
 			}
 		});
 		
@@ -384,27 +398,24 @@ public class MatchManager{
 				}
 			}
 		}
-
-		//close match
-		plugin.am.setNotActive(match.getArena());
-		match.updateTags();
-		matches.remove(match);
-		//ready? countdown?
-		plugin.nf.status(plugin.t.getString("CHOOSE_TEAM"));
-
-		//players:
-		plugin.nf.players();
-
-		if(ready().equalsIgnoreCase(plugin.t.getString("READY"))) {
-			countdown(plugin.countdown, plugin.countdownInit);
-		} else {
-			plugin.nf.status(ready());
-		}
+		
 		//TIME
 		long time2 = System.nanoTime();
 		Double delta = (time2 - time1)/10E6;
-		DecimalFormat dec = new DecimalFormat("##########.###");
-		if(plugin.debug) plugin.nf.text("Took " + dec.format(delta) + " ms");
+		DecimalFormat dec = new DecimalFormat("#.###");
+		if(plugin.debug) plugin.nf.text("Main-Thread: Took " + dec.format(delta) + " ms");
+	}
+	
+	public void softCheck() {
+		if(plugin.softreload) {
+			if(countdownStarted) {
+				plugin.getServer().getScheduler().cancelTask(taskID);
+				countdownStarted = false;
+			}
+			if(matches.size() <= 0) {
+				plugin.reload();
+			}
+		}
 	}
 
 	public synchronized Match getMatch(Player player) {
