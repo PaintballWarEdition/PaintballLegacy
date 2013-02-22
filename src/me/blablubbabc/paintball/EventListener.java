@@ -20,6 +20,7 @@ import me.blablubbabc.paintball.extras.Turret;
 
 import org.bukkit.ChatColor;
 import org.bukkit.Effect;
+import org.bukkit.GameMode;
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.Sound;
@@ -598,12 +599,13 @@ public class EventListener implements Listener {
 		Player player = event.getPlayer();
 		if (Lobby.LOBBY.isMember(player)) {
 			// if (!player.isOp() && !player.hasPermission("paintball.admin")) {
-			event.setCancelled(true);
+			if (player.getGameMode() != GameMode.CREATIVE) event.setCancelled(true);
 			// }
 			final Block block = event.getBlockPlaced();
 			Match m = plugin.mm.getMatch(player);
 			if (m != null && m.started && m.isSurvivor(player)) {
 				if (plugin.turret && block.getType() == Material.PUMPKIN) {
+					event.setCancelled(true);
 					// turret:
 					if (Turret.getTurrets(player).size() < plugin.turretMatchLimit) {
 						if (Turret.getTurrets(player).size() < plugin.turretPlayerLimit) {
@@ -625,6 +627,7 @@ public class EventListener implements Listener {
 					}
 
 				} else if (plugin.mine && block.getType() == Material.FLOWER_POT) {
+					event.setCancelled(true);
 					// mine:
 					if (Mine.getMines(player).size() < plugin.mineMatchLimit) {
 						if (Mine.getMines(player).size() < plugin.minePlayerLimit) {
