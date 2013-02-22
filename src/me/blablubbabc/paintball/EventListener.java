@@ -600,12 +600,12 @@ public class EventListener implements Listener {
 		if (Lobby.LOBBY.isMember(player)) {
 			// if (!player.isOp() && !player.hasPermission("paintball.admin")) {
 			if (player.getGameMode() != GameMode.CREATIVE) event.setCancelled(true);
+			else return;
 			// }
 			final Block block = event.getBlockPlaced();
 			Match m = plugin.mm.getMatch(player);
 			if (m != null && m.started && m.isSurvivor(player)) {
 				if (plugin.turret && block.getType() == Material.PUMPKIN) {
-					event.setCancelled(true);
 					// turret:
 					if (Turret.getTurrets(player).size() < plugin.turretMatchLimit) {
 						if (Turret.getTurrets(player).size() < plugin.turretPlayerLimit) {
@@ -627,7 +627,6 @@ public class EventListener implements Listener {
 					}
 
 				} else if (plugin.mine && block.getType() == Material.FLOWER_POT) {
-					event.setCancelled(true);
 					// mine:
 					if (Mine.getMines(player).size() < plugin.mineMatchLimit) {
 						if (Mine.getMines(player).size() < plugin.minePlayerLimit) {
