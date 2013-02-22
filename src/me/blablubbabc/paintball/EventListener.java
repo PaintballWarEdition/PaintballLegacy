@@ -588,9 +588,7 @@ public class EventListener implements Listener {
 	public void onPlayerBreak(BlockBreakEvent event) {
 		Player player = event.getPlayer();
 		if (Lobby.LOBBY.isMember(player)) {
-			// if (!player.isOp() && !player.hasPermission("paintball.admin")) {
-			event.setCancelled(true);
-			// }
+			if (player.getGameMode() != GameMode.CREATIVE) event.setCancelled(true);
 		}
 	}
 
