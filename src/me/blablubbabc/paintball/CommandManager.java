@@ -128,7 +128,7 @@ public class CommandManager implements CommandExecutor{
 							Lobby.getTeam(player).removeMember(player);
 							player.sendMessage(plugin.t.getString("YOU_LEFT_TEAM"));
 							return true;
-						} else if(plugin.autoLobby) {
+						} else if(plugin.autoLobby && !player.hasPermission("paintball.admin")) {
 							player.sendMessage(plugin.t.getString("CANNOT_LEAVE_LOBBY"));
 							return true;
 						}
