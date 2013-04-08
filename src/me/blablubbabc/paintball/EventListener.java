@@ -303,7 +303,7 @@ public class EventListener implements Listener {
 	@EventHandler(priority = EventPriority.NORMAL)
 	public void onEggThrow(PlayerEggThrowEvent event) {
 		if (event.getEgg().getShooter() instanceof Player) {
-			Player player = (Player) event.getEgg().getShooter();
+			Player player = (Player) event.getEgg().getShooter();	
 			if (Lobby.LOBBY.isMember(player)) {
 				event.setHatching(false);
 			}

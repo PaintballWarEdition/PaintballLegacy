@@ -3,6 +3,8 @@ package me.blablubbabc.paintball.extras;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.LinkedList;
+import java.util.List;
+
 import me.blablubbabc.paintball.Match;
 import me.blablubbabc.paintball.Paintball;
 import org.bukkit.Location;
@@ -16,7 +18,7 @@ import org.bukkit.entity.Player;
 import org.bukkit.util.Vector;
 
 public class Airstrike{
-	private static ArrayList<Airstrike> airstrikes = new ArrayList<Airstrike>();
+	private static List<Airstrike> airstrikes = new ArrayList<Airstrike>();
 
 	public static synchronized void addAirstrike(Airstrike airstrike) {
 		airstrikes.add(airstrike);
@@ -26,8 +28,8 @@ public class Airstrike{
 		airstrikes.remove(airstrike);
 	}
 
-	public static synchronized ArrayList<Airstrike> getAirstrikes(Match match) {
-		ArrayList<Airstrike> list = new ArrayList<Airstrike>();
+	public static synchronized List<Airstrike> getAirstrikes(Match match) {
+		List<Airstrike> list = new ArrayList<Airstrike>();
 		for (Airstrike a : airstrikes) {
 			if (a.match.equals(match)) {
 				list.add(a);
@@ -36,8 +38,8 @@ public class Airstrike{
 		return list;
 	}
 
-	public static synchronized ArrayList<Airstrike> getAirstrikes(Player player) {
-		ArrayList<Airstrike> list = new ArrayList<Airstrike>();
+	public static synchronized List<Airstrike> getAirstrikes(Player player) {
+		List<Airstrike> list = new ArrayList<Airstrike>();
 		for (Airstrike a : airstrikes) {
 			if (a.player.equals(player)) {
 				list.add(a);
@@ -49,12 +51,14 @@ public class Airstrike{
 	public final Player player;
 	public final Match match;
 	public final Paintball plugin;
+	//public final List<Egg> bombs;
 	public int task;
 
 	public Airstrike(Player player, Match match, Paintball plugin) {
 		this.match = match;
 		this.player = player;
 		this.plugin = plugin;
+		//this.bombs = new ArrayList<Egg>();
 		addAirstrike(this);
 	}
 	
@@ -99,6 +103,7 @@ public class Airstrike{
 					egg.teleport(l);
 					egg.setVelocity(new Vector(0,0,0));
 					//Egg egg = player.getWorld().spawn(l, Egg.class);
+					//a.bombs.add(egg);
 					Grenade.eggThrow(player, egg);
 					//PlayerEggThrowEvent event = new PlayerEggThrowEvent(player, egg, false, (byte) 0, EntityType.CHICKEN);
 					//ProjectileLaunchEvent event = new ProjectileLaunchEvent(egg);
@@ -111,7 +116,8 @@ public class Airstrike{
 						definalMark(player);
 						chick.remove();
 						//active = false;
-						removeAirstrike(a);		
+						removeAirstrike(a);
+						//a.bombs.clear();
 					}
 				}
 			}, 0L, 5L);
@@ -210,5 +216,16 @@ public class Airstrike{
 		if(marks.get(name) != null) return true;
 		return false;
 	}
+	
+	/*public static boolean isBomb(Egg egg, Player player) {
+		List<Airstrike> airstrikes = getAirstrikes(player);
+		for (Airstrike a : airstrikes) {
+			for (Egg e : a.bombs) {
+				if (egg.equals(e)) return true;
+			}
+		}
+		return false;
+		
+	}*/
 	
 }
