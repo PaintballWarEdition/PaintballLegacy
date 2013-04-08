@@ -3,6 +3,8 @@ package me.blablubbabc.paintball;
 import java.text.DecimalFormat;
 import de.blablubbabc.insigns.Changer;
 import de.blablubbabc.insigns.InSigns;
+
+import org.bukkit.entity.Player;
 import org.bukkit.plugin.Plugin;
 
 public class InSignsFeature {
@@ -24,7 +26,8 @@ public class InSignsFeature {
 			insigns.addChanger(new Changer("[PB_"+s.toUpperCase()+"]", "paintball.insigns."+s) {
 
 				@Override
-				public String getValue(String playerName) {
+				public String getValue(Player player) {
+					String playerName = player.getName();
 					if(!plugin.sql.isConnected()) return plugin.t.getString("NOT_CONNECTED");
 					else if(plugin.pm.exists(playerName)) {
 						if(stat.equals("hitquote") || stat.equals("kd")) {
