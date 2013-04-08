@@ -734,6 +734,14 @@ public class Match {
 		// target already dead?
 		if (livesLeft.get(target) <= 0)
 			return;
+		
+		String targetName = target.getName();
+		String shooterName = shooter.getName();
+		
+		HashMap<String, String> vars = new HashMap<String, String>();
+		vars.put("target", targetName);
+		vars.put("shooter", shooterName);
+		
 		// Teams?
 		if (enemys(target, shooter)) {
 			// player not dead already?
@@ -742,8 +750,8 @@ public class Match {
 				if (isProtected(target)) {
 					shooter.playSound(shooter.getLocation(), Sound.ANVIL_LAND, 70F, 2F);
 					target.playSound(shooter.getLocation(), Sound.ANVIL_LAND, 60F, 0F);
-					shooter.sendMessage(plugin.t.getString("YOU_HIT_PROTECTED"));
-					target.sendMessage(plugin.t.getString("YOU_WERE_HIT_PROTECTED"));
+					shooter.sendMessage(plugin.t.getString("YOU_HIT_PROTECTED", vars));
+					target.sendMessage(plugin.t.getString("YOU_WERE_HIT_PROTECTED", vars));
 				} else {
 					// -1 live
 					livesLeft.put(target, livesLeft.get(target) - 1);
@@ -756,22 +764,26 @@ public class Match {
 					} else {
 						shooter.playSound(shooter.getLocation(), Sound.MAGMACUBE_WALK, 100F, 1F);
 						target.playSound(shooter.getLocation(), Sound.BAT_HURT, 80F, 0F);
-						shooter.sendMessage(plugin.t.getString("YOU_HIT"));
-						target.sendMessage(plugin.t.getString("YOU_WERE_HIT"));
+						
+						vars.put("hits_taken", String.valueOf(setting_lives - livesLeft.get(target)));
+						vars.put("health_left", String.valueOf(livesLeft.get(target)));
+						vars.put("health", String.valueOf(setting_lives));
+						
+						shooter.sendMessage(plugin.t.getString("YOU_HIT", vars));
+						target.sendMessage(plugin.t.getString("YOU_WERE_HIT", vars));
 					}
 				}
 			}
 		} else if (friendly(target, shooter)) {
 			// message
 			// -points
-			teamattacks.put(shooter.getName(), teamattacks.get(shooter.getName()) + 1);
+			teamattacks.put(shooterName, teamattacks.get(shooter.getName()) + 1);
 			shooter.playSound(shooter.getLocation(), Sound.ANVIL_LAND, 70F, 1F);
 			if (plugin.pointsPerTeamattack != 0) {
-				HashMap<String, String> vars = new HashMap<String, String>();
 				vars.put("points", String.valueOf(plugin.pointsPerTeamattack));
 				shooter.sendMessage(plugin.t.getString("YOU_HIT_MATE_POINTS", vars));
 			} else {
-				shooter.sendMessage(plugin.t.getString("YOU_HIT_MATE"));
+				shooter.sendMessage(plugin.t.getString("YOU_HIT_MATE", vars));
 			}
 		}
 	}
