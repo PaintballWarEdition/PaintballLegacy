@@ -690,6 +690,10 @@ public class Match {
 			spec.remove(player);
 	}
 
+	public int respawnsLeft(Player player) {
+		return respawnsLeft.get(player);
+	}
+	
 	private synchronized void respawn(Player player) {
 		livesLeft.put(player, setting_lives);
 		if (setting_respawns != -1)
