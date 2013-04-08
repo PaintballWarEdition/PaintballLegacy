@@ -194,7 +194,7 @@ public class EventListener implements Listener {
 			lastSignUpdate = System.currentTimeMillis();
 		}
 	}
-
+	
 	@EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = false)
 	public void onPlayerHit(EntityDamageByEntityEvent event) {
 		if (event.getDamager() instanceof Projectile) {
@@ -233,17 +233,22 @@ public class EventListener implements Listener {
 			Player attacker = (Player) event.getDamager();
 			Player target = (Player) event.getEntity();
 			if (attacker != target) {
-				if (mm.getMatch(attacker) != null && mm.getMatch(target) != null) {
-					if (mm.getMatch(attacker) == mm.getMatch(target)) {
-						Match match = mm.getMatch(attacker);
-						if (match.enemys(attacker, target) && match.isSurvivor(attacker) && match.isSurvivor(target) && match.started) {
-							if (plugin.allowMelee) {
-								if (target.getHealth() > plugin.meleeDamage)
-									target.setHealth(target.getHealth() - plugin.meleeDamage);
-								else {
-									plugin.mm.getMatch(target).death(target);
+				if (attacker != target) {
+					Match matchA = mm.getMatch(attacker);
+					if (matchA != null) {
+						Match matchT = mm.getMatch(target);
+						if (matchT != null) {
+							if (matchA == matchT) {
+								if (matchA.enemys(attacker, target) && matchA.isSurvivor(attacker) && matchA.isSurvivor(target) && matchA.started) {
+									if (plugin.allowMelee) {
+										if (target.getHealth() > plugin.meleeDamage)
+											target.setHealth(target.getHealth() - plugin.meleeDamage);
+										else {
+											matchA.death(target);
+										}
+									}
 								}
-							}
+							}	
 						}
 					}
 				}
@@ -574,8 +579,8 @@ public class EventListener implements Listener {
 				rocket.die();
 		}
 	}
-
-	@EventHandler(priority = EventPriority.NORMAL)
+	
+	@EventHandler(priority = EventPriority.NORMAL, ignoreCancelled = true)
 	public void onPlayerDamage(EntityDamageEvent event) {
 		if (event.getEntity() instanceof Player) {
 			Player target = (Player) event.getEntity();
