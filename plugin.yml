@@ -3,7 +3,7 @@ main: me.blablubbabc.paintball.Paintball
 version: 1.1.7
 author: blablubbabc
 description: Paintball by blablubbabc.
-softdepend: [InSigns, TagAPI]
+softdepend: [InSigns, TagAPI, Multiverse-Core, My Worlds, Transporter, Multiworld]
 commands:
     pb:
       description: Paintball commands.
