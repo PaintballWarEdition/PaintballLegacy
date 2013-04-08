@@ -31,6 +31,7 @@ public class Match {
 	private ArrayList<Player> bothTeams = new ArrayList<Player>();
 	private ArrayList<Player> allPlayers = new ArrayList<Player>();
 	private HashMap<Player, Integer> protection = new HashMap<Player, Integer>();
+	private Set<String> justRespawned = new HashSet<String>();
 	// STATS
 	private HashMap<String, Integer> shots = new HashMap<String, Integer>();
 	private HashMap<String, Integer> hits = new HashMap<String, Integer>();
@@ -219,7 +220,7 @@ public class Match {
 				|| plugin.getServer().getScheduler().isQueued(roundTimeTaskId))
 			plugin.getServer().getScheduler().cancelTask(roundTimeTaskId);
 	}
-
+	
 	private void startRoundTimer() {
 		roundTime = setting_round_time;
 
@@ -376,6 +377,23 @@ public class Match {
 			protection.put(player, plugin.protectionTime);
 			player.sendMessage(plugin.t.getString("PROTECTION", vars));
 		}
+		// JUST RESPAWNED TIMER
+		// this will not work that accurate like intended, if the player gets killed, while being justRespawned.
+		// For that reason is the timers delay very short.
+		final String name = player.getName();
+		justRespawned.add(name);
+		plugin.getServer().getScheduler().scheduleSyncDelayedTask(plugin, new Runnable() {
+
+			@Override
+			public void run() {
+				justRespawned.remove(name);
+			}
+			
+		}, 10L);
+	}
+	
+	public boolean isJustRespawned(String playerName) {
+		return justRespawned.contains(playerName);
 	}
 
 	@SuppressWarnings("deprecation")

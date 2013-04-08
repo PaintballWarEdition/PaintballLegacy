@@ -352,7 +352,7 @@ public class EventListener implements Listener {
 		if (Lobby.LOBBY.isMember(player)) {
 			Match match = mm.getMatch(player);
 			if (match != null && Lobby.isPlaying(player) && match.isSurvivor(player)) {
-				if (!match.started) {
+				if (!match.started || match.isJustRespawned(player.getName())) {
 					event.setCancelled(true);
 					return;
 				}
