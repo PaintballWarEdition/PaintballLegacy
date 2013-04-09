@@ -248,16 +248,17 @@ public class Paintball extends JavaPlugin{
 		//CONFIG
 		ArrayList<String> goodsDef = new ArrayList<String>();
 		
-		goodsDef.add("10-Balls-332-0-15");
-		goodsDef.add("50-Balls-332-0-65");
-		goodsDef.add("100-Balls-332-0-120");
+		goodsDef.add("10-Balls-332-0-10");
+		goodsDef.add("50-Balls-332-0-50");
+		goodsDef.add("100-Balls-332-0-100");
 		goodsDef.add("1-Grenade-344-0-20");
-		goodsDef.add("1-Mine-390-0-15");
+		goodsDef.add("1-Mine-390-0-10");
 		goodsDef.add("1-Rocket Launcher-356-0-20");
-		goodsDef.add("1-Airstrike-280-0-100");
-		goodsDef.add("1-Turret-86-0-200");
-		goodsDef.add("1-Speed-373-16482-35");
+		goodsDef.add("1-Airstrike-280-0-60");
+		goodsDef.add("1-Turret-86-0-180");
+		goodsDef.add("1-Speed-373-16482-20");
 		goodsDef.add("1-Pumpgun-382-0-20");
+		goodsDef.add("1-Sniper-398-0-80");
 		
 		ArrayList<Gift> giftsDef = new ArrayList<Gift>();
 		giftsDef.add(new Gift(332, (short)0, 50, 30.0, "Hope you have luck with these balls!"));
