@@ -809,7 +809,7 @@ public class EventListener implements Listener {
 	@EventHandler(priority = EventPriority.MONITOR)
 	public void onPlayerJoin(PlayerJoinEvent event) {
 		final Player player = (Player) event.getPlayer();
-		plugin.pm.addPlayer(player.getName());
+		plugin.pm.addPlayerAsync(player.getName());
 
 		plugin.getServer().getScheduler().scheduleSyncDelayedTask(plugin, new Runnable() {
 

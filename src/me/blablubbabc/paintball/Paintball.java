@@ -18,7 +18,6 @@ import org.bukkit.Location;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.Player;
-import org.bukkit.inventory.ItemStack;
 import org.bukkit.plugin.Plugin;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.bukkit.potion.PotionEffect;
@@ -28,7 +27,7 @@ import org.bukkit.potion.PotionEffect;
  * Do not redistribute or modify it in any way. Use it as it is.
  * Do not copy, redistribute or give away.
  * Usage on own risk. I give no warranties.
- * Commercial usage in any way is not allowed!
+ * Commercial usage in any way is not allowed! Neither direct nor indirect.
  * These terms of use apply to every part of the plugin.
  * 
  * @author blablubbabc
@@ -116,6 +115,8 @@ public class Paintball extends JavaPlugin{
 	public boolean debug;
 	public boolean teleportFix;
 	public int protectionTime;
+	public boolean xplevel_timers;
+	public boolean xpbar_health;
 	
 	//gifts
 	public boolean giftsEnabled;
@@ -361,6 +362,8 @@ public class Paintball extends JavaPlugin{
 		if(getConfig().get("Paintball.Match.Countdown Round Start.Time") == null)getConfig().set("Paintball.Match.Countdown Round Start.Time", 5);
 		if(getConfig().get("Paintball.Match.Round Timer.Time (at least 30)") == null)getConfig().set("Paintball.Match.Round Timer.Time (at least 30)", 120);
 		if(getConfig().get("Paintball.Match.Spawn Protection Seconds") == null)getConfig().set("Paintball.Match.Spawn Protection Seconds", 3);
+		if(getConfig().get("Paintball.Match.XPLevel shows timers") == null)getConfig().set("Paintball.Match.XPLevel shows timers", true);
+		if(getConfig().get("Paintball.Match.XPBar shows health") == null)getConfig().set("Paintball.Match.XPBar shows health", true);
 		
 		if(getConfig().get("Paintball.Extras.Grenades.enabled") == null)getConfig().set("Paintball.Extras.Grenades.enabled", true);
 		if(getConfig().get("Paintball.Extras.Grenades.Explosion-Time-Radius in Ticks") == null)getConfig().set("Paintball.Extras.Grenades.Explosion-Time-Radius in Ticks", 60);
@@ -487,6 +490,10 @@ public class Paintball extends JavaPlugin{
 		//spawn protection
 		protectionTime = getConfig().getInt("Paintball.Match.Spawn Protection Seconds", 3);
 		if(protectionTime < 0) protectionTime = 0;
+		//xp bar stuff
+		xplevel_timers = getConfig().getBoolean("Paintball.Match.XPLevel shows timers", true);
+		xpbar_health = getConfig().getBoolean("Paintball.Match.XPBar shows health", true);
+		
 
 		speedmulti = getConfig().getDouble("Paintball.Ball speed multi", 1.5);
 		listnames = getConfig().getBoolean("Paintball.Colored listnames", true);
@@ -956,7 +963,8 @@ public class Paintball extends JavaPlugin{
 		enterLobby(player);
 		//inventory
 		if(saveInventory) {
-			pm.setInv(player, player.getInventory());
+			pm.storeInventory(player);
+			pm.storeExp(player);
 			player.sendMessage(t.getString("INVENTORY_SAVED"));
 		}
 		checks(player, true);
@@ -975,19 +983,9 @@ public class Paintball extends JavaPlugin{
 		checks(player, true);
 		//restore saved inventory
 		if(restoreInventory && saveInventory) {
-			//PlayerInventory
-			//null check added:
-			ItemStack[] isc = pm.getInvContent(player);
-			if(isc != null) {
-				player.getInventory().setContents(isc);
-			}
-			ItemStack[] isa = pm.getInvArmor(player);
-			if(isa != null) {
-				player.getInventory().setArmorContents(isa);
-			}
-
-			player.sendMessage(t.getString("INVENTORY_RESTORED"));
+			pm.restoreInventory(player);
 		}
+		pm.restoreExp(player);
 		//teleport:
 		if(teleport) player.teleport(pm.getLoc(player));
 		if(messages) {

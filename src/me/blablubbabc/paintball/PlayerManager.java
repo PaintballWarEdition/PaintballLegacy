@@ -12,31 +12,50 @@ public class PlayerManager {
 	private HashMap<Player, Location> locations;
 	private HashMap<Player, ItemStack[]> invContent;
 	private HashMap<Player, ItemStack[]> invArmor;
+	private HashMap<Player, Integer> level;
+	private HashMap<Player, Float> exp;
 
 	public PlayerManager(Paintball pl) {
 		plugin = pl;
 		locations = new HashMap<Player, Location>();
 		invContent = new HashMap<Player, ItemStack[]>();
 		invArmor = new HashMap<Player, ItemStack[]>();
-
-		for (Player p : plugin.getServer().getOnlinePlayers()) {
-			addPlayer(p.getName());
-		}
+		level = new HashMap<Player, Integer>();
+		exp = new HashMap<Player, Float>();
+		
+		addAllOnlinePlayers();
 	}
 
 	// METHODS
 	// SETTER
-	public void addPlayer(final String name) {
+	public void addAllOnlinePlayers() {
 		plugin.getServer().getScheduler()
 				.runTaskAsynchronously(plugin, new Runnable() {
 
 					@Override
 					public void run() {
-						if (!plugin.sql.sqlPlayers.isPlayerExisting(name)) {
-							plugin.sql.sqlPlayers.addNewPlayer(name);
+						for (Player p : plugin.getServer().getOnlinePlayers()) {
+							addPlayer(p.getName());
 						}
 					}
 				});
+	}
+	
+	public void addPlayerAsync(final String name) {
+		plugin.getServer().getScheduler()
+				.runTaskAsynchronously(plugin, new Runnable() {
+
+					@Override
+					public void run() {
+						addPlayer(name);
+					}
+				});
+	}
+	
+	private void addPlayer(final String name) {
+		if (!plugin.sql.sqlPlayers.isPlayerExisting(name)) {
+			plugin.sql.sqlPlayers.addNewPlayer(name);
+		}
 	}
 
 	public void resetData() {
@@ -124,25 +143,56 @@ public class PlayerManager {
 			return null;
 	}
 
-	public synchronized ItemStack[] getInvContent(Player player) {
+	public void restoreInventory(Player player) {
+		//PlayerInventory
+		//null check added:
+		ItemStack[] isc = getInvContent(player);
+		if(isc != null) {
+			player.getInventory().setContents(isc);
+		}
+		ItemStack[] isa = getInvArmor(player);
+		if(isa != null) {
+			player.getInventory().setArmorContents(isa);
+		}
+
+		player.sendMessage(plugin.t.getString("INVENTORY_RESTORED"));
+	}
+	
+	private ItemStack[] getInvContent(Player player) {
 		ItemStack[] inv = invContent.get(player);
 		invContent.remove(player);
 		return inv;
 	}
 
-	public synchronized ItemStack[] getInvArmor(Player player) {
+	private ItemStack[] getInvArmor(Player player) {
 		ItemStack[] inv = invArmor.get(player);
 		invArmor.remove(player);
 		return inv;
 	}
 
-	public synchronized void setLoc(Player player, Location loc) {
+	public void setLoc(Player player, Location loc) {
 		locations.put(player, loc);
 	}
 
-	public synchronized void setInv(Player player, PlayerInventory inv) {
+	public void storeInventory(Player player) {
+		PlayerInventory inv = player.getInventory();
 		invContent.put(player, inv.getContents());
 		invArmor.put(player, inv.getArmorContents());
+	}
+	
+	public void restoreExp(Player player) {
+		Integer levelInt = level.get(player);
+		if (levelInt != null) player.setLevel(levelInt);
+		Float expFloat = exp.get(player);
+		if (exp != null) player.setExp(expFloat);
+		
+		level.remove(player);
+		exp.remove(player);
+	}
+	
+	public void storeExp(Player player) {
+		level.put(player, player.getLevel());
+		exp.put(player, player.getExp());
 	}
 
 }
