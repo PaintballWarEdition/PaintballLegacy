@@ -245,24 +245,14 @@ public class Match {
 							}
 						}
 						// timer
-						if (roundTime == setting_round_time) {
-							roundTime--;
-							return;
-						}
-						if ((roundTime % 30) == 0 && roundTime >= 60) {
-							sendRoundTime(roundTime);
-						}
-						if ((roundTime % 15) == 0 && roundTime > 20 && roundTime < 60) {
-							sendRoundTime(roundTime);
-						}
-						if ((roundTime % 10) == 0 && roundTime > 5 && roundTime <= 20) {
-							sendRoundTime(roundTime);
-						}
-						if (roundTime < 6 && roundTime > 0) {
-							sendRoundTime(roundTime);
-						}
 						roundTime--;
-						if (roundTime < 1) {
+						
+						if ( (roundTime >= 60 && (roundTime % 30) == 0) 
+								|| (roundTime > 20 && roundTime < 60 && (roundTime % 15) == 0) 
+								|| (roundTime > 5 && roundTime <= 20 && (roundTime % 10) == 0) 
+								|| (roundTime < 6 && roundTime > 0)) {
+							plugin.nf.roundTime(roundTime);
+						} else if (roundTime < 1) {
 							plugin.getServer().getScheduler().cancelTask(roundTimeTaskId);
 							// END:
 							if (matchOver)
@@ -277,10 +267,10 @@ public class Match {
 								gameEnd(false, winnerTeam, getEnemyTeam(p), getTeamName(p),
 										getEnemyTeamName(p));
 							}
-
 						}
+						
 					}
-				}, 0L, 20L);
+				}, 20L, 20L);
 	}
 
 	private ArrayList<Player> getWinner() {
@@ -291,14 +281,6 @@ public class Match {
 			return blueT;
 		// else: survivors(blueT) == survivors(redT)-> DRAW
 		return null;
-	}
-
-	private void sendRoundTime(int time) {
-		HashMap<String, String> vars = new HashMap<String, String>();
-		vars.put("seconds", String.valueOf(time));
-		for (Player player : getAll()) {
-			player.sendMessage(plugin.t.getString("MATCH_REMAINING_TIME", vars));
-		}
 	}
 
 	private void sendCountdown(int counter) {

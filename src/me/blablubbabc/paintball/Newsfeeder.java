@@ -54,6 +54,15 @@ public class Newsfeeder {
 		}
 	}
 	
+	public void roundTime(int time) {
+		HashMap<String, String> vars = new HashMap<String, String>();
+		vars.put("plugin", pluginName);
+		vars.put("seconds", String.valueOf(time));
+		for (Player player : Lobby.LOBBY.getMembers()) {
+			player.sendMessage(plugin.t.getString("MATCH_REMAINING_TIME", vars));
+		}
+	}
+	
 	public void text(String message) {
 		for(Player player : Lobby.LOBBY.getMembers()) {
 			if(!Lobby.toggledFeed(player)) text(player, message);
@@ -69,7 +78,7 @@ public class Newsfeeder {
 	public void text(CommandSender sender, String message) {
 		HashMap<String, String> vars = new HashMap<String, String>();
 		vars.put("plugin", pluginName);
-		vars.put("message", String.valueOf(message));
+		vars.put("message", message);
 		sender.sendMessage(plugin.t.getString("TEXT", vars));
 	}
 	
