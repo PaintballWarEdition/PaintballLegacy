@@ -444,9 +444,9 @@ public class EventListener implements Listener {
 				case CARROT_STICK:
 					// SNIPER
 					if (plugin.sniper) {
-						if (action == Action.RIGHT_CLICK_AIR) {
+						if (action == Action.LEFT_CLICK_AIR) {
 							Sniper.toggleZoom(player);
-						} else if (action == Action.LEFT_CLICK_AIR) {
+						} else if (action == Action.RIGHT_CLICK_AIR) {
 							if (!plugin.sniperOnlyUseIfZooming || Sniper.isZooming(player)) {
 								PlayerInventory inv = player.getInventory();
 								if (inv.contains(Material.SNOW_BALL, 1)) {
