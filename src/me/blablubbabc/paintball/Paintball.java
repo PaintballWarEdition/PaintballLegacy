@@ -241,7 +241,7 @@ public class Paintball extends JavaPlugin{
 	//paintball.general
 	//paintball.arena
 	//paintball.admin
-	//paintball.shop.not<id> (starting with 1)
+	//paintball.shop.not<id> (starting with 1) // removed
 
 
 	public BlaSQLite sql;
@@ -370,6 +370,9 @@ public class Paintball extends JavaPlugin{
 		if(getConfig().get("Paintball.Match.Spawn Protection Seconds") == null)getConfig().set("Paintball.Match.Spawn Protection Seconds", 3);
 		if(getConfig().get("Paintball.Match.XPLevel shows timers") == null)getConfig().set("Paintball.Match.XPLevel shows timers", true);
 		if(getConfig().get("Paintball.Match.XPBar shows health") == null)getConfig().set("Paintball.Match.XPBar shows health", true);
+		
+		//This node is also used inside the ArenaManager, so if changed -> also change there!
+		if(getConfig().get("Paintball.Arena.Disabled Arenas") == null)getConfig().set("Paintball.Arena.Disabled Arenas", new ArrayList<String>());
 		
 		if(getConfig().get("Paintball.Extras.Grenades.enabled") == null)getConfig().set("Paintball.Extras.Grenades.enabled", true);
 		if(getConfig().get("Paintball.Extras.Grenades.Explosion-Time-Radius in Ticks") == null)getConfig().set("Paintball.Extras.Grenades.Explosion-Time-Radius in Ticks", 60);
@@ -559,6 +562,9 @@ public class Paintball extends JavaPlugin{
 		shop = getConfig().getBoolean("Paintball.Shop.enabled", true);
 		shopGoods = (ArrayList<String>) getConfig().getList("Paintball.Shop.Goods (amount-name-id-subid-price)", goodsDef);
 
+		//disabled arenas
+		disabledArenas = (List<String>) getConfig().getList("Paintball.Arena.Disabled Arenas", new ArrayList<String>());
+		
 		//lobby join checks
 		checkInventory = getConfig().getBoolean("Paintball.Lobby join.Checks.Inventory", true);
 		saveInventory = getConfig().getBoolean("Paintball.Lobby join.Checks.Inventory Save", true);

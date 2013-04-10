@@ -89,6 +89,27 @@ public class ArenaManager {
 	public void setActive(String arena) {
 		plugin.sql.sqlArenaLobby.setArenaActive(arena);
 	}
+	
+	// return true, if arena was NOT disabled before and is now disabled
+	public boolean disable(String arena) {
+		if (!plugin.disabledArenas.contains(arena)) {
+			plugin.disabledArenas.add(arena);
+			plugin.getConfig().set("Paintball.Arena.Disabled Arenas", plugin.disabledArenas);
+			plugin.saveConfig();
+			return true;
+		}
+		return false;
+	}
+	// return true, if arena was NOT enabled before and is now enabled
+	public boolean enable(String arena) {
+		if (plugin.disabledArenas.contains(arena)) {
+			plugin.disabledArenas.remove(arena);
+			plugin.getConfig().set("Paintball.Arena.Disabled Arenas", plugin.disabledArenas);
+			plugin.saveConfig();
+			return true;
+		}
+		return false;
+	}
 
 
 	//GETTING ARENAS
