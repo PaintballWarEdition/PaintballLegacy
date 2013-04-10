@@ -214,7 +214,7 @@ public class EventListener implements Listener {
 										// Geschoss?
 										if (shot instanceof Snowball) {
 											// match
-											match.hitSnow(target, shooter);
+											if (shot.hasMetadata("Paintba11")) match.hitSnow(target, shooter);
 										}
 									}
 								}
@@ -266,19 +266,21 @@ public class EventListener implements Listener {
 		}
 	}
 
-	@EventHandler(priority = EventPriority.NORMAL)
+	@EventHandler(priority = EventPriority.NORMAL, ignoreCancelled = true)
 	public void onPlayerShoot(ProjectileLaunchEvent event) {
 		if (event.getEntity().getShooter() instanceof Player) {
 			Player player = (Player) event.getEntity().getShooter();
 			if (Lobby.LOBBY.isMember(player)) {
-				if (mm.getMatch(player) != null && Lobby.isPlaying(player) && mm.getMatch(player).isSurvivor(player)) {
-					if (mm.getMatch(player).started) {
+				Match match = mm.getMatch(player);
+				if (match != null && Lobby.isPlaying(player) && match.isSurvivor(player)) {
+					if (match.started) {
 						Projectile shot = (Projectile) event.getEntity();
 						Vector v = shot.getVelocity();
 						// Geschoss?
 						if (shot instanceof Snowball) {
 							// zählen
-							mm.getMatch(player).shot(player);
+							//TODO mark snowballs
+							match.addShots(player, 1);
 							if (plugin.balls == -1) {
 								// +1 ball
 								player.getInventory().addItem(new ItemStack(Material.SNOW_BALL, 1));
@@ -289,7 +291,8 @@ public class EventListener implements Listener {
 							if (plugin.grenade) {
 								Grenade.eggThrow(player, (Egg) shot);
 								// zählen
-								mm.getMatch(player).grenade(player);
+								match.grenade(player);
+								//TODO no airstrike-check ? !
 								if (plugin.grenadeAmount == -1) {
 									// +1grenade
 									player.getInventory().addItem(new ItemStack(Material.EGG, 1));
@@ -346,22 +349,21 @@ public class EventListener implements Listener {
 	}
 
 	@SuppressWarnings("deprecation")
-	@EventHandler(priority = EventPriority.NORMAL)
+	@EventHandler(priority = EventPriority.NORMAL, ignoreCancelled = true)
 	public void onPlayerInteract(PlayerInteractEvent event) {
 		Player player = event.getPlayer();
+		ItemStack item = player.getItemInHand();
+		if (item == null)
+			return;
+		
 		if (Lobby.LOBBY.isMember(player)) {
 			Match match = mm.getMatch(player);
 			if (match != null && Lobby.isPlaying(player) && match.isSurvivor(player)) {
-				if (!match.started || match.isJustRespawned(player.getName())) {
-					event.setCancelled(true);
-					return;
-				}
-				// event.setCancelled(true);
+				if (!match.started || match.isJustRespawned(player.getName())) return;
+				
 				Action action = event.getAction();
-				ItemStack item = player.getItemInHand();
-				if (item == null)
-					return;
-
+				// first: cancle all interactions
+				event.setCancelled(true);
 				switch (item.getType()) {
 				case STICK:
 					// AIRSTRIKE
@@ -408,6 +410,7 @@ public class EventListener implements Listener {
 						if (inv.contains(Material.SNOW_BALL, plugin.pumpgunAmmo)) {
 							Utils.removeInventoryItems(inv, Material.SNOW_BALL, plugin.pumpgunAmmo);
 							player.updateInventory();
+							match.addShots(player, 5);
 							Pumpgun.shot(player, plugin);
 						} else {
 							player.playSound(player.getEyeLocation(), Sound.FIRE_IGNITE, 100F, 2F);
@@ -452,7 +455,7 @@ public class EventListener implements Listener {
 								if (inv.contains(Material.SNOW_BALL, 1)) {
 									Utils.removeInventoryItems(inv, Material.SNOW_BALL, 1);
 									player.updateInventory();
-									match.shot(player);
+									match.addShots(player, 1);
 									Sniper.shoot(player);
 								} else {
 									player.playSound(player.getEyeLocation(), Sound.FIRE_IGNITE, 100F, 2F);
@@ -472,6 +475,8 @@ public class EventListener implements Listener {
 					break;
 
 				default:
+					// no special item in hand
+					event.setCancelled(false);
 					break;
 				}
 
@@ -637,7 +642,7 @@ public class EventListener implements Listener {
 			if (m != null && m.started && m.isSurvivor(player)) {
 				if (plugin.turret && block.getType() == Material.PUMPKIN) {
 					// turret:
-					if (Turret.getTurrets(player).size() < plugin.turretMatchLimit) {
+					if (Turret.getTurrets(m).size() < plugin.turretMatchLimit) {
 						if (Turret.getTurrets(player).size() < plugin.turretPlayerLimit) {
 							Snowman snowman = (Snowman) block.getLocation().getWorld().spawnEntity(block.getLocation(), EntityType.SNOWMAN);
 							new Turret(player, snowman, plugin.mm.getMatch(player), plugin);
@@ -657,7 +662,7 @@ public class EventListener implements Listener {
 
 				} else if (plugin.mine && block.getType() == Material.FLOWER_POT) {
 					// mine:
-					if (Mine.getMines(player).size() < plugin.mineMatchLimit) {
+					if (Mine.getMines(m).size() < plugin.mineMatchLimit) {
 						if (Mine.getMines(player).size() < plugin.minePlayerLimit) {
 							plugin.getServer().getScheduler().scheduleSyncDelayedTask(this.plugin, new Runnable() {
 

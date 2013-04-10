@@ -696,9 +696,9 @@ public class Match {
 		spawnPlayer(player);
 	}
 
-	public synchronized void shot(Player player) {
+	public synchronized void addShots(Player player, int amount) {
 		// add 1
-		shots.put(player.getName(), shots.get(player.getName()) + 1);
+		shots.put(player.getName(), shots.get(player.getName()) + amount);
 		// effekt
 		Location loc = player.getLocation();
 		player.playSound(loc, Sound.WOOD_CLICK, 100F, 0F);
