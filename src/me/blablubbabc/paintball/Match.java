@@ -741,20 +741,23 @@ public class Match {
 					shooter.sendMessage(plugin.t.getString("YOU_HIT_PROTECTED", vars));
 					target.sendMessage(plugin.t.getString("YOU_WERE_HIT_PROTECTED", vars));
 				} else {
+					int healthLeft = livesLeft.get(target) - 1;
 					// -1 live
-					livesLeft.put(target, livesLeft.get(target) - 1);
+					livesLeft.put(target, healthLeft);
 					// stats
 					hits.put(shooter.getName(), hits.get(shooter.getName()) + 1);
 					// dead?->frag
 					// message:
-					if (livesLeft.get(target) <= 0) {
+					if (healthLeft <= 0) {
 						frag(target, shooter);
 					} else {
+						// xp bar
+						if (plugin.useXPBar) target.setExp(healthLeft / setting_lives);
 						shooter.playSound(shooter.getLocation(), Sound.MAGMACUBE_WALK, 100F, 1F);
 						target.playSound(shooter.getLocation(), Sound.HURT_FLESH, 100F, 1F);
 						
-						vars.put("hits_taken", String.valueOf(setting_lives - livesLeft.get(target)));
-						vars.put("health_left", String.valueOf(livesLeft.get(target)));
+						vars.put("hits_taken", String.valueOf(setting_lives - healthLeft));
+						vars.put("health_left", String.valueOf(healthLeft));
 						vars.put("health", String.valueOf(setting_lives));
 						
 						shooter.sendMessage(plugin.t.getString("YOU_HIT", vars));
