@@ -240,6 +240,9 @@ public class Match {
 						}
 						// timer
 						roundTime--;
+						for (Player player : Lobby.LOBBY.getMembers()) {
+							player.setLevel(roundTime);
+						}
 						
 						if ( (roundTime >= 60 && (roundTime % 30) == 0) 
 								|| (roundTime > 20 && roundTime < 60 && (roundTime % 15) == 0) 
@@ -281,6 +284,7 @@ public class Match {
 		HashMap<String, String> vars = new HashMap<String, String>();
 		vars.put("seconds", String.valueOf(counter));
 		for (Player player : getAll()) {
+			player.setLevel(counter);
 			player.sendMessage(plugin.t.getString("COUNTDOWN_START", vars));
 		}
 	}

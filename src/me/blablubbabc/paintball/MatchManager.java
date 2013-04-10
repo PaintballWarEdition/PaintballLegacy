@@ -458,12 +458,14 @@ public class MatchManager{
 						plugin.nf.counter(count);
 						for (Player player : Lobby.LOBBY.getMembers()) {
 							player.playSound(player.getLocation(), Sound.ORB_PICKUP, 80L, 1L);	
+							player.setLevel(count);
 						}
 					}
 					count--;
 					if( count < 1) {
 						for (Player player : Lobby.LOBBY.getMembers()) {
 							player.playSound(player.getLocation(), Sound.ORB_PICKUP, 100L, 2L);	
+							player.setLevel(0);
 						}
 						plugin.getServer().getScheduler().cancelTask(taskID);
 						countdownStarted = false;

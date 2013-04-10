@@ -117,9 +117,6 @@ public class Paintball extends JavaPlugin{
 	public boolean debug;
 	public boolean teleportFix;
 	public int protectionTime;
-	//TODO:
-	public boolean xplevel_timers;
-	public boolean xpbar_health;
 	public List<String> disabledArenas;
 	
 	//gifts
@@ -368,8 +365,6 @@ public class Paintball extends JavaPlugin{
 		if(getConfig().get("Paintball.Match.Countdown Round Start.Time") == null)getConfig().set("Paintball.Match.Countdown Round Start.Time", 5);
 		if(getConfig().get("Paintball.Match.Round Timer.Time (at least 30)") == null)getConfig().set("Paintball.Match.Round Timer.Time (at least 30)", 120);
 		if(getConfig().get("Paintball.Match.Spawn Protection Seconds") == null)getConfig().set("Paintball.Match.Spawn Protection Seconds", 3);
-		if(getConfig().get("Paintball.Match.XPLevel shows timers") == null)getConfig().set("Paintball.Match.XPLevel shows timers", true);
-		if(getConfig().get("Paintball.Match.XPBar shows health") == null)getConfig().set("Paintball.Match.XPBar shows health", true);
 		
 		//This node is also used inside the ArenaManager, so if changed -> also change there!
 		if(getConfig().get("Paintball.Arena.Disabled Arenas") == null)getConfig().set("Paintball.Arena.Disabled Arenas", new ArrayList<String>());
@@ -499,9 +494,6 @@ public class Paintball extends JavaPlugin{
 		//spawn protection
 		protectionTime = getConfig().getInt("Paintball.Match.Spawn Protection Seconds", 3);
 		if(protectionTime < 0) protectionTime = 0;
-		//xp bar stuff
-		xplevel_timers = getConfig().getBoolean("Paintball.Match.XPLevel shows timers", true);
-		xpbar_health = getConfig().getBoolean("Paintball.Match.XPBar shows health", true);
 		
 
 		speedmulti = getConfig().getDouble("Paintball.Ball speed multi", 1.5);
@@ -976,9 +968,11 @@ public class Paintball extends JavaPlugin{
 		//inventory
 		if(saveInventory) {
 			pm.storeInventory(player);
-			pm.storeExp(player);
 			player.sendMessage(t.getString("INVENTORY_SAVED"));
 		}
+		//exp und level:
+		pm.storeExp(player);
+		
 		checks(player, true);
 	}
 	
@@ -997,6 +991,7 @@ public class Paintball extends JavaPlugin{
 		if(restoreInventory && saveInventory) {
 			pm.restoreInventory(player);
 		}
+		//restore xp und level
 		pm.restoreExp(player);
 		//teleport:
 		if(teleport) player.teleport(pm.getLoc(player));
