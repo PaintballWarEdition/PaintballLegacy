@@ -5,6 +5,7 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.LinkedList;
+import java.util.List;
 import java.util.regex.Pattern;
 
 import me.blablubbabc.BlaDB.BlaSQLite;
@@ -95,8 +96,9 @@ public class Paintball extends JavaPlugin{
 	public boolean shop;
 	public ArrayList<String> shopGoods;
 	public ArrayList<String> allowedCommands;
-	public ArrayList<String> blacklistedCommands;
 	public ArrayList<String> blacklistedCommandsRegex;
+	public boolean checkBlacklist;
+	
 	public boolean blacklistAdminOverride;
 	public boolean saveInventory;
 	public boolean onlyRandom;
@@ -115,8 +117,10 @@ public class Paintball extends JavaPlugin{
 	public boolean debug;
 	public boolean teleportFix;
 	public int protectionTime;
+	//TODO:
 	public boolean xplevel_timers;
 	public boolean xpbar_health;
+	public List<String> disabledArenas;
 	
 	//gifts
 	public boolean giftsEnabled;
@@ -275,7 +279,7 @@ public class Paintball extends JavaPlugin{
 		allowedCommands.add("/login *");
 		allowedCommands.add("/register *");
 		
-		blacklistedCommands = new ArrayList<String>();
+		List<String> blacklistedCommands = new ArrayList<String>();
 		blacklistedCommands.add("/ptp {player}");
 		blacklistedCommands.add("/tp {args} {player}");
 		blacklistedCommands.add("/tp {player} {args}");
@@ -309,8 +313,9 @@ public class Paintball extends JavaPlugin{
 		if(getConfig().get("Paintball.Effects") == null)getConfig().set("Paintball.Effects", true);
 		if(getConfig().get("Paintball.Teleport Fix") == null)getConfig().set("Paintball.Teleport Fix", true);
 		if(getConfig().get("Paintball.Allowed Commands") == null)getConfig().set("Paintball.Allowed Commands", allowedCommands);
-		if(getConfig().get("Paintball.Blacklist.Commands") == null)getConfig().set("Paintball.Blacklist.Commands", blacklistedCommands);
+		if(getConfig().get("Paintball.Blacklist.Enabled") == null)getConfig().set("Paintball.Blacklist.Enabled", false);
 		if(getConfig().get("Paintball.Blacklist.Admin Override") == null)getConfig().set("Paintball.Blacklist.Admin Override", true);
+		if(getConfig().get("Paintball.Blacklist.Commands") == null)getConfig().set("Paintball.Blacklist.Commands", blacklistedCommands);
 		//player tags
 		if(getConfig().get("Paintball.Tags.enabled") == null)getConfig().set("Paintball.Tags.enabled", true);
 		if(getConfig().get("Paintball.Tags.colored") == null)getConfig().set("Paintball.Tags.colored", true);
@@ -441,6 +446,8 @@ public class Paintball extends JavaPlugin{
 		autoLobby = getConfig().getBoolean("Paintball.Auto Lobby", false);
 		autoTeam = getConfig().getBoolean("Paintball.Auto Team", false);
 		allowedCommands = (ArrayList<String>) getConfig().getList("Paintball.Allowed Commands", allowedCommands);
+		checkBlacklist = getConfig().getBoolean("Paintball.Blacklist.Enabled", false);
+		blacklistAdminOverride = getConfig().getBoolean("Paintball.Blacklist.Admin Override", false);
 		blacklistedCommands = (ArrayList<String>) getConfig().getList("Paintball.Blacklist.Commands", blacklistedCommands);
 		
 		blacklistedCommandsRegex = new ArrayList<String>();
@@ -460,8 +467,6 @@ public class Paintball extends JavaPlugin{
 			}
 			blacklistedCommandsRegex.add(regex);
 		}
-		
-		blacklistAdminOverride = getConfig().getBoolean("Paintball.Blacklist.Admin Override", false);
 		
 		afkDetection = getConfig().getBoolean("Paintball.AFK Detection.enabled", true);
 		afkMatchAmount = getConfig().getInt("Paintball.AFK Detection.Amount of Matches", 3);

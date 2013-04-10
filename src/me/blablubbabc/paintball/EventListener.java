@@ -722,8 +722,7 @@ public class EventListener implements Listener {
 				event.getPlayer().sendMessage(plugin.t.getString("COMMAND_NOT_ALLOWED"));
 				event.setCancelled(true);
 			}
-		} else if (!event.getMessage().startsWith("/pb")
-				&& (!plugin.blacklistedCommands.isEmpty() ? isBlacklistedCommand(event.getMessage()) : false)) {
+		} else if (!event.getMessage().startsWith("/pb") && plugin.checkBlacklist && isBlacklistedCommand(event.getMessage())) {
 			if (!plugin.blacklistAdminOverride && !event.getPlayer().hasPermission("paintball.admin") && !event.getPlayer().isOp()) {
 				event.getPlayer().sendMessage(plugin.t.getString("COMMAND_BLACKLISTED"));
 				event.setCancelled(true);
