@@ -421,7 +421,7 @@ public class EventListener implements Listener {
 				case DIODE:
 					// ROCKET LAUNCHER
 					if (plugin.rocket && isAirClick(action)) {
-						if (Rocket.getRockets(player).size() < plugin.rocketMatchLimit) {
+						if (Rocket.getRockets(match).size() < plugin.rocketMatchLimit) {
 							if (Rocket.getRockets(player).size() < plugin.rocketPlayerLimit) {
 								player.playSound(player.getLocation(), Sound.SILVERFISH_IDLE, 100L, 1L);
 								Fireball rocket = player.launchProjectile(Fireball.class);
