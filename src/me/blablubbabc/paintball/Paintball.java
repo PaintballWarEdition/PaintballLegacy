@@ -116,6 +116,7 @@ public class Paintball extends JavaPlugin{
 	public boolean effects;
 	public boolean debug;
 	public boolean teleportFix;
+	public boolean useXPBar;
 	public int protectionTime;
 	public List<String> disabledArenas;
 	
@@ -309,6 +310,7 @@ public class Paintball extends JavaPlugin{
 		if(getConfig().get("Paintball.Auto Spec Lobby") == null)getConfig().set("Paintball.Auto Spec Lobby", false);
 		if(getConfig().get("Paintball.Effects") == null)getConfig().set("Paintball.Effects", true);
 		if(getConfig().get("Paintball.Teleport Fix") == null)getConfig().set("Paintball.Teleport Fix", true);
+		if(getConfig().get("Paintball.Use XP Bar") == null)getConfig().set("Paintball.Blacklist.Use XP Bar", true);
 		if(getConfig().get("Paintball.Allowed Commands") == null)getConfig().set("Paintball.Allowed Commands", allowedCommands);
 		if(getConfig().get("Paintball.Blacklist.Enabled") == null)getConfig().set("Paintball.Blacklist.Enabled", false);
 		if(getConfig().get("Paintball.Blacklist.Admin Override") == null)getConfig().set("Paintball.Blacklist.Admin Override", true);
@@ -441,6 +443,7 @@ public class Paintball extends JavaPlugin{
 		noPerms = getConfig().getBoolean("Paintball.No Permissions", false);
 		debug = getConfig().getBoolean("Paintball.Debug", false);
 		teleportFix = getConfig().getBoolean("Paintball.Teleport Fix", true);
+		useXPBar = getConfig().getBoolean("Paintball.Blacklist.Use XP Bar", true);
 		autoLobby = getConfig().getBoolean("Paintball.Auto Lobby", false);
 		autoTeam = getConfig().getBoolean("Paintball.Auto Team", false);
 		allowedCommands = (ArrayList<String>) getConfig().getList("Paintball.Allowed Commands", allowedCommands);
@@ -928,7 +931,7 @@ public class Paintball extends JavaPlugin{
 		return entries;
 	}
 
-	public void checks(Player player, boolean checkListname) {
+	public void checks(Player player, boolean checkListname, boolean changeLevel) {
 		if(!Utils.isEmptyInventory(player)) Utils.clearInv(player);
 		//gamemode
 		if(!player.getGameMode().equals(GameMode.SURVIVAL)) player.setGameMode(GameMode.SURVIVAL);
@@ -956,10 +959,15 @@ public class Paintball extends JavaPlugin{
 		if(player.getWalkSpeed() != 0.2) player.setWalkSpeed(0.2F);
 		//listname
 		if(checkListname && listnames) player.setPlayerListName(null);
+		//xp bar
+		if (useXPBar) {
+			if (changeLevel) player.setLevel(0);
+			player.setExp(1F);
+		}
 	}
 
 	public synchronized void joinLobby(Player player) {
-		checks(player, true);
+		checks(player, true, false);
 		enterLobby(player);
 	}
 	
@@ -971,28 +979,30 @@ public class Paintball extends JavaPlugin{
 			player.sendMessage(t.getString("INVENTORY_SAVED"));
 		}
 		//exp und level:
-		pm.storeExp(player);
+		if (useXPBar) pm.storeExp(player);
 		
-		checks(player, true);
+		checks(player, true, true);
 	}
 	
 	private void enterLobby(Player player) {
 		//set waiting
 		if(Lobby.isPlaying(player) || Lobby.isSpectating(player)) Lobby.getTeam(player).setWaiting(player);
 		//Lobbyteleport
+		//Vehicle
+		if(player.isInsideVehicle()) player.leaveVehicle();
 		player.teleport(getNextLobbySpawn());
 	}
 
 	public synchronized void leaveLobby(Player player, boolean messages, boolean teleport, boolean restoreInventory) {
 		//lobby remove:
 		Lobby.remove(player);
-		checks(player, true);
+		checks(player, true, true);
 		//restore saved inventory
 		if(restoreInventory && saveInventory) {
 			pm.restoreInventory(player);
 		}
 		//restore xp und level
-		pm.restoreExp(player);
+		if (useXPBar) pm.restoreExp(player);
 		//teleport:
 		if(teleport) player.teleport(pm.getLoc(player));
 		if(messages) {

@@ -35,18 +35,9 @@ public class MatchManager{
 			match.undoAllColors();
 			//Teleport all remaining players back to lobby:
 			for(Player p : match.getAll()) {
-				//ist nicht aus minecraft raus:
 				if(Lobby.isPlaying(p) || Lobby.isSpectating(p)){
-					//lobby
-					Lobby.getTeam(p).setWaiting(p);
-					//clear inventory
-					Utils.clearInv(p);
-					//noch im match:
-					if(match.isSurvivor(p)){
-						//teleport is survivor:
-						plugin.joinLobby(p);
-						match.resetWeaponStuffEnd(p);
-					}
+					plugin.joinLobby(p);
+					match.resetWeaponStuffEnd(p);
 				}
 			}
 
@@ -451,6 +442,11 @@ public class MatchManager{
 
 				@Override
 				public void run() {
+					if (plugin.useXPBar) {
+						for (Player player : Lobby.LOBBY.getMembers()) {
+							player.setLevel(count);	
+						}
+					}
 					if(( count % 10 ) == 0 && count >= 10 ) {
 						plugin.nf.counter(count);
 					}
@@ -458,14 +454,12 @@ public class MatchManager{
 						plugin.nf.counter(count);
 						for (Player player : Lobby.LOBBY.getMembers()) {
 							player.playSound(player.getLocation(), Sound.ORB_PICKUP, 80L, 1L);	
-							player.setLevel(count);
 						}
 					}
 					count--;
 					if( count < 1) {
 						for (Player player : Lobby.LOBBY.getMembers()) {
 							player.playSound(player.getLocation(), Sound.ORB_PICKUP, 100L, 2L);	
-							player.setLevel(0);
 						}
 						plugin.getServer().getScheduler().cancelTask(taskID);
 						countdownStarted = false;

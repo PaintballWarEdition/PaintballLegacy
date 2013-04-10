@@ -143,12 +143,12 @@ public class Match {
 			this.grenades.put(p.getName(), 0);
 			this.airstrikes.put(p.getName(), 0);
 
-			plugin.checks(p, true);
+			plugin.checks(p, true, true);
 			spawnPlayer(p);
 		}
 
 		for (Player p : this.spec) {
-			plugin.checks(p, true);
+			plugin.checks(p, true, true);
 			spawnSpec(p);
 		}
 		// colorchanges:
@@ -240,8 +240,10 @@ public class Match {
 						}
 						// timer
 						roundTime--;
-						for (Player player : Lobby.LOBBY.getMembers()) {
-							player.setLevel(roundTime);
+						if (plugin.useXPBar) {
+							for (Player player : Lobby.LOBBY.getMembers()) {
+								player.setLevel(roundTime);
+							}
 						}
 						
 						if ( (roundTime >= 60 && (roundTime % 30) == 0) 
@@ -284,7 +286,7 @@ public class Match {
 		HashMap<String, String> vars = new HashMap<String, String>();
 		vars.put("seconds", String.valueOf(counter));
 		for (Player player : getAll()) {
-			player.setLevel(counter);
+			if (plugin.useXPBar) player.setLevel(counter);
 			player.sendMessage(plugin.t.getString("COUNTDOWN_START", vars));
 		}
 	}
@@ -313,7 +315,7 @@ public class Match {
 		// afk Location
 		playersLoc.put(player.getName(), loc);
 		// PLAYER
-		plugin.checks(player, false);
+		plugin.checks(player, false, false);
 		// INVENTORY
 
 		player.getInventory().setHelmet(
