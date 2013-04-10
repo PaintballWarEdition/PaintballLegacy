@@ -158,32 +158,26 @@ public class Match {
 		// WAITING TIMER:
 		this.started = false;
 		startCount = plugin.countdownStart;
-
+		
+		//first count, tasks starts 20 Ticks later
+		sendCountdown(startCount);
+		
 		startTaskId = plugin.getServer().getScheduler()
 				.scheduleSyncRepeatingTask(plugin, new Runnable() {
 
 					@Override
 					public void run() {
+						startCount--;
+						
 						for (Player p : getAllPlayer()) {
 							p.teleport(playersLoc.get(p.getName()));
 						}
 
-						if (startCount == plugin.countdownStart && startCount > 0) {
+						if ((startCount > 30 && (startCount % 30) == 0) 
+								|| (startCount > 5 && startCount <= 30 && (startCount % 10) == 0)
+								|| (startCount > 0 && startCount <= 5)) {
 							sendCountdown(startCount);
-							startCount--;
-							return;
-						}
-						if ((startCount % 30) == 0 && startCount > 30) {
-							sendCountdown(startCount);
-						}
-						if ((startCount % 10) == 0 && startCount > 5 && startCount <= 30) {
-							sendCountdown(startCount);
-						}
-
-						if (startCount <= 5 && startCount > 0) {
-							sendCountdown(startCount);
-						}
-						if (startCount < 1) {
+						} else if (startCount < 1) {
 							plugin.getServer().getScheduler().cancelTask(startTaskId);
 							// START:
 							started = true;
@@ -198,13 +192,17 @@ public class Match {
 
 							plugin.nf.status(plugin.t.getString("MATCH_SETTINGS_INFO", vars));
 							plugin.nf.status(plugin.t.getString("MATCH_START"));
+							
+							for (Player player : getAll()) {
+								player.playSound(player.getLocation(), Sound.ORB_PICKUP, 100L, 2L);
+							}
 
 							makeAllVisible();
 							startRoundTimer();
 						}
-						startCount--;
+						
 					}
-				}, 0L, 20L);
+				}, 20L, 20L);
 	}
 
 	private void addToPlayerLists(Player p) {
@@ -288,6 +286,7 @@ public class Match {
 		vars.put("seconds", String.valueOf(counter));
 		for (Player player : getAll()) {
 			player.sendMessage(plugin.t.getString("COUNTDOWN_START", vars));
+			player.playSound(player.getLocation(), Sound.ORB_PICKUP, 80L, 1L);
 		}
 	}
 
@@ -310,6 +309,8 @@ public class Match {
 			return;
 		}
 		player.teleport(loc);
+		// sound
+		player.playSound(loc, Sound.BAT_TAKEOFF, 100L, 1L);
 		// afk Location
 		playersLoc.put(player.getName(), loc);
 		// PLAYER
@@ -749,7 +750,7 @@ public class Match {
 						frag(target, shooter);
 					} else {
 						shooter.playSound(shooter.getLocation(), Sound.MAGMACUBE_WALK, 100F, 1F);
-						target.playSound(shooter.getLocation(), Sound.BAT_HURT, 80F, 0F);
+						target.playSound(shooter.getLocation(), Sound.HURT_FLESH, 100F, 1F);
 						
 						vars.put("hits_taken", String.valueOf(setting_lives - livesLeft.get(target)));
 						vars.put("health_left", String.valueOf(livesLeft.get(target)));
