@@ -1,6 +1,8 @@
 package me.blablubbabc.paintball.extras;
 
 import java.util.ArrayList;
+
+import me.blablubbabc.paintball.Match;
 import me.blablubbabc.paintball.Paintball;
 import org.bukkit.Effect;
 import org.bukkit.Location;
@@ -38,18 +40,30 @@ public class Rocket {
 		}
 		return list;
 	}
+	
+	public static synchronized ArrayList<Rocket> getRockets(Match match) {
+		ArrayList<Rocket> list = new ArrayList<Rocket>();
+		for (Rocket r : rockets) {
+			if (r.match.equals(match)) {
+				list.add(r);
+			}
+		}
+		return list;
+	}
 
 	public final Fireball entity;
 	public final Player player;
+	public final Match match;
 	public final Paintball plugin;
 
 	private int tickTask = -1;
 	private int lives;
 	private boolean exploded = false;
 
-	public Rocket(Player player, Fireball rocket, Paintball plugin) {
+	public Rocket(Player player, Fireball rocket, Match match, Paintball plugin) {
 		this.entity = rocket;
 		this.player = player;
+		this.match = match;
 		this.plugin = plugin;
 		this.lives = plugin.rocketRange*10;
 		addRocket(this);
