@@ -192,10 +192,6 @@ public class Match {
 
 							plugin.nf.status(plugin.t.getString("MATCH_SETTINGS_INFO", vars));
 							plugin.nf.status(plugin.t.getString("MATCH_START"));
-							
-							for (Player player : getAll()) {
-								player.playSound(player.getLocation(), Sound.ORB_PICKUP, 100L, 2L);
-							}
 
 							makeAllVisible();
 							startRoundTimer();
@@ -286,7 +282,6 @@ public class Match {
 		vars.put("seconds", String.valueOf(counter));
 		for (Player player : getAll()) {
 			player.sendMessage(plugin.t.getString("COUNTDOWN_START", vars));
-			player.playSound(player.getLocation(), Sound.ORB_PICKUP, 80L, 1L);
 		}
 	}
 

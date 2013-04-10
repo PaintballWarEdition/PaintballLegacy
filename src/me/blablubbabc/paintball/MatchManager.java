@@ -5,6 +5,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map.Entry;
 import org.bukkit.Location;
+import org.bukkit.Sound;
 import org.bukkit.entity.Player;
 
 public class MatchManager{
@@ -455,9 +456,15 @@ public class MatchManager{
 					}
 					if( count <= 5 && count > 0) {
 						plugin.nf.counter(count);
+						for (Player player : Lobby.LOBBY.getMembers()) {
+							player.playSound(player.getLocation(), Sound.ORB_PICKUP, 80L, 1L);	
+						}
 					}
 					count--;
 					if( count < 1) {
+						for (Player player : Lobby.LOBBY.getMembers()) {
+							player.playSound(player.getLocation(), Sound.ORB_PICKUP, 100L, 2L);	
+						}
 						plugin.getServer().getScheduler().cancelTask(taskID);
 						countdownStarted = false;
 						String status = ready();
