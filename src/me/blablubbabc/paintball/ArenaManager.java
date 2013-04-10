@@ -46,7 +46,7 @@ public class ArenaManager {
 	}
 	
 	public boolean isReady(String arena) {
-		if(!inUse(arena)) {
+		if(!inUse(arena) && !isDisabled(arena)) {
 			//spawns?
 			if(hasAllSpawns(arena)) {
 				return true;
@@ -58,8 +58,11 @@ public class ArenaManager {
 	}
 
 	public boolean inUse(String arena) {
-		if(plugin.sql.sqlArenaLobby.isArenaActive(arena)) return true;
-		else return false;
+		return plugin.sql.sqlArenaLobby.isArenaActive(arena);
+	}
+	
+	public boolean isDisabled(String arena) {
+		return plugin.disabledArenas.contains(arena);
 	}
 
 	/*public boolean pvpEnabled(String arena) {

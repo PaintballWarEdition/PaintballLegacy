@@ -110,6 +110,7 @@ public class CmdArena {
 					if(!am.isReady(name)) {
 						player.sendMessage(plugin.t.getString("ARENA_INFO_NEEDS_HEADER"));
 						if(am.inUse(name)) player.sendMessage(plugin.t.getString("ARENA_INFO_NEEDS_NO_USE"));
+						if(am.isDisabled(name)) player.sendMessage(plugin.t.getString("ARENA_INFO_NEEDS_ENABLE"));
 						//if(!am.pvpEnabled(name)) player.sendMessage(plugin.t.getString("ARENA_INFO_NEEDS_PVP"));
 						if(redspawnsize == 0) {
 							vars.put("team", Lobby.RED.getName());
@@ -239,6 +240,28 @@ public class CmdArena {
 						vars.put("settings", settings);
 						player.sendMessage(plugin.t.getString("ARENA_INVALID_SETTING", vars));
 						return true;
+					}
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+				} else if(args[2].equalsIgnoreCase("disable")) {
+					if(am.inUse(name)) {
+						player.sendMessage(plugin.t.getString("ARENA_NO_EDIT_IN_USE"));
+						return true;
+					}
+					if (am.disable(name)) {
+						player.sendMessage(plugin.t.getString("ARENA_DISABLED", vars));
+					} else {
+						player.sendMessage(plugin.t.getString("ARENA_ALREADY_DISABLED", vars));
+					}
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+				} else if(args[2].equalsIgnoreCase("enable")) {
+					if(am.inUse(name)) {
+						player.sendMessage(plugin.t.getString("ARENA_NO_EDIT_IN_USE"));
+						return true;
+					}
+					if (am.enable(name)) {
+						player.sendMessage(plugin.t.getString("ARENA_ENABLED", vars));
+					} else {
+						player.sendMessage(plugin.t.getString("ARENA_ALREADY_ENABLED", vars));
 					}
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 				}

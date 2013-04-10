@@ -265,6 +265,8 @@ public class CommandManager implements CommandExecutor{
 		sender.sendMessage(plugin.t.getString("COMMAND_ARENA_DELRED", vars));
 		sender.sendMessage(plugin.t.getString("COMMAND_ARENA_DELSPEC", vars));
 		sender.sendMessage(plugin.t.getString("COMMAND_ARENA_SET"));
+		sender.sendMessage(plugin.t.getString("COMMAND_ARENA_DISABLE"));
+		sender.sendMessage(plugin.t.getString("COMMAND_ARENA_ENABLE"));
 	}
 	public void adminhelp(CommandSender sender) {
 		sender.sendMessage(blablubbabc);
