@@ -16,23 +16,20 @@ public class Grenade{
 	//private static Random random = new Random();
 	private static HashMap<Player, ArrayList<Egg>> nades = new HashMap<Player, ArrayList<Egg>>();
 	
-	public static synchronized void eggThrow(Player player, Egg nade) {
-		Egg id = (Egg) nade;
-		ArrayList<Egg> n = new ArrayList<Egg>();
-		if(nades.get(player) == null) nades.put(player, n);
-		else n.addAll(nades.get(player));
-		n.add(id);
-		nades.put(player, n);
+	public static void eggThrow(Player player, Egg egg) {
+		ArrayList<Egg> eggs = nades.get(player);
+		if (eggs == null) eggs = new ArrayList<Egg>();
+		eggs.add(egg);
+		nades.put(player, eggs);
 	}
 	
-	public static synchronized void hit(Projectile nade, Paintball plugin) {
-		Egg id = (Egg) nade;
+	public static void hit(Projectile nade, Paintball plugin) {
+		Egg egg = (Egg) nade;
 		for(Player player : nades.keySet()) {
-			ArrayList<Egg> n = new ArrayList<Egg>();
-			n.addAll(nades.get(player));
-			if(n.contains(id)) {
-				n.remove(id);
-				nades.put(player, n);
+			ArrayList<Egg> eggs = nades.get(player);
+			if(eggs.contains(egg)) {
+				eggs.remove(egg);
+				nades.put(player, eggs);
 				explode(player, nade, plugin);
 				break;
 			}
