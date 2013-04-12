@@ -68,7 +68,6 @@ import org.bukkit.event.player.PlayerQuitEvent;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.PlayerInventory;
 import org.bukkit.util.BlockIterator;
-import org.bukkit.util.Vector;
 
 public class EventListener implements Listener {
 	private Paintball plugin;
@@ -266,54 +265,22 @@ public class EventListener implements Listener {
 		}
 	}
 
-	@EventHandler(priority = EventPriority.NORMAL, ignoreCancelled = true)
+	@EventHandler(priority = EventPriority.HIGH, ignoreCancelled = true)
 	public void onPlayerShoot(ProjectileLaunchEvent event) {
 		if (event.getEntity().getShooter() instanceof Player) {
 			Player player = (Player) event.getEntity().getShooter();
 			if (Lobby.LOBBY.isMember(player)) {
-				Match match = mm.getMatch(player);
-				if (match != null && Lobby.isPlaying(player) && match.isSurvivor(player)) {
-					if (match.started) {
-						Projectile shot = (Projectile) event.getEntity();
-						Vector v = shot.getVelocity();
-						// Geschoss?
-						if (shot instanceof Snowball) {
-							// zählen
-							//TODO mark snowballs
-							match.addShots(player, 1);
-							if (plugin.balls == -1) {
-								// +1 ball
-								player.getInventory().addItem(new ItemStack(Material.SNOW_BALL, 1));
-							}
-							// boosting:
-							shot.setVelocity(v.multiply(plugin.speedmulti));
-						} else if (shot instanceof Egg) {
-							if (plugin.grenade) {
-								Grenade.eggThrow(player, (Egg) shot);
-								// zählen
-								match.grenade(player);
-								//TODO no airstrike-check ? !
-								if (plugin.grenadeAmount == -1) {
-									// +1grenade
-									player.getInventory().addItem(new ItemStack(Material.EGG, 1));
-								}
-								// boosting:
-								shot.setVelocity(v.multiply(plugin.grenadeSpeed));
-							}
-						}
-					} else {
-						event.setCancelled(true);
-					}
-				}
+				event.setCancelled(true);
 			}
 		}
 	}
 
 	@EventHandler(priority = EventPriority.NORMAL)
 	public void onEggThrow(PlayerEggThrowEvent event) {
-		if (event.getEgg().getShooter() instanceof Player) {
-			Player player = (Player) event.getEgg().getShooter();
-			if (Lobby.LOBBY.isMember(player)) {
+		Egg egg = event.getEgg();
+		if (egg.getShooter() instanceof Player) {
+			Player player = (Player) egg.getShooter();
+			if (Grenade.isGrenade(egg, player)) {
 				event.setHatching(false);
 			}
 		}
@@ -349,7 +316,7 @@ public class EventListener implements Listener {
 	}
 
 	@SuppressWarnings("deprecation")
-	@EventHandler(priority = EventPriority.NORMAL, ignoreCancelled = true)
+	@EventHandler(priority = EventPriority.NORMAL)
 	public void onPlayerInteract(PlayerInteractEvent event) {
 		Player player = event.getPlayer();
 		ItemStack item = player.getItemInHand();
@@ -360,11 +327,27 @@ public class EventListener implements Listener {
 			Match match = mm.getMatch(player);
 			if (match != null && Lobby.isPlaying(player) && match.isSurvivor(player)) {
 				if (!match.started || match.isJustRespawned(player.getName())) return;
-				
 				Action action = event.getAction();
-				// first: cancle all interactions
-				event.setCancelled(true);
+				
 				switch (item.getType()) {
+				case SNOW_BALL:
+					Snowball ball = (Snowball) player.getWorld().spawnEntity(player.getEyeLocation(), EntityType.SNOWBALL);
+					//TODO mark snowballs
+					// zählen
+					match.addShots(player, 1);
+					if (match.setting_balls != -1) {
+						// -1 ball
+						if (item.getAmount() <= 1)
+							player.setItemInHand(null);
+						else {
+							item.setAmount(item.getAmount() - 1);
+							player.setItemInHand(item);
+						}
+					}
+					// boosting:
+					ball.setVelocity(player.getLocation().getDirection().normalize().multiply(plugin.speedmulti));
+					break;
+					
 				case STICK:
 					// AIRSTRIKE
 					if (plugin.airstrike && isAirClick(action)) {
@@ -376,12 +359,11 @@ public class EventListener implements Listener {
 									match.airstrike(player);
 									// remove stick if not infinite
 									if (match.setting_airstrikes != -1) {
-										ItemStack i = player.getItemInHand();
-										if (i.getAmount() <= 1)
+										if (item.getAmount() <= 1)
 											player.setItemInHand(null);
 										else {
-											i.setAmount(i.getAmount() - 1);
-											player.setItemInHand(i);
+											item.setAmount(item.getAmount() - 1);
+											player.setItemInHand(item);
 										}
 									}
 								} else {
@@ -397,9 +379,23 @@ public class EventListener implements Listener {
 
 				case EGG:
 					// GRENADE
-					if (plugin.grenade && isRightClick(action)) {
+					if (plugin.grenade && isAirClick(action)) {
 						player.sendMessage(plugin.t.getString("GRENADE_THROW"));
 						player.playSound(player.getLocation(), Sound.SILVERFISH_IDLE, 100L, 1L);
+						Egg egg = (Egg) player.getWorld().spawnEntity(player.getEyeLocation(), EntityType.EGG);
+						Grenade.eggThrow(player, egg);
+						// zählen
+						match.grenade(player);
+						if (match.setting_grenades != -1) {
+							if (item.getAmount() <= 1)
+								player.setItemInHand(null);
+							else {
+								item.setAmount(item.getAmount() - 1);
+								player.setItemInHand(item);
+							}
+						}
+						// boosting:
+						egg.setVelocity(player.getLocation().getDirection().multiply(plugin.grenadeSpeed));
 					}
 					break;
 
@@ -424,16 +420,15 @@ public class EventListener implements Listener {
 						if (Rocket.getRockets(match).size() < plugin.rocketMatchLimit) {
 							if (Rocket.getRockets(player).size() < plugin.rocketPlayerLimit) {
 								player.playSound(player.getLocation(), Sound.SILVERFISH_IDLE, 100L, 1L);
-								Fireball rocket = player.launchProjectile(Fireball.class);
+								Fireball rocket = (Fireball) player.getWorld().spawnEntity(player.getEyeLocation(), EntityType.FIREBALL);
 								rocket.setShooter(player);
-								rocket.setVelocity(player.getLocation().getDirection().clone().normalize().multiply(plugin.rocketSpeedMulti));
+								rocket.setVelocity(player.getLocation().getDirection().normalize().multiply(plugin.rocketSpeedMulti));
 								new Rocket(player, rocket, match, plugin);
-								ItemStack i = player.getItemInHand();
-								if (i.getAmount() <= 1)
+								if (item.getAmount() <= 1)
 									player.setItemInHand(null);
 								else {
-									i.setAmount(i.getAmount() - 1);
-									player.setItemInHand(i);
+									item.setAmount(item.getAmount() - 1);
+									player.setItemInHand(item);
 								}
 							} else {
 								player.sendMessage(plugin.t.getString("ROCKET_PLAYER_LIMIT_REACHED"));
@@ -476,7 +471,6 @@ public class EventListener implements Listener {
 
 				default:
 					// no special item in hand
-					event.setCancelled(false);
 					break;
 				}
 
@@ -486,10 +480,6 @@ public class EventListener implements Listener {
 
 	private boolean isAirClick(Action action) {
 		return (action == Action.RIGHT_CLICK_AIR || action == Action.LEFT_CLICK_AIR);
-	}
-
-	private boolean isRightClick(Action action) {
-		return (action == Action.RIGHT_CLICK_AIR || action == Action.RIGHT_CLICK_BLOCK);
 	}
 
 	@EventHandler(priority = EventPriority.NORMAL)
@@ -581,7 +571,7 @@ public class EventListener implements Listener {
 			 * { Material m = iterator.next().getType(); if (m != null && m !=
 			 * Material.AIR) { mat = m; break; } }
 			 */
-			Grenade.hit(shot, plugin);
+			Grenade.eggHit((Egg)shot, plugin);
 		} else if (plugin.rocket && shot instanceof Fireball) {
 			Rocket rocket = Rocket.isRocket((Fireball) shot);
 			if (rocket != null)

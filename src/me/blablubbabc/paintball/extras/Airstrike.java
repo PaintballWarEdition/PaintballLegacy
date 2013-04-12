@@ -99,16 +99,13 @@ public class Airstrike{
 				@Override
 				public void run() {
 					Location l = bombs.get(i);
-					Egg egg = player.launchProjectile(Egg.class);
-					egg.teleport(l);
+					Egg egg = player.getWorld().spawn(l, Egg.class);
+					egg.setShooter(player);
+					//Egg egg = player.launchProjectile(Egg.class);
+					//egg.teleport(l);
 					egg.setVelocity(new Vector(0,0,0));
-					//Egg egg = player.getWorld().spawn(l, Egg.class);
 					//a.bombs.add(egg);
 					Grenade.eggThrow(player, egg);
-					//PlayerEggThrowEvent event = new PlayerEggThrowEvent(player, egg, false, (byte) 0, EntityType.CHICKEN);
-					//ProjectileLaunchEvent event = new ProjectileLaunchEvent(egg);
-					//event.getEntity().setShooter(player);
-					//plugin.getServer().getPluginManager().callEvent(event);
 					chick.setVelocity(bpr.clone().multiply(bombDiff/5));
 					i++;
 					if(i > (bombs.size() - 1)) {

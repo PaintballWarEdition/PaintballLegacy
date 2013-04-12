@@ -7,37 +7,44 @@ import me.blablubbabc.paintball.Paintball;
 import org.bukkit.Location;
 import org.bukkit.entity.Egg;
 import org.bukkit.entity.Player;
-import org.bukkit.entity.Projectile;
 import org.bukkit.entity.Snowball;
 import org.bukkit.util.Vector;
 
 public class Grenade{
 	
 	//private static Random random = new Random();
-	private static HashMap<Player, ArrayList<Egg>> nades = new HashMap<Player, ArrayList<Egg>>();
+	private static HashMap<String, ArrayList<Egg>> nades = new HashMap<String, ArrayList<Egg>>();
 	
-	public static void eggThrow(Player player, Egg egg) {
-		ArrayList<Egg> eggs = nades.get(player);
-		if (eggs == null) eggs = new ArrayList<Egg>();
-		eggs.add(egg);
-		nades.put(player, eggs);
+	public static boolean isGrenade(Egg egg, Player shooter) {
+		ArrayList<Egg> eggs = nades.get(shooter.getName());
+		if (eggs == null || !eggs.contains(egg)) return false;
+		else return true;
 	}
 	
-	public static void hit(Projectile nade, Paintball plugin) {
-		Egg egg = (Egg) nade;
-		for(Player player : nades.keySet()) {
-			ArrayList<Egg> eggs = nades.get(player);
-			if(eggs.contains(egg)) {
+	public static void eggThrow(Player player, Egg egg) {
+		String name = player.getName();
+		ArrayList<Egg> eggs = nades.get(name);
+		if (eggs == null) eggs = new ArrayList<Egg>();
+		eggs.add(egg);
+		nades.put(name, eggs);
+	}
+	
+	public static void eggHit(Egg egg, Paintball plugin) {
+		if (egg.getShooter() instanceof Player) {
+			Player player = (Player) egg.getShooter();
+			String name = player.getName();
+			ArrayList<Egg> eggs = nades.get(name);
+			if(eggs != null && eggs.contains(egg)) {
 				eggs.remove(egg);
-				nades.put(player, eggs);
-				explode(player, nade, plugin);
-				break;
+				if (eggs.size() == 0) nades.remove(name);
+				else nades.put(name, eggs);
+				explode(player, egg, plugin);
 			}
 		}
 	}
 	
-	public static void explode(Player player, Projectile nade, Paintball plugin) {
-		Location loc = nade.getLocation();
+	private static void explode(Player player, Egg egg, Paintball plugin) {
+		Location loc = egg.getLocation();
 		loc.getWorld().createExplosion(loc, -1.0F);
 		for(Vector v : directions()) {
 			moveExpSnow(loc.getWorld().spawn(loc, Snowball.class), v, player, plugin);
