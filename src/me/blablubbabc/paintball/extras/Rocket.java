@@ -3,7 +3,6 @@ package me.blablubbabc.paintball.extras;
 import java.util.ArrayList;
 import java.util.HashMap;
 
-import me.blablubbabc.paintball.Match;
 import me.blablubbabc.paintball.Paintball;
 import me.blablubbabc.paintball.Source;
 import me.blablubbabc.paintball.Utils;
@@ -21,13 +20,12 @@ public class Rocket {
 	private static HashMap<String, ArrayList<Rocket>> rockets = new HashMap<String, ArrayList<Rocket>>();
 
 	/**
-	 * Registers a new grenade.
+	 * Registers a new rocket.
 	 * 
 	 * @param fireball
 	 * @param player
-	 * @param source
 	 */
-	private static void registerRocket(Rocket rocket, String shooterName, Source source) {
+	private static void registerRocket(Rocket rocket, String shooterName) {
 		ArrayList<Rocket> prockets = rockets.get(shooterName);
 		if (prockets == null) {
 			prockets = new ArrayList<Rocket>();
@@ -38,7 +36,7 @@ public class Rocket {
 	}
 
 	/**
-	 * Returns a Rocket object if the given Fireball is a grenade of the player OR null if not.
+	 * Returns a Rocket object if the given Fireball is a rocket of the player OR null if not.
 	 * @param fireball
 	 * @param shooterName
 	 * @param remove
@@ -118,18 +116,16 @@ public class Rocket {
 
 	public final Fireball entity;
 	public final Player player;
-	public final Match match;
 
 	private int tickTask = -1;
 	private int lives;
 	private boolean exploded = false;
 
-	public Rocket(Player player, Fireball rocket, Match match) {
+	public Rocket(Player player, Fireball rocket) {
 		this.entity = rocket;
 		this.player = player;
-		this.match = match;
 		this.lives = Paintball.instance.rocketRange*10;
-		registerRocket(this, player.getName(), Source.ROCKET);
+		registerRocket(this, player.getName());
 		tick();
 	}
 	
@@ -170,18 +166,20 @@ public class Rocket {
 							}
 							tick();
 						} else {
+							// remove rocket:
+							getRocket(entity, player.getName(), true);
 							die();
 						}
 					}
 				}, 2L);
 	}
 
-	public synchronized void die() {
-		if (!exploded)
+	public void die() {
+		if (!exploded) {
 			explode();
+		}
 		if (tickTask != -1)
 			Paintball.instance.getServer().getScheduler().cancelTask(tickTask);
-		removeRocket(this);
 		// some effect here:
 		if (Paintball.instance.effects) {
 			Location loc = entity.getLocation();
@@ -211,16 +209,18 @@ public class Rocket {
 	private void explode() {
 		exploded = true;
 		Location loc = entity.getLocation();
-		loc.getWorld().createExplosion(loc, 0.0F);
+		loc.getWorld().createExplosion(loc, -1F);
 		for (Vector v : Utils.getDirections()) {
-			moveExpSnow(loc.getWorld().spawn(loc, Snowball.class), v, player);
-			moveExpSnow(loc.getWorld().spawn(loc, Snowball.class), v, player);
+			snow(loc.getWorld().spawn(loc, Snowball.class), v);
+			snow(loc.getWorld().spawn(loc, Snowball.class), v);
 		}
 	}
 
-	private static void moveExpSnow(final Snowball s, Vector v, Player player) {
+	private void snow(final Snowball s, Vector v) {
 		s.setShooter(player);
-		Vector v2 = v;
+		final String shooterName = player.getName();
+		Ball.registerBall(s, shooterName, Source.ROCKET);
+		Vector v2 = v.clone();
 		v2.setX(v.getX() + Math.random() - Math.random());
 		v2.setY(v.getY() + Math.random() - Math.random());
 		v2.setZ(v.getZ() + Math.random() - Math.random());
@@ -231,6 +231,7 @@ public class Rocket {
 					@Override
 					public void run() {
 						if (!s.isDead() || s.isValid())
+							Ball.getBall(s, shooterName, true);
 							s.remove();
 					}
 				}, (long) Paintball.instance.rocketTime);

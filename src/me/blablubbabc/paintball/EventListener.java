@@ -260,8 +260,11 @@ public class EventListener implements Listener {
 	public void onFireballExplosion(EntityExplodeEvent event) {
 		Entity entity = event.getEntity();
 		if (entity != null && entity.getType() == EntityType.FIREBALL) {
-			if (Rocket.isRocket((Fireball) entity) != null) {
-				event.setCancelled(true);
+			Fireball fireball = (Fireball) entity;
+			if (fireball.getShooter() instanceof Player) {
+				if (Rocket.getRocket(fireball, ((Player)fireball.getShooter()).getName(), false) != null) {
+					event.setCancelled(true);
+				}
 			}
 		}
 	}
@@ -332,21 +335,25 @@ public class EventListener implements Listener {
 				
 				switch (item.getType()) {
 				case SNOW_BALL:
-					Snowball ball = (Snowball) player.getWorld().spawnEntity(player.getEyeLocation(), EntityType.SNOWBALL);
-					//TODO mark snowballs
-					// zählen
-					match.addShots(player, 1);
-					if (match.setting_balls != -1) {
-						// -1 ball
-						if (item.getAmount() <= 1)
-							player.setItemInHand(null);
-						else {
-							item.setAmount(item.getAmount() - 1);
-							player.setItemInHand(item);
+					//MARKER
+					if (isAirClick(action)) {
+						Snowball ball = (Snowball) player.getWorld().spawnEntity(player.getEyeLocation(), EntityType.SNOWBALL);
+						// register snowball
+						Ball.registerBall(ball, player.getName(), Source.MARKER);
+						// zählen
+						match.addShots(player, 1);
+						if (match.setting_balls != -1) {
+							// -1 ball
+							if (item.getAmount() <= 1)
+								player.setItemInHand(null);
+							else {
+								item.setAmount(item.getAmount() - 1);
+								player.setItemInHand(item);
+							}
 						}
+						// boosting:
+						ball.setVelocity(player.getLocation().getDirection().normalize().multiply(plugin.speedmulti));
 					}
-					// boosting:
-					ball.setVelocity(player.getLocation().getDirection().normalize().multiply(plugin.speedmulti));
 					break;
 					
 				case STICK:
@@ -418,13 +425,13 @@ public class EventListener implements Listener {
 				case DIODE:
 					// ROCKET LAUNCHER
 					if (plugin.rocket && isAirClick(action)) {
-						if (Rocket.getRockets(match).size() < plugin.rocketMatchLimit) {
-							if (Rocket.getRockets(player).size() < plugin.rocketPlayerLimit) {
+						if (Rocket.getRocketCountMatch() < plugin.rocketMatchLimit) {
+							if (Rocket.getRocketCountPlayer(player.getName()) < plugin.rocketPlayerLimit) {
 								player.playSound(player.getLocation(), Sound.SILVERFISH_IDLE, 100L, 1L);
 								Fireball rocket = (Fireball) player.getWorld().spawnEntity(player.getEyeLocation(), EntityType.FIREBALL);
 								rocket.setShooter(player);
 								rocket.setVelocity(player.getLocation().getDirection().normalize().multiply(plugin.rocketSpeedMulti));
-								new Rocket(player, rocket, match, plugin);
+								new Rocket(player, rocket);
 								if (item.getAmount() <= 1)
 									player.setItemInHand(null);
 								else {
@@ -529,21 +536,22 @@ public class EventListener implements Listener {
 	@EventHandler(priority = EventPriority.MONITOR)
 	public void onProjectileHit(ProjectileHitEvent event) {
 		Projectile shot = event.getEntity();
-		if (shot instanceof Snowball) {
-			if (shot.getShooter() instanceof Player) {
-				Player player = (Player) shot.getShooter();
-				String playerName = player.getName();
-				Ball ball = Ball.getBall((Snowball)shot, playerName, true);
+		if (shot.getShooter() instanceof Player) {
+			Player shooter = (Player) shot.getShooter();
+			String shooterName = shooter.getName();
+			
+			if (shot instanceof Snowball) {
+				Ball ball = Ball.getBall((Snowball)shot, shooterName, true);
 				// is ball
 				if (ball != null) {
-					Match match = mm.getMatch(player);
+					Match match = mm.getMatch(shooter);
 					if (match != null) {
 						Location loc = shot.getLocation();
 						// mine
 						if (plugin.mine) {
 							Block block = loc.getBlock();
 							Mine mine = Mine.isMine(block);
-							if (mine != null && match == mine.match && (match.enemys(player, mine.player) || player.equals(mine.player))) {
+							if (mine != null && match == mine.match && (match.enemys(shooter, mine.player) || shooter.equals(mine.player))) {
 								mine.explode(true);
 							}
 
@@ -551,7 +559,7 @@ public class EventListener implements Listener {
 							while (iterator.hasNext()) {
 								Mine m = Mine.isMine(iterator.next());
 								if (m != null) {
-									if (match == m.match && (match.enemys(player, m.player) || player.equals(m.player))) {
+									if (match == m.match && (match.enemys(shooter, m.player) || shooter.equals(m.player))) {
 										m.explode(true);
 									}
 								}
@@ -559,26 +567,15 @@ public class EventListener implements Listener {
 						}
 						// effect
 						if (plugin.effects) {
-							if (match.isBlue(player)) {
+							if (match.isBlue(shooter)) {
 								loc.getWorld().playEffect(loc, Effect.POTION_BREAK, 0);
-							} else if (match.isRed(player)) {
+							} else if (match.isRed(shooter)) {
 								loc.getWorld().playEffect(loc, Effect.POTION_BREAK, 5);
 							}
 						}
 					}
 				}
-			}
-		} else if (plugin.grenade && shot instanceof Egg) {
-			/*
-			 * //TEST Location loc = shot.getLocation(); Material mat =
-			 * Material.DIRT; BlockIterator iterator = new
-			 * BlockIterator(loc.getWorld(), loc.toVector(),
-			 * shot.getVelocity().normalize(), 0, 3); while (iterator.hasNext())
-			 * { Material m = iterator.next().getType(); if (m != null && m !=
-			 * Material.AIR) { mat = m; break; } }
-			 */
-			if (shot.getShooter() instanceof Player) {
-				Player shooter = (Player) shot.getShooter();
+			} else if (plugin.grenade && shot instanceof Egg) {
 				Grenade nade = Grenade.getGrenade((Egg)shot, shooter.getName(), true);
 				if (nade != null) {
 					Match match = mm.getMatch(shooter);
@@ -586,11 +583,11 @@ public class EventListener implements Listener {
 						nade.explode(shot.getLocation(), shooter);	
 					}
 				}
+			} else if (plugin.rocket && shot instanceof Fireball) {
+				Rocket rocket = Rocket.getRocket((Fireball)shot, shooterName, true);
+				if (rocket != null)
+					rocket.die();
 			}
-		} else if (plugin.rocket && shot instanceof Fireball) {
-			Rocket rocket = Rocket.isRocket((Fireball) shot);
-			if (rocket != null)
-				rocket.die();
 		}
 	}
 	

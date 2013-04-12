@@ -138,7 +138,7 @@ public class Grenade {
 	
 	public void explode(Location location, Player shooter) {
 		location.getWorld().createExplosion(location, -1F);
-		String shooterName = shooter.getName();
+		final String shooterName = shooter.getName();
 		for (Vector v : Utils.getDirections()) {
 			final Snowball s  = location.getWorld().spawn(location, Snowball.class);
 			s.setShooter(shooter);
@@ -147,13 +147,13 @@ public class Grenade {
 			v2.setX(v.getX() + Math.random() - Math.random());
 			v2.setY(v.getY() + Math.random() - Math.random());
 			v2.setZ(v.getZ() + Math.random() - Math.random());
-			s.setVelocity(v2.normalize().multiply(2));
+			s.setVelocity(v2);
 			Paintball.instance.getServer().getScheduler().scheduleSyncDelayedTask(Paintball.instance, new Runnable() {
 
 				@Override
 				public void run() {
 					if (!s.isDead() || s.isValid()) {
-						Ball.getBall(s, ((Player)s.getShooter()).getName(), true);
+						Ball.getBall(s, shooterName, true);
 						s.remove();
 					}
 				}
