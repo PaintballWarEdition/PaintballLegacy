@@ -15,7 +15,6 @@ import org.bukkit.util.Vector;
 
 public class Grenade {
 
-	// private static Random random = new Random();
 	private static HashMap<String, ArrayList<Grenade>> nades = new HashMap<String, ArrayList<Grenade>>();
 
 	/**
@@ -148,7 +147,7 @@ public class Grenade {
 			v2.setX(v.getX() + Math.random() - Math.random());
 			v2.setY(v.getY() + Math.random() - Math.random());
 			v2.setZ(v.getZ() + Math.random() - Math.random());
-			s.setVelocity(v2.normalize().multiply(Paintball.instance.grenadeSpeed));
+			s.setVelocity(v2.normalize().multiply(2));
 			Paintball.instance.getServer().getScheduler().scheduleSyncDelayedTask(Paintball.instance, new Runnable() {
 
 				@Override

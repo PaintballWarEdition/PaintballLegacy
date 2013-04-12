@@ -10,6 +10,7 @@ import java.util.concurrent.ConcurrentHashMap;
 import java.util.regex.Pattern;
 
 import me.blablubbabc.paintball.extras.Airstrike;
+import me.blablubbabc.paintball.extras.Ball;
 import me.blablubbabc.paintball.extras.Grenade;
 import me.blablubbabc.paintball.extras.Mine;
 import me.blablubbabc.paintball.extras.PowerFist;
@@ -531,33 +532,38 @@ public class EventListener implements Listener {
 		if (shot instanceof Snowball) {
 			if (shot.getShooter() instanceof Player) {
 				Player player = (Player) shot.getShooter();
-				if (mm.getMatch(player) != null) {
+				String playerName = player.getName();
+				Ball ball = Ball.getBall((Snowball)shot, playerName, true);
+				// is ball
+				if (ball != null) {
 					Match match = mm.getMatch(player);
-					Location loc = shot.getLocation();
-					// mine
-					if (plugin.mine) {
-						Block block = loc.getBlock();
-						Mine mine = Mine.isMine(block);
-						if (mine != null && match == mine.match && (match.enemys(player, mine.player) || player.equals(mine.player))) {
-							mine.explode(true);
-						}
+					if (match != null) {
+						Location loc = shot.getLocation();
+						// mine
+						if (plugin.mine) {
+							Block block = loc.getBlock();
+							Mine mine = Mine.isMine(block);
+							if (mine != null && match == mine.match && (match.enemys(player, mine.player) || player.equals(mine.player))) {
+								mine.explode(true);
+							}
 
-						BlockIterator iterator = new BlockIterator(loc.getWorld(), loc.toVector(), shot.getVelocity().normalize(), 0, 2);
-						while (iterator.hasNext()) {
-							Mine m = Mine.isMine(iterator.next());
-							if (m != null) {
-								if (match == m.match && (match.enemys(player, m.player) || player.equals(m.player))) {
-									m.explode(true);
+							BlockIterator iterator = new BlockIterator(loc.getWorld(), loc.toVector(), shot.getVelocity().normalize(), 0, 2);
+							while (iterator.hasNext()) {
+								Mine m = Mine.isMine(iterator.next());
+								if (m != null) {
+									if (match == m.match && (match.enemys(player, m.player) || player.equals(m.player))) {
+										m.explode(true);
+									}
 								}
 							}
 						}
-					}
-					// effect
-					if (plugin.effects) {
-						if (match.isBlue(player)) {
-							loc.getWorld().playEffect(loc, Effect.POTION_BREAK, 2);
-						} else if (match.isRed(player)) {
-							loc.getWorld().playEffect(loc, Effect.POTION_BREAK, 1);
+						// effect
+						if (plugin.effects) {
+							if (match.isBlue(player)) {
+								loc.getWorld().playEffect(loc, Effect.POTION_BREAK, 0);
+							} else if (match.isRed(player)) {
+								loc.getWorld().playEffect(loc, Effect.POTION_BREAK, 5);
+							}
 						}
 					}
 				}
@@ -574,7 +580,12 @@ public class EventListener implements Listener {
 			if (shot.getShooter() instanceof Player) {
 				Player shooter = (Player) shot.getShooter();
 				Grenade nade = Grenade.getGrenade((Egg)shot, shooter.getName(), true);
-				if (nade != null) nade.explode(shot.getLocation(), shooter);
+				if (nade != null) {
+					Match match = mm.getMatch(shooter);
+					if (match != null) {
+						nade.explode(shot.getLocation(), shooter);	
+					}
+				}
 			}
 		} else if (plugin.rocket && shot instanceof Fireball) {
 			Rocket rocket = Rocket.isRocket((Fireball) shot);
