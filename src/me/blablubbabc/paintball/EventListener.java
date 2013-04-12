@@ -13,7 +13,6 @@ import me.blablubbabc.paintball.extras.Airstrike;
 import me.blablubbabc.paintball.extras.Ball;
 import me.blablubbabc.paintball.extras.Grenade;
 import me.blablubbabc.paintball.extras.Mine;
-import me.blablubbabc.paintball.extras.PowerFist;
 import me.blablubbabc.paintball.extras.Pumpgun;
 import me.blablubbabc.paintball.extras.Rocket;
 import me.blablubbabc.paintball.extras.Sniper;
@@ -313,8 +312,6 @@ public class EventListener implements Listener {
 						plugin.christmas.giveGift(player, receiver);
 					}
 				}
-			} else if (player.getItemInHand().getType() == Material.BREWING_STAND_ITEM) {
-				PowerFist.use(player, event.getRightClicked());
 			}
 		}
 	}

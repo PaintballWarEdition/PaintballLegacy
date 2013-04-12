@@ -1,6 +1,7 @@
 package me.blablubbabc.paintball.extras;
 
 import me.blablubbabc.paintball.Paintball;
+import me.blablubbabc.paintball.Source;
 
 import org.bukkit.Location;
 import org.bukkit.Sound;
@@ -34,6 +35,7 @@ public class Pumpgun {
 	
 	private static void moveSnow(final Snowball s, Vector v, Player player, Paintball plugin) {
 		s.setShooter(player);
+		Ball.registerBall(s, player.getName(), Source.PUMPGUN);
 		s.setVelocity(v.multiply(plugin.pumpgunSpeedmulti));
 	}
 }
