@@ -1,10 +1,13 @@
 package me.blablubbabc.paintball;
 
+import java.util.ArrayList;
+
 import org.bukkit.Material;
 import org.bukkit.block.BlockFace;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
+import org.bukkit.util.Vector;
 
 public class Utils {
 	public static boolean isEmptyInventory(Player p) {
@@ -49,12 +52,47 @@ public class Utils {
 		}
 	}
 
+	private static ArrayList<Vector> vectors = new ArrayList<Vector>();
+
+	static {
+		// alle Richtungen
+		vectors.add(new Vector(1, 0, 0));
+		vectors.add(new Vector(0, 1, 0));
+		vectors.add(new Vector(0, 0, 1));
+		vectors.add(new Vector(1, 1, 0));
+		vectors.add(new Vector(1, 0, 1));
+		vectors.add(new Vector(0, 1, 1));
+		vectors.add(new Vector(0, 0, 0));
+		vectors.add(new Vector(1, 1, 1));
+		vectors.add(new Vector(-1, -1, -1));
+		vectors.add(new Vector(-1, 0, 0));
+		vectors.add(new Vector(0, -1, 0));
+		vectors.add(new Vector(0, 0, -1));
+		vectors.add(new Vector(-1, -1, 0));
+		vectors.add(new Vector(-1, 0, -1));
+		vectors.add(new Vector(0, -1, -1));
+		vectors.add(new Vector(1, -1, 0));
+		vectors.add(new Vector(1, 0, -1));
+		vectors.add(new Vector(0, 1, -1));
+		vectors.add(new Vector(-1, 1, 0));
+		vectors.add(new Vector(-1, 0, 1));
+		vectors.add(new Vector(0, -1, 1));
+		vectors.add(new Vector(1, 1, -1));
+		vectors.add(new Vector(1, -1, 1));
+		vectors.add(new Vector(-1, 1, 1));
+		vectors.add(new Vector(1, -1, -1));
+		vectors.add(new Vector(-1, 1, -1));
+		vectors.add(new Vector(-1, -1, 1));
+	}
+
+	public static ArrayList<Vector> getDirections() {
+		return vectors;
+	}
+
 	// ///////////////////////////
-	public static final BlockFace[] axis = { BlockFace.NORTH, BlockFace.EAST, BlockFace.SOUTH,
-			BlockFace.WEST };
-	public static final BlockFace[] radial = { BlockFace.NORTH, BlockFace.NORTH_EAST,
-			BlockFace.EAST, BlockFace.SOUTH_EAST, BlockFace.SOUTH, BlockFace.SOUTH_WEST,
-			BlockFace.WEST, BlockFace.NORTH_WEST };
+	public static final BlockFace[] axis = { BlockFace.NORTH, BlockFace.EAST, BlockFace.SOUTH, BlockFace.WEST };
+	public static final BlockFace[] radial = { BlockFace.NORTH, BlockFace.NORTH_EAST, BlockFace.EAST, BlockFace.SOUTH_EAST, BlockFace.SOUTH,
+			BlockFace.SOUTH_WEST, BlockFace.WEST, BlockFace.NORTH_WEST };
 
 	/**
 	 * Gets the horizontal Block Face from a given yaw angle<br>

@@ -35,6 +35,8 @@ import org.bukkit.potion.PotionEffect;
  *
  */
 public class Paintball extends JavaPlugin{
+	public static Paintball instance;
+	
 	public PlayerManager pm;
 	public CommandManager cm;
 	public MatchManager mm;
@@ -247,6 +249,7 @@ public class Paintball extends JavaPlugin{
 
 	@SuppressWarnings("unchecked")
 	public void onEnable(){	
+		instance = this;
 		//CONFIG
 		ArrayList<String> goodsDef = new ArrayList<String>();
 		

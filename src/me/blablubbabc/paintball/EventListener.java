@@ -280,7 +280,7 @@ public class EventListener implements Listener {
 		Egg egg = event.getEgg();
 		if (egg.getShooter() instanceof Player) {
 			Player player = (Player) egg.getShooter();
-			if (Grenade.isGrenade(egg, player)) {
+			if (Grenade.getGrenade(egg, player.getName(), false) != null) {
 				event.setHatching(false);
 			}
 		}
@@ -352,8 +352,8 @@ public class EventListener implements Listener {
 					// AIRSTRIKE
 					if (plugin.airstrike && isAirClick(action)) {
 						if (Airstrike.marked(player.getName())) {
-							if (Airstrike.getAirstrikes(match).size() < plugin.airstrikeMatchLimit) {
-								if (Airstrike.getAirstrikes(player).size() < plugin.airstrikePlayerLimit) {
+							if (Airstrike.getAirstrikeCountMatch() < plugin.airstrikeMatchLimit) {
+								if (Airstrike.getAirstrikeCountPlayer(player.getName()) < plugin.airstrikePlayerLimit) {
 									Airstrike.call(plugin, player, match);
 									// zählen
 									match.airstrike(player);
@@ -383,7 +383,7 @@ public class EventListener implements Listener {
 						player.sendMessage(plugin.t.getString("GRENADE_THROW"));
 						player.playSound(player.getLocation(), Sound.SILVERFISH_IDLE, 100L, 1L);
 						Egg egg = (Egg) player.getWorld().spawnEntity(player.getEyeLocation(), EntityType.EGG);
-						Grenade.eggThrow(player, egg);
+						Grenade.registerGrenade(egg, player.getName(), Source.GRENADE);
 						// zählen
 						match.grenade(player);
 						if (match.setting_grenades != -1) {
@@ -571,7 +571,11 @@ public class EventListener implements Listener {
 			 * { Material m = iterator.next().getType(); if (m != null && m !=
 			 * Material.AIR) { mat = m; break; } }
 			 */
-			Grenade.eggHit((Egg)shot, plugin);
+			if (shot.getShooter() instanceof Player) {
+				Player shooter = (Player) shot.getShooter();
+				Grenade nade = Grenade.getGrenade((Egg)shot, shooter.getName(), true);
+				if (nade != null) nade.explode(shot.getLocation(), shooter);
+			}
 		} else if (plugin.rocket && shot instanceof Fireball) {
 			Rocket rocket = Rocket.isRocket((Fireball) shot);
 			if (rocket != null)

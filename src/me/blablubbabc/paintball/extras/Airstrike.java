@@ -1,12 +1,13 @@
 package me.blablubbabc.paintball.extras;
 
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.LinkedList;
-import java.util.List;
+import java.util.Map;
 
 import me.blablubbabc.paintball.Match;
 import me.blablubbabc.paintball.Paintball;
+import me.blablubbabc.paintball.Source;
+
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.block.Block;
@@ -17,8 +18,36 @@ import org.bukkit.entity.EntityType;
 import org.bukkit.entity.Player;
 import org.bukkit.util.Vector;
 
-public class Airstrike{
-	private static List<Airstrike> airstrikes = new ArrayList<Airstrike>();
+public class Airstrike {
+	
+	private static int airstrikeCounter = 0;
+	private static Map<String, Integer> airstrikes = new HashMap<String, Integer>();
+	
+	private static void addAirstrike(String shooterName) {
+		Integer pcount = airstrikes.get(shooterName);
+		if (pcount == null) pcount = 0;
+		airstrikes.put(shooterName, pcount + 1);
+	}
+	
+	private static void removeAirstrike(String shooterName) {
+		Integer pstrikes = airstrikes.get(shooterName);
+		if (pstrikes != null) {
+			if (pstrikes == 1) airstrikes.remove(shooterName);
+			else airstrikes.put(shooterName, pstrikes - 1);
+			airstrikeCounter--;
+		}
+	}
+	
+	public static int getAirstrikeCountMatch() {
+		return airstrikeCounter;
+	}
+	
+	public static int getAirstrikeCountPlayer(String shooterName) {
+		Integer pstrikes = airstrikes.get(shooterName);
+		return pstrikes == null ? 0 : pstrikes;
+	}
+	
+	/*private static List<Airstrike> airstrikes = new ArrayList<Airstrike>();
 
 	public static synchronized void addAirstrike(Airstrike airstrike) {
 		airstrikes.add(airstrike);
@@ -46,30 +75,26 @@ public class Airstrike{
 			}
 		}
 		return list;
-	}
+	}*/
 	
 	public final Player player;
 	public final Match match;
 	public final Paintball plugin;
-	//public final List<Egg> bombs;
 	public int task;
 
-	public Airstrike(Player player, Match match, Paintball plugin) {
+	private Airstrike(Player player, Match match, Paintball plugin) {
 		this.match = match;
 		this.player = player;
 		this.plugin = plugin;
-		//this.bombs = new ArrayList<Egg>();
-		addAirstrike(this);
+		addAirstrike(player.getName());
 	}
 	
 	private static HashMap<String, Block> marks = new HashMap<String, Block>();
 	private static HashMap<String, Block> finalmarks = new HashMap<String, Block>();
-	//public static boolean active = false;
 	
 	public static void call(final Paintball plugin, final Player player, final Match match) {
 		final String name = player.getName();
 		if(marked(name)) {
-			//active = true;
 			final Airstrike a = new Airstrike(player, match, plugin);
 			
 			Block block = marks.get(name);
@@ -94,6 +119,7 @@ public class Airstrike{
 			//chicken
 			Location lc = new Location(player.getWorld(), bombs.getFirst().getX(), bombs.getFirst().getY(), bombs.getFirst().getZ(), 0, getLookAtYaw(bpr));
 			final Entity chick = player.getWorld().spawnEntity(lc.add(new Vector(0,5,0)), EntityType.CHICKEN);
+			final String shooterName = player.getName();
 			a.task = plugin.getServer().getScheduler().scheduleSyncRepeatingTask(plugin, new Runnable() {
 				int i = 0;
 				@Override
@@ -101,20 +127,14 @@ public class Airstrike{
 					Location l = bombs.get(i);
 					Egg egg = player.getWorld().spawn(l, Egg.class);
 					egg.setShooter(player);
-					//Egg egg = player.launchProjectile(Egg.class);
-					//egg.teleport(l);
-					egg.setVelocity(new Vector(0,0,0));
-					//a.bombs.add(egg);
-					Grenade.eggThrow(player, egg);
+					Grenade.registerGrenade(egg, shooterName, Source.AIRSTRIKE);
 					chick.setVelocity(bpr.clone().multiply(bombDiff/5));
 					i++;
 					if(i > (bombs.size() - 1)) {
 						plugin.getServer().getScheduler().cancelTask(a.task);
 						definalMark(player);
 						chick.remove();
-						//active = false;
-						removeAirstrike(a);
-						//a.bombs.clear();
+						removeAirstrike(shooterName);
 					}
 				}
 			}, 0L, 5L);
