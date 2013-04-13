@@ -137,7 +137,7 @@ public class EventListener implements Listener {
 	public void onEntityDeath(EntityDeathEvent event) {
 		if (event.getEntityType() == EntityType.SNOWMAN) {
 			Snowman snowman = (Snowman) event.getEntity();
-			Turret turret = Turret.isTurret(snowman);
+			Turret turret = Turret.getIsTurret(snowman);
 			if (turret != null) {
 				turret.die(true);
 			}
@@ -221,7 +221,7 @@ public class EventListener implements Listener {
 						}
 					} else if (event.getEntityType() == EntityType.SNOWMAN) {
 						Snowman snowman = (Snowman) event.getEntity();
-						Turret turret = Turret.isTurret(snowman);
+						Turret turret = Turret.getIsTurret(snowman);
 						if (turret != null && match == turret.match && match.enemys(shooter, turret.player)) {
 							turret.hit();
 						}
@@ -359,7 +359,7 @@ public class EventListener implements Listener {
 						if (Airstrike.marked(player.getName())) {
 							if (Airstrike.getAirstrikeCountMatch() < plugin.airstrikeMatchLimit) {
 								if (Airstrike.getAirstrikeCountPlayer(player.getName()) < plugin.airstrikePlayerLimit) {
-									Airstrike.call(plugin, player, match);
+									Airstrike.call(player, match);
 									// zählen
 									match.airstrike(player);
 									// remove stick if not infinite
@@ -412,7 +412,7 @@ public class EventListener implements Listener {
 							Utils.removeInventoryItems(inv, Material.SNOW_BALL, plugin.pumpgunAmmo);
 							player.updateInventory();
 							match.addShots(player, 5);
-							Pumpgun.shot(player, plugin);
+							Pumpgun.shot(player);
 						} else {
 							player.playSound(player.getEyeLocation(), Sound.FIRE_IGNITE, 100F, 2F);
 						}
@@ -547,14 +547,14 @@ public class EventListener implements Listener {
 						// mine
 						if (plugin.mine) {
 							Block block = loc.getBlock();
-							Mine mine = Mine.isMine(block);
+							Mine mine = Mine.getIsMine(block);
 							if (mine != null && match == mine.match && (match.enemys(shooter, mine.player) || shooter.equals(mine.player))) {
 								mine.explode(true);
 							}
 
 							BlockIterator iterator = new BlockIterator(loc.getWorld(), loc.toVector(), shot.getVelocity().normalize(), 0, 2);
 							while (iterator.hasNext()) {
-								Mine m = Mine.isMine(iterator.next());
+								Mine m = Mine.getIsMine(iterator.next());
 								if (m != null) {
 									if (match == m.match && (match.enemys(shooter, m.player) || shooter.equals(m.player))) {
 										m.explode(true);
@@ -622,7 +622,7 @@ public class EventListener implements Listener {
 	@EventHandler(priority = EventPriority.HIGHEST)
 	public void onCreatureSpawn(CreatureSpawnEvent event) {
 		if (event.getEntityType() == EntityType.SNOWMAN) {
-			if (Turret.isTurret((Snowman) event.getEntity()) != null) {
+			if (Turret.getIsTurret((Snowman) event.getEntity()) != null) {
 				event.setCancelled(false);
 			}
 		}
@@ -641,10 +641,10 @@ public class EventListener implements Listener {
 			if (m != null && m.started && m.isSurvivor(player)) {
 				if (plugin.turret && block.getType() == Material.PUMPKIN) {
 					// turret:
-					if (Turret.getTurrets(m).size() < plugin.turretMatchLimit) {
-						if (Turret.getTurrets(player).size() < plugin.turretPlayerLimit) {
+					if (Turret.getTurretCountMatch() < plugin.turretMatchLimit) {
+						if (Turret.getTurrets(player.getName()).size() < plugin.turretPlayerLimit) {
 							Snowman snowman = (Snowman) block.getLocation().getWorld().spawnEntity(block.getLocation(), EntityType.SNOWMAN);
-							new Turret(player, snowman, plugin.mm.getMatch(player), plugin);
+							new Turret(player, snowman, plugin.mm.getMatch(player));
 							ItemStack i = player.getItemInHand();
 							if (i.getAmount() <= 1)
 								player.setItemInHand(null);
@@ -661,8 +661,8 @@ public class EventListener implements Listener {
 
 				} else if (plugin.mine && block.getType() == Material.FLOWER_POT) {
 					// mine:
-					if (Mine.getMines(m).size() < plugin.mineMatchLimit) {
-						if (Mine.getMines(player).size() < plugin.minePlayerLimit) {
+					if (Mine.getMineCountMatch() < plugin.mineMatchLimit) {
+						if (Mine.getMines(player.getName()).size() < plugin.minePlayerLimit) {
 							plugin.getServer().getScheduler().scheduleSyncDelayedTask(this.plugin, new Runnable() {
 
 								@Override
@@ -670,7 +670,7 @@ public class EventListener implements Listener {
 									block.setType(Material.FLOWER_POT);
 								}
 							}, 1L);
-							new Mine(player, block, plugin.mm.getMatch(player), plugin);
+							new Mine(player, block, plugin.mm.getMatch(player));
 							ItemStack i = player.getItemInHand();
 							if (i.getAmount() <= 1)
 								player.setItemInHand(null);

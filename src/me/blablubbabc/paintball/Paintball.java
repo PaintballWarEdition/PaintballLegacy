@@ -11,7 +11,6 @@ import java.util.regex.Pattern;
 import me.blablubbabc.BlaDB.BlaSQLite;
 import me.blablubbabc.paintball.Metrics.Graph;
 import me.blablubbabc.paintball.extras.NoGravity;
-import me.blablubbabc.paintball.extras.Sniper;
 import me.blablubbabc.paintball.extras.Turret;
 import org.bukkit.ChatColor;
 import org.bukkit.GameMode;
@@ -703,9 +702,6 @@ public class Paintball extends JavaPlugin{
 		softreload = false;
 		lobbyspawn = 0;
 		afkMatchCount = new HashMap<String, Integer>();
-		
-		//WEAPONS
-		Sniper.init(this);
 
 		//autoLobby
 		if(autoLobby) {
@@ -716,7 +712,7 @@ public class Paintball extends JavaPlugin{
 		}
 		
 		//start no gravity task
-		if (sniperNoGravity) NoGravity.run(this);
+		if (sniperNoGravity) NoGravity.run();
 
 		//METRICS
 		try {

@@ -1,8 +1,14 @@
 package me.blablubbabc.paintball.extras;
 
 import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Map;
+
 import me.blablubbabc.paintball.Match;
 import me.blablubbabc.paintball.Paintball;
+import me.blablubbabc.paintball.Source;
+import me.blablubbabc.paintball.Utils;
+
 import org.bukkit.Effect;
 import org.bukkit.Location;
 import org.bukkit.Material;
@@ -14,7 +20,55 @@ import org.bukkit.util.BlockIterator;
 import org.bukkit.util.Vector;
 
 public class Mine {
-	private static ArrayList<Mine> mines = new ArrayList<Mine>();
+	
+	private static int mineCounter = 0;
+	private static Map<String, ArrayList<Mine>> mines = new HashMap<String, ArrayList<Mine>>();
+	
+	private static void addMine(String shooterName, Mine mine) {
+		ArrayList<Mine> pmines = mines.get(shooterName);
+		if (pmines == null) {
+			pmines = new ArrayList<Mine>();
+			mines.put(shooterName, pmines);
+		}
+		pmines.add(mine);
+		mineCounter++;
+	}
+	
+	private static void removeMine(String shooterName, Mine mine) {
+		ArrayList<Mine> pmines = mines.get(shooterName);
+		if (pmines != null) {
+			if (pmines.remove(mine)) {
+				mineCounter--;
+				if (pmines.size() == 0) mines.remove(shooterName);
+			}
+		}
+	}
+	
+	public static int getMineCountMatch() {
+		return mineCounter;
+	}
+	
+	public static ArrayList<Mine> getMines(String playerName) {
+		ArrayList<Mine> pmines = mines.get(playerName);
+		if (pmines == null) {
+			pmines = new ArrayList<Mine>();
+		}
+		return pmines;
+	}
+	
+	public static Mine getIsMine(Block mine) {
+		for (ArrayList<Mine> pmines : mines.values()) {
+			for (Mine m : pmines) {
+				if (m.block.equals(mine)) {
+					return m;
+				}
+			}
+		}
+		return null;
+	}
+	
+	
+	/*private static ArrayList<Mine> mines = new ArrayList<Mine>();
 
 	public static synchronized void addMine(Mine mine) {
 		mines.add(mine);
@@ -51,36 +105,34 @@ public class Mine {
 			}
 		}
 		return list;
-	}
+	}*/
 
 	public final Block block;
 	public final Location loc;
 	public final Player player;
 	public final Match match;
-	public final Paintball plugin;
 
 	private int tickTask = -1;
 	private boolean exploded = false;
 
-	public Mine(Player player, Block mine, Match match, Paintball plugin) {
+	public Mine(Player player, Block mine, Match match) {
 		this.block = mine;
 		this.loc = block.getLocation();
 		this.match = match;
 		this.player = player;
-		this.plugin = plugin;
-		addMine(this);
+		addMine(player.getName(), this);
 		tick();
 	}
 
 	private void tick() {
-		tickTask = plugin.getServer().getScheduler()
-				.scheduleSyncDelayedTask(this.plugin, new Runnable() {
+		tickTask = Paintball.instance.getServer().getScheduler()
+				.scheduleSyncDelayedTask(Paintball.instance, new Runnable() {
 
 					@Override
 					public void run() {
 						if (!exploded) {
 							if (block.getType() == Material.FLOWER_POT) {
-								if (plugin.effects) {
+								if (Paintball.instance.effects) {
 									// effect
 									for (Player p : match.getAllPlayer()) {
 										if (match.isSurvivor(p)) {
@@ -115,7 +167,7 @@ public class Mine {
 	private boolean nearEnemy() {
 		for (Player p : match.getEnemyTeam(player)) {
 			if (match.isSurvivor(p)) {
-				if (loc.distance(p.getLocation()) < plugin.mineRange
+				if (loc.distance(p.getLocation()) < Paintball.instance.mineRange
 						&& canSeeMine(p)) {
 					return true;
 				}
@@ -144,18 +196,19 @@ public class Mine {
 				Vec3D.a(loc2.getX(), loc2.getY(), loc2.getZ())) == null;
 	}*/
 
-	public synchronized void explode(final boolean effect) {
+	public void explode(final boolean effect) {
 		if (!exploded) {
 			exploded = true;
 			if (tickTask != -1)
-				plugin.getServer().getScheduler().cancelTask(tickTask);
+				Paintball.instance.getServer().getScheduler().cancelTask(tickTask);
 			if (block.getType() == Material.FLOWER_POT)
 				block.setType(Material.AIR);
-			removeMine(this);
+			final String playerName = player.getName();
+			removeMine(playerName, this);
 
 			if (effect) {
 				// some effect here:
-				if (plugin.effects) {
+				if (Paintball.instance.effects) {
 					// effect
 					loc.getWorld().playEffect(loc, Effect.SMOKE, 1);
 					loc.getWorld().playEffect(loc, Effect.SMOKE, 2);
@@ -169,65 +222,29 @@ public class Mine {
 				}
 
 				loc.getWorld().createExplosion(loc, 0.0F);
-				for (Vector v : directions()) {
-					moveExpSnow(loc.getWorld().spawn(loc, Snowball.class), v,
-							player, plugin);
+				for (Vector v : Utils.getUpVectors()) {
+					final Snowball s = loc.getWorld().spawn(loc, Snowball.class);
+					s.setShooter(player);
+					Ball.registerBall(s, playerName, Source.MINE);
+					
+					Vector v2 = v.clone();
+					v2.setX(v.getX() + Math.random() - Math.random());
+					v2.setY(v.getY() + Math.random() - Math.random());
+					v2.setZ(v.getZ() + Math.random() - Math.random());
+					s.setVelocity(v2.normalize().multiply(0.5));
+					Paintball.instance.getServer().getScheduler()
+							.scheduleSyncDelayedTask(Paintball.instance, new Runnable() {
+
+								@Override
+								public void run() {
+									if (!s.isDead() || s.isValid())
+										Ball.getBall(s, playerName, true);
+										s.remove();
+								}
+							}, (long) Paintball.instance.mineTime);
 				}
 			}
 		}
-	}
-
-	private static void moveExpSnow(final Snowball s, Vector v, Player player,
-			Paintball plugin) {
-		s.setShooter(player);
-		Vector v2 = v;
-		v2.setX(v.getX() + Math.random() - Math.random());
-		v2.setY(v.getY() + Math.random() - Math.random());
-		v2.setZ(v.getZ() + Math.random() - Math.random());
-		s.setVelocity(v2.normalize().multiply(0.5));
-		plugin.getServer().getScheduler()
-				.scheduleSyncDelayedTask(plugin, new Runnable() {
-
-					@Override
-					public void run() {
-						if (!s.isDead() || s.isValid())
-							s.remove();
-					}
-				}, (long) plugin.mineTime);
-	}
-
-	private static ArrayList<Vector> directions() {
-		ArrayList<Vector> vectors = new ArrayList<Vector>();
-		// alle Richtungen
-		vectors.add(new Vector(1, 0, 0));
-		vectors.add(new Vector(0, 1, 0));
-		vectors.add(new Vector(0, 0, 1));
-		vectors.add(new Vector(1, 1, 0));
-		vectors.add(new Vector(1, 0, 1));
-		vectors.add(new Vector(0, 1, 1));
-		vectors.add(new Vector(0, 0, 0));
-		vectors.add(new Vector(1, 1, 1));
-		vectors.add(new Vector(-1, -1, -1));
-		vectors.add(new Vector(-1, 0, 0));
-		vectors.add(new Vector(0, -1, 0));
-		vectors.add(new Vector(0, 0, -1));
-		vectors.add(new Vector(-1, -1, 0));
-		vectors.add(new Vector(-1, 0, -1));
-		vectors.add(new Vector(0, -1, -1));
-		vectors.add(new Vector(1, -1, 0));
-		vectors.add(new Vector(1, 0, -1));
-		vectors.add(new Vector(0, 1, -1));
-		vectors.add(new Vector(-1, 1, 0));
-		vectors.add(new Vector(-1, 0, 1));
-		vectors.add(new Vector(0, -1, 1));
-		vectors.add(new Vector(1, 1, -1));
-		vectors.add(new Vector(1, -1, 1));
-		vectors.add(new Vector(-1, 1, 1));
-		vectors.add(new Vector(1, -1, -1));
-		vectors.add(new Vector(-1, 1, -1));
-		vectors.add(new Vector(-1, -1, 1));
-
-		return vectors;
 	}
 
 }

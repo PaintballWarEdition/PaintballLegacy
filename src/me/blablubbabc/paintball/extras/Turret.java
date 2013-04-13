@@ -1,8 +1,13 @@
 package me.blablubbabc.paintball.extras;
 
 import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Map;
+
 import me.blablubbabc.paintball.Match;
 import me.blablubbabc.paintball.Paintball;
+import me.blablubbabc.paintball.Source;
+
 import org.bukkit.Effect;
 import org.bukkit.Location;
 import org.bukkit.entity.Player;
@@ -15,7 +20,55 @@ public class Turret {
 	private static Double[][] table;
 	private static int ySize;
 
-	private static ArrayList<Turret> turrets = new ArrayList<Turret>();
+	private static int turretCounter = 0;
+	private static Map<String, ArrayList<Turret>> turrets = new HashMap<String, ArrayList<Turret>>();
+	
+	private static void addTurret(String shooterName, Turret turret) {
+		ArrayList<Turret> pturrets = turrets.get(shooterName);
+		if (pturrets == null) {
+			pturrets = new ArrayList<Turret>();
+			turrets.put(shooterName, pturrets);
+		}
+		pturrets.add(turret);
+		turretCounter++;
+	}
+	
+	private static void removeTurret(String shooterName, Turret turret) {
+		ArrayList<Turret> pturrets = turrets.get(shooterName);
+		if (pturrets != null) {
+			if (pturrets.remove(turret)) {
+				turretCounter--;
+				if (pturrets.size() == 0) turrets.remove(shooterName);
+			}
+		}
+	}
+	
+	public static int getTurretCountMatch() {
+		return turretCounter;
+	}
+	
+	public static ArrayList<Turret> getTurrets(String playerName) {
+		ArrayList<Turret> pturrets = turrets.get(playerName);
+		if (pturrets == null) {
+			pturrets = new ArrayList<Turret>();
+		}
+		return pturrets;
+	}
+	
+	public static Turret getIsTurret(Snowman snowman) {
+		for (ArrayList<Turret> pturrets : turrets.values()) {
+			for (Turret t : pturrets) {
+				if (t.entity.equals(snowman)) {
+					return t;
+				}
+			}
+		}
+		return null;
+	}
+	
+	
+	
+	/*private static ArrayList<Turret> turrets = new ArrayList<Turret>();
 
 	public static synchronized void addTurret(Turret turret) {
 		turrets.add(turret);
@@ -52,12 +105,12 @@ public class Turret {
 			}
 		}
 		return list;
-	}
+	}*/
 
 	public final Match match;
 	public final Snowman entity;
 	public final Player player;
-	public final Paintball plugin;
+	public final String playerName;
 	//public final Location loc;
 
 	private int tickTask = -1;
@@ -68,22 +121,22 @@ public class Turret {
 	private int salve;
 	private int lives;
 
-	public Turret(Player player, Snowman turret, Match match, Paintball plugin) {
+	public Turret(Player player, Snowman turret, Match match) {
 		this.entity = turret;
 		this.player = player;
+		this.playerName = player.getName();
 		this.match = match;
 		//this.loc = entity.getLocation();
-		this.plugin = plugin;
-		this.cooldown = plugin.turretCooldown;
-		this.salve = plugin.turretSalve;
-		this.lives = plugin.turretLives;
-		addTurret(this);
+		this.cooldown = Paintball.instance.turretCooldown;
+		this.salve = Paintball.instance.turretSalve;
+		this.lives = Paintball.instance.turretLives;
+		addTurret(playerName, this);
 		this.tick();
 	}
 
 	private void tick() {
-		tickTask = plugin.getServer().getScheduler()
-				.scheduleSyncDelayedTask(this.plugin, new Runnable() {
+		tickTask = Paintball.instance.getServer().getScheduler()
+				.scheduleSyncDelayedTask(Paintball.instance, new Runnable() {
 
 					@Override
 					public void run() {
@@ -96,7 +149,7 @@ public class Turret {
 								tickTask = -1;
 								shoot();
 							} else {
-								cooldown = plugin.turretCooldown;
+								cooldown = Paintball.instance.turretCooldown;
 								tick();
 							}
 						} else {
@@ -147,8 +200,8 @@ public class Turret {
 	}
 
 	private void shoot() {
-		salveTask = plugin.getServer().getScheduler()
-				.scheduleSyncDelayedTask(this.plugin, new Runnable() {
+		salveTask = Paintball.instance.getServer().getScheduler()
+				.scheduleSyncDelayedTask(Paintball.instance, new Runnable() {
 
 					@Override
 					public void run() {
@@ -178,6 +231,7 @@ public class Turret {
 												.add(new Vector(0, 2, 0))
 												.add(dir2), Snowball.class);
 								s.setShooter(player);
+								Ball.registerBall(s, playerName, Source.TURRET);
 
 								s.setVelocity(getAimVector(
 										entVec.clone().add(new Vector(0, 2, 0))
@@ -190,13 +244,13 @@ public class Turret {
 								if (!entity.hasLineOfSight(target) || !canBeShoot(entVec.clone().add(new Vector(0, 2, 0))
 										.add(dir2), targetVec.clone(), dir2.clone()))
 									target = null;
-								salve = plugin.turretSalve;
+								salve = Paintball.instance.turretSalve;
 								salveTask = -1;
 								tick();
 							}
 						} else {
 							target = null;
-							salve = plugin.turretSalve;
+							salve = Paintball.instance.turretSalve;
 							salveTask = -1;
 							tick();
 						}
@@ -204,12 +258,12 @@ public class Turret {
 				}, 5L);
 	}
 
-	public synchronized void die(boolean effect) {
+	public void die(boolean effect) {
 		if (tickTask != -1)
-			plugin.getServer().getScheduler().cancelTask(tickTask);
+			Paintball.instance.getServer().getScheduler().cancelTask(tickTask);
 		if (salveTask != -1)
-			plugin.getServer().getScheduler().cancelTask(salveTask);
-		removeTurret(this);
+			Paintball.instance.getServer().getScheduler().cancelTask(salveTask);
+		removeTurret(playerName, this);
 		// some effect here:
 		if(effect) {
 			Location loc = entity.getLocation();
@@ -235,7 +289,7 @@ public class Turret {
 			entity.remove();
 	}
 	
-	public synchronized void hit() {
+	public void hit() {
 		this.lives--;
 		if(this.lives <= 0) {
 			this.die(true);
@@ -301,7 +355,7 @@ public class Turret {
 			// default angle 45°; tan 45 = 1.619
 			tan = 1.619D;
 		}
-		return aim.setY(tan).normalize().multiply(plugin.speedmulti);
+		return aim.setY(tan).normalize().multiply(Paintball.instance.speedmulti);
 	}
 
 	public static void calculateTable(int angleMin, int angleMax, int ticks,

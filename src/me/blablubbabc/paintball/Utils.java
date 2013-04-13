@@ -52,43 +52,56 @@ public class Utils {
 		}
 	}
 
-	private static ArrayList<Vector> vectors = new ArrayList<Vector>();
+	private static ArrayList<Vector> upVectors = new ArrayList<Vector>();
+	private static ArrayList<Vector> downVectors = new ArrayList<Vector>();
 
 	static {
 		// alle Richtungen
-		vectors.add(new Vector(1, 0, 0));
-		vectors.add(new Vector(0, 1, 0));
-		vectors.add(new Vector(0, 0, 1));
-		vectors.add(new Vector(1, 1, 0));
-		vectors.add(new Vector(1, 0, 1));
-		vectors.add(new Vector(0, 1, 1));
-		vectors.add(new Vector(0, 0, 0));
-		vectors.add(new Vector(1, 1, 1));
-		vectors.add(new Vector(-1, -1, -1));
-		vectors.add(new Vector(-1, 0, 0));
-		vectors.add(new Vector(0, -1, 0));
-		vectors.add(new Vector(0, 0, -1));
-		vectors.add(new Vector(-1, -1, 0));
-		vectors.add(new Vector(-1, 0, -1));
-		vectors.add(new Vector(0, -1, -1));
-		vectors.add(new Vector(1, -1, 0));
-		vectors.add(new Vector(1, 0, -1));
-		vectors.add(new Vector(0, 1, -1));
-		vectors.add(new Vector(-1, 1, 0));
-		vectors.add(new Vector(-1, 0, 1));
-		vectors.add(new Vector(0, -1, 1));
-		vectors.add(new Vector(1, 1, -1));
-		vectors.add(new Vector(1, -1, 1));
-		vectors.add(new Vector(-1, 1, 1));
-		vectors.add(new Vector(1, -1, -1));
-		vectors.add(new Vector(-1, 1, -1));
-		vectors.add(new Vector(-1, -1, 1));
+		upVectors.add(new Vector(1, 0, 0));
+		upVectors.add(new Vector(0, 1, 0));
+		upVectors.add(new Vector(0, 0, 1));
+		upVectors.add(new Vector(1, 1, 0));
+		upVectors.add(new Vector(1, 0, 1));
+		upVectors.add(new Vector(0, 1, 1));
+		upVectors.add(new Vector(0, 0, 0));
+		upVectors.add(new Vector(1, 1, 1));
+		upVectors.add(new Vector(-1, 0, 0));
+		upVectors.add(new Vector(0, 0, -1));
+		upVectors.add(new Vector(-1, 0, -1));
+		upVectors.add(new Vector(1, 0, -1));
+		upVectors.add(new Vector(0, 1, -1));
+		upVectors.add(new Vector(-1, 1, 0));
+		upVectors.add(new Vector(-1, 0, 1));
+		upVectors.add(new Vector(1, 1, -1));
+		upVectors.add(new Vector(-1, 1, 1));
+		upVectors.add(new Vector(-1, 1, -1));
+		
+		downVectors.add(new Vector(-1, -1, 1));
+		downVectors.add(new Vector(-1, -1, -1));
+		downVectors.add(new Vector(1, -1, -1));
+		downVectors.add(new Vector(1, -1, 1));
+		downVectors.add(new Vector(0, -1, 1));
+		downVectors.add(new Vector(0, -1, -1));
+		downVectors.add(new Vector(1, -1, 0));
+		downVectors.add(new Vector(-1, -1, 0));
+		downVectors.add(new Vector(0, -1, 0));
+	}
+
+	public static ArrayList<Vector> getUpVectors() {
+		return upVectors;
+	}
+	
+	public static ArrayList<Vector> getDownVectors() {
+		return downVectors;
 	}
 
 	public static ArrayList<Vector> getDirections() {
+		ArrayList<Vector> vectors = new ArrayList<Vector>();
+		vectors.addAll(upVectors);
+		vectors.addAll(downVectors);
 		return vectors;
 	}
-
+	
 	// ///////////////////////////
 	public static final BlockFace[] axis = { BlockFace.NORTH, BlockFace.EAST, BlockFace.SOUTH, BlockFace.WEST };
 	public static final BlockFace[] radial = { BlockFace.NORTH, BlockFace.NORTH_EAST, BlockFace.EAST, BlockFace.SOUTH_EAST, BlockFace.SOUTH,

@@ -79,48 +79,45 @@ public class Airstrike {
 	
 	public final Player player;
 	public final Match match;
-	public final Paintball plugin;
 	public int task;
 
-	private Airstrike(Player player, Match match, Paintball plugin) {
+	private Airstrike(Player player, Match match) {
 		this.match = match;
 		this.player = player;
-		this.plugin = plugin;
 		addAirstrike(player.getName());
 	}
 	
 	private static HashMap<String, Block> marks = new HashMap<String, Block>();
 	private static HashMap<String, Block> finalmarks = new HashMap<String, Block>();
 	
-	public static void call(final Paintball plugin, final Player player, final Match match) {
+	public static void call(final Player player, final Match match) {
 		final String name = player.getName();
 		if(marked(name)) {
-			final Airstrike a = new Airstrike(player, match, plugin);
+			final Airstrike a = new Airstrike(player, match);
 			
 			Block block = marks.get(name);
 			demark(player);
 			finalMark(block, player);
 			//airstrike
-			int range = plugin.airstrikeRange;
-			Vector pv = new Vector(player.getLocation().getX(),block.getLocation().getY()+plugin.airstrikeHeight,player.getLocation().getZ());
-			Vector bv =	new Vector(block.getLocation().getX(),block.getLocation().getY()+plugin.airstrikeHeight,block.getLocation().getZ());
+			Vector pv = new Vector(player.getLocation().getX(),block.getLocation().getY()+Paintball.instance.airstrikeHeight,player.getLocation().getZ());
+			Vector bv =	new Vector(block.getLocation().getX(),block.getLocation().getY()+Paintball.instance.airstrikeHeight,block.getLocation().getZ());
 			Vector bp = new Vector() ; bp.copy(bv); bp.subtract(pv).normalize();
 			final Vector bpr = new Vector(-bp.getZ(),0,bp.getX()); bpr.normalize();
 			Location b1 = bv.clone().toLocation(player.getWorld());
-			b1.subtract(bpr.clone().multiply(range));
+			b1.subtract(bpr.clone().multiply(Paintball.instance.airstrikeRange));
 			//Block b2 = player.getWorld().getBlockAt(block.getLocation().add(bp.multiply(range)));
-			final double bombDiff = ( (2*range) / plugin.airstrikeBombs );
+			final double bombDiff = ( (2*Paintball.instance.airstrikeRange) / Paintball.instance.airstrikeBombs );
 			
 			final LinkedList<Location> bombs = new LinkedList<Location>();
-			for(int i = 1; i <= plugin.airstrikeBombs; i++) {
+			for(int i = 1; i <= Paintball.instance.airstrikeBombs; i++) {
 				bombs.add(b1.clone().add(bpr.clone().multiply((bombDiff*i))));
 			}
-			player.sendMessage(plugin.t.getString("AIRSTRKE_CALLED"));
+			player.sendMessage(Paintball.instance.t.getString("AIRSTRKE_CALLED"));
 			//chicken
 			Location lc = new Location(player.getWorld(), bombs.getFirst().getX(), bombs.getFirst().getY(), bombs.getFirst().getZ(), 0, getLookAtYaw(bpr));
 			final Entity chick = player.getWorld().spawnEntity(lc.add(new Vector(0,5,0)), EntityType.CHICKEN);
 			final String shooterName = player.getName();
-			a.task = plugin.getServer().getScheduler().scheduleSyncRepeatingTask(plugin, new Runnable() {
+			a.task = Paintball.instance.getServer().getScheduler().scheduleSyncRepeatingTask(Paintball.instance, new Runnable() {
 				int i = 0;
 				@Override
 				public void run() {
@@ -131,7 +128,7 @@ public class Airstrike {
 					chick.setVelocity(bpr.clone().multiply(bombDiff/5));
 					i++;
 					if(i > (bombs.size() - 1)) {
-						plugin.getServer().getScheduler().cancelTask(a.task);
+						Paintball.instance.getServer().getScheduler().cancelTask(a.task);
 						definalMark(player);
 						chick.remove();
 						removeAirstrike(shooterName);

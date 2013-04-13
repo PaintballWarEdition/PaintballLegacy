@@ -946,12 +946,14 @@ public class Match {
 
 	public void resetWeaponStuffEnd(Player p) {
 		// remove turrets:
-		for (Turret t : Turret.getTurrets(p)) {
-			t.die(false);
+		Iterator<Turret> iterT = Turret.getTurrets(p.getName()).iterator();
+		while (iterT.hasNext()) {
+			iterT.next().die(false);
 		}
 		// remove mines:
-		for (Mine m : Mine.getMines(p)) {
-			m.explode(false);
+		Iterator<Mine> iterM = Mine.getMines(p.getName()).iterator();
+		while (iterM.hasNext()) {
+			iterM.next().explode(false);
 		}
 		// remove zooming
 		if (Sniper.isZooming(p))
@@ -960,12 +962,14 @@ public class Match {
 
 	public void resetWeaponStuffDeath(Player p) {
 		// remove turrets:
-		for (Turret t : Turret.getTurrets(p)) {
-			t.die(true);
+		Iterator<Turret> iterT = Turret.getTurrets(p.getName()).iterator();
+		while (iterT.hasNext()) {
+			iterT.next().die(true);
 		}
 		// remove mines:
-		for (Mine m : Mine.getMines(p)) {
-			m.explode(false);
+		Iterator<Mine> iterM = Mine.getMines(p.getName()).iterator();
+		while (iterM.hasNext()) {
+			iterM.next().explode(false);
 		}
 		// remove zooming
 		if (Sniper.isZooming(p))

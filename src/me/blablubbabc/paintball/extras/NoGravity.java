@@ -27,8 +27,8 @@ public class NoGravity {
 		return entitiesVec.containsKey(e);
 	}
 
-	public static void run(Paintball plugin) {
-		plugin.getServer().getScheduler().runTaskTimer(plugin, new Runnable() {
+	public static void run() {
+		Paintball.instance.getServer().getScheduler().runTaskTimer(Paintball.instance, new Runnable() {
 			
 			@Override
 			public void run() {

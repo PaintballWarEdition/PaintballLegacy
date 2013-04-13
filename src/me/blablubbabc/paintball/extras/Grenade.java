@@ -47,8 +47,9 @@ public class Grenade {
 		Integer id = egg.getEntityId();
 		Grenade nade = getGrenadeFromList(pnades, id);
 		if (remove && nade != null) {
-			if (pnades.size() == 1) nades.remove(shooterName);
-			else pnades.remove(nade);
+			if (pnades.remove(nade)) {
+				if (pnades.size() == 0) nades.remove(shooterName);
+			}
 		}
 		return nade;
 	}

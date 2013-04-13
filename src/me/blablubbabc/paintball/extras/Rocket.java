@@ -19,12 +19,6 @@ public class Rocket {
 	private static int rocketCounter = 0;
 	private static HashMap<String, ArrayList<Rocket>> rockets = new HashMap<String, ArrayList<Rocket>>();
 
-	/**
-	 * Registers a new rocket.
-	 * 
-	 * @param fireball
-	 * @param player
-	 */
 	private static void registerRocket(Rocket rocket, String shooterName) {
 		ArrayList<Rocket> prockets = rockets.get(shooterName);
 		if (prockets == null) {
@@ -35,25 +29,19 @@ public class Rocket {
 		rocketCounter++;
 	}
 
-	/**
-	 * Returns a Rocket object if the given Fireball is a rocket of the player OR null if not.
-	 * @param fireball
-	 * @param shooterName
-	 * @param remove
-	 * @return
-	 */
 	public static Rocket getRocket(Fireball fireball, String shooterName, boolean remove) {
 		ArrayList<Rocket> prockets = rockets.get(shooterName);
 		if (prockets == null)
 			return null;
 		Integer id = fireball.getEntityId();
-		Rocket nade = getRocketFromList(prockets, id);
-		if (remove && nade != null) {
-			if (prockets.size() == 1) rockets.remove(shooterName);
-			else prockets.remove(nade);
-			rocketCounter--;
+		Rocket rocket = getRocketFromList(prockets, id);
+		if (remove && rocket != null) {
+			if (prockets.remove(rocket)) {
+				rocketCounter--;
+				if (prockets.size() == 0) rockets.remove(shooterName);
+			}
 		}
-		return nade;
+		return rocket;
 	}
 	
 	private static Rocket getRocketFromList(ArrayList<Rocket> prockets, int id) {
@@ -209,32 +197,28 @@ public class Rocket {
 	private void explode() {
 		exploded = true;
 		Location loc = entity.getLocation();
-		loc.getWorld().createExplosion(loc, -1F);
-		for (Vector v : Utils.getDirections()) {
-			snow(loc.getWorld().spawn(loc, Snowball.class), v);
-			snow(loc.getWorld().spawn(loc, Snowball.class), v);
-		}
-	}
-
-	private void snow(final Snowball s, Vector v) {
-		s.setShooter(player);
+		loc.getWorld().createExplosion(loc, 0.0F);
 		final String shooterName = player.getName();
-		Ball.registerBall(s, shooterName, Source.ROCKET);
-		Vector v2 = v.clone();
-		v2.setX(v.getX() + Math.random() - Math.random());
-		v2.setY(v.getY() + Math.random() - Math.random());
-		v2.setZ(v.getZ() + Math.random() - Math.random());
-		s.setVelocity(v2.normalize());
-		Paintball.instance.getServer().getScheduler()
-				.scheduleSyncDelayedTask(Paintball.instance, new Runnable() {
+		for (Vector v : Utils.getDirections()) {
+			final Snowball s = loc.getWorld().spawn(loc, Snowball.class);
+			s.setShooter(player);
+			Ball.registerBall(s, shooterName, Source.ROCKET);
+			Vector v2 = v.clone();
+			v2.setX(v.getX() + Math.random() - Math.random());
+			v2.setY(v.getY() + Math.random() - Math.random());
+			v2.setZ(v.getZ() + Math.random() - Math.random());
+			s.setVelocity(v2.normalize());
+			Paintball.instance.getServer().getScheduler()
+					.scheduleSyncDelayedTask(Paintball.instance, new Runnable() {
 
-					@Override
-					public void run() {
-						if (!s.isDead() || s.isValid())
-							Ball.getBall(s, shooterName, true);
-							s.remove();
-					}
-				}, (long) Paintball.instance.rocketTime);
+						@Override
+						public void run() {
+							if (!s.isDead() || s.isValid())
+								Ball.getBall(s, shooterName, true);
+								s.remove();
+						}
+					}, (long) Paintball.instance.rocketTime);
+		}
 	}
 
 }

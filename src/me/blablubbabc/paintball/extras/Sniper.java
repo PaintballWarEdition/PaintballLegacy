@@ -3,6 +3,7 @@ package me.blablubbabc.paintball.extras;
 import java.util.ArrayList;
 
 import me.blablubbabc.paintball.Paintball;
+import me.blablubbabc.paintball.Source;
 
 import org.bukkit.Location;
 import org.bukkit.Sound;
@@ -12,16 +13,11 @@ import org.bukkit.potion.PotionEffectType;
 import org.bukkit.util.Vector;
 
 public class Sniper {
-	private static Paintball plugin;
 	private static ArrayList<Player> zooming = new ArrayList<Player>();
-
-	public static void init(Paintball pl) {
-		plugin = pl;
-	}
 	
 	private static void setZoom(Player player) {
 		player.setWalkSpeed(-0.15F);
-		if(plugin.sniperRemoveSpeed) player.removePotionEffect(PotionEffectType.SPEED);
+		if(Paintball.instance.sniperRemoveSpeed) player.removePotionEffect(PotionEffectType.SPEED);
 	}
 	
 	private static void setNoZoom(Player player) {
@@ -65,10 +61,11 @@ public class Sniper {
 
 	private static void moveSnow(final Snowball s, Vector v, Player player) {
 		s.setShooter(player);
-		if (plugin.sniperNoGravity) {
-			NoGravity.addEntity(s, v.multiply(plugin.sniperSpeedmulti), plugin.sniperNoGravityDuration*20);
+		Ball.registerBall(s, player.getName(), Source.PUMPGUN);
+		if (Paintball.instance.sniperNoGravity) {
+			NoGravity.addEntity(s, v.multiply(Paintball.instance.sniperSpeedmulti), Paintball.instance.sniperNoGravityDuration*20);
 		} else {
-			s.setVelocity(v.multiply(plugin.sniperSpeedmulti));
+			s.setVelocity(v.multiply(Paintball.instance.sniperSpeedmulti));
 		}
 		
 	}
