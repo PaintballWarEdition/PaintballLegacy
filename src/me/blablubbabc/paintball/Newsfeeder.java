@@ -146,7 +146,7 @@ public class Newsfeeder {
 			vars.put("respawns", String.valueOf(match.setting_respawns));
 			vars.put("respawns_left", String.valueOf(match.respawnsLeft(target) - 1));
 			for(Player player : Lobby.LOBBY.getMembers()) {
-				if(!Lobby.toggledFeed(player)) player.sendMessage(plugin.t.getString("KILL_FEED", vars));
+				if(!Lobby.toggledFeed(player)) player.sendMessage(plugin.t.getString("KILL_FEED_RESPAWNS", vars));
 			}
 		} else {
 			for(Player player : Lobby.LOBBY.getMembers()) {
