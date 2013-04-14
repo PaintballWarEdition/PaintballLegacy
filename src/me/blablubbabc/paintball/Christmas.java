@@ -21,16 +21,16 @@ public class Christmas {
 		this.random = new Random();
 	}
 	
-	public synchronized void setWishes(String player) {
+	public void setWishes(String player) {
 		wishes.put(player, System.currentTimeMillis());
 	}
 	
-	public synchronized boolean alreadyWished(String player) {
+	public boolean alreadyWished(String player) {
 		update();
 		return wishes.containsKey(player);
 	}
 	
-	private synchronized void update() {
+	private void update() {
 		ArrayList<String> names = new ArrayList<String>();
 		for(String n : wishes.keySet()) {
 			names.add(n);
