@@ -197,7 +197,7 @@ public class Rocket {
 	private void explode() {
 		exploded = true;
 		Location loc = entity.getLocation();
-		loc.getWorld().createExplosion(loc, 0.0F);
+		loc.getWorld().createExplosion(loc, -1F, false);
 		final String shooterName = player.getName();
 		for (Vector v : Utils.getDirections()) {
 			final Snowball s = loc.getWorld().spawn(loc, Snowball.class);

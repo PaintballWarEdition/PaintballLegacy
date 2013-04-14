@@ -28,13 +28,13 @@ import org.bukkit.block.Block;
 import org.bukkit.block.BlockState;
 import org.bukkit.block.Sign;
 import org.bukkit.entity.Egg;
-import org.bukkit.entity.Entity;
 import org.bukkit.entity.EntityType;
 import org.bukkit.entity.Fireball;
 import org.bukkit.entity.Player;
 import org.bukkit.entity.Projectile;
 import org.bukkit.entity.Snowball;
 import org.bukkit.entity.Snowman;
+import org.bukkit.event.Event.Result;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
@@ -46,7 +46,6 @@ import org.bukkit.event.entity.CreatureSpawnEvent;
 import org.bukkit.event.entity.EntityDamageByEntityEvent;
 import org.bukkit.event.entity.EntityDamageEvent;
 import org.bukkit.event.entity.EntityDeathEvent;
-import org.bukkit.event.entity.EntityExplodeEvent;
 import org.bukkit.event.entity.FoodLevelChangeEvent;
 import org.bukkit.event.entity.PlayerDeathEvent;
 import org.bukkit.event.entity.ProjectileHitEvent;
@@ -229,7 +228,7 @@ public class EventListener implements Listener {
 					}
 				}
 			}
-		} else if (event.getDamager() instanceof Player && event.getEntity() instanceof Player && event.getCause() == DamageCause.ENTITY_ATTACK) {
+		} else if (plugin.allowMelee && event.getDamager() instanceof Player && event.getEntity() instanceof Player && event.getCause() == DamageCause.ENTITY_ATTACK) {
 			Player attacker = (Player) event.getDamager();
 			Player target = (Player) event.getEntity();
 			if (attacker != target) {
@@ -239,12 +238,10 @@ public class EventListener implements Listener {
 					if (matchT != null) {
 						if (matchA == matchT) {
 							if (matchA.enemys(attacker, target) && matchA.isSurvivor(attacker) && matchA.isSurvivor(target) && matchA.started) {
-								if (plugin.allowMelee) {
-									if (target.getHealth() > plugin.meleeDamage)
-										target.setHealth(target.getHealth() - plugin.meleeDamage);
-									else {
-										matchA.frag(target, attacker, Source.MELEE);
-									}
+								if (target.getHealth() > plugin.meleeDamage)
+									target.setHealth(target.getHealth() - plugin.meleeDamage);
+								else {
+									matchA.frag(target, attacker, Source.MELEE);
 								}
 							}
 						}	
@@ -254,8 +251,8 @@ public class EventListener implements Listener {
 		}
 	}
 
-	@EventHandler(priority = EventPriority.NORMAL)
-	public void onFireballExplosion(EntityExplodeEvent event) {
+	/*@EventHandler(priority = EventPriority.NORMAL)
+	public void onFireballExplosion(ExplosionPrimeEvent event) {
 		Entity entity = event.getEntity();
 		if (entity != null && entity.getType() == EntityType.FIREBALL) {
 			Fireball fireball = (Fireball) entity;
@@ -265,7 +262,7 @@ public class EventListener implements Listener {
 				}
 			}
 		}
-	}
+	}*/
 
 	@EventHandler(priority = EventPriority.HIGH, ignoreCancelled = true)
 	public void onPlayerShoot(ProjectileLaunchEvent event) {
@@ -319,6 +316,7 @@ public class EventListener implements Listener {
 	@EventHandler(priority = EventPriority.NORMAL)
 	public void onPlayerInteract(PlayerInteractEvent event) {
 		Player player = event.getPlayer();
+		if (player.getGameMode() == GameMode.CREATIVE) return;
 		ItemStack item = player.getItemInHand();
 		if (item == null)
 			return;
@@ -328,6 +326,8 @@ public class EventListener implements Listener {
 			if (match != null && Lobby.isPlaying(player) && match.isSurvivor(player)) {
 				if (!match.started || match.isJustRespawned(player.getName())) return;
 				Action action = event.getAction();
+				
+				event.setUseItemInHand(Result.DENY);
 				
 				switch (item.getType()) {
 				case SNOW_BALL:
@@ -427,8 +427,11 @@ public class EventListener implements Listener {
 							if (Rocket.getRocketCountPlayer(player.getName()) < plugin.rocketPlayerLimit) {
 								player.playSound(player.getLocation(), Sound.SILVERFISH_IDLE, 100L, 1L);
 								Fireball rocket = (Fireball) player.getWorld().spawnEntity(player.getEyeLocation(), EntityType.FIREBALL);
+								rocket.setIsIncendiary(false);
+								rocket.setYield(0F);
 								rocket.setShooter(player);
-								rocket.setVelocity(player.getLocation().getDirection().normalize().multiply(plugin.rocketSpeedMulti));
+								rocket.setDirection(player.getLocation().getDirection().normalize().multiply(plugin.rocketSpeedMulti));
+								//rocket.setVelocity(player.getLocation().getDirection().normalize().multiply(plugin.rocketSpeedMulti));
 								new Rocket(player, rocket);
 								if (item.getAmount() <= 1)
 									player.setItemInHand(null);
@@ -595,21 +598,21 @@ public class EventListener implements Listener {
 			Player target = (Player) event.getEntity();
 			Lobby team = Lobby.getTeam(target);
 			if (team != null) {
+				int damage = event.getDamage();
+				event.setDamage(0);
+				event.setCancelled(true);
 				Match match = plugin.mm.getMatch(target);
 				if (match != null && team != Lobby.SPECTATE && match.isSurvivor(target) && match.started) {
-					if ((plugin.falldamage && event.getCause() == DamageCause.FALL) || (plugin.otherDamage && event.getCause() != DamageCause.FALL)) {
-						if (target.getHealth() <= event.getDamage()) {
-							event.setDamage(0);
-							event.setCancelled(true);
+					if ((plugin.falldamage && event.getCause() == DamageCause.FALL) 
+							|| (plugin.otherDamage && event.getCause() != DamageCause.FALL 
+							&& event.getCause() != DamageCause.ENTITY_ATTACK && event.getCause() != DamageCause.PROJECTILE)) {
+						if (target.getHealth() <= damage) {
 							match.death(target);
+						} else {
+							target.setHealth(target.getHealth() - damage);
+							event.setCancelled(false);
 						}
-					} else {
-						event.setDamage(0);
-						event.setCancelled(true);
 					}
-				} else {
-					event.setDamage(0);
-					event.setCancelled(true);
 				}
 			}
 		}
@@ -800,17 +803,19 @@ public class EventListener implements Listener {
 		}
 	}
 
-	@EventHandler(priority = EventPriority.MONITOR)
+	@EventHandler(priority = EventPriority.HIGH)
 	public void onPlayerDead(PlayerDeathEvent event) {
 		Player player = (Player) event.getEntity();
 		if (Lobby.LOBBY.isMember(player)) {
 			if (Lobby.isPlaying(player) || Lobby.isSpectating(player))
 				mm.getMatch(player).left(player);
-			plugin.leaveLobby(player, true, false, false);
+			plugin.leaveLobby(player, true, true, true);
 			// drops?
 			event.setDroppedExp(0);
-			event.setKeepLevel(true);
-			event.getDrops().removeAll(event.getDrops());
+			event.setKeepLevel(false);
+			event.getDrops().clear();
+			plugin.log("WARNING: IllegalState! A player died while playing paintball. Report this to blablubbabc");
+			plugin.log("Report: " + event.toString());
 		}
 	}
 
