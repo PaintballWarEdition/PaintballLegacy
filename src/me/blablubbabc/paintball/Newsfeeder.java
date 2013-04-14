@@ -143,10 +143,10 @@ public class Newsfeeder {
 		vars.put("target_color", Lobby.getTeam(match.getTeamName(target)).color().toString());
 		vars.put("target", target.getName());
 		if (match.setting_respawns != -1 && match.setting_respawns != 0) {
-			vars.put("respawns", String.valueOf(match.setting_respawns));
-			vars.put("respawns_left", String.valueOf(match.respawnsLeft(target) - 1));
+			vars.put("lives", String.valueOf(match.setting_respawns + 1));
+			vars.put("lives_left", String.valueOf(match.respawnsLeft(target) - 1));
 			for(Player player : Lobby.LOBBY.getMembers()) {
-				if(!Lobby.toggledFeed(player)) player.sendMessage(plugin.t.getString("KILL_FEED_RESPAWNS", vars));
+				if(!Lobby.toggledFeed(player)) player.sendMessage(plugin.t.getString("KILL_FEED_LIVES", vars));
 			}
 		} else {
 			for(Player player : Lobby.LOBBY.getMembers()) {

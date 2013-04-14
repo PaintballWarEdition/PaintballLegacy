@@ -334,6 +334,7 @@ public class EventListener implements Listener {
 					//MARKER
 					if (isAirClick(action)) {
 						Snowball ball = (Snowball) player.getWorld().spawnEntity(player.getEyeLocation(), EntityType.SNOWBALL);
+						ball.setShooter(player);
 						// register snowball
 						Ball.registerBall(ball, player.getName(), Source.MARKER);
 						// zählen
@@ -387,6 +388,7 @@ public class EventListener implements Listener {
 						player.sendMessage(plugin.t.getString("GRENADE_THROW"));
 						player.playSound(player.getLocation(), Sound.SILVERFISH_IDLE, 100L, 1L);
 						Egg egg = (Egg) player.getWorld().spawnEntity(player.getEyeLocation(), EntityType.EGG);
+						egg.setShooter(player);
 						Grenade.registerGrenade(egg, player.getName(), Source.GRENADE);
 						// zählen
 						match.grenade(player);

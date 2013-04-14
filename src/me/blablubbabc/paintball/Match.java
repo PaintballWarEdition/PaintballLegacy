@@ -951,15 +951,16 @@ public class Match {
 
 	public void resetWeaponStuffEnd(Player p) {
 		// remove turrets:
-		Iterator<Turret> iterT = Turret.getTurrets(p.getName()).iterator();
-		while (iterT.hasNext()) {
-			iterT.next().die(false);
+		ArrayList<Turret> pturrets = new ArrayList<Turret>(Turret.getTurrets(p.getName()));
+		for (Turret t : pturrets) {
+			t.die(false);
 		}
 		// remove mines:
-		Iterator<Mine> iterM = Mine.getMines(p.getName()).iterator();
-		while (iterM.hasNext()) {
-			iterM.next().explode(false);
+		ArrayList<Mine> pmines = new ArrayList<Mine>(Mine.getMines(p.getName()));
+		for (Mine m : pmines) {
+			m.explode(false);
 		}
+		
 		// remove zooming
 		if (Sniper.isZooming(p))
 			Sniper.setNotZooming(p);
@@ -967,14 +968,14 @@ public class Match {
 
 	public void resetWeaponStuffDeath(Player p) {
 		// remove turrets:
-		Iterator<Turret> iterT = Turret.getTurrets(p.getName()).iterator();
-		while (iterT.hasNext()) {
-			iterT.next().die(true);
+		ArrayList<Turret> pturrets = new ArrayList<Turret>(Turret.getTurrets(p.getName()));
+		for (Turret t : pturrets) {
+			t.die(true);
 		}
 		// remove mines:
-		Iterator<Mine> iterM = Mine.getMines(p.getName()).iterator();
-		while (iterM.hasNext()) {
-			iterM.next().explode(false);
+		ArrayList<Mine> pmines = new ArrayList<Mine>(Mine.getMines(p.getName()));
+		for (Mine m : pmines) {
+			m.explode(false);
 		}
 		// remove zooming
 		if (Sniper.isZooming(p))
