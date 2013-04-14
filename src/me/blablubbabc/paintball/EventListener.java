@@ -314,7 +314,7 @@ public class EventListener implements Listener {
 	
 	@SuppressWarnings("deprecation")
 	@EventHandler(priority = EventPriority.NORMAL)
-	public void onPlayerInteract(PlayerInteractEvent event) {
+	public void onPlayerInteractLate(PlayerInteractEvent event) {
 		Player player = event.getPlayer();
 		if (player.getGameMode() == GameMode.CREATIVE) return;
 		ItemStack item = player.getItemInHand();
