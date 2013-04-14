@@ -213,6 +213,7 @@ public class EventListener implements Listener {
 										// Geschoss?
 										if (shot instanceof Snowball) {
 											// match
+											//TODO
 											if (shot.hasMetadata("Paintba11")) match.hitSnow(target, shooter);
 										}
 									}
@@ -232,23 +233,21 @@ public class EventListener implements Listener {
 			Player attacker = (Player) event.getDamager();
 			Player target = (Player) event.getEntity();
 			if (attacker != target) {
-				if (attacker != target) {
-					Match matchA = mm.getMatch(attacker);
-					if (matchA != null) {
-						Match matchT = mm.getMatch(target);
-						if (matchT != null) {
-							if (matchA == matchT) {
-								if (matchA.enemys(attacker, target) && matchA.isSurvivor(attacker) && matchA.isSurvivor(target) && matchA.started) {
-									if (plugin.allowMelee) {
-										if (target.getHealth() > plugin.meleeDamage)
-											target.setHealth(target.getHealth() - plugin.meleeDamage);
-										else {
-											matchA.death(target);
-										}
+				Match matchA = mm.getMatch(attacker);
+				if (matchA != null) {
+					Match matchT = mm.getMatch(target);
+					if (matchT != null) {
+						if (matchA == matchT) {
+							if (matchA.enemys(attacker, target) && matchA.isSurvivor(attacker) && matchA.isSurvivor(target) && matchA.started) {
+								if (plugin.allowMelee) {
+									if (target.getHealth() > plugin.meleeDamage)
+										target.setHealth(target.getHealth() - plugin.meleeDamage);
+									else {
+										matchA.frag(target, attacker);
 									}
 								}
-							}	
-						}
+							}
+						}	
 					}
 				}
 			}
@@ -595,12 +594,16 @@ public class EventListener implements Listener {
 			Lobby team = Lobby.getTeam(target);
 			if (team != null) {
 				Match match = plugin.mm.getMatch(target);
-				if (match != null && plugin.damage && team != Lobby.SPECTATE && match.isSurvivor(target) && match.started
-						&& event.getCause() != DamageCause.ENTITY_ATTACK) {
-					if (target.getHealth() <= event.getDamage()) {
+				if (match != null && team != Lobby.SPECTATE && match.isSurvivor(target) && match.started) {
+					if ((plugin.falldamage && event.getCause() == DamageCause.FALL) || (plugin.otherDamage && event.getCause() != DamageCause.FALL)) {
+						if (target.getHealth() <= event.getDamage()) {
+							event.setDamage(0);
+							event.setCancelled(true);
+							match.death(target);
+						}
+					} else {
 						event.setDamage(0);
 						event.setCancelled(true);
-						match.death(target);
 					}
 				} else {
 					event.setDamage(0);

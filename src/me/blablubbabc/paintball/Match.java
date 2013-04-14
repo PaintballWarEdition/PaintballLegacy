@@ -373,7 +373,7 @@ public class Match {
 				justRespawned.remove(name);
 			}
 			
-		}, 10L);
+		}, 12L);
 	}
 	
 	public boolean isJustRespawned(String playerName) {
@@ -649,7 +649,7 @@ public class Match {
 
 	// AKTIONS
 
-	public synchronized void left(Player player) {
+	public void left(Player player) {
 		// team?
 		if (getTeam(player) != null) {
 			// 0 leben aka tot
@@ -678,7 +678,7 @@ public class Match {
 		return respawnsLeft.get(player);
 	}
 	
-	private synchronized void respawn(Player player) {
+	private void respawn(Player player) {
 		livesLeft.put(player, setting_lives);
 		if (setting_respawns != -1)
 			respawnsLeft.put(player, respawnsLeft.get(player) - 1);
@@ -696,7 +696,7 @@ public class Match {
 		spawnPlayer(player);
 	}
 
-	public synchronized void addShots(Player player, int amount) {
+	public void addShots(Player player, int amount) {
 		// add 1
 		shots.put(player.getName(), shots.get(player.getName()) + amount);
 		// effekt
@@ -704,17 +704,17 @@ public class Match {
 		player.playSound(loc, Sound.WOOD_CLICK, 100F, 0F);
 	}
 
-	public synchronized void grenade(Player player) {
+	public void grenade(Player player) {
 		// add 1
 		grenades.put(player.getName(), grenades.get(player.getName()) + 1);
 	}
 
-	public synchronized void airstrike(Player player) {
+	public void airstrike(Player player) {
 		// add 1
 		airstrikes.put(player.getName(), airstrikes.get(player.getName()) + 1);
 	}
 
-	public synchronized void hitSnow(Player target, Player shooter) {
+	public void hitSnow(Player target, Player shooter) {
 		// math over already?
 		if (matchOver)
 			return;
@@ -779,7 +779,7 @@ public class Match {
 		}
 	}
 
-	public synchronized void frag(final Player target, Player killer) {
+	public void frag(final Player target, Player killer) {
 		// math over already?
 		if (matchOver)
 			return;
@@ -789,6 +789,11 @@ public class Match {
 		// STATS
 		deaths.put(target.getName(), deaths.get(target.getName()) + 1);
 		kills.put(killer.getName(), kills.get(killer.getName()) + 1);
+		
+		// 0 leben aka tot
+		livesLeft.put(target, 0);
+		// spawn protection
+		protection.remove(target);
 
 		// feed
 		HashMap<String, String> vars = new HashMap<String, String>();
@@ -850,7 +855,7 @@ public class Match {
 
 	}
 
-	public synchronized void death(final Player target) {
+	public void death(final Player target) {
 		// math over already?
 		if (matchOver)
 			return;
@@ -915,7 +920,7 @@ public class Match {
 		}
 	}
 
-	private synchronized void gameEnd(final boolean draw, ArrayList<Player> winnerS,
+	private void gameEnd(final boolean draw, ArrayList<Player> winnerS,
 			ArrayList<Player> looserS, String winS, String looseS) {
 		matchOver = true;
 		endSchedulers();

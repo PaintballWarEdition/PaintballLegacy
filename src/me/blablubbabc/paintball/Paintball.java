@@ -105,7 +105,8 @@ public class Paintball extends JavaPlugin{
 	public boolean onlyRandom;
 	public boolean autoRandom;
 	public boolean noPerms;
-	public boolean damage;
+	public boolean otherDamage;
+	public boolean falldamage;
 	public boolean allowMelee;
 	public int meleeDamage;
 	public boolean autoLobby;
@@ -356,7 +357,8 @@ public class Paintball extends JavaPlugin{
 		if(getConfig().get("Paintball.Lobby join.Checks.FoodLevel") == null)getConfig().set("Paintball.Lobby join.Checks.FoodLevel", true);
 		if(getConfig().get("Paintball.Lobby join.Checks.Effects") == null)getConfig().set("Paintball.Lobby join.Checks.Effects", true);
 
-		if(getConfig().get("Paintball.Match.Damage") == null)getConfig().set("Paintball.Match.Damage", false);
+		if(getConfig().get("Paintball.Match.Damage.FallDamage") == null)getConfig().set("Paintball.Match.Damage.FallDamage", false);
+		if(getConfig().get("Paintball.Match.Damage.Other Damage") == null)getConfig().set("Paintball.Match.Damage.Other Damage", true);
 		if(getConfig().get("Paintball.Match.Allow Melee") == null)getConfig().set("Paintball.Match.Allow Melee", true);
 		if(getConfig().get("Paintball.Match.Melee Damage") == null)getConfig().set("Paintball.Match.Melee Damage", 1);
 		if(getConfig().get("Paintball.Match.Lives") == null)getConfig().set("Paintball.Match.Lives", 1);
@@ -437,7 +439,8 @@ public class Paintball extends JavaPlugin{
 		cashPerRound = getConfig().getInt("Paintball.Cash per Round", 0);
 
 		//gerneral:
-		damage = getConfig().getBoolean("Paintball.Match.Damage", false);
+		falldamage = getConfig().getBoolean("Paintball.Match.Damage.FallDamage", false);
+		otherDamage = getConfig().getBoolean("Paintball.Match.Damage.Other Damage", true);
 		allowMelee = getConfig().getBoolean("Paintball.Match.Allow Melee", true);
 		meleeDamage = getConfig().getInt("Paintball.Match.Melee Damage", 1);
 		if(meleeDamage < 1) meleeDamage = 1;
