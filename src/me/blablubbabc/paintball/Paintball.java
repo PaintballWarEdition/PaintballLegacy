@@ -10,7 +10,9 @@ import java.util.regex.Pattern;
 
 import me.blablubbabc.BlaDB.BlaSQLite;
 import me.blablubbabc.paintball.Metrics.Graph;
+import me.blablubbabc.paintball.extras.Ball;
 import me.blablubbabc.paintball.extras.NoGravity;
+import me.blablubbabc.paintball.extras.Rocket;
 import me.blablubbabc.paintball.extras.Turret;
 import org.bukkit.ChatColor;
 import org.bukkit.GameMode;
@@ -305,7 +307,7 @@ public class Paintball extends JavaPlugin{
 		if(getConfig().get("Paintball.Cash per Hit") == null)getConfig().set("Paintball.Cash per Hit", 0);
 		if(getConfig().get("Paintball.Cash per Win") == null)getConfig().set("Paintball.Cash per Win", 10);
 		if(getConfig().get("Paintball.Cash per Round") == null)getConfig().set("Paintball.Cash per Round", 0);
-		if(getConfig().get("Paintball.Ball speed multi") == null)getConfig().set("Paintball.Ball speed multi", 1.5);
+		if(getConfig().get("Paintball.Ball speed multi") == null)getConfig().set("Paintball.Ball speed multi", 1.7);
 		if(getConfig().get("Paintball.Colored listnames") == null)getConfig().set("Paintball.Colored listnames", true);
 		if(getConfig().get("Paintball.Colored chatnames") == null)getConfig().set("Paintball.Colored chatnames", true);
 		if(getConfig().get("Paintball.Only Random") == null)getConfig().set("Paintball.Only Random", false);
@@ -821,6 +823,17 @@ public class Paintball extends JavaPlugin{
 				new Poster(plugin);
 			}
 		}, 1L);
+		
+		// TEST
+		
+		getServer().getScheduler().runTaskTimer(this, new Runnable() {
+			
+			@Override
+			public void run() {
+				
+				log("Balls: "+ Ball.count + " ; Rockets: " + Rocket.getRocketCountMatch());
+			}
+		}, 100L, 20L);
 
 	}
 

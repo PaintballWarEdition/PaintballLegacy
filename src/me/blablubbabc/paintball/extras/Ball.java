@@ -9,6 +9,8 @@ import me.blablubbabc.paintball.Source;
 import org.bukkit.entity.Snowball;
 
 public class Ball {
+	//TEST
+	public static int count = 0;
 	
 	private static Map<String, ArrayList<Ball>> balls = new HashMap<String, ArrayList<Ball>>();
 	
@@ -19,6 +21,7 @@ public class Ball {
 			balls.put(shooterName, pballs);
 		}
 		pballs.add(new Ball(snowball.getEntityId(), source));
+		count++;
 	}
 	
 	public static Ball getBall(Snowball snowball, String shooterName, boolean remove) {
@@ -27,8 +30,10 @@ public class Ball {
 		Integer id = snowball.getEntityId();
 		Ball ball = getBallFromList(pballs, id);
 		if (remove && ball != null) {
-			if (balls.size() == 1) balls.remove(shooterName);
-			else pballs.remove(ball);
+			if (pballs.remove(ball)) {
+				count--;
+				if (pballs.size() == 0) balls.remove(shooterName);
+			}
 		}
 		return ball;
 	}

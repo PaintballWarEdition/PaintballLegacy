@@ -324,7 +324,7 @@ public class EventListener implements Listener {
 		if (Lobby.LOBBY.isMember(player)) {
 			Match match = mm.getMatch(player);
 			if (match != null && Lobby.isPlaying(player) && match.isSurvivor(player)) {
-				event.setUseItemInHand(Result.DENY);
+				if (item.getType() != Material.POTION) event.setUseItemInHand(Result.DENY);
 				if (!match.started || match.isJustRespawned(player.getName())) return;
 				Action action = event.getAction();
 				
@@ -429,8 +429,8 @@ public class EventListener implements Listener {
 								rocket.setIsIncendiary(false);
 								rocket.setYield(0F);
 								rocket.setShooter(player);
-								rocket.setDirection(player.getLocation().getDirection().normalize().multiply(plugin.rocketSpeedMulti));
-								//rocket.setVelocity(player.getLocation().getDirection().normalize().multiply(plugin.rocketSpeedMulti));
+								//rocket.setDirection(player.getLocation().getDirection().normalize().multiply(plugin.rocketSpeedMulti));
+								rocket.setVelocity(player.getLocation().getDirection().normalize().multiply(plugin.rocketSpeedMulti));
 								new Rocket(player, rocket);
 								if (item.getAmount() <= 1)
 									player.setItemInHand(null);
