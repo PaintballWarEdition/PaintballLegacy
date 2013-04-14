@@ -714,7 +714,7 @@ public class Match {
 		airstrikes.put(player.getName(), airstrikes.get(player.getName()) + 1);
 	}
 
-	public void hitSnow(Player target, Player shooter) {
+	public void hitSnow(Player target, Player shooter, Source source) {
 		// math over already?
 		if (matchOver)
 			return;
@@ -749,7 +749,7 @@ public class Match {
 					// dead?->frag
 					// message:
 					if (healthLeft <= 0) {
-						frag(target, shooter);
+						frag(target, shooter, source);
 					} else {
 						// xp bar
 						if (plugin.useXPBar) target.setExp(healthLeft / setting_lives);
@@ -779,7 +779,7 @@ public class Match {
 		}
 	}
 
-	public void frag(final Player target, Player killer) {
+	public void frag(final Player target, Player killer, Source source) {
 		// math over already?
 		if (matchOver)
 			return;

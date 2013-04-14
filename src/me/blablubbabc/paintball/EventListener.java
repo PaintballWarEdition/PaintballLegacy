@@ -200,21 +200,21 @@ public class EventListener implements Listener {
 			Projectile shot = (Projectile) event.getDamager();
 			if (shot.getShooter() instanceof Player) {
 				Player shooter = (Player) shot.getShooter();
-				Match match = mm.getMatch(shooter);
-				if (match != null) {
+				Match matchA = mm.getMatch(shooter);
+				if (matchA != null) {
 					if (event.getEntity() instanceof Player) {
 						Player target = (Player) event.getEntity();
 						if (shooter != target) {
-							Match matchTarget = mm.getMatch(target);
-							if (match != null && matchTarget != null) {
-								if (match == matchTarget) {
-									if (!match.isSpec(shooter) && !match.isSpec(target) && match.isSurvivor(shooter) && match.isSurvivor(target)
-											&& match.started) {
+							Match matchB = mm.getMatch(target);
+							if (matchB != null ) {
+								if (matchA == matchB) {
+									if (!matchA.isSpec(shooter) && !matchA.isSpec(target) && matchA.isSurvivor(shooter) && matchA.isSurvivor(target)
+											&& matchA.started) {
 										// Geschoss?
 										if (shot instanceof Snowball) {
 											// match
-											//TODO
-											if (shot.hasMetadata("Paintba11")) match.hitSnow(target, shooter);
+											Ball ball = Ball.getBall((Snowball)shot, shooter.getName(), false);
+											if (ball != null) matchA.hitSnow(target, shooter, ball.getSource());
 										}
 									}
 								}
@@ -223,7 +223,7 @@ public class EventListener implements Listener {
 					} else if (event.getEntityType() == EntityType.SNOWMAN) {
 						Snowman snowman = (Snowman) event.getEntity();
 						Turret turret = Turret.getIsTurret(snowman);
-						if (turret != null && match == turret.match && match.enemys(shooter, turret.player)) {
+						if (turret != null && matchA == turret.match && matchA.enemys(shooter, turret.player)) {
 							turret.hit();
 						}
 					}
@@ -243,7 +243,7 @@ public class EventListener implements Listener {
 									if (target.getHealth() > plugin.meleeDamage)
 										target.setHealth(target.getHealth() - plugin.meleeDamage);
 									else {
-										matchA.frag(target, attacker);
+										matchA.frag(target, attacker, Source.MELEE);
 									}
 								}
 							}

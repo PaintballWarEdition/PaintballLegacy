@@ -8,5 +8,6 @@ public enum Source {
 	PUMPGUN,
 	ROCKET,
 	SNIPER,
-	TURRET;
+	TURRET,
+	MELEE;
 }
