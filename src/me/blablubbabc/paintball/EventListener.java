@@ -315,7 +315,7 @@ public class EventListener implements Listener {
 	@SuppressWarnings("deprecation")
 	@EventHandler(priority = EventPriority.NORMAL)
 	public void onPlayerInteractLate(PlayerInteractEvent event) {
-		Player player = event.getPlayer();
+		final Player player = event.getPlayer();
 		if (player.getGameMode() == GameMode.CREATIVE) return;
 		ItemStack item = player.getItemInHand();
 		if (item == null)
@@ -332,23 +332,26 @@ public class EventListener implements Listener {
 				case SNOW_BALL:
 					//MARKER
 					if (isAirClick(action)) {
-						Snowball ball = (Snowball) player.getWorld().spawnEntity(player.getEyeLocation(), EntityType.SNOWBALL);
-						ball.setShooter(player);
-						// register snowball
-						Ball.registerBall(ball, player.getName(), Source.MARKER);
-						// zählen
-						match.addShots(player, 1);
-						if (match.setting_balls != -1) {
-							// -1 ball
-							if (item.getAmount() <= 1)
-								player.setItemInHand(null);
-							else {
-								item.setAmount(item.getAmount() - 1);
-								player.setItemInHand(item);
+						PlayerInventory inv = player.getInventory();
+						if (match.setting_balls == -1 || inv.contains(Material.SNOW_BALL, 1)) {
+							Snowball ball = (Snowball) player.getWorld().spawnEntity(player.getEyeLocation(), EntityType.SNOWBALL);
+							ball.setShooter(player);
+							// register snowball
+							Ball.registerBall(ball, player.getName(), Source.MARKER);
+							// boosting:
+							// test: no normalizing
+							ball.setVelocity(player.getLocation().getDirection().multiply(plugin.speedmulti));
+							// zählen
+							match.addShots(player, 1);
+							
+							if (match.setting_balls != -1) {
+								// -1 ball
+								Utils.removeInventoryItems(inv, Material.SNOW_BALL, 1);
+								player.updateInventory();
 							}
+						} else {
+							player.playSound(player.getEyeLocation(), Sound.FIRE_IGNITE, 100F, 2F);
 						}
-						// boosting:
-						ball.setVelocity(player.getLocation().getDirection().normalize().multiply(plugin.speedmulti));
 					}
 					break;
 					
@@ -367,7 +370,7 @@ public class EventListener implements Listener {
 											player.setItemInHand(null);
 										else {
 											item.setAmount(item.getAmount() - 1);
-											player.setItemInHand(item);
+											player.updateInventory();
 										}
 									}
 								} else {
@@ -384,23 +387,25 @@ public class EventListener implements Listener {
 				case EGG:
 					// GRENADE
 					if (plugin.grenade && isAirClick(action)) {
-						player.sendMessage(plugin.t.getString("GRENADE_THROW"));
-						player.playSound(player.getLocation(), Sound.SILVERFISH_IDLE, 100L, 1L);
-						Egg egg = (Egg) player.getWorld().spawnEntity(player.getEyeLocation(), EntityType.EGG);
-						egg.setShooter(player);
-						Grenade.registerGrenade(egg, player.getName(), Source.GRENADE);
-						// zählen
-						match.grenade(player);
-						if (match.setting_grenades != -1) {
-							if (item.getAmount() <= 1)
-								player.setItemInHand(null);
-							else {
-								item.setAmount(item.getAmount() - 1);
-								player.setItemInHand(item);
+						PlayerInventory inv = player.getInventory();
+						if (match.setting_grenades == -1 || inv.contains(Material.EGG, 1)) {
+							player.sendMessage(plugin.t.getString("GRENADE_THROW"));
+							player.playSound(player.getLocation(), Sound.SILVERFISH_IDLE, 100L, 1L);
+							Egg egg = (Egg) player.getWorld().spawnEntity(player.getEyeLocation(), EntityType.EGG);
+							egg.setShooter(player);
+							// boosting:
+							egg.setVelocity(player.getLocation().getDirection().multiply(plugin.grenadeSpeed));
+							Grenade.registerGrenade(egg, player.getName(), Source.GRENADE);
+							// zählen
+							match.grenade(player);
+							if (match.setting_grenades != -1) {
+								// -1 egg
+								Utils.removeInventoryItems(inv, Material.EGG, 1);
+								player.updateInventory();
 							}
+						} else {
+							player.playSound(player.getEyeLocation(), Sound.FIRE_IGNITE, 100F, 2F);
 						}
-						// boosting:
-						egg.setVelocity(player.getLocation().getDirection().multiply(plugin.grenadeSpeed));
 					}
 					break;
 
@@ -453,15 +458,16 @@ public class EventListener implements Listener {
 						if (action == Action.LEFT_CLICK_AIR) {
 							Sniper.toggleZoom(player);
 						} else if (action == Action.RIGHT_CLICK_AIR) {
-							if (!plugin.sniperOnlyUseIfZooming || Sniper.isZooming(player)) {
-								PlayerInventory inv = player.getInventory();
-								if (inv.contains(Material.SNOW_BALL, 1)) {
+							PlayerInventory inv = player.getInventory();
+							if ((!plugin.sniperOnlyUseIfZooming || Sniper.isZooming(player))
+								&& (match.setting_balls == -1 || inv.contains(Material.SNOW_BALL, 1))) {
+								match.addShots(player, 1);
+								Sniper.shoot(player);
+								
+								if (match.setting_balls != -1) {
+									// -1 ball
 									Utils.removeInventoryItems(inv, Material.SNOW_BALL, 1);
 									player.updateInventory();
-									match.addShots(player, 1);
-									Sniper.shoot(player);
-								} else {
-									player.playSound(player.getEyeLocation(), Sound.FIRE_IGNITE, 100F, 2F);
 								}
 							} else {
 								player.playSound(player.getEyeLocation(), Sound.FIRE_IGNITE, 100F, 2F);
@@ -473,7 +479,13 @@ public class EventListener implements Listener {
 				case CHEST:
 					// GIFT
 					if (plugin.giftsEnabled) {
-						plugin.christmas.unwrapGift(player);
+						plugin.getServer().getScheduler().runTaskLater(plugin, new Runnable() {
+							
+							@Override
+							public void run() {
+								plugin.christmas.unwrapGift(player);
+							}
+						}, 1L);
 					}
 					break;
 
