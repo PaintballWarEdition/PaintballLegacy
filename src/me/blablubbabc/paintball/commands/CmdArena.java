@@ -252,6 +252,7 @@ public class CmdArena {
 					} else {
 						player.sendMessage(plugin.t.getString("ARENA_ALREADY_DISABLED", vars));
 					}
+					return true;
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 				} else if(args[2].equalsIgnoreCase("enable")) {
 					if(am.inUse(name)) {
@@ -263,6 +264,7 @@ public class CmdArena {
 					} else {
 						player.sendMessage(plugin.t.getString("ARENA_ALREADY_ENABLED", vars));
 					}
+					return true;
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 				}
 			}
