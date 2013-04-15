@@ -212,8 +212,10 @@ public class EventListener implements Listener {
 										// Geschoss?
 										if (shot instanceof Snowball) {
 											// match
-											Ball ball = Ball.getBall((Snowball)shot, shooter.getName(), false);
-											if (ball != null) matchA.hitSnow(target, shooter, ball.getSource());
+											Ball ball = Ball.getBall(shot.getEntityId(), shooter.getName(), false);
+											if (ball != null) {
+												matchA.hitSnow(target, shooter, ball.getSource());
+											}
 										}
 									}
 								}
@@ -314,7 +316,7 @@ public class EventListener implements Listener {
 	
 	@SuppressWarnings("deprecation")
 	@EventHandler(priority = EventPriority.NORMAL)
-	public void onPlayerInteractLate(PlayerInteractEvent event) {
+	public void onPlayerInteract(PlayerInteractEvent event) {
 		final Player player = event.getPlayer();
 		if (player.getGameMode() == GameMode.CREATIVE) return;
 		ItemStack item = player.getItemInHand();
@@ -337,7 +339,7 @@ public class EventListener implements Listener {
 							Snowball ball = (Snowball) player.getWorld().spawnEntity(player.getEyeLocation(), EntityType.SNOWBALL);
 							ball.setShooter(player);
 							// register snowball
-							Ball.registerBall(ball, player.getName(), Source.MARKER);
+							Ball.registerBall(ball.getEntityId(), player.getName(), Source.MARKER);
 							// boosting:
 							// test: no normalizing
 							ball.setVelocity(player.getLocation().getDirection().multiply(plugin.speedmulti));
@@ -553,7 +555,7 @@ public class EventListener implements Listener {
 			String shooterName = shooter.getName();
 			
 			if (shot instanceof Snowball) {
-				Ball ball = Ball.getBall((Snowball)shot, shooterName, true);
+				Ball ball = Ball.getBall(shot.getEntityId(), shooterName, true);
 				// is ball
 				if (ball != null) {
 					Match match = mm.getMatch(shooter);

@@ -225,7 +225,7 @@ public class Mine {
 				for (Vector v : Utils.getUpVectors()) {
 					final Snowball s = loc.getWorld().spawn(loc, Snowball.class);
 					s.setShooter(player);
-					Ball.registerBall(s, playerName, Source.MINE);
+					Ball.registerBall(s.getEntityId(), playerName, Source.MINE);
 					
 					Vector v2 = v.clone();
 					v2.setX(v.getX() + Math.random() - Math.random());
@@ -238,7 +238,7 @@ public class Mine {
 								@Override
 								public void run() {
 									if (!s.isDead() || s.isValid())
-										Ball.getBall(s, playerName, true);
+										Ball.getBall(s.getEntityId(), playerName, true);
 										s.remove();
 								}
 							}, (long) Paintball.instance.mineTime);

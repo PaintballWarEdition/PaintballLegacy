@@ -36,7 +36,7 @@ public class Pumpgun {
 	
 	private static void moveSnow(final Snowball s, Vector v, Player player, String playerName) {
 		s.setShooter(player);
-		Ball.registerBall(s, playerName, Source.PUMPGUN);
+		Ball.registerBall(s.getEntityId(), playerName, Source.PUMPGUN);
 		s.setVelocity(v.multiply(Paintball.instance.pumpgunSpeedmulti));
 	}
 }

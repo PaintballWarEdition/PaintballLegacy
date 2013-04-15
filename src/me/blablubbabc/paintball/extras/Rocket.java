@@ -202,7 +202,7 @@ public class Rocket {
 		for (Vector v : Utils.getDirections()) {
 			final Snowball s = loc.getWorld().spawn(loc, Snowball.class);
 			s.setShooter(player);
-			Ball.registerBall(s, shooterName, Source.ROCKET);
+			Ball.registerBall(s.getEntityId(), shooterName, Source.ROCKET);
 			Vector v2 = v.clone();
 			v2.setX(v.getX() + Math.random() - Math.random());
 			v2.setY(v.getY() + Math.random() - Math.random());
@@ -214,7 +214,7 @@ public class Rocket {
 						@Override
 						public void run() {
 							if (!s.isDead() || s.isValid())
-								Ball.getBall(s, shooterName, true);
+								Ball.getBall(s.getEntityId(), shooterName, true);
 								s.remove();
 						}
 					}, (long) Paintball.instance.rocketTime);

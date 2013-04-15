@@ -4,27 +4,28 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
 
-import org.bukkit.entity.Entity;
+import org.bukkit.entity.Player;
+import org.bukkit.entity.Projectile;
 import org.bukkit.util.Vector;
 
 import me.blablubbabc.paintball.Paintball;
 
 public class NoGravity {
-	private static Map<Entity, Vector> entitiesVec = new HashMap<Entity, Vector>();
-	private static Map<Entity, Integer> entitiesDur = new HashMap<Entity, Integer>();
+	private static Map<Projectile, Vector> entitiesVec = new HashMap<Projectile, Vector>();
+	private static Map<Projectile, Integer> entitiesDur = new HashMap<Projectile, Integer>();
 
-	public static void addEntity(Entity e, Vector v, int duration) {
-		entitiesVec.put(e, v);
-		entitiesDur.put(e, duration);
+	public static void addEntity(Projectile s, Vector v, int duration) {
+		entitiesVec.put(s, v);
+		entitiesDur.put(s, duration);
 	}
 
-	public static void removeEntity(Entity e) {
-		entitiesVec.remove(e);
-		entitiesDur.remove(e);
+	public static void removeEntity(Projectile s) {
+		entitiesVec.remove(s);
+		entitiesDur.remove(s);
 	}
 
-	public static boolean containsEntity(Entity e) {
-		return entitiesVec.containsKey(e);
+	public static boolean containsEntity(Projectile s) {
+		return entitiesVec.containsKey(s);
 	}
 
 	public static void run() {
@@ -33,16 +34,18 @@ public class NoGravity {
 			@Override
 			public void run() {
 				if(!entitiesVec.isEmpty()) {
-					Iterator<Entity> iterator = entitiesVec.keySet().iterator();
+					Iterator<Projectile> iterator = entitiesVec.keySet().iterator();
 					while(iterator.hasNext()) {
-						Entity e = iterator.next();
-						int dur = entitiesDur.get(e);
-						if(e.isDead() || dur <= 0 || !e.isValid()) {
+						Projectile s = iterator.next();
+						int dur = entitiesDur.get(s);
+						if(s.isDead() || dur <= 0 || !s.isValid()) {
 							iterator.remove();
-							entitiesDur.remove(e);
+							entitiesDur.remove(s);
+							Ball.getBall(s.getEntityId(), ((Player) s.getShooter()).getName(), true);
+							s.remove();
 						} else {
-							e.setVelocity(entitiesVec.get(e));
-							entitiesDur.put(e, dur-1);
+							s.setVelocity(entitiesVec.get(s));
+							entitiesDur.put(s, dur-1);
 						}
 					}
 				}

@@ -143,7 +143,7 @@ public class Grenade {
 		for (Vector v : Utils.getDirections()) {
 			final Snowball s  = location.getWorld().spawn(location, Snowball.class);
 			s.setShooter(shooter);
-			Ball.registerBall(s, shooterName, source);
+			Ball.registerBall(s.getEntityId(), shooterName, source);
 			Vector v2 = v.clone();
 			v2.setX(v.getX() + Math.random() - Math.random());
 			v2.setY(v.getY() + Math.random() - Math.random());
@@ -154,7 +154,7 @@ public class Grenade {
 				@Override
 				public void run() {
 					if (!s.isDead() || s.isValid()) {
-						Ball.getBall(s, shooterName, true);
+						Ball.getBall(s.getEntityId(), shooterName, true);
 						s.remove();
 					}
 				}

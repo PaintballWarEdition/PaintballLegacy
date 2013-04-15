@@ -61,7 +61,7 @@ public class Sniper {
 
 	private static void moveSnow(final Snowball s, Vector v, Player player) {
 		s.setShooter(player);
-		Ball.registerBall(s, player.getName(), Source.PUMPGUN);
+		Ball.registerBall(s.getEntityId(), player.getName(), Source.SNIPER);
 		if (Paintball.instance.sniperNoGravity) {
 			NoGravity.addEntity(s, v.multiply(Paintball.instance.sniperSpeedmulti), Paintball.instance.sniperNoGravityDuration*20);
 		} else {

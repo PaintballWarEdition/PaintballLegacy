@@ -832,8 +832,17 @@ public class Paintball extends JavaPlugin{
 			public void run() {
 				
 				log("Balls: "+ Ball.count + " ; Rockets: " + Rocket.getRocketCountMatch());
+				for (String playerName : Ball.balls.keySet()) {
+					ArrayList<Ball> pballs = Ball.balls.get(playerName);
+					log ("Balls " + playerName +": " + pballs.size());
+					String ids = "";
+					for (Ball b : pballs) {
+						ids += b.getId() + ", ";
+					}
+					log("IDs: " + ids);
+				}
 			}
-		}, 100L, 20L);
+		}, 100L, 60L);
 
 	}
 

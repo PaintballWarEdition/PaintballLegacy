@@ -49,7 +49,7 @@ public class SQLPlayers {
 		for(String s : statsList) {
 			values += s + ",";
 		}
-		if(values.length() > 1) values.substring(0, (values.length() -1));
+		if(values.length() > 1) values = values.substring(0, (values.length() -1));
 		return values;
 	}
 	public int getRank(String player, String stat) {

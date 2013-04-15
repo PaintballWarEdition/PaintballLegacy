@@ -6,28 +6,27 @@ import java.util.Map;
 
 import me.blablubbabc.paintball.Source;
 
-import org.bukkit.entity.Snowball;
-
 public class Ball {
 	//TEST
 	public static int count = 0;
 	
-	private static Map<String, ArrayList<Ball>> balls = new HashMap<String, ArrayList<Ball>>();
+	public static Map<String, ArrayList<Ball>> balls = new HashMap<String, ArrayList<Ball>>();
 	
-	public static void registerBall(Snowball snowball, String shooterName, Source source) {
+	public static Ball registerBall(int id, String shooterName, Source source) {
 		ArrayList<Ball> pballs = balls.get(shooterName);
 		if (pballs == null) {
 			pballs = new ArrayList<Ball>();
 			balls.put(shooterName, pballs);
 		}
-		pballs.add(new Ball(snowball.getEntityId(), source));
+		Ball ball = new Ball(id, source);
+		pballs.add(ball);
 		count++;
+		return ball;
 	}
 	
-	public static Ball getBall(Snowball snowball, String shooterName, boolean remove) {
+	public static Ball getBall(int id, String shooterName, boolean remove) {
 		ArrayList<Ball> pballs = balls.get(shooterName);
 		if (pballs == null) return null;
-		Integer id = snowball.getEntityId();
 		Ball ball = getBallFromList(pballs, id);
 		if (remove && ball != null) {
 			if (pballs.remove(ball)) {
@@ -53,7 +52,7 @@ public class Ball {
 		this.source = source;
 	}
 
-	int getId() {
+	public int getId() {
 		return id;
 	}
 
