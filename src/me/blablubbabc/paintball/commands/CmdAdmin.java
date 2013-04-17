@@ -16,13 +16,13 @@ public class CmdAdmin {
 	private int happyTaskId;
 	private int happyhour;
 	
-	private synchronized void setHappyhour(int seconds) {
+	private void setHappyhour(int seconds) {
 		happyhour = seconds;
 	}
-	private synchronized int getHappyhour() {
+	private int getHappyhour() {
 		return happyhour;
 	}
-	private synchronized void happyhourMinus() {
+	private void happyhourMinus() {
 		happyhour--;
 	}
 
@@ -271,8 +271,7 @@ public class CmdAdmin {
 		} else if(args[1].equalsIgnoreCase("reload")) {
 			//neue matches verhindern
 			plugin.active = false;
-			plugin.reload();
-			sender.sendMessage(plugin.t.getString("REALOAD_FINISHED"));
+			plugin.reload(sender);
 			return true;
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 		} else if(args[1].equalsIgnoreCase("softreload")) {
@@ -282,8 +281,8 @@ public class CmdAdmin {
 			//message:
 			plugin.nf.status(plugin.t.getString("SOFTRELOAD"));
 			//check
-			sender.sendMessage(plugin.t.getString("RELOAD_SOON"));
-			plugin.mm.softCheck();
+			if (plugin.mm.softCheck()) plugin.reload(sender);
+			else sender.sendMessage(plugin.t.getString("RELOAD_SOON"));
 			return true;
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 		} else if(args[1].equalsIgnoreCase("random")) {

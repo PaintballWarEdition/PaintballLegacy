@@ -6,6 +6,7 @@ public enum Source {
 	AIRSTRIKE,
 	MINE,
 	PUMPGUN,
+	SHOTGUN,
 	ROCKET,
 	SNIPER,
 	TURRET,

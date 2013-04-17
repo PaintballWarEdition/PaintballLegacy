@@ -1,6 +1,7 @@
 package me.blablubbabc.paintball;
 
 import java.util.ArrayList;
+import java.util.Random;
 
 import org.bukkit.Material;
 import org.bukkit.block.BlockFace;
@@ -10,6 +11,8 @@ import org.bukkit.inventory.ItemStack;
 import org.bukkit.util.Vector;
 
 public class Utils {
+	public static Random random = new Random();
+	
 	public static boolean isEmptyInventory(Player p) {
 		for (ItemStack i : p.getInventory()) {
 			if (i == null)

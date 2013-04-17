@@ -398,28 +398,29 @@ public class MatchManager{
 		if(plugin.debug) plugin.nf.text("Main-Thread: Took " + dec.format(delta) + " ms");
 	}
 	
-	public void softCheck() {
+	public boolean softCheck() {
 		if(plugin.softreload) {
 			if(countdownStarted) {
 				plugin.getServer().getScheduler().cancelTask(taskID);
 				countdownStarted = false;
 			}
 			if(matches.size() <= 0) {
-				plugin.reload();
+				return true;
 			}
 		}
+		return false;
 	}
 
-	public synchronized Match getMatch(Player player) {
+	public Match getMatch(Player player) {
 		for(Match m : matches) {
 			if(m.inMatch(player)) return m;
 		}
 		return null;
 	}
 
-	public synchronized String ready() {
+	public String ready() {
 		//softreload-check:
-		softCheck();
+		if (softCheck()) plugin.reload(null);
 		//activated?
 		if(!plugin.active) return plugin.t.getString("NEW_MATCHES_DISABLED");
 		//no game active

@@ -12,12 +12,14 @@ import me.blablubbabc.BlaDB.BlaSQLite;
 import me.blablubbabc.paintball.Metrics.Graph;
 import me.blablubbabc.paintball.extras.Ball;
 import me.blablubbabc.paintball.extras.NoGravity;
+import me.blablubbabc.paintball.extras.Pumpgun;
 import me.blablubbabc.paintball.extras.Rocket;
 import me.blablubbabc.paintball.extras.Turret;
 import org.bukkit.ChatColor;
 import org.bukkit.GameMode;
 import org.bukkit.Location;
 import org.bukkit.command.CommandExecutor;
+import org.bukkit.command.CommandSender;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.Player;
 import org.bukkit.plugin.Plugin;
@@ -208,10 +210,17 @@ public class Paintball extends JavaPlugin{
 	public int minePlayerLimit;
 	
 	public boolean pumpgun;
-	public int pumpgunAngle1;
-	public int pumpgunAngle2;
+	public int pumpgunBullets;
+	public double pumpgunSpray;
 	public double pumpgunSpeedmulti;
 	public int pumpgunAmmo;
+	
+	public boolean shotgun;
+	public int shotgunAngle1;
+	public int shotgunAngle2;
+	public int shotgunAngleVert;
+	public double shotgunSpeedmulti;
+	public int shotgunAmmo;
 	
 	public boolean sniper;
 	public double sniperSpeedmulti;
@@ -264,7 +273,8 @@ public class Paintball extends JavaPlugin{
 		goodsDef.add("1-Airstrike-280-0-60");
 		goodsDef.add("1-Turret-86-0-180");
 		goodsDef.add("1-Speed-373-16482-20");
-		goodsDef.add("1-Pumpgun-382-0-20");
+		goodsDef.add("1-Shotgun-382-0-20");
+		goodsDef.add("1-Pumpgun-275-0-20");
 		goodsDef.add("1-Sniper-398-0-80");
 		
 		ArrayList<Gift> giftsDef = new ArrayList<Gift>();
@@ -381,6 +391,7 @@ public class Paintball extends JavaPlugin{
 		if(getConfig().get("Paintball.Extras.Grenades.Explosion-Time-Radius in Ticks") == null)getConfig().set("Paintball.Extras.Grenades.Explosion-Time-Radius in Ticks", 60);
 		if(getConfig().get("Paintball.Extras.Grenades.Speed multi") == null)getConfig().set("Paintball.Extras.Grenades.Speed multi", 1.0);
 		if(getConfig().get("Paintball.Extras.Grenades.Amount") == null)getConfig().set("Paintball.Extras.Grenades.Amount", 0);
+		
 		if(getConfig().get("Paintball.Extras.Airstrike.enabled") == null)getConfig().set("Paintball.Extras.Airstrike.enabled", true);
 		if(getConfig().get("Paintball.Extras.Airstrike.Height") == null)getConfig().set("Paintball.Extras.Airstrike.Height", 15);
 		if(getConfig().get("Paintball.Extras.Airstrike.Range (half)") == null)getConfig().set("Paintball.Extras.Airstrike.Range (half)", 30);
@@ -388,6 +399,7 @@ public class Paintball extends JavaPlugin{
 		if(getConfig().get("Paintball.Extras.Airstrike.Amount") == null)getConfig().set("Paintball.Extras.Airstrike.Amount", 0);
 		if(getConfig().get("Paintball.Extras.Airstrike.Match Limit") == null)getConfig().set("Paintball.Extras.Airstrike.Match Limit", 3);
 		if(getConfig().get("Paintball.Extras.Airstrike.Player Limit") == null)getConfig().set("Paintball.Extras.Airstrike.Player Limit", 1);
+		
 		if(getConfig().get("Paintball.Extras.Turret.enabled") == null)getConfig().set("Paintball.Extras.Turret.enabled", true);
 		if(getConfig().get("Paintball.Extras.Turret.angleMin (min -90)") == null)getConfig().set("Paintball.Extras.Turret.angleMin (min -90)", -45);
 		if(getConfig().get("Paintball.Extras.Turret.angleMax (max 90)") == null)getConfig().set("Paintball.Extras.Turret.angleMax (max 90)", 45);
@@ -399,22 +411,33 @@ public class Paintball extends JavaPlugin{
 		if(getConfig().get("Paintball.Extras.Turret.lives") == null)getConfig().set("Paintball.Extras.Turret.lives", 10);
 		if(getConfig().get("Paintball.Extras.Turret.Match Limit") == null)getConfig().set("Paintball.Extras.Turret.Match Limit", 15);
 		if(getConfig().get("Paintball.Extras.Turret.Player Limit") == null)getConfig().set("Paintball.Extras.Turret.Player Limit", 3);
+		
 		if(getConfig().get("Paintball.Extras.Rocket.enabled") == null)getConfig().set("Paintball.Extras.Rocket.enabled", true);
 		if(getConfig().get("Paintball.Extras.Rocket.Range in Seconds") == null)getConfig().set("Paintball.Extras.Airstrike.Range in Seconds", 4);
 		if(getConfig().get("Paintball.Extras.Rocket.Speed Multi") == null)getConfig().set("Paintball.Extras.Rocket.Speed Multi", 1.5);
 		if(getConfig().get("Paintball.Extras.Rocket.Explosion-Time-Radius in Ticks") == null)getConfig().set("Paintball.Extras.Rocket.Explosion-Time-Radius in Ticks", 60);
 		if(getConfig().get("Paintball.Extras.Rocket.Match Limit") == null)getConfig().set("Paintball.Extras.Rocket.Match Limit", 100);
 		if(getConfig().get("Paintball.Extras.Rocket.Player Limit") == null)getConfig().set("Paintball.Extras.Rocket.Player Limit", 25);
+		
 		if(getConfig().get("Paintball.Extras.Mine.enabled") == null)getConfig().set("Paintball.Extras.Mine.enabled", true);
 		if(getConfig().get("Paintball.Extras.Mine.Range") == null)getConfig().set("Paintball.Extras.Mine.Range", 4.0);
 		if(getConfig().get("Paintball.Extras.Mine.Explosion-Time-Radius in Ticks") == null)getConfig().set("Paintball.Extras.Mine.Explosion-Time-Radius in Ticks", 60);
 		if(getConfig().get("Paintball.Extras.Mine.Match Limit") == null)getConfig().set("Paintball.Extras.Mine.Match Limit", 50);
 		if(getConfig().get("Paintball.Extras.Mine.Player Limit") == null)getConfig().set("Paintball.Extras.Mine.Player Limit", 10);
+		
+		if(getConfig().get("Paintball.Extras.Shotgun.enabled") == null)getConfig().set("Paintball.Extras.Shotgun.enabled", true);
+		if(getConfig().get("Paintball.Extras.Shotgun.Angle1") == null)getConfig().set("Paintball.Extras.Shotgun.Angle1", 5);
+		if(getConfig().get("Paintball.Extras.Shotgun.Angle2") == null)getConfig().set("Paintball.Extras.Shotgun.Angle2", 10);
+		if(getConfig().get("Paintball.Extras.Shotgun.AngleVertical") == null)getConfig().set("Paintball.Extras.Shotgun.AngleVertical", 3);
+		if(getConfig().get("Paintball.Extras.Shotgun.Speedmulti") == null)getConfig().set("Paintball.Extras.Shotgun.Speedmulti", 1.5);
+		if(getConfig().get("Paintball.Extras.Shotgun.Needed Ammo") == null)getConfig().set("Paintball.Extras.Shotgun.Needed Ammo", 5);
+		
 		if(getConfig().get("Paintball.Extras.Pumpgun.enabled") == null)getConfig().set("Paintball.Extras.Pumpgun.enabled", true);
-		if(getConfig().get("Paintball.Extras.Pumpgun.Angle1") == null)getConfig().set("Paintball.Extras.Pumpgun.Angle1", 3);
-		if(getConfig().get("Paintball.Extras.Pumpgun.Angle2") == null)getConfig().set("Paintball.Extras.Pumpgun.Angle2", 6);
-		if(getConfig().get("Paintball.Extras.Pumpgun.Speedmulti") == null)getConfig().set("Paintball.Extras.Pumpgun.Speedmulti", 1.5);
+		if(getConfig().get("Paintball.Extras.Pumpgun.Bullets") == null)getConfig().set("Paintball.Extras.Pumpgun.Bullets", 15);
+		if(getConfig().get("Paintball.Extras.Pumpgun.Spray (higher number means less spray)") == null)getConfig().set("Paintball.Extras.Pumpgun.Spray (higher number means less spray)", 2.7);
+		if(getConfig().get("Paintball.Extras.Pumpgun.Speedmulti") == null)getConfig().set("Paintball.Extras.Pumpgun.Speedmulti", 1.2);
 		if(getConfig().get("Paintball.Extras.Pumpgun.Needed Ammo") == null)getConfig().set("Paintball.Extras.Pumpgun.Needed Ammo", 5);
+		
 		if(getConfig().get("Paintball.Extras.Sniper.enabled") == null)getConfig().set("Paintball.Extras.Sniper.enabled", true);
 		if(getConfig().get("Paintball.Extras.Sniper.Speedmulti") == null)getConfig().set("Paintball.Extras.Sniper.Speedmulti", 4.0);
 		if(getConfig().get("Paintball.Extras.Sniper.Only useable if zooming") == null)getConfig().set("Paintball.Extras.Sniper.Only useable if zooming", true);
@@ -643,12 +666,22 @@ public class Paintball extends JavaPlugin{
 		minePlayerLimit = getConfig().getInt("Paintball.Extras.Mine.Player Limit", 10);
 		if(minePlayerLimit < 0) minePlayerLimit = 0;
 		
+		shotgun = getConfig().getBoolean("Paintball.Extras.Shotgun.enabled", true);
+		shotgunAngle1 = getConfig().getInt("Paintball.Extras.Shotgun.Angle1", 5);
+		shotgunAngle2 = getConfig().getInt("Paintball.Extras.Shotgun.Angle2", 10);
+		shotgunAngleVert = getConfig().getInt("Paintball.Extras.Shotgun.AngleVertical", 3);
+		shotgunSpeedmulti = getConfig().getDouble("Paintball.Extras.Shotgun.Speedmulti", 1.5);
+		shotgunAmmo = getConfig().getInt("Paintball.Extras.Shotgun.Needed Ammo", 5);
+		if(shotgunAmmo < 0) shotgunAmmo = 0;
+		
 		pumpgun = getConfig().getBoolean("Paintball.Extras.Pumpgun.enabled", true);
-		pumpgunAngle1 = getConfig().getInt("Paintball.Extras.Pumpgun.Angle1", 3);
-		pumpgunAngle2 = getConfig().getInt("Paintball.Extras.Pumpgun.Angle2", 6);
+		pumpgunBullets = getConfig().getInt("Paintball.Extras.Pumpgun.Bullets", 15);
+		if(pumpgunBullets < 0) pumpgunBullets = 0;
+		pumpgunSpray = getConfig().getDouble("Paintball.Extras.Pumpgun.Spray (higher number means less spray)", 2.7);
 		pumpgunSpeedmulti = getConfig().getDouble("Paintball.Extras.Pumpgun.Speedmulti", 1.5);
 		pumpgunAmmo = getConfig().getInt("Paintball.Extras.Pumpgun.Needed Ammo", 5);
 		if(pumpgunAmmo < 0) pumpgunAmmo = 0;
+		
 		
 		sniper = getConfig().getBoolean("Paintball.Extras.Sniper.enabled", true);
 		sniperSpeedmulti = getConfig().getDouble("Paintball.Extras.Sniper.Speedmulti", 4.0);
@@ -715,6 +748,9 @@ public class Paintball extends JavaPlugin{
 				else cm.joinLobbyPre(player);
 			}
 		}
+		
+		//weapons
+		Pumpgun.init();
 		
 		//start no gravity task
 		if (sniperNoGravity) NoGravity.run();
@@ -893,10 +929,11 @@ public class Paintball extends JavaPlugin{
 		//System.out.println(message);
 	}
 
-	public void reload() {
+	public void reload(CommandSender sender) {
 		reloadConfig();
 		getServer().getPluginManager().disablePlugin(this);
 		getServer().getPluginManager().enablePlugin(this);
+		if (sender != null) sender.sendMessage(t.getString("REALOAD_FINISHED"));
 	}
 
 	

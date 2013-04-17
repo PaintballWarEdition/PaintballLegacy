@@ -412,14 +412,29 @@ public class EventListener implements Listener {
 					break;
 
 				case SPECKLED_MELON:
+					// SHOTGUN
+					if (plugin.shotgun && isAirClick(action)) {
+						PlayerInventory inv = player.getInventory();
+						if (inv.contains(Material.SNOW_BALL, plugin.shotgunAmmo)) {
+							Utils.removeInventoryItems(inv, Material.SNOW_BALL, plugin.shotgunAmmo);
+							player.updateInventory();
+							match.addShots(player, 15);
+							Pumpgun.shotShotgun(player);
+						} else {
+							player.playSound(player.getEyeLocation(), Sound.FIRE_IGNITE, 100F, 2F);
+						}
+					}
+					break;
+					
+				case STONE_AXE:
 					// PUMPGUN
 					if (plugin.pumpgun && isAirClick(action)) {
 						PlayerInventory inv = player.getInventory();
 						if (inv.contains(Material.SNOW_BALL, plugin.pumpgunAmmo)) {
 							Utils.removeInventoryItems(inv, Material.SNOW_BALL, plugin.pumpgunAmmo);
 							player.updateInventory();
-							match.addShots(player, 5);
-							Pumpgun.shot(player);
+							match.addShots(player, plugin.pumpgunBullets);
+							Pumpgun.shotPumpgun(player);
 						} else {
 							player.playSound(player.getEyeLocation(), Sound.FIRE_IGNITE, 100F, 2F);
 						}
