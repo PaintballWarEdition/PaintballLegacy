@@ -174,7 +174,11 @@ public class Match {
 						startCount--;
 						
 						for (Player p : getAllPlayer()) {
-							p.teleport(playersLoc.get(p.getName()));
+							Location ploc = p.getLocation();
+							Location loc = playersLoc.get(p.getName()).clone();
+							loc.setPitch(ploc.getPitch());
+							loc.setYaw(ploc.getYaw());
+							p.teleport(loc);
 						}
 
 						if ((startCount > 30 && (startCount % 30) == 0) 
