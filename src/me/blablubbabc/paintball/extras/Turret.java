@@ -231,7 +231,7 @@ public class Turret {
 												.add(new Vector(0, 2, 0))
 												.add(dir2), Snowball.class);
 								s.setShooter(player);
-								Ball.registerBall(s.getEntityId(), playerName, Source.TURRET);
+								Ball.registerBall(s, playerName, Source.TURRET);
 
 								s.setVelocity(getAimVector(
 										entVec.clone().add(new Vector(0, 2, 0))

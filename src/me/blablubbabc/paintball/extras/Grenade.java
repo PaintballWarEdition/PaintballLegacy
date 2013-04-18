@@ -8,7 +8,6 @@ import me.blablubbabc.paintball.Source;
 import me.blablubbabc.paintball.Utils;
 
 import org.bukkit.Location;
-import org.bukkit.entity.Egg;
 import org.bukkit.entity.Player;
 import org.bukkit.entity.Snowball;
 import org.bukkit.util.Vector;
@@ -16,21 +15,14 @@ import org.bukkit.util.Vector;
 public class Grenade {
 
 	private static HashMap<String, ArrayList<Grenade>> nades = new HashMap<String, ArrayList<Grenade>>();
-
-	/**
-	 * Registers a new grenade.
-	 * 
-	 * @param egg
-	 * @param player
-	 * @param source
-	 */
-	public static void registerGrenade(Egg egg, String shooterName, Source source) {
+	
+	public static void registerGrenade(int id, String shooterName, Source source) {
 		ArrayList<Grenade> pnades = nades.get(shooterName);
 		if (pnades == null) {
 			pnades = new ArrayList<Grenade>();
 			nades.put(shooterName, pnades);
 		}
-		pnades.add(new Grenade(egg.getEntityId(), source));
+		pnades.add(new Grenade(id, source));
 	}
 
 	/**
@@ -40,11 +32,10 @@ public class Grenade {
 	 * @param remove
 	 * @return
 	 */
-	public static Grenade getGrenade(Egg egg, String shooterName, boolean remove) {
+	public static Grenade getGrenade(int id, String shooterName, boolean remove) {
 		ArrayList<Grenade> pnades = nades.get(shooterName);
 		if (pnades == null)
 			return null;
-		Integer id = egg.getEntityId();
 		Grenade nade = getGrenadeFromList(pnades, id);
 		if (remove && nade != null) {
 			if (pnades.remove(nade)) {
@@ -143,7 +134,7 @@ public class Grenade {
 		for (Vector v : Utils.getDirections()) {
 			final Snowball s  = location.getWorld().spawn(location, Snowball.class);
 			s.setShooter(shooter);
-			Ball.registerBall(s.getEntityId(), shooterName, source);
+			Ball.registerBall(s, shooterName, source);
 			Vector v2 = v.clone();
 			v2.setX(v.getX() + Math.random() - Math.random());
 			v2.setY(v.getY() + Math.random() - Math.random());

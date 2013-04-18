@@ -45,7 +45,7 @@ public class Pumpgun {
 			for (int i = -Paintball.instance.shotgunAngleVert; i <= Paintball.instance.shotgunAngleVert; i += Paintball.instance.shotgunAngleVert) {
 				Snowball s = loc.getWorld().spawn(loc, Snowball.class);
 				s.setShooter(player);
-				Ball.registerBall(s.getEntityId(), playerName, Source.SHOTGUN);
+				Ball.registerBall(s, playerName, Source.SHOTGUN);
 				s.setVelocity(rotateAxis(vec, n, i).multiply(Paintball.instance.shotgunSpeedmulti));
 			}
 		}
@@ -87,7 +87,7 @@ public class Pumpgun {
 		for (int i = 0; i < Paintball.instance.pumpgunBullets ; i++) {
 			Snowball s = loc.getWorld().spawn(loc, Snowball.class);
 			s.setShooter(player);
-			Ball.registerBall(s.getEntityId(), playerName, Source.PUMPGUN);
+			Ball.registerBall(s, playerName, Source.PUMPGUN);
 			Vector v = new Vector(dir.getX() + (Utils.random.nextDouble()-0.45)/Paintball.instance.pumpgunSpray, dir.getY() + (Utils.random.nextDouble()-0.45)/Paintball.instance.pumpgunSpray, dir.getZ() + (Utils.random.nextDouble()-0.45)/Paintball.instance.pumpgunSpray).normalize();
 			s.setVelocity(v.multiply(Paintball.instance.pumpgunSpeedmulti));
 		}

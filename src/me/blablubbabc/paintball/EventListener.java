@@ -281,7 +281,7 @@ public class EventListener implements Listener {
 		Egg egg = event.getEgg();
 		if (egg.getShooter() instanceof Player) {
 			Player player = (Player) egg.getShooter();
-			if (Grenade.getGrenade(egg, player.getName(), false) != null) {
+			if (Grenade.getGrenade(egg.getEntityId(), player.getName(), false) != null) {
 				event.setHatching(false);
 			}
 		}
@@ -339,7 +339,7 @@ public class EventListener implements Listener {
 							Snowball ball = (Snowball) player.getWorld().spawnEntity(player.getEyeLocation(), EntityType.SNOWBALL);
 							ball.setShooter(player);
 							// register snowball
-							Ball.registerBall(ball.getEntityId(), player.getName(), Source.MARKER);
+							Ball.registerBall(ball, player.getName(), Source.MARKER);
 							// boosting:
 							// test: no normalizing
 							ball.setVelocity(player.getLocation().getDirection().multiply(plugin.speedmulti));
@@ -363,7 +363,7 @@ public class EventListener implements Listener {
 						if (Airstrike.marked(player.getName())) {
 							if (Airstrike.getAirstrikeCountMatch() < plugin.airstrikeMatchLimit) {
 								if (Airstrike.getAirstrikeCountPlayer(player.getName()) < plugin.airstrikePlayerLimit) {
-									Airstrike.call(player, match);
+									new Airstrike(player);
 									// zählen
 									match.airstrike(player);
 									// remove stick if not infinite
@@ -397,7 +397,7 @@ public class EventListener implements Listener {
 							egg.setShooter(player);
 							// boosting:
 							egg.setVelocity(player.getLocation().getDirection().multiply(plugin.grenadeSpeed));
-							Grenade.registerGrenade(egg, player.getName(), Source.GRENADE);
+							Grenade.registerGrenade(egg.getEntityId(), player.getName(), Source.GRENADE);
 							// zählen
 							match.grenade(player);
 							if (match.setting_grenades != -1) {
@@ -518,6 +518,23 @@ public class EventListener implements Listener {
 	private boolean isAirClick(Action action) {
 		return (action == Action.RIGHT_CLICK_AIR || action == Action.LEFT_CLICK_AIR);
 	}
+	
+	/*@EventHandler(priority = EventPriority.NORMAL)
+	public void onChunkUnload(ChunkUnloadEvent event) {
+		for (Entity e : event.getChunk().getEntities()) {
+			if (e.getType() == EntityType.SNOWBALL) {
+				Snowball s = (Snowball) e;
+				if (s.getShooter() instanceof Player) {
+					Ball.getBall(s.getEntityId(), ((Player)s.getShooter()).getName(), true);
+				}
+			} else if (e.getType() == EntityType.EGG) {
+				Egg egg = (Egg) e;
+				if (egg.getShooter() instanceof Player) {
+					Grenade.getGrenade(egg.getEntityId(), ((Player)egg.getShooter()).getName(), true);
+				}
+			}.
+		}
+	}*/
 
 	@EventHandler(priority = EventPriority.NORMAL)
 	public void onItemInHand(PlayerItemHeldEvent event) {
@@ -605,7 +622,7 @@ public class EventListener implements Listener {
 					}
 				}
 			} else if (plugin.grenade && shot instanceof Egg) {
-				Grenade nade = Grenade.getGrenade((Egg)shot, shooter.getName(), true);
+				Grenade nade = Grenade.getGrenade(shot.getEntityId(), shooter.getName(), true);
 				if (nade != null) {
 					Match match = mm.getMatch(shooter);
 					if (match != null) {
@@ -613,7 +630,7 @@ public class EventListener implements Listener {
 					}
 				}
 			} else if (plugin.rocket && shot instanceof Fireball) {
-				Rocket rocket = Rocket.getRocket((Fireball)shot, shooterName, true);
+				Rocket rocket = Rocket.getRocket(shot.getEntityId(), shooterName, true);
 				if (rocket != null)
 					rocket.die();
 			}

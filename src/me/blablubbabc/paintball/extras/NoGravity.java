@@ -4,8 +4,10 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
 
+import org.bukkit.entity.Egg;
 import org.bukkit.entity.Player;
 import org.bukkit.entity.Projectile;
+import org.bukkit.entity.Snowball;
 import org.bukkit.util.Vector;
 
 import me.blablubbabc.paintball.Paintball;
@@ -41,8 +43,11 @@ public class NoGravity {
 						if(s.isDead() || dur <= 0 || !s.isValid()) {
 							iterator.remove();
 							entitiesDur.remove(s);
-							Ball.getBall(s.getEntityId(), ((Player) s.getShooter()).getName(), true);
-							s.remove();
+							if (dur <= 0) {
+								if(s instanceof Snowball) Ball.getBall(s.getEntityId(), ((Player) s.getShooter()).getName(), true);
+								else if(s instanceof Egg) Grenade.getGrenade(s.getEntityId(), ((Player) s.getShooter()).getName(), true);
+								s.remove();
+							}
 						} else {
 							s.setVelocity(entitiesVec.get(s));
 							entitiesDur.put(s, dur-1);

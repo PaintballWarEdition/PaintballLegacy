@@ -29,11 +29,10 @@ public class Rocket {
 		rocketCounter++;
 	}
 
-	public static Rocket getRocket(Fireball fireball, String shooterName, boolean remove) {
+	public static Rocket getRocket(int id, String shooterName, boolean remove) {
 		ArrayList<Rocket> prockets = rockets.get(shooterName);
 		if (prockets == null)
 			return null;
-		Integer id = fireball.getEntityId();
 		Rocket rocket = getRocketFromList(prockets, id);
 		if (remove && rocket != null) {
 			if (prockets.remove(rocket)) {
@@ -155,7 +154,7 @@ public class Rocket {
 							tick();
 						} else {
 							// remove rocket:
-							getRocket(entity, player.getName(), true);
+							getRocket(entity.getEntityId(), player.getName(), true);
 							die();
 						}
 					}
@@ -202,7 +201,7 @@ public class Rocket {
 		for (Vector v : Utils.getDirections()) {
 			final Snowball s = loc.getWorld().spawn(loc, Snowball.class);
 			s.setShooter(player);
-			Ball.registerBall(s.getEntityId(), shooterName, Source.ROCKET);
+			Ball.registerBall(s, shooterName, Source.ROCKET);
 			Vector v2 = v.clone();
 			v2.setX(v.getX() + Math.random() - Math.random());
 			v2.setY(v.getY() + Math.random() - Math.random());

@@ -225,7 +225,7 @@ public class Mine {
 				for (Vector v : Utils.getUpVectors()) {
 					final Snowball s = loc.getWorld().spawn(loc, Snowball.class);
 					s.setShooter(player);
-					Ball.registerBall(s.getEntityId(), playerName, Source.MINE);
+					Ball.registerBall(s, playerName, Source.MINE);
 					
 					Vector v2 = v.clone();
 					v2.setX(v.getX() + Math.random() - Math.random());

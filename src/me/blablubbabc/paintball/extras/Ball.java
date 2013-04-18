@@ -4,6 +4,8 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
 
+import org.bukkit.entity.Snowball;
+
 import me.blablubbabc.paintball.Source;
 
 public class Ball {
@@ -12,13 +14,13 @@ public class Ball {
 	
 	public static Map<String, ArrayList<Ball>> balls = new HashMap<String, ArrayList<Ball>>();
 	
-	public static Ball registerBall(int id, String shooterName, Source source) {
+	public static Ball registerBall(Snowball entity, String shooterName, Source source) {
 		ArrayList<Ball> pballs = balls.get(shooterName);
 		if (pballs == null) {
 			pballs = new ArrayList<Ball>();
 			balls.put(shooterName, pballs);
 		}
-		Ball ball = new Ball(id, source);
+		Ball ball = new Ball(entity, source);
 		pballs.add(ball);
 		count++;
 		return ball;
@@ -44,21 +46,35 @@ public class Ball {
 		return null;
 	}
 	
-	private final int id;
+	public static void clear() {
+		for (String playerName : balls.keySet()) {
+			ArrayList<Ball> pballs = balls.get(playerName);
+			for (Ball b : pballs) {
+				b.remove();
+			}
+		}
+		balls.clear();
+	}
+	
+	
+	private final Snowball entity;
 	private final Source source;
 	
-	public Ball(int id, Source source) {
-		this.id = id;
+	public Ball(Snowball entity, Source source) {
+		this.entity = entity;
 		this.source = source;
 	}
 
 	public int getId() {
-		return id;
+		return entity.getEntityId();
 	}
 
 	public Source getSource() {
 		return source;
 	}
 	
+	public void remove() {
+		entity.remove();
+	}
 	
 }
