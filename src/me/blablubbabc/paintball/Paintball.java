@@ -430,13 +430,13 @@ public class Paintball extends JavaPlugin{
 		if(getConfig().get("Paintball.Extras.Shotgun.Angle2") == null)getConfig().set("Paintball.Extras.Shotgun.Angle2", 10);
 		if(getConfig().get("Paintball.Extras.Shotgun.AngleVertical") == null)getConfig().set("Paintball.Extras.Shotgun.AngleVertical", 3);
 		if(getConfig().get("Paintball.Extras.Shotgun.Speedmulti") == null)getConfig().set("Paintball.Extras.Shotgun.Speedmulti", 1.5);
-		if(getConfig().get("Paintball.Extras.Shotgun.Needed Ammo") == null)getConfig().set("Paintball.Extras.Shotgun.Needed Ammo", 5);
+		if(getConfig().get("Paintball.Extras.Shotgun.Needed Ammo") == null)getConfig().set("Paintball.Extras.Shotgun.Needed Ammo", 15);
 		
 		if(getConfig().get("Paintball.Extras.Pumpgun.enabled") == null)getConfig().set("Paintball.Extras.Pumpgun.enabled", true);
-		if(getConfig().get("Paintball.Extras.Pumpgun.Bullets") == null)getConfig().set("Paintball.Extras.Pumpgun.Bullets", 15);
-		if(getConfig().get("Paintball.Extras.Pumpgun.Spray (higher number means less spray)") == null)getConfig().set("Paintball.Extras.Pumpgun.Spray (higher number means less spray)", 2.7);
+		if(getConfig().get("Paintball.Extras.Pumpgun.Bullets") == null)getConfig().set("Paintball.Extras.Pumpgun.Bullets", 10);
+		if(getConfig().get("Paintball.Extras.Pumpgun.Spray (higher number means less spray)") == null)getConfig().set("Paintball.Extras.Pumpgun.Spray (higher number means less spray)", 3.5);
 		if(getConfig().get("Paintball.Extras.Pumpgun.Speedmulti") == null)getConfig().set("Paintball.Extras.Pumpgun.Speedmulti", 1.2);
-		if(getConfig().get("Paintball.Extras.Pumpgun.Needed Ammo") == null)getConfig().set("Paintball.Extras.Pumpgun.Needed Ammo", 5);
+		if(getConfig().get("Paintball.Extras.Pumpgun.Needed Ammo") == null)getConfig().set("Paintball.Extras.Pumpgun.Needed Ammo", 10);
 		
 		if(getConfig().get("Paintball.Extras.Sniper.enabled") == null)getConfig().set("Paintball.Extras.Sniper.enabled", true);
 		if(getConfig().get("Paintball.Extras.Sniper.Speedmulti") == null)getConfig().set("Paintball.Extras.Sniper.Speedmulti", 4.0);
