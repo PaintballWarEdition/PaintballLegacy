@@ -40,6 +40,7 @@ public class MatchManager{
 					match.resetWeaponStuffEnd(p);
 				}
 			}
+			match.resetMainWeaponStuffEnd();
 
 			//close match
 			plugin.am.setNotActive(match.getArena());

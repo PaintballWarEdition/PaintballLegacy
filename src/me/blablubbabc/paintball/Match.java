@@ -932,6 +932,7 @@ public class Match {
 		for (Player p : getAllPlayer()) {
 			resetWeaponStuffEnd(p);
 		}
+		resetMainWeaponStuffEnd();
 		if (!draw) {
 			for (Player p : winnerS) {
 				this.winners.add(p);
