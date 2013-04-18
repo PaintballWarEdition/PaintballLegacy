@@ -397,7 +397,7 @@ public class EventListener implements Listener {
 							egg.setShooter(player);
 							// boosting:
 							egg.setVelocity(player.getLocation().getDirection().multiply(plugin.grenadeSpeed));
-							Grenade.registerGrenade(egg.getEntityId(), player.getName(), Source.GRENADE);
+							Grenade.registerGrenade(egg, player.getName(), Source.GRENADE);
 							// zählen
 							match.grenade(player);
 							if (match.setting_grenades != -1) {

@@ -65,6 +65,7 @@ public class Ball {
 		this.source = source;
 	}
 
+	//TEST -> public
 	public int getId() {
 		return entity.getEntityId();
 	}
@@ -73,7 +74,7 @@ public class Ball {
 		return source;
 	}
 	
-	public void remove() {
+	void remove() {
 		entity.remove();
 	}
 	

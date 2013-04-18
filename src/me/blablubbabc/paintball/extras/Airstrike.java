@@ -135,7 +135,7 @@ public class Airstrike {
 				Location l = bombs.get(i);
 				Egg egg = player.getWorld().spawn(l, Egg.class);
 				egg.setShooter(player);
-				Grenade.registerGrenade(egg.getEntityId(), playerName, Source.AIRSTRIKE);
+				Grenade.registerGrenade(egg, playerName, Source.AIRSTRIKE);
 				chick.setVelocity(chickVel);
 				i++;
 				if(i > (bombs.size() - 1)) {

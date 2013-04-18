@@ -8,6 +8,7 @@ import me.blablubbabc.paintball.Source;
 import me.blablubbabc.paintball.Utils;
 
 import org.bukkit.Location;
+import org.bukkit.entity.Egg;
 import org.bukkit.entity.Player;
 import org.bukkit.entity.Snowball;
 import org.bukkit.util.Vector;
@@ -16,13 +17,13 @@ public class Grenade {
 
 	private static HashMap<String, ArrayList<Grenade>> nades = new HashMap<String, ArrayList<Grenade>>();
 	
-	public static void registerGrenade(int id, String shooterName, Source source) {
+	public static void registerGrenade(Egg egg, String shooterName, Source source) {
 		ArrayList<Grenade> pnades = nades.get(shooterName);
 		if (pnades == null) {
 			pnades = new ArrayList<Grenade>();
 			nades.put(shooterName, pnades);
 		}
-		pnades.add(new Grenade(id, source));
+		pnades.add(new Grenade(egg, source));
 	}
 
 	/**
@@ -51,6 +52,16 @@ public class Grenade {
 				return nade;
 		}
 		return null;
+	}
+	
+	public static void clear() {
+		for (String playerName : nades.keySet()) {
+			ArrayList<Grenade> pnades = nades.get(playerName);
+			for (Grenade g : pnades) {
+				g.remove();
+			}
+		}
+		nades.clear();
 	}
 
 	/*public static void eggThrow(Player player, Egg egg) {
@@ -112,16 +123,16 @@ public class Grenade {
 	 * } }, 100L); }
 	 */
 
-	private final int id;
+	private final Egg entity;
 	private final Source source;
 
-	public Grenade(int id, Source source) {
-		this.id = id;
+	public Grenade(Egg entity, Source source) {
+		this.entity = entity;
 		this.source = source;
 	}
 
 	int getId() {
-		return id;
+		return entity.getEntityId();
 	}
 
 	public Source getSource() {
@@ -151,6 +162,10 @@ public class Grenade {
 				}
 			}, (long) Paintball.instance.grenadeTime);
 		}
+	}
+	
+	void remove() {
+		entity.remove();
 	}
 	
 	/*private void snow(final Snowball s, Vector v, Player player) {

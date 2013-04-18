@@ -9,6 +9,10 @@ import java.util.List;
 import java.util.Map;
 import java.util.Random;
 import java.util.Set;
+
+import me.blablubbabc.paintball.extras.Airstrike;
+import me.blablubbabc.paintball.extras.Ball;
+import me.blablubbabc.paintball.extras.Grenade;
 import me.blablubbabc.paintball.extras.Mine;
 import me.blablubbabc.paintball.extras.Sniper;
 import me.blablubbabc.paintball.extras.Turret;
@@ -964,6 +968,15 @@ public class Match {
 		// remove zooming
 		if (Sniper.isZooming(p))
 			Sniper.setNotZooming(p);
+		
+	}
+	
+	public void resetMainWeaponStuffEnd() {
+		//remove airstrikes
+		Airstrike.clear();
+		//remove grenades
+		Grenade.clear();
+		Ball.clear();
 	}
 
 	public void resetWeaponStuffDeath(Player p) {
