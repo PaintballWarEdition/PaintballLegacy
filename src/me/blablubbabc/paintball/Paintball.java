@@ -945,27 +945,27 @@ public class Paintball extends JavaPlugin{
 
 	
 	//METHODS LOBBYSPAWNS
-	private synchronized void loadDB() {
+	private void loadDB() {
 		lobbyspawns = new LinkedList<Location>();
 		for(Location loc : sql.sqlArenaLobby.getLobbyspawns()) {
 			lobbyspawns.add(loc);
 		}
 	}
 
-	public synchronized void addLobbySpawn(Location loc) {
+	public void addLobbySpawn(Location loc) {
 		lobbyspawns.add(loc);
 		sql.sqlArenaLobby.addLobbyspawn(loc);
 	}
-	public synchronized void deleteLobbySpawns() {
+	public void deleteLobbySpawns() {
 		sql.sqlArenaLobby.removeLobbyspawns();
 		lobbyspawns = new LinkedList<Location>();
 	}
 
-	public synchronized int getLobbyspawnsCount() {
+	public int getLobbyspawnsCount() {
 		return lobbyspawns.size();
 	}
 
-	public synchronized Location getNextLobbySpawn() {
+	public Location getNextLobbySpawn() {
 		lobbyspawn++;
 		if(lobbyspawn > (lobbyspawns.size()-1)) lobbyspawn = 0;
 		return (lobbyspawns.size() > 0 ? lobbyspawns.get(lobbyspawn) : null);
@@ -975,21 +975,21 @@ public class Paintball extends JavaPlugin{
 	//UTILS
 	////////////////////////////////////
 	
-	public synchronized void afkRemove(String player) {
+	public void afkRemove(String player) {
 		afkMatchCount.remove(player);
 	}
 	
-	public synchronized int afkGet(String player) {
+	public int afkGet(String player) {
 		int amount = 0;
 		if(afkMatchCount.get(player) != null) amount = afkMatchCount.get(player);
 		return amount;
 	}
 	
-	public synchronized void afkSet(String player, int amount) {
+	public void afkSet(String player, int amount) {
 		afkMatchCount.put(player, amount);
 	}
 	
-	public synchronized ArrayList<String> afkGetEntries() {
+	public ArrayList<String> afkGetEntries() {
 		ArrayList<String> entries = new ArrayList<String>();
 		
 		for(String s : afkMatchCount.keySet()) {
@@ -1034,13 +1034,14 @@ public class Paintball extends JavaPlugin{
 		}
 	}
 
-	public synchronized void joinLobby(Player player) {
+	public void joinLobby(Player player) {
 		checks(player, true, false);
 		enterLobby(player);
 	}
 	
-	public synchronized void joinLobbyFresh(Player player) {
-		enterLobby(player);
+	public void joinLobbyFresh(Player player) {
+		if(player.isInsideVehicle()) player.leaveVehicle();
+		player.teleport(getNextLobbySpawn());
 		//inventory
 		if(saveInventory) {
 			pm.storeInventory(player);
@@ -1056,28 +1057,31 @@ public class Paintball extends JavaPlugin{
 		//set waiting
 		if(Lobby.isPlaying(player) || Lobby.isSpectating(player)) Lobby.getTeam(player).setWaiting(player);
 		//Lobbyteleport
-		//Vehicle
-		if(player.isInsideVehicle()) player.leaveVehicle();
 		player.teleport(getNextLobbySpawn());
 	}
-
-	public synchronized void leaveLobby(Player player, boolean messages, boolean teleport, boolean restoreInventory) {
-		//lobby remove:
-		Lobby.remove(player);
-		checks(player, true, true);
-		//restore saved inventory
-		if(restoreInventory && saveInventory) {
-			pm.restoreInventory(player);
-		}
-		//restore xp und level
-		if (useXPBar) pm.restoreExp(player);
-		//teleport:
-		if(teleport) player.teleport(pm.getLoc(player));
-		if(messages) {
-			//messages:
-			player.sendMessage(t.getString("YOU_LEFT_LOBBY"));
-			nf.leave(player.getName());
-		}
+	
+	public boolean leaveLobby(Player player, boolean messages, boolean teleport, boolean restoreInventory) {
+		if (Lobby.LOBBY.isMember(player)) {
+			if (Lobby.isPlaying(player) || Lobby.isSpectating(player))
+				mm.getMatch(player).left(player);
+			//lobby remove:
+			Lobby.remove(player);
+			checks(player, true, true);
+			//restore saved inventory
+			if(restoreInventory && saveInventory) {
+				pm.restoreInventory(player);
+			}
+			//restore xp und level
+			if (useXPBar) pm.restoreExp(player);
+			//teleport:
+			if(teleport) player.teleport(pm.getLoc(player));
+			if(messages) {
+				//messages:
+				player.sendMessage(t.getString("YOU_LEFT_LOBBY"));
+				nf.leave(player.getName());
+			}
+			return true;
+		} else return false;
 	}
 	
 }

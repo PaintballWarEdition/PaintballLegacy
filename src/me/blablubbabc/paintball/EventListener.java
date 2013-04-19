@@ -54,6 +54,7 @@ import org.bukkit.event.entity.EntityDamageEvent.DamageCause;
 import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.event.inventory.InventoryType.SlotType;
 import org.bukkit.event.player.AsyncPlayerChatEvent;
+import org.bukkit.event.player.PlayerChangedWorldEvent;
 import org.bukkit.event.player.PlayerCommandPreprocessEvent;
 import org.bukkit.event.player.PlayerDropItemEvent;
 import org.bukkit.event.player.PlayerEggThrowEvent;
@@ -132,6 +133,20 @@ public class EventListener implements Listener {
 		}
 	}
 
+	@EventHandler(priority = EventPriority.NORMAL)
+	public void onWorldChange(PlayerChangedWorldEvent event) {
+		if (plugin.worldMode) {
+			Player player = event.getPlayer();
+			boolean fromPb = plugin.worldModeWorlds.contains(event.getFrom().getName());
+			boolean toPb = plugin.worldModeWorlds.contains(event.getPlayer().getWorld().getName());
+			if (!fromPb && toPb) {
+				//todo join lobby fresh
+			} else if (fromPb && !toPb) {
+				plugin.leaveLobby(player, true, true, true);
+			}
+		}
+	}
+	
 	@EventHandler(priority = EventPriority.NORMAL)
 	public void onEntityDeath(EntityDeathEvent event) {
 		if (event.getEntityType() == EntityType.SNOWMAN) {
@@ -851,10 +866,7 @@ public class EventListener implements Listener {
 	@EventHandler(priority = EventPriority.HIGH)
 	public void onPlayerDead(PlayerDeathEvent event) {
 		Player player = (Player) event.getEntity();
-		if (Lobby.LOBBY.isMember(player)) {
-			if (Lobby.isPlaying(player) || Lobby.isSpectating(player))
-				mm.getMatch(player).left(player);
-			plugin.leaveLobby(player, true, true, true);
+		if (plugin.leaveLobby(player, true, true, true)) {
 			// drops?
 			event.setDroppedExp(0);
 			event.setKeepLevel(false);
@@ -893,11 +905,7 @@ public class EventListener implements Listener {
 	}
 
 	private void onPlayerDisconnect(Player player) {
-		if (Lobby.LOBBY.isMember(player)) {
-			if (Lobby.isPlaying(player) || Lobby.isSpectating(player))
-				mm.getMatch(player).left(player);
-			plugin.leaveLobby(player, true, true, true);
-		}
+		plugin.leaveLobby(player, true, true, true);
 
 	}
 

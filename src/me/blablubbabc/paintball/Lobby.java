@@ -33,46 +33,45 @@ public enum Lobby {
 	}
 	//METHODS
 	//SETTER
-	public synchronized void addMember(Player player) {
+	public void addMember(Player player) {
 		if(!players.containsKey(player)) {
 			players.put(player, false);
 			//max Players since last metrics submit-try
 			if(players.size() > maxPlayers) maxPlayers = players.size();
 		}
 	}
-	public synchronized void removeMember(Player player) {
+	public void removeMember(Player player) {
 		if(players.containsKey(player)) players.remove(player);
 	}
-	public synchronized void setPlaying(Player player) {
+	public void setPlaying(Player player) {
 		if(players.containsKey(player)) players.put(player, true);
 	}
-	public synchronized void setWaiting(Player player) {
+	public void setWaiting(Player player) {
 		if(players.containsKey(player)) players.put(player, false);
 	}
 	//GETTER
-	public synchronized Set<Player> getMembers() {
+	public Set<Player> getMembers() {
 		return players.keySet();
 	}
 	//TEST unsynchronised:
 	public boolean isMember(Player player) {
-		if(players.containsKey(player)) return true;
-		return false;
+		return players.containsKey(player);
 	}
-	public synchronized int numberInGame() {
+	public int numberInGame() {
 		int number = 0;
 		for(Player player : players.keySet()) {
 			if(players.get(player)) number++;
 		}
 		return number;
 	}
-	public synchronized int numberWaiting() {
+	public int numberWaiting() {
 		int number = 0;
 		for(Player player : players.keySet()) {
 			if(!players.get(player)) number++;
 		}
 		return number;
 	}
-	public synchronized int number() {
+	public int number() {
 		return players.size();
 	}
 	public int maxNumber() {
@@ -89,54 +88,54 @@ public enum Lobby {
 	}
 	//STATIC
 	//GETTER
-	public synchronized static Lobby getTeam(String team) {
+	public static Lobby getTeam(String team) {
 		for(Lobby t : Lobby.values()) {
 			if(t.getName().equalsIgnoreCase(team)) return t;
 		}
 		return null;
 	}
-	public synchronized static Lobby getTeam(Player player) {
+	public static Lobby getTeam(Player player) {
 		for(Lobby team : Lobby.values()) {
 			if(team.isMember(player) && team != Lobby.LOBBY) return team;
 		}
 		if(Lobby.LOBBY.isMember(player)) return Lobby.LOBBY;
 		return null;
 	}
-	public synchronized static boolean toggledFeed(Player player) {
+	public static boolean toggledFeed(Player player) {
 		if(Lobby.LOBBY.players.get(player)) return true;
 		return false;
 	}
-	public synchronized static void toggleFeed(Player player) {
+	public static void toggleFeed(Player player) {
 		if(toggledFeed(player)) Lobby.LOBBY.players.put(player, false);
 		else Lobby.LOBBY.players.put(player, true);
 	}
-	public synchronized static boolean inTeam(Player player) {
+	public static boolean inTeam(Player player) {
 		if(getTeam(player) == Lobby.RED || getTeam(player) == Lobby.BLUE || getTeam(player) == Lobby.RANDOM) {
 			return true;
 		}
 		return false;
 	}
-	public synchronized static boolean isPlaying(Player player) {
+	public static boolean isPlaying(Player player) {
 		if(inTeam(player)) {
 			if(getTeam(player).players.get(player)) return true;
 		}
 		return false;
 	}
-	public synchronized static boolean isSpectating(Player player) {
+	public static boolean isSpectating(Player player) {
 		if(getTeam(player) == Lobby.SPECTATE) {
 			if(getTeam(player).players.get(player)) return true;
 		}
 		return false;
 	}
 	//SETTER
-	public synchronized static void remove(Player player) {
+	public static void remove(Player player) {
 		
 		for(Lobby l : Lobby.values()) {
 			l.removeMember(player);
 		}
 	}
 	
-	public synchronized  static void resetMaxPlayers() {
+	public static void resetMaxPlayers() {
 		for(Lobby l : Lobby.values()) {
 			l.maxPlayers = l.players.size();
 		}
