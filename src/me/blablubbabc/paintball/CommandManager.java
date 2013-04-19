@@ -116,46 +116,45 @@ public class CommandManager implements CommandExecutor{
 						return joinTeam(player, Lobby.SPECTATE);
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 					} else if(args[0].equalsIgnoreCase("leave") || args[0].equalsIgnoreCase("exit") || args[0].equalsIgnoreCase("quit")) {
-						if(!Lobby.LOBBY.isMember(player)) {
-							player.sendMessage(plugin.t.getString("NOT_IN_LOBBY"));
-							return true;
-						}
-						/*if(Lobby.inTeam(player) || Lobby.SPECTATE.isMember(player)) {
-							if(Lobby.isPlaying(player) || Lobby.isSpectating(player)) {
-								player.sendMessage(plugin.t.getString("CANNOT_LEAVE_LOBBY_PLAYING"));
+						if (args.length == 2 && args[1].equalsIgnoreCase("team")) {
+							if(!Lobby.LOBBY.isMember(player) || !(Lobby.inTeam(player) || Lobby.SPECTATE.isMember(player))) {
+								player.sendMessage(plugin.t.getString("BE_IN_NO_TEAM"));
 								return true;
 							}
+							/*if(Lobby.isPlaying(player) || Lobby.isSpectating(player)) {
+								player.sendMessage(plugin.t.getString("CANNOT_LEAVE_LOBBY_PLAYING"));
+								return true;
+							}*/
+							if (Lobby.isPlaying(player) || Lobby.isSpectating(player))
+								plugin.mm.getMatch(player).left(player);
+							plugin.joinLobby(player);
 							Lobby.getTeam(player).removeMember(player);
 							player.sendMessage(plugin.t.getString("YOU_LEFT_TEAM"));
-							return true;
-						} else if(plugin.autoLobby && !player.hasPermission("paintball.admin")) {
-							player.sendMessage(plugin.t.getString("CANNOT_LEAVE_LOBBY"));
-							return true;
-						}*/
-						if(plugin.autoLobby && !player.hasPermission("paintball.admin")) {
-							player.sendMessage(plugin.t.getString("CANNOT_LEAVE_LOBBY"));
 						} else {
-							plugin.leaveLobby(player, true, true, true);
+							if(!Lobby.LOBBY.isMember(player)) {
+								player.sendMessage(plugin.t.getString("NOT_IN_LOBBY"));
+								return true;
+							}
+							/*if(Lobby.inTeam(player) || Lobby.SPECTATE.isMember(player)) {
+								if(Lobby.isPlaying(player) || Lobby.isSpectating(player)) {
+									player.sendMessage(plugin.t.getString("CANNOT_LEAVE_LOBBY_PLAYING"));
+									return true;
+								}
+								Lobby.getTeam(player).removeMember(player);
+								player.sendMessage(plugin.t.getString("YOU_LEFT_TEAM"));
+								return true;
+							} else if(plugin.autoLobby && !player.hasPermission("paintball.admin")) {
+								player.sendMessage(plugin.t.getString("CANNOT_LEAVE_LOBBY"));
+								return true;
+							}*/
+							if(plugin.autoLobby && !player.hasPermission("paintball.admin")) {
+								player.sendMessage(plugin.t.getString("CANNOT_LEAVE_LOBBY"));
+							} else {
+								plugin.leaveLobby(player, true, true, true);
+							}
 						}
 						return true;
-
-////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-					} else if(args[0].equalsIgnoreCase("leaveteam")) {
-						if(!Lobby.LOBBY.isMember(player) || !(Lobby.inTeam(player) || Lobby.SPECTATE.isMember(player))) {
-							player.sendMessage(plugin.t.getString("BE_IN_NO_TEAM"));
-							return true;
-						}
-						/*if(Lobby.isPlaying(player) || Lobby.isSpectating(player)) {
-							player.sendMessage(plugin.t.getString("CANNOT_LEAVE_LOBBY_PLAYING"));
-							return true;
-						}*/
-						if (Lobby.isPlaying(player) || Lobby.isSpectating(player))
-							plugin.mm.getMatch(player).left(player);
-						plugin.joinLobby(player);
-						Lobby.getTeam(player).removeMember(player);
-						player.sendMessage(plugin.t.getString("YOU_LEFT_TEAM"));
-						return true;
-
+						
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 					} else if(args[0].equalsIgnoreCase("toggle")) {
 						if(!Lobby.LOBBY.isMember(player)) {
