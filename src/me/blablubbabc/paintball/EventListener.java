@@ -140,7 +140,11 @@ public class EventListener implements Listener {
 			boolean fromPb = plugin.worldModeWorlds.contains(event.getFrom().getName());
 			boolean toPb = plugin.worldModeWorlds.contains(event.getPlayer().getWorld().getName());
 			if (!fromPb && toPb) {
-				//todo join lobby fresh
+				if (!Lobby.LOBBY.isMember(player)) {
+					if (plugin.autoTeam)
+						plugin.cm.joinTeam(player, Lobby.RANDOM);
+					else plugin.cm.joinLobbyPre(player);
+				}
 			} else if (fromPb && !toPb) {
 				plugin.leaveLobby(player, true, true, true);
 			}
