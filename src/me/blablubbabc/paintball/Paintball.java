@@ -115,6 +115,8 @@ public class Paintball extends JavaPlugin{
 	public int meleeDamage;
 	public boolean autoLobby;
 	public boolean autoTeam;
+	public boolean worldMode;
+	public List<String> worldModeWorlds;
 	public boolean afkDetection;
 	public int afkRadius;
 	public int afkMatchAmount;
@@ -322,6 +324,10 @@ public class Paintball extends JavaPlugin{
 		if(getConfig().get("Paintball.Colored chatnames") == null)getConfig().set("Paintball.Colored chatnames", true);
 		if(getConfig().get("Paintball.Only Random") == null)getConfig().set("Paintball.Only Random", false);
 		if(getConfig().get("Paintball.Auto Random") == null)getConfig().set("Paintball.Auto Random", true);
+		if(getConfig().get("Paintball.World Mode.enabled") == null)getConfig().set("Paintball.World Mode.enabled", false);
+		if(getConfig().get("Paintball.World Mode.worlds") == null)getConfig().set("Paintball.World Mode.worlds", new ArrayList<String>() {"world", "paintball"});
+		public boolean worldMode;
+		public List<String> worldModeWorlds;
 		if(getConfig().get("Paintball.Auto Spec Lobby") == null)getConfig().set("Paintball.Auto Spec Lobby", false);
 		if(getConfig().get("Paintball.Effects") == null)getConfig().set("Paintball.Effects", true);
 		if(getConfig().get("Paintball.Teleport Fix") == null)getConfig().set("Paintball.Teleport Fix", true);
