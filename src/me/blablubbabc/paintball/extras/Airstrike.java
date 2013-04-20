@@ -2,8 +2,10 @@ package me.blablubbabc.paintball.extras;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 
 import me.blablubbabc.paintball.Paintball;
 import me.blablubbabc.paintball.Source;
@@ -16,9 +18,30 @@ import org.bukkit.entity.Egg;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.EntityType;
 import org.bukkit.entity.Player;
+import org.bukkit.inventory.ItemStack;
 import org.bukkit.util.Vector;
 
 public class Airstrike {
+	
+	private static ConcurrentHashMap<String, Integer> taskIds;
+	private static HashSet<Byte> transparent = null;
+	
+	public static void init() {
+		taskIds = new ConcurrentHashMap<String, Integer>();
+		
+		transparent = new HashSet<Byte>();
+		transparent.add((byte) 0);
+		transparent.add((byte) 8);
+		transparent.add((byte) 10);
+		transparent.add((byte) 51);
+		transparent.add((byte) 90);
+		transparent.add((byte) 119);
+		transparent.add((byte) 321);
+		transparent.add((byte) 85);
+		
+		
+	}
+	
 	
 	private static int airstrikeCounter = 0;
 	private static Map<String, ArrayList<Airstrike>> airstrikes = new HashMap<String, ArrayList<Airstrike>>();
@@ -229,6 +252,40 @@ public class Airstrike {
 	
 	public static boolean marked(String name) {
 		return marks.get(name) != null;
+	}
+	
+	public static void handleItemInHand(final Player player, ItemStack item) {
+		final String name = player.getName();
+		if (item != null) {
+			if (item.getType() == Material.STICK) {
+				if (!taskIds.containsKey(name)) {
+					int taskId = Paintball.instance.getServer().getScheduler().scheduleSyncRepeatingTask(Paintball.instance, new Runnable() {
+
+						@Override
+						public void run() {
+							if (player.getItemInHand().getTypeId() == 280) {
+								Block block = player.getTargetBlock(transparent, 1000);
+								if (!Airstrike.isBlock(block, name)) {
+									Airstrike.demark(player);
+									Airstrike.mark(block, player);
+								}
+							} else {
+								Paintball.instance.getServer().getScheduler().cancelTask(taskIds.get(name));
+								taskIds.remove(name);
+								Airstrike.demark(player);
+							}
+						}
+					}, 0L, 1L);
+					taskIds.put(name, taskId);
+				}
+			} else {
+				if (taskIds.containsKey(name)) {
+					Paintball.instance.getServer().getScheduler().cancelTask(taskIds.get(name));
+					taskIds.remove(name);
+					Airstrike.demark(player);
+				}
+			}
+		}
 	}
 	
 }

@@ -3,10 +3,8 @@ package me.blablubbabc.paintball;
 import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
-import java.util.concurrent.ConcurrentHashMap;
 import java.util.regex.Pattern;
 
 import me.blablubbabc.paintball.extras.Airstrike;
@@ -72,9 +70,7 @@ import org.bukkit.util.BlockIterator;
 public class EventListener implements Listener {
 	private Paintball plugin;
 	private MatchManager mm;
-
-	private ConcurrentHashMap<String, Integer> taskIds;
-	private HashSet<Byte> transparent;
+	
 	private long lastSignUpdate = 0;
 
 	// private HashMap<Player, String> chatMessages;
@@ -82,19 +78,7 @@ public class EventListener implements Listener {
 	public EventListener(Paintball pl) {
 		plugin = pl;
 		mm = plugin.mm;
-		taskIds = new ConcurrentHashMap<String, Integer>();
 		// chatMessages = new HashMap<Player, String>();
-
-		transparent = new HashSet<Byte>();
-		transparent.add((byte) 0);
-		transparent.add((byte) 8);
-		transparent.add((byte) 10);
-		transparent.add((byte) 51);
-		transparent.add((byte) 90);
-		transparent.add((byte) 119);
-		transparent.add((byte) 321);
-		transparent.add((byte) 85);
-
 	}
 
 	// /////////////////////////////////////////
@@ -557,44 +541,17 @@ public class EventListener implements Listener {
 
 	@EventHandler(priority = EventPriority.NORMAL)
 	public void onItemInHand(PlayerItemHeldEvent event) {
-		final Player player = event.getPlayer();
-		final String name = player.getName();
+		Player player = event.getPlayer();
 		if (Lobby.LOBBY.isMember(player)) {
 			// zooming?
 			if (Sniper.isZooming(player))
 				Sniper.setNotZooming(player);
 
-			ItemStack item = player.getInventory().getItem(event.getNewSlot());
-			if (item != null) {
-				if (plugin.airstrike && item.getType() == Material.STICK) {
-					if (!taskIds.containsKey(name)) {
-						int taskId = plugin.getServer().getScheduler().scheduleSyncRepeatingTask(plugin, new Runnable() {
-
-							@Override
-							public void run() {
-								if (player.getItemInHand().getTypeId() == 280) {
-									Block block = player.getTargetBlock(transparent, 1000);
-									if (!Airstrike.isBlock(block, name)) {
-										Airstrike.demark(player);
-										Airstrike.mark(block, player);
-									}
-								} else {
-									plugin.getServer().getScheduler().cancelTask(taskIds.get(name));
-									taskIds.remove(name);
-									Airstrike.demark(player);
-								}
-							}
-						}, 0L, 1L);
-						taskIds.put(name, taskId);
-					}
-				} else {
-					if (taskIds.containsKey(name)) {
-						plugin.getServer().getScheduler().cancelTask(taskIds.get(name));
-						taskIds.remove(name);
-						Airstrike.demark(player);
-					}
-				}
+			if (plugin.airstrike) {
+				ItemStack item = player.getInventory().getItem(event.getNewSlot());
+				Airstrike.handleItemInHand(player, item);
 			}
+			
 		}
 	}
 

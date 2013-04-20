@@ -3,9 +3,12 @@ package me.blablubbabc.paintball.commands;
 import java.util.HashMap;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
+import org.bukkit.inventory.ItemStack;
+
 import me.blablubbabc.paintball.Match;
 import me.blablubbabc.paintball.Paintball;
 import me.blablubbabc.paintball.ShopGood;
+import me.blablubbabc.paintball.extras.Airstrike;
 
 public class CmdShop {
 	private Paintball plugin;
@@ -89,7 +92,8 @@ public class CmdShop {
 							plugin.stats.addGeneralStats(pStats);
 						}
 						//item
-						player.getInventory().addItem(good.getItemStack());
+						ItemStack item = good.getItemStack();
+						player.getInventory().addItem(item);
 						player.updateInventory();
 						
 						HashMap<String, String> vars = new HashMap<String, String>();
@@ -98,6 +102,11 @@ public class CmdShop {
 						if(!plugin.happyhour) vars.put("price", String.valueOf(price));
 						else vars.put("price", plugin.t.getString("FOR_FREE"));
 						player.sendMessage(plugin.t.getString("YOU_BOUGHT", vars));
+						
+						//airstrike item in hand update
+						if (plugin.airstrike) {
+							Airstrike.handleItemInHand(player, item);
+						}
 						
 						return true;
 					} else {
