@@ -9,7 +9,6 @@ import org.bukkit.entity.Snowball;
 import me.blablubbabc.paintball.Source;
 
 public class Ball {
-	//TEST
 	public static int count = 0;
 	
 	public static Map<String, ArrayList<Ball>> balls = new HashMap<String, ArrayList<Ball>>();
@@ -54,6 +53,7 @@ public class Ball {
 			}
 		}
 		balls.clear();
+		count = 0;
 	}
 	
 	
@@ -65,7 +65,6 @@ public class Ball {
 		this.source = source;
 	}
 
-	//TEST -> public
 	public int getId() {
 		return entity.getEntityId();
 	}

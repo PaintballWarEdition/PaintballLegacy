@@ -122,9 +122,10 @@ public class CommandManager implements CommandExecutor{
 								player.sendMessage(plugin.t.getString("CANNOT_LEAVE_LOBBY_PLAYING"));
 								return true;
 							}*/
-							if (Lobby.isPlaying(player) || Lobby.isSpectating(player))
+							if (Lobby.isPlaying(player) || Lobby.isSpectating(player)) {
 								plugin.mm.getMatch(player).left(player);
-							plugin.joinLobby(player);
+								plugin.joinLobby(player);
+							}
 							Lobby.getTeam(player).removeMember(player);
 							player.sendMessage(plugin.t.getString("YOU_LEFT_TEAM"));
 						} else {

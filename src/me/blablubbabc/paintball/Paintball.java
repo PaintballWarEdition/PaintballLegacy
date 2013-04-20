@@ -320,7 +320,7 @@ public class Paintball extends JavaPlugin{
 		if(getConfig().get("Paintball.Cash per Hit") == null)getConfig().set("Paintball.Cash per Hit", 0);
 		if(getConfig().get("Paintball.Cash per Win") == null)getConfig().set("Paintball.Cash per Win", 10);
 		if(getConfig().get("Paintball.Cash per Round") == null)getConfig().set("Paintball.Cash per Round", 0);
-		if(getConfig().get("Paintball.Ball speed multi") == null)getConfig().set("Paintball.Ball speed multi", 1.7);
+		if(getConfig().get("Paintball.Ball speed multi") == null)getConfig().set("Paintball.Ball speed multi", 2.5);
 		if(getConfig().get("Paintball.Colored listnames") == null)getConfig().set("Paintball.Colored listnames", true);
 		if(getConfig().get("Paintball.Colored chatnames") == null)getConfig().set("Paintball.Colored chatnames", true);
 		if(getConfig().get("Paintball.Only Random") == null)getConfig().set("Paintball.Only Random", false);
@@ -434,13 +434,13 @@ public class Paintball extends JavaPlugin{
 		if(getConfig().get("Paintball.Extras.Shotgun.Angle1") == null)getConfig().set("Paintball.Extras.Shotgun.Angle1", 5);
 		if(getConfig().get("Paintball.Extras.Shotgun.Angle2") == null)getConfig().set("Paintball.Extras.Shotgun.Angle2", 10);
 		if(getConfig().get("Paintball.Extras.Shotgun.AngleVertical") == null)getConfig().set("Paintball.Extras.Shotgun.AngleVertical", 3);
-		if(getConfig().get("Paintball.Extras.Shotgun.Speedmulti") == null)getConfig().set("Paintball.Extras.Shotgun.Speedmulti", 1.5);
+		if(getConfig().get("Paintball.Extras.Shotgun.Speedmulti") == null)getConfig().set("Paintball.Extras.Shotgun.Speedmulti", 1.0);
 		if(getConfig().get("Paintball.Extras.Shotgun.Needed Ammo") == null)getConfig().set("Paintball.Extras.Shotgun.Needed Ammo", 15);
 		
 		if(getConfig().get("Paintball.Extras.Pumpgun.enabled") == null)getConfig().set("Paintball.Extras.Pumpgun.enabled", true);
 		if(getConfig().get("Paintball.Extras.Pumpgun.Bullets") == null)getConfig().set("Paintball.Extras.Pumpgun.Bullets", 10);
 		if(getConfig().get("Paintball.Extras.Pumpgun.Spray (higher number means less spray)") == null)getConfig().set("Paintball.Extras.Pumpgun.Spray (higher number means less spray)", 3.5);
-		if(getConfig().get("Paintball.Extras.Pumpgun.Speedmulti") == null)getConfig().set("Paintball.Extras.Pumpgun.Speedmulti", 1.2);
+		if(getConfig().get("Paintball.Extras.Pumpgun.Speedmulti") == null)getConfig().set("Paintball.Extras.Pumpgun.Speedmulti", 1.0);
 		if(getConfig().get("Paintball.Extras.Pumpgun.Needed Ammo") == null)getConfig().set("Paintball.Extras.Pumpgun.Needed Ammo", 10);
 		
 		if(getConfig().get("Paintball.Extras.Sniper.enabled") == null)getConfig().set("Paintball.Extras.Sniper.enabled", true);
@@ -677,7 +677,7 @@ public class Paintball extends JavaPlugin{
 		shotgunAngle1 = getConfig().getInt("Paintball.Extras.Shotgun.Angle1", 5);
 		shotgunAngle2 = getConfig().getInt("Paintball.Extras.Shotgun.Angle2", 10);
 		shotgunAngleVert = getConfig().getInt("Paintball.Extras.Shotgun.AngleVertical", 3);
-		shotgunSpeedmulti = getConfig().getDouble("Paintball.Extras.Shotgun.Speedmulti", 1.5);
+		shotgunSpeedmulti = getConfig().getDouble("Paintball.Extras.Shotgun.Speedmulti", 1.0);
 		shotgunAmmo = getConfig().getInt("Paintball.Extras.Shotgun.Needed Ammo", 5);
 		if(shotgunAmmo < 0) shotgunAmmo = 0;
 		
@@ -685,7 +685,7 @@ public class Paintball extends JavaPlugin{
 		pumpgunBullets = getConfig().getInt("Paintball.Extras.Pumpgun.Bullets", 15);
 		if(pumpgunBullets < 0) pumpgunBullets = 0;
 		pumpgunSpray = getConfig().getDouble("Paintball.Extras.Pumpgun.Spray (higher number means less spray)", 2.7);
-		pumpgunSpeedmulti = getConfig().getDouble("Paintball.Extras.Pumpgun.Speedmulti", 1.5);
+		pumpgunSpeedmulti = getConfig().getDouble("Paintball.Extras.Pumpgun.Speedmulti", 1.0);
 		pumpgunAmmo = getConfig().getInt("Paintball.Extras.Pumpgun.Needed Ammo", 5);
 		if(pumpgunAmmo < 0) pumpgunAmmo = 0;
 		
@@ -867,25 +867,25 @@ public class Paintball extends JavaPlugin{
 			}
 		}, 1L);
 		
-		// TEST
-		
-		getServer().getScheduler().runTaskTimer(this, new Runnable() {
-			
-			@Override
-			public void run() {
+		if (debug) {
+			getServer().getScheduler().runTaskTimer(this, new Runnable() {
 				
-				log("Balls: "+ Ball.count + " ; Rockets: " + Rocket.getRocketCountMatch());
-				for (String playerName : Ball.balls.keySet()) {
-					ArrayList<Ball> pballs = Ball.balls.get(playerName);
-					log ("Balls " + playerName +": " + pballs.size());
-					String ids = "";
-					for (Ball b : pballs) {
-						ids += b.getId() + ", ";
+				@Override
+				public void run() {
+					
+					log("Balls: "+ Ball.count + " ; Rockets: " + Rocket.getRocketCountMatch());
+					for (String playerName : Ball.balls.keySet()) {
+						ArrayList<Ball> pballs = Ball.balls.get(playerName);
+						log ("Balls " + playerName +": " + pballs.size());
+						String ids = "";
+						for (Ball b : pballs) {
+							ids += b.getId() + ", ";
+						}
+						log("IDs: " + ids);
 					}
-					log("IDs: " + ids);
 				}
-			}
-		}, 100L, 60L);
+			}, 100L, 60L);
+		}
 
 	}
 
@@ -1035,7 +1035,7 @@ public class Paintball extends JavaPlugin{
 	}
 
 	public void joinLobby(Player player) {
-		checks(player, true, false);
+		checks(player, true, true);
 		enterLobby(player);
 	}
 	

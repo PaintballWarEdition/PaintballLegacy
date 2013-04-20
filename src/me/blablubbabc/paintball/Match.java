@@ -760,7 +760,9 @@ public class Match {
 						frag(target, shooter, source);
 					} else {
 						// xp bar
-						if (plugin.useXPBar) target.setExp(healthLeft / setting_lives);
+						if (plugin.useXPBar) {
+							target.setExp((float)healthLeft / setting_lives);
+						}
 						shooter.playSound(shooter.getLocation(), Sound.MAGMACUBE_WALK, 100F, 1F);
 						target.playSound(shooter.getLocation(), Sound.HURT_FLESH, 100F, 1F);
 						

@@ -361,7 +361,7 @@ public class EventListener implements Listener {
 							Ball.registerBall(ball, player.getName(), Source.MARKER);
 							// boosting:
 							// test: no normalizing
-							ball.setVelocity(player.getLocation().getDirection().multiply(plugin.speedmulti));
+							ball.setVelocity(player.getLocation().getDirection().normalize().multiply(plugin.speedmulti));
 							// zählen
 							match.addShots(player, 1);
 							
