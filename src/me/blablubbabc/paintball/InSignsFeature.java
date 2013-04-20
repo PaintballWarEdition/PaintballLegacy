@@ -4,6 +4,7 @@ import java.text.DecimalFormat;
 import de.blablubbabc.insigns.Changer;
 import de.blablubbabc.insigns.InSigns;
 
+import org.bukkit.Location;
 import org.bukkit.entity.Player;
 import org.bukkit.plugin.Plugin;
 
@@ -26,7 +27,7 @@ public class InSignsFeature {
 			insigns.addChanger(new Changer("[PB_"+s.toUpperCase()+"]", "paintball.insigns."+s) {
 
 				@Override
-				public String getValue(Player player) {
+				public String getValue(Player player, Location location) {
 					String playerName = player.getName();
 					if(!plugin.sql.isConnected()) return plugin.t.getString("NOT_CONNECTED");
 					else if(plugin.pm.exists(playerName)) {
