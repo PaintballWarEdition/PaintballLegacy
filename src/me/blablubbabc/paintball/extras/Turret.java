@@ -6,7 +6,7 @@ import java.util.Map;
 
 import me.blablubbabc.paintball.Match;
 import me.blablubbabc.paintball.Paintball;
-import me.blablubbabc.paintball.Source;
+import me.blablubbabc.paintball.Origin;
 
 import org.bukkit.Effect;
 import org.bukkit.Location;
@@ -231,7 +231,7 @@ public class Turret {
 												.add(new Vector(0, 2, 0))
 												.add(dir2), Snowball.class);
 								s.setShooter(player);
-								Ball.registerBall(s, playerName, Source.TURRET);
+								Ball.registerBall(s, playerName, Origin.TURRET);
 
 								s.setVelocity(getAimVector(
 										entVec.clone().add(new Vector(0, 2, 0))

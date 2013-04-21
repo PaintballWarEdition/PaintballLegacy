@@ -256,7 +256,7 @@ public class EventListener implements Listener {
 								if (target.getHealth() > plugin.meleeDamage)
 									target.setHealth(target.getHealth() - plugin.meleeDamage);
 								else {
-									matchA.frag(target, attacker, Source.MELEE);
+									matchA.frag(target, attacker, Origin.MELEE);
 								}
 							}
 						}	
@@ -352,7 +352,7 @@ public class EventListener implements Listener {
 							Snowball ball = (Snowball) player.getWorld().spawnEntity(player.getEyeLocation(), EntityType.SNOWBALL);
 							ball.setShooter(player);
 							// register snowball
-							Ball.registerBall(ball, player.getName(), Source.MARKER);
+							Ball.registerBall(ball, player.getName(), Origin.MARKER);
 							// boosting:
 							// test: no normalizing
 							ball.setVelocity(player.getLocation().getDirection().normalize().multiply(plugin.speedmulti));
@@ -408,7 +408,7 @@ public class EventListener implements Listener {
 							egg.setShooter(player);
 							// boosting:
 							egg.setVelocity(player.getLocation().getDirection().multiply(plugin.grenadeSpeed));
-							Grenade.registerGrenade(egg, player.getName(), Source.GRENADE);
+							Grenade.registerGrenade(egg, player.getName(), Origin.GRENADE);
 							// zählen
 							match.grenade(player);
 							if (match.setting_grenades != -1) {

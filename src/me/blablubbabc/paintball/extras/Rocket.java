@@ -4,7 +4,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 
 import me.blablubbabc.paintball.Paintball;
-import me.blablubbabc.paintball.Source;
+import me.blablubbabc.paintball.Origin;
 import me.blablubbabc.paintball.Utils;
 
 import org.bukkit.Effect;
@@ -201,7 +201,7 @@ public class Rocket {
 		for (Vector v : Utils.getDirections()) {
 			final Snowball s = loc.getWorld().spawn(loc, Snowball.class);
 			s.setShooter(player);
-			Ball.registerBall(s, shooterName, Source.ROCKET);
+			Ball.registerBall(s, shooterName, Origin.ROCKET);
 			Vector v2 = v.clone();
 			v2.setX(v.getX() + Math.random() - Math.random());
 			v2.setY(v.getY() + Math.random() - Math.random());

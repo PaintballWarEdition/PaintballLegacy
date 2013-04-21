@@ -4,7 +4,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 
 import me.blablubbabc.paintball.Paintball;
-import me.blablubbabc.paintball.Source;
+import me.blablubbabc.paintball.Origin;
 import me.blablubbabc.paintball.Utils;
 
 import org.bukkit.Location;
@@ -17,7 +17,7 @@ public class Grenade {
 
 	private static HashMap<String, ArrayList<Grenade>> nades = new HashMap<String, ArrayList<Grenade>>();
 	
-	public static void registerGrenade(Egg egg, String shooterName, Source source) {
+	public static void registerGrenade(Egg egg, String shooterName, Origin source) {
 		ArrayList<Grenade> pnades = nades.get(shooterName);
 		if (pnades == null) {
 			pnades = new ArrayList<Grenade>();
@@ -124,9 +124,9 @@ public class Grenade {
 	 */
 
 	private final Egg entity;
-	private final Source source;
+	private final Origin source;
 
-	public Grenade(Egg entity, Source source) {
+	public Grenade(Egg entity, Origin source) {
 		this.entity = entity;
 		this.source = source;
 	}
@@ -135,7 +135,7 @@ public class Grenade {
 		return entity.getEntityId();
 	}
 
-	public Source getSource() {
+	public Origin getSource() {
 		return source;
 	}
 	

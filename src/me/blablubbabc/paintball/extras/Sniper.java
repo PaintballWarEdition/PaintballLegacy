@@ -3,7 +3,7 @@ package me.blablubbabc.paintball.extras;
 import java.util.ArrayList;
 
 import me.blablubbabc.paintball.Paintball;
-import me.blablubbabc.paintball.Source;
+import me.blablubbabc.paintball.Origin;
 
 import org.bukkit.Location;
 import org.bukkit.Sound;
@@ -61,7 +61,7 @@ public class Sniper {
 
 	private static void moveSnow(final Snowball s, Vector v, Player player) {
 		s.setShooter(player);
-		Ball.registerBall(s, player.getName(), Source.SNIPER);
+		Ball.registerBall(s, player.getName(), Origin.SNIPER);
 		if (Paintball.instance.sniperNoGravity) {
 			NoGravity.addEntity(s, v.multiply(Paintball.instance.sniperSpeedmulti), Paintball.instance.sniperNoGravityDuration*20);
 		} else {

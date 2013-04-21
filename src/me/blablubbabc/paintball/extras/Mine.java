@@ -6,7 +6,7 @@ import java.util.Map;
 
 import me.blablubbabc.paintball.Match;
 import me.blablubbabc.paintball.Paintball;
-import me.blablubbabc.paintball.Source;
+import me.blablubbabc.paintball.Origin;
 import me.blablubbabc.paintball.Utils;
 
 import org.bukkit.Effect;
@@ -225,7 +225,7 @@ public class Mine {
 				for (Vector v : Utils.getUpVectors()) {
 					final Snowball s = loc.getWorld().spawn(loc, Snowball.class);
 					s.setShooter(player);
-					Ball.registerBall(s, playerName, Source.MINE);
+					Ball.registerBall(s, playerName, Origin.MINE);
 					
 					Vector v2 = v.clone();
 					v2.setX(v.getX() + Math.random() - Math.random());

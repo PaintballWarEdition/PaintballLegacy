@@ -6,7 +6,7 @@ import java.util.Map;
 
 import org.bukkit.entity.Snowball;
 
-import me.blablubbabc.paintball.Source;
+import me.blablubbabc.paintball.Origin;
 
 public class Ball {
 	
@@ -14,7 +14,7 @@ public class Ball {
 	
 	public static Map<String, ArrayList<Ball>> balls = new HashMap<String, ArrayList<Ball>>();
 	
-	public static Ball registerBall(Snowball entity, String shooterName, Source source) {
+	public static Ball registerBall(Snowball entity, String shooterName, Origin source) {
 		ArrayList<Ball> pballs = balls.get(shooterName);
 		if (pballs == null) {
 			pballs = new ArrayList<Ball>();
@@ -59,9 +59,9 @@ public class Ball {
 	
 	
 	private final Snowball entity;
-	private final Source source;
+	private final Origin source;
 	
-	public Ball(Snowball entity, Source source) {
+	public Ball(Snowball entity, Origin source) {
 		this.entity = entity;
 		this.source = source;
 	}
@@ -70,7 +70,7 @@ public class Ball {
 		return entity.getEntityId();
 	}
 
-	public Source getSource() {
+	public Origin getSource() {
 		return source;
 	}
 	

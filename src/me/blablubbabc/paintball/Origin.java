@@ -1,6 +1,6 @@
 package me.blablubbabc.paintball;
 
-public enum Source {
+public enum Origin {
 	MARKER,
 	GRENADE,
 	AIRSTRIKE,

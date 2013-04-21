@@ -8,7 +8,7 @@ import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
 import me.blablubbabc.paintball.Paintball;
-import me.blablubbabc.paintball.Source;
+import me.blablubbabc.paintball.Origin;
 
 import org.bukkit.Location;
 import org.bukkit.Material;
@@ -158,7 +158,7 @@ public class Airstrike {
 				Location l = bombs.get(i);
 				Egg egg = player.getWorld().spawn(l, Egg.class);
 				egg.setShooter(player);
-				Grenade.registerGrenade(egg, playerName, Source.AIRSTRIKE);
+				Grenade.registerGrenade(egg, playerName, Origin.AIRSTRIKE);
 				chick.setVelocity(chickVel);
 				i++;
 				if(i > (bombs.size() - 1)) {

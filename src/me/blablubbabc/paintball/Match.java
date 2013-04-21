@@ -736,7 +736,7 @@ public class Match {
 		airstrikes.put(player.getName(), airstrikes.get(player.getName()) + 1);
 	}
 
-	public void hitSnow(Player target, Player shooter, Source source) {
+	public void hitSnow(Player target, Player shooter, Origin source) {
 		// math over already?
 		if (matchOver)
 			return;
@@ -803,7 +803,7 @@ public class Match {
 		}
 	}
 
-	public void frag(final Player target, Player killer, Source source) {
+	public void frag(final Player target, Player killer, Origin source) {
 		// math over already?
 		if (matchOver)
 			return;
