@@ -42,11 +42,18 @@ public class Pumpgun {
 				vec = dir.clone();
 			}
 			
-			for (int i = -Paintball.instance.shotgunAngleVert; i <= Paintball.instance.shotgunAngleVert; i += Paintball.instance.shotgunAngleVert) {
+			if (Paintball.instance.shotgunAngleVert == 0) {
 				Snowball s = loc.getWorld().spawn(loc, Snowball.class);
 				s.setShooter(player);
 				Ball.registerBall(s, playerName, Source.SHOTGUN);
-				s.setVelocity(rotateAxis(vec, n, i).multiply(Paintball.instance.shotgunSpeedmulti));
+				s.setVelocity(vec.clone().multiply(Paintball.instance.shotgunSpeedmulti));
+			} else {
+				for (int i = -Paintball.instance.shotgunAngleVert; i <= Paintball.instance.shotgunAngleVert; i += Paintball.instance.shotgunAngleVert) {
+					Snowball s = loc.getWorld().spawn(loc, Snowball.class);
+					s.setShooter(player);
+					Ball.registerBall(s, playerName, Source.SHOTGUN);
+					s.setVelocity(rotateAxis(vec, n, i).multiply(Paintball.instance.shotgunSpeedmulti));
+				}
 			}
 		}
 		
