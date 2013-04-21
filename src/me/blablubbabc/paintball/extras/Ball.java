@@ -9,6 +9,7 @@ import org.bukkit.entity.Snowball;
 import me.blablubbabc.paintball.Source;
 
 public class Ball {
+	
 	public static int count = 0;
 	
 	public static Map<String, ArrayList<Ball>> balls = new HashMap<String, ArrayList<Ball>>();

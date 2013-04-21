@@ -3,6 +3,9 @@ package me.blablubbabc.paintball;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Random;
+
+import me.blablubbabc.paintball.extras.ItemManager;
+
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
@@ -44,7 +47,7 @@ public class Christmas {
 		if(all) player.sendMessage(plugin.t.getString("ALL_RECEIVED_GIFT"));
 		else player.sendMessage(plugin.t.getString("RECEIVED_GIFT")) ;
 		
-		player.getInventory().addItem(new ItemStack(Material.CHEST, amount));
+		player.getInventory().addItem(ItemManager.setMeta(new ItemStack(Material.CHEST, amount)));
 		/*if(player.getInventory().firstEmpty() != -1) {
 			player.getInventory().addItem(new ItemStack(Material.CHEST, amount));
 		} else {
@@ -70,7 +73,7 @@ public class Christmas {
 				chance += (g.getChance()*plugin.giftChanceFactor);
 				if(r < chance) {
 					player.sendMessage(ChatColor.GREEN+g.getMessage());
-					player.getInventory().addItem(g.getItem(true));
+					player.getInventory().addItem(ItemManager.setMeta(g.getItem(true)));
 					player.updateInventory();
 					break;
 				}
@@ -91,7 +94,7 @@ public class Christmas {
 		receiver.sendMessage(plugin.t.getString("RECEIVED_GIFT_FROM", vars)) ;
 		goodGuy.sendMessage(plugin.t.getString("GAVE_GIFT_TO", vars)) ;
 		
-		receiver.getInventory().addItem(new ItemStack(Material.CHEST, 1));
+		receiver.getInventory().addItem(ItemManager.setMeta(new ItemStack(Material.CHEST, 1)));
 		
 		ItemStack i = goodGuy.getItemInHand();
 		if (i.getAmount() <= 1)

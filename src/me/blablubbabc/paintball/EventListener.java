@@ -613,6 +613,7 @@ public class EventListener implements Listener {
 		}
 	}
 	
+	@SuppressWarnings("deprecation")
 	@EventHandler(priority = EventPriority.NORMAL, ignoreCancelled = true)
 	public void onPlayerDamage(EntityDamageEvent event) {
 		if (event.getEntity() instanceof Player) {
@@ -630,8 +631,22 @@ public class EventListener implements Listener {
 						if (target.getHealth() <= damage) {
 							match.death(target);
 						} else {
-							target.setHealth(target.getHealth() - damage);
+							event.setDamage(damage);
 							event.setCancelled(false);
+							
+							//heal armor
+							PlayerInventory inventory = target.getInventory();
+							ItemStack[] armor = inventory.getArmorContents();
+
+							for(int i = 0; i < armor.length; i++)
+							{
+							    if(armor[i] != null)
+							        armor[i].setDurability((short) 0);
+							}
+
+							inventory.setArmorContents(armor);
+							target.updateInventory();
+							
 						}
 					}
 				}

@@ -9,6 +9,7 @@ import me.blablubbabc.paintball.Match;
 import me.blablubbabc.paintball.Paintball;
 import me.blablubbabc.paintball.ShopGood;
 import me.blablubbabc.paintball.extras.Airstrike;
+import me.blablubbabc.paintball.extras.ItemManager;
 
 public class CmdShop {
 	private Paintball plugin;
@@ -93,7 +94,7 @@ public class CmdShop {
 						}
 						//item
 						ItemStack item = good.getItemStack();
-						player.getInventory().addItem(item);
+						player.getInventory().addItem(ItemManager.setMeta(item));
 						player.updateInventory();
 						
 						HashMap<String, String> vars = new HashMap<String, String>();

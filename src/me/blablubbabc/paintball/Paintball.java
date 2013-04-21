@@ -11,6 +11,7 @@ import java.util.regex.Pattern;
 
 import me.blablubbabc.BlaDB.BlaSQLite;
 import me.blablubbabc.paintball.Metrics.Graph;
+import me.blablubbabc.paintball.extras.Airstrike;
 import me.blablubbabc.paintball.extras.Ball;
 import me.blablubbabc.paintball.extras.NoGravity;
 import me.blablubbabc.paintball.extras.Pumpgun;
@@ -758,6 +759,7 @@ public class Paintball extends JavaPlugin{
 		
 		//weapons
 		Pumpgun.init();
+		Airstrike.init();
 		
 		//start no gravity task
 		if (sniperNoGravity) NoGravity.run();

@@ -13,10 +13,12 @@ import java.util.Set;
 import me.blablubbabc.paintball.extras.Airstrike;
 import me.blablubbabc.paintball.extras.Ball;
 import me.blablubbabc.paintball.extras.Grenade;
+import me.blablubbabc.paintball.extras.ItemManager;
 import me.blablubbabc.paintball.extras.Mine;
 import me.blablubbabc.paintball.extras.Sniper;
 import me.blablubbabc.paintball.extras.Turret;
 import org.bukkit.Color;
+import org.bukkit.DyeColor;
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.Sound;
@@ -303,8 +305,10 @@ public class Match {
 
 	@SuppressWarnings("deprecation")
 	public synchronized void spawnPlayer(final Player player) {
+		boolean red = false;
 		Location loc;
 		if (redT.contains(player)) {
+			red = true;
 			if (spawnRed > (redspawns.size() - 1))
 				spawnRed = 0;
 			loc = redspawns.get(spawnRed);
@@ -338,18 +342,25 @@ public class Match {
 		player.getInventory().setBoots(
 				setColor(new ItemStack(Material.LEATHER_BOOTS, 1),
 						Lobby.getTeam(getTeamName(player)).colorA()));
+		
+		if (red) {
+			player.getInventory().setItem(8, ItemManager.setMeta(new ItemStack(Material.WOOL, 1, (short)0, DyeColor.RED.getWoolData())));
+		} else {
+			player.getInventory().setItem(8, ItemManager.setMeta(new ItemStack(Material.WOOL, 1, (short)0, DyeColor.BLUE.getWoolData())));
+		}
+		
 		if (setting_balls > 0)
-			player.getInventory().addItem(new ItemStack(Material.SNOW_BALL, setting_balls));
+			player.getInventory().addItem(ItemManager.setMeta(new ItemStack(Material.SNOW_BALL, setting_balls)));
 		else if (setting_balls == -1)
-			player.getInventory().addItem(new ItemStack(Material.SNOW_BALL, 10));
+			player.getInventory().addItem(ItemManager.setMeta(new ItemStack(Material.SNOW_BALL, 10)));
 		if (setting_grenades > 0)
-			player.getInventory().addItem(new ItemStack(Material.EGG, setting_grenades));
+			player.getInventory().addItem(ItemManager.setMeta(new ItemStack(Material.EGG, setting_grenades)));
 		else if (setting_grenades == -1)
-			player.getInventory().addItem(new ItemStack(Material.EGG, 10));
+			player.getInventory().addItem(ItemManager.setMeta(new ItemStack(Material.EGG, 10)));
 		if (setting_airstrikes > 0)
-			player.getInventory().addItem(new ItemStack(Material.STICK, setting_airstrikes));
+			player.getInventory().addItem(ItemManager.setMeta(new ItemStack(Material.STICK, setting_airstrikes)));
 		else if (setting_airstrikes == -1)
-			player.getInventory().addItem(new ItemStack(Material.STICK, 10));
+			player.getInventory().addItem(ItemManager.setMeta(new ItemStack(Material.STICK, 10)));
 		// gifts
 		if (plugin.giftsEnabled) {
 			int r = random.nextInt(1000);
@@ -403,6 +414,9 @@ public class Match {
 				setColor(new ItemStack(Material.LEATHER_LEGGINGS, 1), Lobby.SPECTATE.colorA()));
 		player.getInventory().setBoots(
 				setColor(new ItemStack(Material.LEATHER_BOOTS, 1), Lobby.SPECTATE.colorA()));
+		
+		player.getInventory().setItem(8, ItemManager.setMeta(new ItemStack(Material.WOOL, 1, (short)0, DyeColor.YELLOW.getWoolData())));
+		
 		player.updateInventory();
 		// MESSAGE
 		HashMap<String, String> vars = new HashMap<String, String>();
