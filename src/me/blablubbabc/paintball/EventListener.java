@@ -39,6 +39,7 @@ import org.bukkit.event.Listener;
 import org.bukkit.event.block.Action;
 import org.bukkit.event.block.BlockBreakEvent;
 import org.bukkit.event.block.BlockPlaceEvent;
+import org.bukkit.event.block.EntityBlockFormEvent;
 import org.bukkit.event.block.SignChangeEvent;
 import org.bukkit.event.entity.CreatureSpawnEvent;
 import org.bukkit.event.entity.EntityDamageByEntityEvent;
@@ -131,6 +132,15 @@ public class EventListener implements Listener {
 				}
 			} else if (fromPb && !toPb) {
 				plugin.leaveLobby(player, true, true, true);
+			}
+		}
+	}
+	
+	@EventHandler(priority = EventPriority.NORMAL)
+	public void onSnowmanTrail(EntityBlockFormEvent event) {
+		if (event.getEntity().getType() == EntityType.SNOWMAN) {
+			if (Turret.getIsTurret((Snowman) event.getEntity()) != null) {
+				event.setCancelled(true);
 			}
 		}
 	}
