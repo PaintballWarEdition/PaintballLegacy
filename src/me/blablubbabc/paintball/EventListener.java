@@ -336,7 +336,7 @@ public class EventListener implements Listener {
 				switch (item.getType()) {
 				case SNOW_BALL:
 					//MARKER
-					if (isAirClick(action)) {
+					if (isAirClick(action) && item.hasItemMeta() && item.getItemMeta().getDisplayName().equals(Paintball.instance.t.getString("WEAPON_PAINTBALL"))) {
 						PlayerInventory inv = player.getInventory();
 						if (match.setting_balls == -1 || inv.contains(Material.SNOW_BALL, 1)) {
 							Snowball ball = (Snowball) player.getWorld().spawnEntity(player.getEyeLocation(), EntityType.SNOWBALL);
@@ -362,7 +362,7 @@ public class EventListener implements Listener {
 					
 				case STICK:
 					// AIRSTRIKE
-					if (plugin.airstrike && isAirClick(action)) {
+					if (plugin.airstrike && isAirClick(action) && item.hasItemMeta() && item.getItemMeta().getDisplayName().equals(Paintball.instance.t.getString("WEAPON_AIRSTRIKE"))) {
 						if (Airstrike.marked(player.getName())) {
 							if (Airstrike.getAirstrikeCountMatch() < plugin.airstrikeMatchLimit) {
 								if (Airstrike.getAirstrikeCountPlayer(player.getName()) < plugin.airstrikePlayerLimit) {
@@ -391,7 +391,7 @@ public class EventListener implements Listener {
 
 				case EGG:
 					// GRENADE
-					if (plugin.grenade && isAirClick(action)) {
+					if (plugin.grenade && isAirClick(action) && item.hasItemMeta() && item.getItemMeta().getDisplayName().equals(Paintball.instance.t.getString("WEAPON_GRENADE"))) {
 						PlayerInventory inv = player.getInventory();
 						if (match.setting_grenades == -1 || inv.contains(Material.EGG, 1)) {
 							player.sendMessage(plugin.t.getString("GRENADE_THROW"));
@@ -416,7 +416,7 @@ public class EventListener implements Listener {
 
 				case SPECKLED_MELON:
 					// SHOTGUN
-					if (plugin.shotgun && isAirClick(action)) {
+					if (plugin.shotgun && isAirClick(action) && item.hasItemMeta() && item.getItemMeta().getDisplayName().equals(Paintball.instance.t.getString("WEAPON_SHOTGUN"))) {
 						PlayerInventory inv = player.getInventory();
 						if (inv.contains(Material.SNOW_BALL, plugin.shotgunAmmo)) {
 							Utils.removeInventoryItems(inv, Material.SNOW_BALL, plugin.shotgunAmmo);
@@ -431,7 +431,7 @@ public class EventListener implements Listener {
 					
 				case STONE_AXE:
 					// PUMPGUN
-					if (plugin.pumpgun && isAirClick(action)) {
+					if (plugin.pumpgun && isAirClick(action) && item.hasItemMeta() && item.getItemMeta().getDisplayName().equals(Paintball.instance.t.getString("WEAPON_PUMPGUN"))) {
 						PlayerInventory inv = player.getInventory();
 						if (inv.contains(Material.SNOW_BALL, plugin.pumpgunAmmo)) {
 							Utils.removeInventoryItems(inv, Material.SNOW_BALL, plugin.pumpgunAmmo);
@@ -446,7 +446,7 @@ public class EventListener implements Listener {
 
 				case DIODE:
 					// ROCKET LAUNCHER
-					if (plugin.rocket && isAirClick(action)) {
+					if (plugin.rocket && isAirClick(action) && item.hasItemMeta() && item.getItemMeta().getDisplayName().equals(Paintball.instance.t.getString("WEAPON_ROCKET"))) {
 						if (Rocket.getRocketCountMatch() < plugin.rocketMatchLimit) {
 							if (Rocket.getRocketCountPlayer(player.getName()) < plugin.rocketPlayerLimit) {
 								player.playSound(player.getLocation(), Sound.SILVERFISH_IDLE, 100L, 1L);
@@ -474,7 +474,7 @@ public class EventListener implements Listener {
 
 				case CARROT_STICK:
 					// SNIPER
-					if (plugin.sniper) {
+					if (plugin.sniper && item.hasItemMeta() && item.getItemMeta().getDisplayName().equals(Paintball.instance.t.getString("WEAPON_SNIPER"))) {
 						if (action == Action.LEFT_CLICK_AIR) {
 							Sniper.toggleZoom(player);
 						} else if (action == Action.RIGHT_CLICK_AIR) {
@@ -498,7 +498,7 @@ public class EventListener implements Listener {
 
 				case CHEST:
 					// GIFT
-					if (plugin.giftsEnabled) {
+					if (plugin.giftsEnabled && item.hasItemMeta() && item.getItemMeta().getDisplayName().equals(Paintball.instance.t.getString("WEAPON_GIFT"))) {
 						plugin.getServer().getScheduler().runTaskLater(plugin, new Runnable() {
 							
 							@Override
@@ -683,18 +683,18 @@ public class EventListener implements Listener {
 			final Block block = event.getBlockPlaced();
 			Match m = plugin.mm.getMatch(player);
 			if (m != null && m.started && m.isSurvivor(player)) {
-				if (plugin.turret && block.getType() == Material.PUMPKIN) {
+				ItemStack item = player.getItemInHand();
+				if (plugin.turret && block.getType() == Material.PUMPKIN && item.hasItemMeta() && item.getItemMeta().getDisplayName().equals(Paintball.instance.t.getString("WEAPON_TURRET"))) {
 					// turret:
 					if (Turret.getTurretCountMatch() < plugin.turretMatchLimit) {
 						if (Turret.getTurrets(player.getName()).size() < plugin.turretPlayerLimit) {
 							Snowman snowman = (Snowman) block.getLocation().getWorld().spawnEntity(block.getLocation(), EntityType.SNOWMAN);
 							new Turret(player, snowman, plugin.mm.getMatch(player));
-							ItemStack i = player.getItemInHand();
-							if (i.getAmount() <= 1)
+							if (item.getAmount() <= 1)
 								player.setItemInHand(null);
 							else {
-								i.setAmount(i.getAmount() - 1);
-								player.setItemInHand(i);
+								item.setAmount(item.getAmount() - 1);
+								player.setItemInHand(item);
 							}
 						} else {
 							player.sendMessage(plugin.t.getString("TURRET_PLAYER_LIMIT_REACHED"));
@@ -703,7 +703,7 @@ public class EventListener implements Listener {
 						player.sendMessage(plugin.t.getString("TURRET_MATCH_LIMIT_REACHED"));
 					}
 
-				} else if (plugin.mine && block.getType() == Material.FLOWER_POT) {
+				} else if (plugin.mine && block.getType() == Material.FLOWER_POT && item.hasItemMeta() && item.getItemMeta().getDisplayName().equals(Paintball.instance.t.getString("WEAPON_MINE"))) {
 					// mine:
 					if (Mine.getMineCountMatch() < plugin.mineMatchLimit) {
 						if (Mine.getMines(player.getName()).size() < plugin.minePlayerLimit) {
