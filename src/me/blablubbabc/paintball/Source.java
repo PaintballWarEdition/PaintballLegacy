@@ -10,5 +10,5 @@ public enum Source {
 	ROCKET,
 	SNIPER,
 	TURRET,
-	MELEE;
+	MELEE
 }
