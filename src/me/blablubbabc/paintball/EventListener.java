@@ -352,7 +352,6 @@ public class EventListener implements Listener {
 							if (match.setting_balls != -1) {
 								// -1 ball
 								Utils.removeInventoryItems(inv, Material.SNOW_BALL, 1);
-								player.updateInventory();
 							}
 						} else {
 							player.playSound(player.getEyeLocation(), Sound.FIRE_IGNITE, 100F, 2F);
@@ -375,7 +374,6 @@ public class EventListener implements Listener {
 											player.setItemInHand(null);
 										else {
 											item.setAmount(item.getAmount() - 1);
-											player.updateInventory();
 										}
 									}
 								} else {
@@ -406,7 +404,6 @@ public class EventListener implements Listener {
 							if (match.setting_grenades != -1) {
 								// -1 egg
 								Utils.removeInventoryItems(inv, Material.EGG, 1);
-								player.updateInventory();
 							}
 						} else {
 							player.playSound(player.getEyeLocation(), Sound.FIRE_IGNITE, 100F, 2F);
@@ -420,7 +417,6 @@ public class EventListener implements Listener {
 						PlayerInventory inv = player.getInventory();
 						if (inv.contains(Material.SNOW_BALL, plugin.shotgunAmmo)) {
 							Utils.removeInventoryItems(inv, Material.SNOW_BALL, plugin.shotgunAmmo);
-							player.updateInventory();
 							match.addShots(player, 15);
 							Pumpgun.shotShotgun(player);
 						} else {
@@ -435,7 +431,6 @@ public class EventListener implements Listener {
 						PlayerInventory inv = player.getInventory();
 						if (inv.contains(Material.SNOW_BALL, plugin.pumpgunAmmo)) {
 							Utils.removeInventoryItems(inv, Material.SNOW_BALL, plugin.pumpgunAmmo);
-							player.updateInventory();
 							match.addShots(player, plugin.pumpgunBullets);
 							Pumpgun.shotPumpgun(player);
 						} else {
@@ -454,7 +449,6 @@ public class EventListener implements Listener {
 								rocket.setIsIncendiary(false);
 								rocket.setYield(0F);
 								rocket.setShooter(player);
-								//rocket.setDirection(player.getLocation().getDirection().normalize().multiply(plugin.rocketSpeedMulti));
 								rocket.setVelocity(player.getLocation().getDirection().normalize().multiply(plugin.rocketSpeedMulti));
 								new Rocket(player, rocket);
 								if (item.getAmount() <= 1)
@@ -487,7 +481,6 @@ public class EventListener implements Listener {
 								if (match.setting_balls != -1) {
 									// -1 ball
 									Utils.removeInventoryItems(inv, Material.SNOW_BALL, 1);
-									player.updateInventory();
 								}
 							} else {
 								player.playSound(player.getEyeLocation(), Sound.FIRE_IGNITE, 100F, 2F);
@@ -513,6 +506,14 @@ public class EventListener implements Listener {
 					// no special item in hand
 					break;
 				}
+				
+				plugin.getServer().getScheduler().runTaskLater(plugin, new Runnable() {
+					
+					@Override
+					public void run() {
+						player.updateInventory();
+					}
+				}, 1L);
 
 			}
 		}
