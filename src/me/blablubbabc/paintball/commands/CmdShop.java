@@ -47,12 +47,12 @@ public class CmdShop {
 				player.sendMessage("");
 				if(plugin.happyhour) player.sendMessage(plugin.t.getString("HAPPYHOUR"));
 				HashMap<String, String> vars = new HashMap<String, String>();
-				boolean admin = (player.isOp() || player.hasPermission("paintball.admin"));
+				//boolean admin = (player.isOp() || player.hasPermission("paintball.admin"));
 				for(int i = 0; i < goods.length; i++) {
 					vars.put("id", String.valueOf(i+1));
 					vars.put("good", goods[i].getSlot());
 					String msg = plugin.t.getString("SHOP_ENTRY", vars);
-					if(player.hasPermission("paintball.shop.not"+String.valueOf(i)) && !admin) msg = msg.concat(" "+plugin.red+"X");
+					//if(player.hasPermission("paintball.shop.not"+String.valueOf(i)) && !admin) msg = msg.concat(" "+plugin.red+"X");
 					player.sendMessage(msg);
 				}
 				player.sendMessage("");
@@ -67,7 +67,8 @@ public class CmdShop {
 					Integer id = isNumber(args[1]);
 					if(id != null && id > 0 && id <= goods.length) {
 						ShopGood good = goods[id-1];
-						if(good.isEmpty() || (player.hasPermission("paintball.shop.not"+String.valueOf(id)) && !player.isOp() && !player.hasPermission("paintball.admin")) ) {
+						//if(good.isEmpty() || (player.hasPermission("paintball.shop.not"+String.valueOf(id)) && !player.isOp() && !player.hasPermission("paintball.admin")) ) {
+						if (good.isEmpty()) {
 							player.sendMessage(plugin.t.getString("GOOD_NOT_AVAILABLE"));
 							return true;
 						}
