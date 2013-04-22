@@ -8,3 +8,10 @@ commands:
     pb:
       description: Paintball commands.
       usage: /<command>
+permissions:
+    paintball.general:
+        description: Allows a player to play paintball.
+        default: true
+    paintball.admin:
+        description: Access to admin and arena commands.
+        default: op
