@@ -233,6 +233,10 @@ public class Paintball extends JavaPlugin{
 	public boolean sniperNoGravity;
 	public int sniperNoGravityDuration;
 	
+	public boolean orbitalstrike;
+	public int orbitalstrikeMatchLimit;
+	public int orbitalstrikePlayerLimit;
+	
 	
 	//TODO
 	//shop-items
@@ -450,6 +454,11 @@ public class Paintball extends JavaPlugin{
 		if(getConfig().get("Paintball.Extras.Sniper.Remove speed potion effect on zoom") == null)getConfig().set("Paintball.Extras.Sniper.Remove speed potion effect on zoom", true);
 		if(getConfig().get("Paintball.Extras.Sniper.No gravity on bullets") == null)getConfig().set("Paintball.Extras.Sniper.No gravity on bullets", false);
 		if(getConfig().get("Paintball.Extras.Sniper.No gravity duration") == null)getConfig().set("Paintball.Extras.Sniper.No gravity duration", 10);
+		
+		if(getConfig().get("Paintball.Extras.Orbitalstrike.enabled") == null)getConfig().set("Paintball.Extras.Airstrike.enabled", true);
+		if(getConfig().get("Paintball.Extras.Orbitalstrike.Match Limit") == null)getConfig().set("Paintball.Extras.Orbitalstrike.Match Limit", 3);
+		if(getConfig().get("Paintball.Extras.Orbitalstrike.Player Limit") == null)getConfig().set("Paintball.Extras.Orbitalstrike.Player Limit", 1);
+		
 		if(getConfig().get("Paintball.Shop.enabled") == null)getConfig().set("Paintball.Shop.enabled", true);
 		if(getConfig().get("Paintball.Shop.Goods (amount-name-id-subid-price)") == null)getConfig().set("Paintball.Shop.Goods (amount-name-id-subid-price)", goodsDef);
 		saveConfig();
@@ -698,6 +707,10 @@ public class Paintball extends JavaPlugin{
 		sniperNoGravity = getConfig().getBoolean("Paintball.Extras.Sniper.No gravity on bullets", false);
 		sniperNoGravityDuration = getConfig().getInt("Paintball.Extras.Sniper.No gravity duration", 10);
 		if (sniperNoGravityDuration < 1) sniperNoGravityDuration = 1;
+		
+		orbitalstrike = getConfig().getBoolean("Paintball.Extras.Airstrike.enabled", true);
+		orbitalstrikeMatchLimit = getConfig().getInt("Paintball.Extras.Orbitalstrike.Match Limit", 3);
+		orbitalstrikePlayerLimit = getConfig().getInt("Paintball.Extras.Orbitalstrike.Player Limit", 1);
 		
 		
 

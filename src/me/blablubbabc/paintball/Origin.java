@@ -4,6 +4,7 @@ public enum Origin {
 	MARKER,
 	GRENADE,
 	AIRSTRIKE,
+	ORBITALSTRIKE,
 	MINE,
 	PUMPGUN,
 	SHOTGUN,

@@ -145,7 +145,7 @@ public class Airstrike {
 		for(int i = 1; i <= Paintball.instance.airstrikeBombs; i++) {
 			bombs.add(b1.clone().add(bpr.clone().multiply((bombDiff*i))));
 		}
-		player.sendMessage(Paintball.instance.t.getString("AIRSTRKE_CALLED"));
+		player.sendMessage(Paintball.instance.t.getString("AIRSTRIKE_CALLED"));
 		//chicken
 		Location lc = new Location(player.getWorld(), bombs.getFirst().getX(), bombs.getFirst().getY(), bombs.getFirst().getZ(), 0, getLookAtYaw(bpr));
 		chick = player.getWorld().spawnEntity(lc.add(new Vector(0,5,0)), EntityType.CHICKEN);
@@ -263,7 +263,7 @@ public class Airstrike {
 
 						@Override
 						public void run() {
-							if (player.getItemInHand().getTypeId() == 280) {
+							if (player.getItemInHand().getType() == Material.STICK) {
 								Block block = player.getTargetBlock(transparent, 1000);
 								if (!Airstrike.isBlock(block, name)) {
 									Airstrike.demark(player);

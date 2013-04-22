@@ -11,6 +11,7 @@ import me.blablubbabc.paintball.extras.Airstrike;
 import me.blablubbabc.paintball.extras.Ball;
 import me.blablubbabc.paintball.extras.Grenade;
 import me.blablubbabc.paintball.extras.Mine;
+import me.blablubbabc.paintball.extras.Orbitalstrike;
 import me.blablubbabc.paintball.extras.Pumpgun;
 import me.blablubbabc.paintball.extras.Rocket;
 import me.blablubbabc.paintball.extras.Sniper;
@@ -392,6 +393,30 @@ public class EventListener implements Listener {
 
 							} else {
 								player.sendMessage(plugin.t.getString("AIRSTRIK_MATCH_LIMIT_REACHED"));
+							}
+						}
+					}
+					break;
+
+				case BLAZE_ROD:
+					// ORBITALSTRIKE
+					if (plugin.orbitalstrike && isAirClick(action) && item.hasItemMeta() && item.getItemMeta().getDisplayName().equals(Paintball.instance.t.getString("WEAPON_ORBITALSTRIKE"))) {
+						if (Orbitalstrike.marked(player.getName())) {
+							if (Orbitalstrike.getOrbitalstrikeCountMatch() < plugin.orbitalstrikeMatchLimit) {
+								if (Orbitalstrike.getOrbitalstrikeCountPlayer(player.getName()) < plugin.orbitalstrikePlayerLimit) {
+									new Orbitalstrike(player);
+									// remove stick if not infinite
+									if (item.getAmount() <= 1)
+										player.setItemInHand(null);
+									else {
+										item.setAmount(item.getAmount() - 1);
+									}
+								} else {
+									player.sendMessage(plugin.t.getString("ORBITALSTRIKE_PLAYER_LIMIT_REACHED"));
+								}
+
+							} else {
+								player.sendMessage(plugin.t.getString("ORBITALSTRIK_MATCH_LIMIT_REACHED"));
 							}
 						}
 					}
