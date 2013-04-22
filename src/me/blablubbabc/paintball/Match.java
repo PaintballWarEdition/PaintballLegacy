@@ -15,6 +15,7 @@ import me.blablubbabc.paintball.extras.Ball;
 import me.blablubbabc.paintball.extras.Grenade;
 import me.blablubbabc.paintball.extras.ItemManager;
 import me.blablubbabc.paintball.extras.Mine;
+import me.blablubbabc.paintball.extras.Orbitalstrike;
 import me.blablubbabc.paintball.extras.Sniper;
 import me.blablubbabc.paintball.extras.Turret;
 import org.bukkit.Color;
@@ -995,6 +996,8 @@ public class Match {
 	public void resetMainWeaponStuffEnd() {
 		//remove airstrikes
 		Airstrike.clear();
+		//remove orbitalstrikes
+		Orbitalstrike.clear();
 		//remove grenades
 		Grenade.clear();
 		Ball.clear();
