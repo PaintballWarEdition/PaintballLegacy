@@ -404,7 +404,7 @@ public class EventListener implements Listener {
 						if (Orbitalstrike.marked(player.getName())) {
 							if (Orbitalstrike.getOrbitalstrikeCountMatch() < plugin.orbitalstrikeMatchLimit) {
 								if (Orbitalstrike.getOrbitalstrikeCountPlayer(player.getName()) < plugin.orbitalstrikePlayerLimit) {
-									new Orbitalstrike(player);
+									new Orbitalstrike(player, match);
 									// remove stick if not infinite
 									if (item.getAmount() <= 1)
 										player.setItemInHand(null);

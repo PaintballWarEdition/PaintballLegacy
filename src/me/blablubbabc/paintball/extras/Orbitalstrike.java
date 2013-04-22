@@ -6,6 +6,7 @@ import java.util.HashSet;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
+import me.blablubbabc.paintball.Match;
 import me.blablubbabc.paintball.Paintball;
 import me.blablubbabc.paintball.Origin;
 
@@ -104,11 +105,13 @@ public class Orbitalstrike {
 
 	private final Player player;
 	private final String playerName;
+	private final Match match;
 	private int task = -1;
 
-	public Orbitalstrike(Player player) {
+	public Orbitalstrike(Player player, Match match) {
 		this.player = player;
 		this.playerName = player.getName();
+		this.match = match;
 		addOrbitalstrike(this, player.getName());
 		call();
 	}
@@ -123,41 +126,42 @@ public class Orbitalstrike {
 		final Location loc = block.getLocation();
 
 		task = Paintball.instance.getServer().getScheduler().scheduleSyncRepeatingTask(Paintball.instance, new Runnable() {
-			int i = 21;
+			int i = 41;
 			Location oldLoc;
 
 			@Override
 			public void run() {
-				if (oldLoc != null)
-					player.sendBlockChange(oldLoc, player.getWorld().getBlockAt(oldLoc).getType(), player.getWorld().getBlockAt(oldLoc).getData());
+				/*if (oldLoc != null)
+					player.sendBlockChange(oldLoc, player.getWorld().getBlockAt(oldLoc).getType(), player.getWorld().getBlockAt(oldLoc).getData());*/
 				i--;
 				oldLoc = new Location(loc.getWorld(), loc.getBlockX(), loc.getBlockY() + i, loc.getBlockZ());
-				player.sendBlockChange(oldLoc, Material.GLOWSTONE, (byte) 0);
+				for (Player p : match.getAll()) {
+					p.sendBlockChange(oldLoc, Material.GLOWSTONE, (byte) 0);
+				}
 
 				if (i <= 0) {
 					final Location loc1 = new Location(loc.getWorld(), loc.getBlockX(), loc.getBlockY() + 3, loc.getBlockZ());
 					final Location loc2 = new Location(loc.getWorld(), loc.getBlockX(), loc.getBlockY() + 6, loc.getBlockZ());
 
-					loc.getWorld().createExplosion(loc, -1);
-					loc1.getWorld().createExplosion(loc1, -1);
-					loc2.getWorld().createExplosion(loc2, -1);
-
 					final Vector[] vectors = new Vector[36];
 					for (int j = 0; j < 36; j += 1) {
-						double x = Math.cos(j * 10.0D * 0.01856444444444445D) * 4.0;
-						double z = Math.sin(j * 10.0D * 0.01856444444444445D) * 4.0;
+						double x = Math.cos(j * 10.0D * 0.01856444444444445D) * 3.0;
+						double z = Math.sin(j * 10.0D * 0.01856444444444445D) * 3.0;
 						vectors[j] = new Vector(x, 0.0D, z);
 					}
+					
+					remove();
 					
 					Paintball.instance.getServer().getScheduler().runTaskLater(Paintball.instance, new Runnable() {
 
 						@Override
 						public void run() {
+							loc.getWorld().createExplosion(loc, -1);
 							for (Vector v : vectors) {
-								Snowball s = player.getWorld().spawn(loc2, Snowball.class);
+								Snowball s = player.getWorld().spawn(loc, Snowball.class);
 								s.setShooter(player);
 								Ball.registerBall(s, playerName, Origin.ORBITALSTRIKE);
-								s.setVelocity(v);
+								s.setVelocity(v.clone().setY(1));
 							}
 						}
 					}, 1L);
@@ -167,18 +171,33 @@ public class Orbitalstrike {
 						@Override
 						public void run() {
 							for (Vector v : vectors) {
-								Snowball s = player.getWorld().spawn(loc2, Snowball.class);
+								Snowball s = player.getWorld().spawn(loc, Snowball.class);
 								s.setShooter(player);
 								Ball.registerBall(s, playerName, Origin.ORBITALSTRIKE);
-								s.setVelocity(v);
+								s.setVelocity(v.clone().setY(1));
 							}
 						}
-					}, 15L);
+					}, 3L);
 
 					Paintball.instance.getServer().getScheduler().runTaskLater(Paintball.instance, new Runnable() {
 
 						@Override
 						public void run() {
+							loc1.getWorld().createExplosion(loc1, -1);
+							for (Vector v : vectors) {
+								Snowball s = player.getWorld().spawn(loc1, Snowball.class);
+								s.setShooter(player);
+								Ball.registerBall(s, playerName, Origin.ORBITALSTRIKE);
+								s.setVelocity(v);
+							}
+						}
+					}, 5L);
+
+					Paintball.instance.getServer().getScheduler().runTaskLater(Paintball.instance, new Runnable() {
+
+						@Override
+						public void run() {
+							loc2.getWorld().createExplosion(loc2, -1);
 							for (Vector v : vectors) {
 								Snowball s = player.getWorld().spawn(loc2, Snowball.class);
 								s.setShooter(player);
@@ -186,14 +205,13 @@ public class Orbitalstrike {
 								s.setVelocity(v);
 							}
 						}
-					}, 30L);
-
-					remove();
+					}, 10L);
+					
 				}
 			}
-		}, 0L, 4L);
+		}, 0L, 2L);
 	}
-
+	
 	public void remove() {
 		if (this.task != -1)
 			Paintball.instance.getServer().getScheduler().cancelTask(task);
@@ -220,10 +238,14 @@ public class Orbitalstrike {
 		String name = player.getName();
 		if (finalmarks.get(name) != null) {
 			Block last = finalmarks.get(name);
-			for (int i = 0; i < 11; i++) {
+			for (int i = 0; i < 40; i++) {
 				last = last.getRelative(BlockFace.UP);
 				Location loc = last.getLocation();
-				player.sendBlockChange(loc, player.getWorld().getBlockAt(loc).getType(), player.getWorld().getBlockAt(loc).getData());
+				
+				// send really to all players in this world ?
+				for (Player p : player.getWorld().getPlayers()) {
+					p.sendBlockChange(loc, player.getWorld().getBlockAt(loc).getType(), player.getWorld().getBlockAt(loc).getData());
+				}
 			}
 			finalmarks.remove(name);
 		}

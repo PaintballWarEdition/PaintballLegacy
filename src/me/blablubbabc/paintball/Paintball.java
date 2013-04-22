@@ -14,6 +14,7 @@ import me.blablubbabc.paintball.Metrics.Graph;
 import me.blablubbabc.paintball.extras.Airstrike;
 import me.blablubbabc.paintball.extras.Ball;
 import me.blablubbabc.paintball.extras.NoGravity;
+import me.blablubbabc.paintball.extras.Orbitalstrike;
 import me.blablubbabc.paintball.extras.Pumpgun;
 import me.blablubbabc.paintball.extras.Rocket;
 import me.blablubbabc.paintball.extras.Turret;
@@ -773,6 +774,7 @@ public class Paintball extends JavaPlugin{
 		//weapons
 		Pumpgun.init();
 		Airstrike.init();
+		Orbitalstrike.init();
 		
 		//start no gravity task
 		if (sniperNoGravity) NoGravity.run();
