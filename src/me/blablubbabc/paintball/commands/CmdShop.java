@@ -10,6 +10,7 @@ import me.blablubbabc.paintball.Paintball;
 import me.blablubbabc.paintball.ShopGood;
 import me.blablubbabc.paintball.extras.Airstrike;
 import me.blablubbabc.paintball.extras.ItemManager;
+import me.blablubbabc.paintball.extras.Orbitalstrike;
 
 public class CmdShop {
 	private Paintball plugin;
@@ -107,6 +108,10 @@ public class CmdShop {
 						//airstrike item in hand update
 						if (plugin.airstrike) {
 							Airstrike.handleItemInHand(player, item);
+						}
+						
+						if (plugin.orbitalstrike) {
+							Orbitalstrike.handleItemInHand(player, item);
 						}
 						
 						return true;
