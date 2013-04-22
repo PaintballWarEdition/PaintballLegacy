@@ -23,6 +23,7 @@ public class Orbitalstrike {
 
 	private static ConcurrentHashMap<String, Integer> taskIds;
 	private static HashSet<Byte> transparent = null;
+	final static Vector[] vectors = new Vector[36];
 
 	public static void init() {
 		taskIds = new ConcurrentHashMap<String, Integer>();
@@ -36,6 +37,12 @@ public class Orbitalstrike {
 		transparent.add((byte) 119);
 		transparent.add((byte) 321);
 		transparent.add((byte) 85);
+		
+		for (int j = 0; j < 36; j += 1) {
+			double x = Math.cos(j * 10.0D * 0.01856444444444445D) * 3.0;
+			double z = Math.sin(j * 10.0D * 0.01856444444444445D) * 3.0;
+			vectors[j] = new Vector(x, 0.0D, z);
+		}
 
 	}
 
@@ -136,16 +143,10 @@ public class Orbitalstrike {
 				i--;
 				oldLoc = new Location(loc.getWorld(), loc.getBlockX(), loc.getBlockY() + i, loc.getBlockZ());
 				for (Player p : match.getAll()) {
-					p.sendBlockChange(oldLoc, Material.GLOWSTONE, (byte) 0);
+					p.sendBlockChange(oldLoc, Material.REDSTONE_BLOCK, (byte) 0);
 				}
 
 				if (i <= 1) {
-					final Vector[] vectors = new Vector[36];
-					for (int j = 0; j < 36; j += 1) {
-						double x = Math.cos(j * 10.0D * 0.01856444444444445D) * 3.0;
-						double z = Math.sin(j * 10.0D * 0.01856444444444445D) * 3.0;
-						vectors[j] = new Vector(x, 0.0D, z);
-					}
 					
 					remove(true);
 					
@@ -158,9 +159,9 @@ public class Orbitalstrike {
 
 						@Override
 						public void run() {
-							loc.getWorld().createExplosion(loc1, -1);
+							loc1.getWorld().createExplosion(loc1.getX(), loc1.getY(), loc1.getZ(), 4, false, false);
 							for (Vector v : vectors) {
-								Snowball s = player.getWorld().spawn(loc, Snowball.class);
+								Snowball s = player.getWorld().spawn(loc1, Snowball.class);
 								s.setShooter(player);
 								Ball.registerBall(s, playerName, Origin.ORBITALSTRIKE);
 								s.setVelocity(v.clone().setY(2.5));
@@ -185,7 +186,6 @@ public class Orbitalstrike {
 
 						@Override
 						public void run() {
-							loc2.getWorld().createExplosion(loc2, -1);
 							for (Vector v : vectors) {
 								Snowball s = player.getWorld().spawn(loc2, Snowball.class);
 								s.setShooter(player);
@@ -199,7 +199,6 @@ public class Orbitalstrike {
 
 						@Override
 						public void run() {
-							loc3.getWorld().createExplosion(loc3, -1);
 							for (Vector v : vectors) {
 								Snowball s = player.getWorld().spawn(loc3, Snowball.class);
 								s.setShooter(player);
@@ -213,7 +212,6 @@ public class Orbitalstrike {
 
 						@Override
 						public void run() {
-							loc4.getWorld().createExplosion(loc4, -1);
 							for (Vector v : vectors) {
 								Snowball s = player.getWorld().spawn(loc4, Snowball.class);
 								s.setShooter(player);
@@ -247,7 +245,7 @@ public class Orbitalstrike {
 			player.sendBlockChange(last.getLocation(), Material.NETHER_FENCE, (byte) 0);
 		}
 		last = last.getRelative(BlockFace.UP);
-		player.sendBlockChange(last.getLocation(), Material.GLOWSTONE, (byte) 0);
+		player.sendBlockChange(last.getLocation(), Material.REDSTONE_BLOCK, (byte) 0);
 	}
 
 	private static void definalMark(Player player, Match match) {
@@ -275,7 +273,7 @@ public class Orbitalstrike {
 			player.sendBlockChange(last.getLocation(), Material.NETHER_FENCE, (byte) 0);
 		}
 		last = last.getRelative(BlockFace.UP);
-		player.sendBlockChange(last.getLocation(), Material.GLOWSTONE, (byte) 0);
+		player.sendBlockChange(last.getLocation(), Material.REDSTONE_BLOCK, (byte) 0);
 	}
 
 	public static void demark(Player player) {
