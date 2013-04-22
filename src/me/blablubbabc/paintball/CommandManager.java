@@ -52,7 +52,8 @@ public class CommandManager implements CommandExecutor{
 				}
 
 				if(args[0].equalsIgnoreCase("arena")) {
-					if(!sender.isOp() && !sender.hasPermission("paintball.arena")) {
+					//if(!sender.isOp() && !sender.hasPermission("paintball.arena")) {
+					if(!sender.isOp() && !sender.hasPermission("paintball.admin")) {
 						sender.sendMessage(plugin.t.getString("NO_PERMISSION"));
 						return true;
 					}
