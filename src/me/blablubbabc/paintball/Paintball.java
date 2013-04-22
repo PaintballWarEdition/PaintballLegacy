@@ -285,6 +285,7 @@ public class Paintball extends JavaPlugin{
 		goodsDef.add("1-Shotgun-382-0-20");
 		goodsDef.add("1-Pumpgun-275-0-20");
 		goodsDef.add("1-Sniper-398-0-80");
+		goodsDef.add("1-Orbitalstrike-369-0-80");
 		
 		ArrayList<Gift> giftsDef = new ArrayList<Gift>();
 		giftsDef.add(new Gift(332, (short)0, 50, 30.0, "Hope you have luck with these balls!"));
