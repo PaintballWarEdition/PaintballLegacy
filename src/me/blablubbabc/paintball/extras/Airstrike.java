@@ -77,9 +77,9 @@ public class Airstrike {
 	
 	public static void clear() {
 		for (String playerName : airstrikes.keySet()) {
-			ArrayList<Airstrike> pstrikes = airstrikes.get(playerName);
+			ArrayList<Airstrike> pstrikes = new ArrayList<Airstrike>(airstrikes.get(playerName));
 			for (Airstrike strike : pstrikes) {
-				strike.remove();
+				strike.remove(false);
 			}
 		}
 		airstrikes.clear();
@@ -162,17 +162,17 @@ public class Airstrike {
 				chick.setVelocity(chickVel);
 				i++;
 				if(i > (bombs.size() - 1)) {
-					remove();
+					remove(true);
 				}
 			}
 		}, 0L, 5L);
 	}
 	
-	public void remove() {
+	public void remove(boolean removeFromList) {
 		if (this.task != -1) Paintball.instance.getServer().getScheduler().cancelTask(task);
 		definalMark(player);
 		if (this.chick != null) chick.remove();
-		removeAirstrike(this, playerName);
+		if (removeFromList) removeAirstrike(this, playerName);
 	}
 	
 	private float getLookAtYaw(Vector motion) {

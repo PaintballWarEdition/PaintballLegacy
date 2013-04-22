@@ -56,7 +56,7 @@ public class Grenade {
 	
 	public static void clear() {
 		for (String playerName : nades.keySet()) {
-			ArrayList<Grenade> pnades = nades.get(playerName);
+			ArrayList<Grenade> pnades = new ArrayList<Grenade>(nades.get(playerName));
 			for (Grenade g : pnades) {
 				g.remove();
 			}

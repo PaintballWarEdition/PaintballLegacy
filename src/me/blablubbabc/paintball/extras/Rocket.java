@@ -61,6 +61,16 @@ public class Rocket {
 		else return prockets.size();
 	}
 	
+	public static void clear() {
+		for (String playerName : rockets.keySet()) {
+			ArrayList<Rocket> prockets = new ArrayList<Rocket>(rockets.get(playerName));
+			for (Rocket r : prockets) {
+				r.remove();
+			}
+		}
+		rockets.clear();
+	}
+	
 	
 	/*private static ArrayList<Rocket> rockets = new ArrayList<Rocket>();
 
@@ -161,12 +171,17 @@ public class Rocket {
 				}, 2L);
 	}
 
+	public void remove() {
+		if (tickTask != -1)
+			Paintball.instance.getServer().getScheduler().cancelTask(tickTask);
+		if (entity.isValid() && !entity.isDead())
+			entity.remove();
+	}
+	
 	public void die() {
 		if (!exploded) {
 			explode();
 		}
-		if (tickTask != -1)
-			Paintball.instance.getServer().getScheduler().cancelTask(tickTask);
 		// some effect here:
 		if (Paintball.instance.effects) {
 			Location loc = entity.getLocation();
@@ -188,9 +203,7 @@ public class Rocket {
 			entity.getWorld().playEffect(loc, Effect.MOBSPAWNER_FLAMES, 7);
 			entity.getWorld().playEffect(loc, Effect.MOBSPAWNER_FLAMES, 8);
 		}
-
-		if (entity.isValid() && !entity.isDead())
-			entity.remove();
+		remove();
 	}
 
 	private void explode() {
