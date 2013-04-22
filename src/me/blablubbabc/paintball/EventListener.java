@@ -583,9 +583,14 @@ public class EventListener implements Listener {
 			if (Sniper.isZooming(player))
 				Sniper.setNotZooming(player);
 
+			ItemStack item = player.getInventory().getItem(event.getNewSlot());
+			
 			if (plugin.airstrike) {
-				ItemStack item = player.getInventory().getItem(event.getNewSlot());
 				Airstrike.handleItemInHand(player, item);
+			}
+			
+			if (plugin.orbitalstrike) {
+				Orbitalstrike.handleItemInHand(player, item);
 			}
 			
 		}

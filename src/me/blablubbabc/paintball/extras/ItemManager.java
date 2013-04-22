@@ -38,6 +38,10 @@ public class ItemManager {
 			meta.setDisplayName(Paintball.instance.t.getString("WEAPON_AIRSTRIKE"));
 			break;
 
+		case BLAZE_ROD:
+			meta.setDisplayName(Paintball.instance.t.getString("WEAPON_ORBITALSTRIKE"));
+			break;
+
 		case FLOWER_POT_ITEM:
 			meta.setDisplayName(Paintball.instance.t.getString("WEAPON_MINE"));
 			break;
