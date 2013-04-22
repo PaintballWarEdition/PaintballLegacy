@@ -83,6 +83,7 @@ public class Airstrike {
 			}
 		}
 		airstrikes.clear();
+		airstrikeCounter = 0;
 	}
 	
 	/*private static List<Airstrike> airstrikes = new ArrayList<Airstrike>();

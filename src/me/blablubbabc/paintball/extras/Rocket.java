@@ -69,6 +69,7 @@ public class Rocket {
 			}
 		}
 		rockets.clear();
+		rocketCounter = 0;
 	}
 	
 	

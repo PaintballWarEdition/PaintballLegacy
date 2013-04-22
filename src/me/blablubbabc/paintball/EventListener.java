@@ -416,7 +416,7 @@ public class EventListener implements Listener {
 								}
 
 							} else {
-								player.sendMessage(plugin.t.getString("ORBITALSTRIK_MATCH_LIMIT_REACHED"));
+								player.sendMessage(plugin.t.getString("ORBITALSTRIKE_MATCH_LIMIT_REACHED"));
 							}
 						}
 					}

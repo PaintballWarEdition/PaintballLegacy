@@ -87,6 +87,7 @@ public class Orbitalstrike {
 			}
 		}
 		orbitalstrikes.clear();
+		orbitalstrikeCounter = 0;
 	}
 
 	/*
@@ -159,12 +160,12 @@ public class Orbitalstrike {
 
 						@Override
 						public void run() {
-							loc1.getWorld().createExplosion(loc1.getX(), loc1.getY(), loc1.getZ(), 4, false, false);
+							loc1.getWorld().createExplosion(loc1, -1);
 							for (Vector v : vectors) {
 								Snowball s = player.getWorld().spawn(loc1, Snowball.class);
 								s.setShooter(player);
 								Ball.registerBall(s, playerName, Origin.ORBITALSTRIKE);
-								s.setVelocity(v.clone().setY(2.5));
+								s.setVelocity(v.clone().setY(2));
 							}
 						}
 					}, 1L);
