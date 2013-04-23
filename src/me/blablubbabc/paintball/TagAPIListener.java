@@ -18,7 +18,7 @@ public class TagAPIListener implements Listener {
 	public void onTagRecieve(PlayerReceiveNameTagEvent event) {
 		Player player = event.getPlayer();
 		Match match = plugin.mm.getMatch(player);
-		if (match != null && match.isSurvivor(player) && plugin.tags) {
+		if (match != null && match.isSurvivor(player)) {
 			Player target = event.getNamedPlayer();
 			if(Lobby.isPlaying(player)) {
 				if(plugin.tagsInvis) {

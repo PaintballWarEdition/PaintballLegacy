@@ -863,13 +863,15 @@ public class Paintball extends JavaPlugin{
 			log("Plugin 'InSigns' not found. Additional sign features disabled.");
 		}
 		//TagAPI:
-		Plugin tagAPIPlugin = getServer().getPluginManager().getPlugin("TagAPI");
-		if((tagAPIPlugin != null) && tagAPIPlugin.isEnabled()) {
-			tagAPI = new TagAPIListener(this);
-			getServer().getPluginManager().registerEvents(tagAPI, this);
-			log("Plugin 'TagAPI' found. Using it now.");
-		} else {
-			log("Plugin 'TagAPI' not found. Additional tag features disabled.");
+		if (tags) {
+			Plugin tagAPIPlugin = getServer().getPluginManager().getPlugin("TagAPI");
+			if((tagAPIPlugin != null) && tagAPIPlugin.isEnabled()) {
+				tagAPI = new TagAPIListener(this);
+				getServer().getPluginManager().registerEvents(tagAPI, this);
+				log("Plugin 'TagAPI' found. Using it now.");
+			} else {
+				log("Plugin 'TagAPI' not found. Additional tag features disabled.");
+			}
 		}
 		
 		//calculating turret angles:
