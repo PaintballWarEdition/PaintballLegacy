@@ -34,7 +34,7 @@ public class BlaSQLite {
 
 	public void closeConnection() {
 		try {
-			connection.close();
+			if (isConnected()) connection.close();
 		} catch(Exception e) {
 			e.printStackTrace();
 		}
@@ -42,7 +42,7 @@ public class BlaSQLite {
 	
 	public boolean isConnected() {
 		try {
-			return connection!=null && !connection.isClosed();
+			return connection != null && !connection.isClosed();
 		} catch (SQLException e) {
 			e.printStackTrace();
 			return false;
@@ -50,7 +50,7 @@ public class BlaSQLite {
 	}
 
 	public void refreshConnection() {
-		if (connection == null) {
+		if (!isConnected()) {
 			initialise();
 			pragmas();
 		}
@@ -104,6 +104,7 @@ public class BlaSQLite {
 	}
 	
 	public synchronized boolean getAutoCommit() {
+		this.refreshConnection();
 		boolean r = true;
 		try {
 			r = this.connection.getAutoCommit();
@@ -114,6 +115,7 @@ public class BlaSQLite {
 	}
 	
 	public synchronized void setAutoCommit(boolean b) {
+		this.refreshConnection();
 		try {
 			this.connection.setAutoCommit(b);
 		} catch (SQLException e) {
@@ -122,6 +124,7 @@ public class BlaSQLite {
 	}
 	
 	public synchronized void commit() {
+		this.refreshConnection();
 		try {
 			this.connection.commit();
 		} catch (SQLException e) {

@@ -337,7 +337,7 @@ public class Paintball extends JavaPlugin{
 		if(getConfig().get("Paintball.Auto Spec Lobby") == null)getConfig().set("Paintball.Auto Spec Lobby", false);
 		if(getConfig().get("Paintball.Effects") == null)getConfig().set("Paintball.Effects", true);
 		if(getConfig().get("Paintball.Teleport Fix") == null)getConfig().set("Paintball.Teleport Fix", true);
-		if(getConfig().get("Paintball.Use XP Bar") == null)getConfig().set("Paintball.Blacklist.Use XP Bar", true);
+		if(getConfig().get("Paintball.Use XP Bar") == null)getConfig().set("Paintball.Use XP Bar", true);
 		if(getConfig().get("Paintball.Allowed Commands") == null)getConfig().set("Paintball.Allowed Commands", allowedCommands);
 		if(getConfig().get("Paintball.Blacklist.Enabled") == null)getConfig().set("Paintball.Blacklist.Enabled", false);
 		if(getConfig().get("Paintball.Blacklist.Admin Override") == null)getConfig().set("Paintball.Blacklist.Admin Override", true);
@@ -490,7 +490,7 @@ public class Paintball extends JavaPlugin{
 		noPerms = getConfig().getBoolean("Paintball.No Permissions", false);
 		debug = getConfig().getBoolean("Paintball.Debug", false);
 		teleportFix = getConfig().getBoolean("Paintball.Teleport Fix", true);
-		useXPBar = getConfig().getBoolean("Paintball.Blacklist.Use XP Bar", true);
+		useXPBar = getConfig().getBoolean("Paintball.Use XP Bar", true);
 		autoLobby = getConfig().getBoolean("Paintball.Auto Lobby", false);
 		autoTeam = getConfig().getBoolean("Paintball.Auto Team", false);
 		allowedCommands = (ArrayList<String>) getConfig().getList("Paintball.Allowed Commands", allowedCommands);
