@@ -393,7 +393,7 @@ public class Paintball extends JavaPlugin{
 		if(getConfig().get("Paintball.Match.Countdown.Time") == null)getConfig().set("Paintball.Match.Countdown.Time", 20);
 		if(getConfig().get("Paintball.Match.Countdown.Delay") == null)getConfig().set("Paintball.Match.Countdown.Delay", 10);
 		if(getConfig().get("Paintball.Match.Countdown Round Start.Time") == null)getConfig().set("Paintball.Match.Countdown Round Start.Time", 5);
-		if(getConfig().get("Paintball.Match.Round Timer.Time (at least 30)") == null)getConfig().set("Paintball.Match.Round Timer.Time (at least 30)", 120);
+		if(getConfig().get("Paintball.Match.Round Timer.Time (at least 30)") == null)getConfig().set("Paintball.Match.Round Timer.Time (at least 30)", 180);
 		if(getConfig().get("Paintball.Match.Spawn Protection Seconds") == null)getConfig().set("Paintball.Match.Spawn Protection Seconds", 3);
 		
 		//This node is also used inside the ArenaManager, so if changed -> also change there!
@@ -539,7 +539,7 @@ public class Paintball extends JavaPlugin{
 		if(countdownInit < 0) countdownInit = 0;
 		countdownStart = getConfig().getInt("Paintball.Match.Countdown Round Start.Time", 5);
 		if(countdownStart < 0) countdownStart = 0;
-		roundTimer = getConfig().getInt("Paintball.Match.Round Timer.Time (at least 30)", 120);
+		roundTimer = getConfig().getInt("Paintball.Match.Round Timer.Time (at least 30)", 180);
 		if(roundTimer < 30) roundTimer = 30;
 		//spawn protection
 		protectionTime = getConfig().getInt("Paintball.Match.Spawn Protection Seconds", 3);
