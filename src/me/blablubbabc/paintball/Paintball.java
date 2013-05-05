@@ -457,7 +457,7 @@ public class Paintball extends JavaPlugin{
 		if(getConfig().get("Paintball.Extras.Sniper.No gravity on bullets") == null)getConfig().set("Paintball.Extras.Sniper.No gravity on bullets", false);
 		if(getConfig().get("Paintball.Extras.Sniper.No gravity duration") == null)getConfig().set("Paintball.Extras.Sniper.No gravity duration", 3);
 		
-		if(getConfig().get("Paintball.Extras.Orbitalstrike.enabled") == null)getConfig().set("Paintball.Extras.Airstrike.enabled", true);
+		if(getConfig().get("Paintball.Extras.Orbitalstrike.enabled") == null)getConfig().set("Paintball.Extras.Orbitalstrike.enabled", true);
 		if(getConfig().get("Paintball.Extras.Orbitalstrike.Match Limit") == null)getConfig().set("Paintball.Extras.Orbitalstrike.Match Limit", 3);
 		if(getConfig().get("Paintball.Extras.Orbitalstrike.Player Limit") == null)getConfig().set("Paintball.Extras.Orbitalstrike.Player Limit", 1);
 		
@@ -710,7 +710,7 @@ public class Paintball extends JavaPlugin{
 		sniperNoGravityDuration = getConfig().getInt("Paintball.Extras.Sniper.No gravity duration", 3);
 		if (sniperNoGravityDuration < 1) sniperNoGravityDuration = 1;
 		
-		orbitalstrike = getConfig().getBoolean("Paintball.Extras.Airstrike.enabled", true);
+		orbitalstrike = getConfig().getBoolean("Paintball.Extras.Orbitalstrike.enabled", true);
 		orbitalstrikeMatchLimit = getConfig().getInt("Paintball.Extras.Orbitalstrike.Match Limit", 3);
 		orbitalstrikePlayerLimit = getConfig().getInt("Paintball.Extras.Orbitalstrike.Player Limit", 1);
 		
