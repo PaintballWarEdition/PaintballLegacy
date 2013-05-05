@@ -32,6 +32,7 @@ public class Pumpgun {
 		
 		Vector n = new Vector(dirY.getZ(), 0.0, -dirY.getX());
 		
+		boolean alreadyAngleNull = false;
 		for (int angle : angles) {
 			Vector vec;
 			if (angle != 0) {
@@ -39,7 +40,11 @@ public class Pumpgun {
 				vec.multiply(Math.sqrt(vec.getX() * vec.getX() + vec.getZ() * vec.getZ())).subtract(dirY);
 				vec = dir.clone().add(vec).normalize();
 			} else {
-				vec = dir.clone();
+				if (alreadyAngleNull) continue;
+				else {
+					alreadyAngleNull = true;
+					vec = dir.clone();
+				}
 			}
 			
 			if (Paintball.instance.shotgunAngleVert == 0) {
