@@ -6,13 +6,18 @@ import me.blablubbabc.paintball.Paintball;
 import me.blablubbabc.paintball.Origin;
 
 import org.bukkit.Location;
+import org.bukkit.Material;
 import org.bukkit.Sound;
 import org.bukkit.entity.Player;
 import org.bukkit.entity.Snowball;
+import org.bukkit.inventory.ItemStack;
 import org.bukkit.potion.PotionEffectType;
 import org.bukkit.util.Vector;
 
 public class Sniper {
+	
+	public final static ItemStack item = ItemManager.setMeta(new ItemStack(Material.CARROT_STICK));
+	
 	private static ArrayList<Player> zooming = new ArrayList<Player>();
 	
 	private static void setZoom(Player player) {

@@ -16,10 +16,13 @@ import org.bukkit.Sound;
 import org.bukkit.block.Block;
 import org.bukkit.entity.Player;
 import org.bukkit.entity.Snowball;
+import org.bukkit.inventory.ItemStack;
 import org.bukkit.util.BlockIterator;
 import org.bukkit.util.Vector;
 
 public class Mine {
+	
+	public final static ItemStack item = ItemManager.setMeta(new ItemStack(Material.FLOWER_POT_ITEM));
 	
 	private static int mineCounter = 0;
 	private static Map<String, ArrayList<Mine>> mines = new HashMap<String, ArrayList<Mine>>();

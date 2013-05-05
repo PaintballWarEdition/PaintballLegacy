@@ -9,12 +9,16 @@ import me.blablubbabc.paintball.Utils;
 
 import org.bukkit.Effect;
 import org.bukkit.Location;
+import org.bukkit.Material;
 import org.bukkit.entity.Fireball;
 import org.bukkit.entity.Player;
 import org.bukkit.entity.Snowball;
+import org.bukkit.inventory.ItemStack;
 import org.bukkit.util.Vector;
 
 public class Rocket {
+	
+	public final static ItemStack item = ItemManager.setMeta(new ItemStack(Material.DIODE));
 	
 	private static int rocketCounter = 0;
 	private static HashMap<String, ArrayList<Rocket>> rockets = new HashMap<String, ArrayList<Rocket>>();

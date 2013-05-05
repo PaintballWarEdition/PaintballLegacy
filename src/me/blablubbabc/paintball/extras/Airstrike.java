@@ -23,6 +23,8 @@ import org.bukkit.util.Vector;
 
 public class Airstrike {
 	
+	public final static ItemStack item = ItemManager.setMeta(new ItemStack(Material.STICK));
+	
 	private static ConcurrentHashMap<String, Integer> taskIds;
 	private static HashSet<Byte> transparent = null;
 	
@@ -258,13 +260,13 @@ public class Airstrike {
 	public static void handleItemInHand(final Player player, ItemStack item) {
 		final String name = player.getName();
 		if (item != null) {
-			if (item.getType() == Material.STICK) {
+			if (item.isSimilar(Airstrike.item)) {
 				if (!taskIds.containsKey(name)) {
 					int taskId = Paintball.instance.getServer().getScheduler().scheduleSyncRepeatingTask(Paintball.instance, new Runnable() {
 
 						@Override
 						public void run() {
-							if (player.getItemInHand().getType() == Material.STICK) {
+							if (player.getItemInHand().isSimilar(Airstrike.item)) {
 								Block block = player.getTargetBlock(transparent, 1000);
 								if (!Airstrike.isBlock(block, name)) {
 									Airstrike.demark(player);

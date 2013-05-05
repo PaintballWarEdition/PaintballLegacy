@@ -3,7 +3,6 @@ package me.blablubbabc.paintball;
 import java.util.ArrayList;
 import java.util.Random;
 
-import org.bukkit.Material;
 import org.bukkit.block.BlockFace;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.Inventory;
@@ -34,13 +33,13 @@ public class Utils {
 		p.getInventory().setArmorContents(null);
 	}
 
-	public static void removeInventoryItems(Inventory inv, ItemStack item) {
-		removeInventoryItems(inv, item.getType(), item.getAmount());
-	}
+	/*public static void removeInventoryItems(Inventory inv, ItemStack item) {
+		removeInventoryItems(inv, item, item.getAmount());
+	}*/
 
-	public static void removeInventoryItems(Inventory inv, Material type, int amount) {
+	public static void removeInventoryItems(Inventory inv, ItemStack item, int amount) {
 		for (ItemStack is : inv.getContents()) {
-			if (is != null && is.getType() == type) {
+			if (is != null && is.isSimilar(item)) {
 				int newamount = is.getAmount() - amount;
 				if (newamount > 0) {
 					is.setAmount(newamount);

@@ -8,13 +8,17 @@ import me.blablubbabc.paintball.Origin;
 import me.blablubbabc.paintball.Utils;
 
 import org.bukkit.Location;
+import org.bukkit.Material;
 import org.bukkit.entity.Egg;
 import org.bukkit.entity.Player;
 import org.bukkit.entity.Snowball;
+import org.bukkit.inventory.ItemStack;
 import org.bukkit.util.Vector;
 
 public class Grenade {
 
+	public final static ItemStack item = ItemManager.setMeta(new ItemStack(Material.EGG));
+	
 	private static HashMap<String, ArrayList<Grenade>> nades = new HashMap<String, ArrayList<Grenade>>();
 	
 	public static void registerGrenade(Egg egg, String shooterName, Origin source) {

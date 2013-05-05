@@ -21,6 +21,8 @@ import org.bukkit.util.Vector;
 
 public class Orbitalstrike {
 
+	public final static ItemStack item = ItemManager.setMeta(new ItemStack(Material.BLAZE_ROD));
+	
 	private static ConcurrentHashMap<String, Integer> taskIds;
 	private static HashSet<Byte> transparent = null;
 	final static Vector[] vectors = new Vector[36];
@@ -302,13 +304,13 @@ public class Orbitalstrike {
 	public static void handleItemInHand(final Player player, ItemStack item) {
 		final String name = player.getName();
 		if (item != null) {
-			if (item.getType() == Material.BLAZE_ROD) {
+			if (item.isSimilar(Orbitalstrike.item)) {
 				if (!taskIds.containsKey(name)) {
 					int taskId = Paintball.instance.getServer().getScheduler().scheduleSyncRepeatingTask(Paintball.instance, new Runnable() {
 
 						@Override
 						public void run() {
-							if (player.getItemInHand().getType() == Material.BLAZE_ROD) {
+							if (player.getItemInHand().isSimilar(Orbitalstrike.item)) {
 								Block block = player.getTargetBlock(transparent, 1000);
 								if (!Orbitalstrike.isBlock(block, name)) {
 									Orbitalstrike.demark(player);

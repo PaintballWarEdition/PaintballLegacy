@@ -13,10 +13,12 @@ import me.blablubbabc.BlaDB.BlaSQLite;
 import me.blablubbabc.paintball.Metrics.Graph;
 import me.blablubbabc.paintball.extras.Airstrike;
 import me.blablubbabc.paintball.extras.Ball;
+import me.blablubbabc.paintball.extras.Gift;
+import me.blablubbabc.paintball.extras.Gifts;
 import me.blablubbabc.paintball.extras.NoGravity;
 import me.blablubbabc.paintball.extras.Orbitalstrike;
-import me.blablubbabc.paintball.extras.Pumpgun;
 import me.blablubbabc.paintball.extras.Rocket;
+import me.blablubbabc.paintball.extras.Shotgun;
 import me.blablubbabc.paintball.extras.Turret;
 import org.bukkit.ChatColor;
 import org.bukkit.GameMode;
@@ -52,7 +54,6 @@ public class Paintball extends JavaPlugin{
 	public ArenaManager am;
 	public Translator t;
 	public Musiker musik;
-	public Christmas christmas;
 	public Stats stats;
 	public Serverlister slist;
 	public InSignsFeature isf;
@@ -751,8 +752,6 @@ public class Paintball extends JavaPlugin{
 		stats = new Stats(this);
 		getServer().getPluginManager().registerEvents(listener, this);
 		getServer().getPluginManager().registerEvents(new TeleportFix(this), this);
-		//GIFTS
-		christmas = new Christmas(this);
 		//COMMANDS
 		cm = new CommandManager(this);
 		CommandExecutor ce = cm;
@@ -772,8 +771,9 @@ public class Paintball extends JavaPlugin{
 			}
 		}
 		
-		//weapons
-		Pumpgun.init();
+		//extra inits
+		Gifts.init();
+		Shotgun.init();
 		Airstrike.init();
 		Orbitalstrike.init();
 		

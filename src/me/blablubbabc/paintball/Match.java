@@ -12,6 +12,7 @@ import java.util.Set;
 
 import me.blablubbabc.paintball.extras.Airstrike;
 import me.blablubbabc.paintball.extras.Ball;
+import me.blablubbabc.paintball.extras.Gifts;
 import me.blablubbabc.paintball.extras.Grenade;
 import me.blablubbabc.paintball.extras.ItemManager;
 import me.blablubbabc.paintball.extras.Mine;
@@ -366,7 +367,7 @@ public class Match {
 		if (plugin.giftsEnabled) {
 			int r = random.nextInt(1000);
 			if (plugin.giftOnSpawnChance > (r / 10)) {
-				plugin.christmas.receiveGift(player, 1, false);
+				Gifts.receiveGift(player, 1, false);
 			}
 		}
 		player.updateInventory();

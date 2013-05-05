@@ -9,6 +9,7 @@ import org.bukkit.entity.EntityType;
 import org.bukkit.entity.Player;
 import me.blablubbabc.paintball.Lobby;
 import me.blablubbabc.paintball.Paintball;
+import me.blablubbabc.paintball.extras.Gifts;
 
 
 public class CmdAdmin {
@@ -334,7 +335,7 @@ public class CmdAdmin {
 					}
 					for(Player p : Lobby.LOBBY.getMembers()) {
 						if(Lobby.isPlaying(p)) {
-							plugin.christmas.receiveGift(p, amount, true);
+							Gifts.receiveGift(p, amount, true);
 						}
 					}	
 				}

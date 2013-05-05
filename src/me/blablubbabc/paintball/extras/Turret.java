@@ -10,13 +10,17 @@ import me.blablubbabc.paintball.Origin;
 
 import org.bukkit.Effect;
 import org.bukkit.Location;
+import org.bukkit.Material;
 import org.bukkit.entity.Player;
 import org.bukkit.entity.Snowball;
 import org.bukkit.entity.Snowman;
+import org.bukkit.inventory.ItemStack;
 import org.bukkit.util.Vector;
 
 public class Turret {
 
+	public final static ItemStack item = ItemManager.setMeta(new ItemStack(Material.PUMPKIN));
+	
 	private static Double[][] table;
 	private static int ySize;
 

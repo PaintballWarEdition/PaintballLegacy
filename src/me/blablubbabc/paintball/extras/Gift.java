@@ -1,4 +1,4 @@
-package me.blablubbabc.paintball;
+package me.blablubbabc.paintball.extras;
 
 import org.bukkit.inventory.ItemStack;
 

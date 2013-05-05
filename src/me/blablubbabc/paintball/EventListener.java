@@ -9,11 +9,13 @@ import java.util.regex.Pattern;
 
 import me.blablubbabc.paintball.extras.Airstrike;
 import me.blablubbabc.paintball.extras.Ball;
+import me.blablubbabc.paintball.extras.Gifts;
 import me.blablubbabc.paintball.extras.Grenade;
 import me.blablubbabc.paintball.extras.Mine;
 import me.blablubbabc.paintball.extras.Orbitalstrike;
 import me.blablubbabc.paintball.extras.Pumpgun;
 import me.blablubbabc.paintball.extras.Rocket;
+import me.blablubbabc.paintball.extras.Shotgun;
 import me.blablubbabc.paintball.extras.Sniper;
 import me.blablubbabc.paintball.extras.Turret;
 
@@ -321,7 +323,7 @@ public class EventListener implements Listener {
 				if (event.getRightClicked() instanceof Player) {
 					Player receiver = (Player) event.getRightClicked();
 					if (Lobby.getTeam(receiver) != null) {
-						plugin.christmas.giveGift(player, receiver);
+						Gifts.giveGift(player, receiver);
 					}
 				}
 			}
@@ -347,7 +349,7 @@ public class EventListener implements Listener {
 				switch (item.getType()) {
 				case SNOW_BALL:
 					//MARKER
-					if (isAirClick(action) && item.hasItemMeta() && item.getItemMeta().getDisplayName().equals(Paintball.instance.t.getString("WEAPON_PAINTBALL"))) {
+					if (isAirClick(action) && item.isSimilar(Ball.item)) {
 						PlayerInventory inv = player.getInventory();
 						if (match.setting_balls == -1 || inv.contains(Material.SNOW_BALL, 1)) {
 							Snowball ball = (Snowball) player.getWorld().spawnEntity(player.getEyeLocation(), EntityType.SNOWBALL);
@@ -362,7 +364,7 @@ public class EventListener implements Listener {
 							
 							if (match.setting_balls != -1) {
 								// -1 ball
-								Utils.removeInventoryItems(inv, Material.SNOW_BALL, 1);
+								Utils.removeInventoryItems(inv, Ball.item, 1);
 							}
 						} else {
 							player.playSound(player.getEyeLocation(), Sound.FIRE_IGNITE, 100F, 2F);
@@ -372,7 +374,7 @@ public class EventListener implements Listener {
 					
 				case STICK:
 					// AIRSTRIKE
-					if (plugin.airstrike && isAirClick(action) && item.hasItemMeta() && item.getItemMeta().getDisplayName().equals(Paintball.instance.t.getString("WEAPON_AIRSTRIKE"))) {
+					if (plugin.airstrike && isAirClick(action) && item.isSimilar(Airstrike.item)) {
 						if (Airstrike.marked(player.getName())) {
 							if (Airstrike.getAirstrikeCountMatch() < plugin.airstrikeMatchLimit) {
 								if (Airstrike.getAirstrikeCountPlayer(player.getName()) < plugin.airstrikePlayerLimit) {
@@ -400,7 +402,7 @@ public class EventListener implements Listener {
 
 				case BLAZE_ROD:
 					// ORBITALSTRIKE
-					if (plugin.orbitalstrike && isAirClick(action) && item.hasItemMeta() && item.getItemMeta().getDisplayName().equals(Paintball.instance.t.getString("WEAPON_ORBITALSTRIKE"))) {
+					if (plugin.orbitalstrike && isAirClick(action) && item.isSimilar(Orbitalstrike.item)) {
 						if (Orbitalstrike.marked(player.getName())) {
 							if (Orbitalstrike.getOrbitalstrikeCountMatch() < plugin.orbitalstrikeMatchLimit) {
 								if (Orbitalstrike.getOrbitalstrikeCountPlayer(player.getName()) < plugin.orbitalstrikePlayerLimit) {
@@ -424,9 +426,9 @@ public class EventListener implements Listener {
 
 				case EGG:
 					// GRENADE
-					if (plugin.grenade && isAirClick(action) && item.hasItemMeta() && item.getItemMeta().getDisplayName().equals(Paintball.instance.t.getString("WEAPON_GRENADE"))) {
+					if (plugin.grenade && isAirClick(action) && item.isSimilar(Grenade.item)) {
 						PlayerInventory inv = player.getInventory();
-						if (match.setting_grenades == -1 || inv.contains(Material.EGG, 1)) {
+						if (match.setting_grenades == -1 || inv.containsAtLeast(Grenade.item,  1)) {
 							player.sendMessage(plugin.t.getString("GRENADE_THROW"));
 							player.playSound(player.getLocation(), Sound.SILVERFISH_IDLE, 100L, 1L);
 							Egg egg = (Egg) player.getWorld().spawnEntity(player.getEyeLocation(), EntityType.EGG);
@@ -438,7 +440,7 @@ public class EventListener implements Listener {
 							match.grenade(player);
 							if (match.setting_grenades != -1) {
 								// -1 egg
-								Utils.removeInventoryItems(inv, Material.EGG, 1);
+								Utils.removeInventoryItems(inv, Grenade.item, 1);
 							}
 						} else {
 							player.playSound(player.getEyeLocation(), Sound.FIRE_IGNITE, 100F, 2F);
@@ -448,12 +450,12 @@ public class EventListener implements Listener {
 
 				case SPECKLED_MELON:
 					// SHOTGUN
-					if (plugin.shotgun && isAirClick(action) && item.hasItemMeta() && item.getItemMeta().getDisplayName().equals(Paintball.instance.t.getString("WEAPON_SHOTGUN"))) {
+					if (plugin.shotgun && isAirClick(action) && item.isSimilar(Shotgun.item)) {
 						PlayerInventory inv = player.getInventory();
-						if (inv.contains(Material.SNOW_BALL, plugin.shotgunAmmo)) {
-							Utils.removeInventoryItems(inv, Material.SNOW_BALL, plugin.shotgunAmmo);
+						if (inv.containsAtLeast(Ball.item, plugin.shotgunAmmo)) {
+							Utils.removeInventoryItems(inv, Ball.item, plugin.shotgunAmmo);
 							match.addShots(player, 15);
-							Pumpgun.shotShotgun(player);
+							Shotgun.shoot(player);
 						} else {
 							player.playSound(player.getEyeLocation(), Sound.FIRE_IGNITE, 100F, 2F);
 						}
@@ -462,12 +464,12 @@ public class EventListener implements Listener {
 					
 				case STONE_AXE:
 					// PUMPGUN
-					if (plugin.pumpgun && isAirClick(action) && item.hasItemMeta() && item.getItemMeta().getDisplayName().equals(Paintball.instance.t.getString("WEAPON_PUMPGUN"))) {
+					if (plugin.pumpgun && isAirClick(action) && item.isSimilar(Pumpgun.item)) {
 						PlayerInventory inv = player.getInventory();
-						if (inv.contains(Material.SNOW_BALL, plugin.pumpgunAmmo)) {
-							Utils.removeInventoryItems(inv, Material.SNOW_BALL, plugin.pumpgunAmmo);
+						if (inv.containsAtLeast(Ball.item, plugin.pumpgunAmmo)) {
+							Utils.removeInventoryItems(inv, Ball.item, plugin.pumpgunAmmo);
 							match.addShots(player, plugin.pumpgunBullets);
-							Pumpgun.shotPumpgun(player);
+							Pumpgun.shoot(player);
 						} else {
 							player.playSound(player.getEyeLocation(), Sound.FIRE_IGNITE, 100F, 2F);
 						}
@@ -476,7 +478,7 @@ public class EventListener implements Listener {
 
 				case DIODE:
 					// ROCKET LAUNCHER
-					if (plugin.rocket && isAirClick(action) && item.hasItemMeta() && item.getItemMeta().getDisplayName().equals(Paintball.instance.t.getString("WEAPON_ROCKET"))) {
+					if (plugin.rocket && isAirClick(action) && item.isSimilar(Rocket.item)) {
 						if (Rocket.getRocketCountMatch() < plugin.rocketMatchLimit) {
 							if (Rocket.getRocketCountPlayer(player.getName()) < plugin.rocketPlayerLimit) {
 								player.playSound(player.getLocation(), Sound.SILVERFISH_IDLE, 100L, 1L);
@@ -503,7 +505,7 @@ public class EventListener implements Listener {
 
 				case CARROT_STICK:
 					// SNIPER
-					if (plugin.sniper && item.hasItemMeta() && item.getItemMeta().getDisplayName().equals(Paintball.instance.t.getString("WEAPON_SNIPER"))) {
+					if (plugin.sniper && item.isSimilar(Sniper.item)) {
 						if (action == Action.LEFT_CLICK_AIR) {
 							Sniper.toggleZoom(player);
 						} else if (action == Action.RIGHT_CLICK_AIR) {
@@ -515,7 +517,7 @@ public class EventListener implements Listener {
 								
 								if (match.setting_balls != -1) {
 									// -1 ball
-									Utils.removeInventoryItems(inv, Material.SNOW_BALL, 1);
+									Utils.removeInventoryItems(inv, Ball.item, 1);
 								}
 							} else {
 								player.playSound(player.getEyeLocation(), Sound.FIRE_IGNITE, 100F, 2F);
@@ -526,12 +528,12 @@ public class EventListener implements Listener {
 
 				case CHEST:
 					// GIFT
-					if (plugin.giftsEnabled && item.hasItemMeta() && item.getItemMeta().getDisplayName().equals(Paintball.instance.t.getString("WEAPON_GIFT"))) {
+					if (plugin.giftsEnabled && item.isSimilar(Gifts.item)) {
 						plugin.getServer().getScheduler().runTaskLater(plugin, new Runnable() {
 							
 							@Override
 							public void run() {
-								plugin.christmas.unwrapGift(player);
+								Gifts.unwrapGift(player);
 							}
 						}, 1L);
 					}

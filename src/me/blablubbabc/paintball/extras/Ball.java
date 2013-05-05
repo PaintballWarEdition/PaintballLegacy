@@ -4,11 +4,15 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
 
+import org.bukkit.Material;
 import org.bukkit.entity.Snowball;
+import org.bukkit.inventory.ItemStack;
 
 import me.blablubbabc.paintball.Origin;
 
 public class Ball {
+	
+	public final static ItemStack item = ItemManager.setMeta(new ItemStack(Material.SNOW_BALL));
 	
 	public static int count = 0;
 	
