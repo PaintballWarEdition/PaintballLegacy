@@ -82,7 +82,7 @@ public class Translator {
 		// get translation:
 		localisationFile = new File(path + "/" + filename + ".txt");
 		if (!localisationFile.exists()) {
-			log("ERROR: Couldn't find the specified language file.");
+			log("ERROR: Couldn't find the specified language file: " + localisationFile.getName());
 			log("Using the default language now: " + def_file.getName());
 			use_def = true;
 		} else {
