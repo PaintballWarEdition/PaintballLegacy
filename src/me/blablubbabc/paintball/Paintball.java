@@ -402,7 +402,7 @@ public class Paintball extends JavaPlugin{
 		
 		if(getConfig().get("Paintball.Extras.Grenades.enabled") == null)getConfig().set("Paintball.Extras.Grenades.enabled", true);
 		if(getConfig().get("Paintball.Extras.Grenades.Explosion-Time-Radius in Ticks") == null)getConfig().set("Paintball.Extras.Grenades.Explosion-Time-Radius in Ticks", 60);
-		if(getConfig().get("Paintball.Extras.Grenades.Speed multi") == null)getConfig().set("Paintball.Extras.Grenades.Speed multi", 1.0);
+		if(getConfig().get("Paintball.Extras.Grenades.Speed multi") == null)getConfig().set("Paintball.Extras.Grenades.Speed multi", 1.5);
 		if(getConfig().get("Paintball.Extras.Grenades.Amount") == null)getConfig().set("Paintball.Extras.Grenades.Amount", 0);
 		
 		if(getConfig().get("Paintball.Extras.Airstrike.enabled") == null)getConfig().set("Paintball.Extras.Airstrike.enabled", true);
@@ -624,7 +624,7 @@ public class Paintball extends JavaPlugin{
 		grenade = getConfig().getBoolean("Paintball.Extras.Grenades.enabled", true);
 		grenadeTime = getConfig().getInt("Paintball.Extras.Grenades.Explosion-Time-Radius in Ticks", 60);
 		if(grenadeTime < 1) grenadeTime = 1;
-		grenadeSpeed = getConfig().getDouble("Paintball.Extras.Grenades.Speed multi", 1.0);
+		grenadeSpeed = getConfig().getDouble("Paintball.Extras.Grenades.Speed multi", 1.5);
 		grenadeAmount = getConfig().getInt("Paintball.Extras.Grenades.Amount", 0);
 		if(grenadeAmount < -1) grenadeAmount = -1;
 
