@@ -72,7 +72,16 @@ public class Gifts {
 				chance += (g.getChance()*Paintball.instance.giftChanceFactor);
 				if(r < chance) {
 					player.sendMessage(ChatColor.GREEN+g.getMessage());
-					player.getInventory().addItem(ItemManager.setMeta(g.getItem(true)));
+					ItemStack item = ItemManager.setMeta(g.getItem(true));
+					player.getInventory().addItem(item);
+					//airstrike item in hand update
+					if (Paintball.instance.airstrike) {
+						Airstrike.handleItemInHand(player, item);
+					}
+					
+					if (Paintball.instance.orbitalstrike) {
+						Orbitalstrike.handleItemInHand(player, item);
+					}
 					player.updateInventory();
 					break;
 				}
