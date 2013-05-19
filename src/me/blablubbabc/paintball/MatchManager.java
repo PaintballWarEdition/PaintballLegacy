@@ -440,7 +440,7 @@ public class MatchManager{
 			plugin.nf.status(plugin.t.getString("NEW_MATCH_STARTS_SOON"));
 			countdownStarted = true;
 			count = number;
-			taskID = plugin.getServer().getScheduler().scheduleSyncRepeatingTask(plugin, new Runnable(){
+			taskID = plugin.getServer().getScheduler().runTaskTimer(plugin, new Runnable(){
 
 				@Override
 				public void run() {
@@ -475,7 +475,7 @@ public class MatchManager{
 					}
 				}
 
-			}, (long) (20*initial), 20L);
+			}, (long) (20*initial), 20L).getTaskId();
 		}
 	}
 

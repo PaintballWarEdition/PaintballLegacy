@@ -57,11 +57,11 @@ public class Match {
 	private ArrayList<Player> spec = new ArrayList<Player>();
 	private String arena;
 
-	private int startTaskId;
+	private int startTaskId = -1;
 	private int startCount;
 
 	private int roundTime;
-	private int roundTimeTaskId;
+	private int roundTimeTaskId = -1;
 
 	private ArrayList<Location> redspawns;
 	private ArrayList<Location> bluespawns;
@@ -171,7 +171,7 @@ public class Match {
 		sendCountdown(startCount);
 		
 		startTaskId = plugin.getServer().getScheduler()
-				.scheduleSyncRepeatingTask(plugin, new Runnable() {
+				.runTaskTimer(plugin, new Runnable() {
 
 					@Override
 					public void run() {
@@ -210,7 +210,7 @@ public class Match {
 						}
 						
 					}
-				}, 20L, 20L);
+				}, 20L, 20L).getTaskId();
 	}
 
 	private void addToPlayerLists(Player p) {
@@ -231,7 +231,7 @@ public class Match {
 		roundTime = setting_round_time;
 
 		roundTimeTaskId = plugin.getServer().getScheduler()
-				.scheduleSyncRepeatingTask(plugin, new Runnable() {
+				.runTaskTimer(plugin, new Runnable() {
 
 					@Override
 					public void run() {
@@ -281,7 +281,7 @@ public class Match {
 						}
 						
 					}
-				}, 20L, 20L);
+				}, 20L, 20L).getTaskId();
 	}
 
 	private ArrayList<Player> getWinner() {
