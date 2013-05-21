@@ -1025,6 +1025,7 @@ public class Paintball extends JavaPlugin{
 	}
 
 	public void checks(Player player, boolean checkListname, boolean changeLevel) {
+		player.closeInventory();
 		if(!Utils.isEmptyInventory(player)) Utils.clearInv(player);
 		//gamemode
 		if(!player.getGameMode().equals(GameMode.SURVIVAL)) player.setGameMode(GameMode.SURVIVAL);
