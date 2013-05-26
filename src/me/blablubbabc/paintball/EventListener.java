@@ -349,7 +349,7 @@ public class EventListener implements Listener {
 				switch (item.getType()) {
 				case SNOW_BALL:
 					//MARKER
-					if (isAirClick(action) && item.isSimilar(Ball.item)) {
+					if (item.isSimilar(Ball.item)) {
 						PlayerInventory inv = player.getInventory();
 						if (match.setting_balls == -1 || inv.contains(Material.SNOW_BALL, 1)) {
 							Snowball ball = (Snowball) player.getWorld().spawnEntity(player.getEyeLocation(), EntityType.SNOWBALL);
@@ -374,7 +374,7 @@ public class EventListener implements Listener {
 					
 				case STICK:
 					// AIRSTRIKE
-					if (plugin.airstrike && isAirClick(action) && item.isSimilar(Airstrike.item)) {
+					if (plugin.airstrike && item.isSimilar(Airstrike.item)) {
 						if (Airstrike.marked(player.getName())) {
 							if (Airstrike.getAirstrikeCountMatch() < plugin.airstrikeMatchLimit) {
 								if (Airstrike.getAirstrikeCountPlayer(player.getName()) < plugin.airstrikePlayerLimit) {
@@ -402,7 +402,7 @@ public class EventListener implements Listener {
 
 				case BLAZE_ROD:
 					// ORBITALSTRIKE
-					if (plugin.orbitalstrike && isAirClick(action) && item.isSimilar(Orbitalstrike.item)) {
+					if (plugin.orbitalstrike && item.isSimilar(Orbitalstrike.item)) {
 						if (Orbitalstrike.marked(player.getName())) {
 							if (Orbitalstrike.getOrbitalstrikeCountMatch() < plugin.orbitalstrikeMatchLimit) {
 								if (Orbitalstrike.getOrbitalstrikeCountPlayer(player.getName()) < plugin.orbitalstrikePlayerLimit) {
@@ -426,7 +426,7 @@ public class EventListener implements Listener {
 
 				case EGG:
 					// GRENADE
-					if (plugin.grenade && isAirClick(action) && item.isSimilar(Grenade.item)) {
+					if (plugin.grenade && item.isSimilar(Grenade.item)) {
 						PlayerInventory inv = player.getInventory();
 						if (match.setting_grenades == -1 || inv.containsAtLeast(Grenade.item,  1)) {
 							player.sendMessage(plugin.t.getString("GRENADE_THROW"));
@@ -450,7 +450,7 @@ public class EventListener implements Listener {
 
 				case SPECKLED_MELON:
 					// SHOTGUN
-					if (plugin.shotgun && isAirClick(action) && item.isSimilar(Shotgun.item)) {
+					if (plugin.shotgun && item.isSimilar(Shotgun.item)) {
 						PlayerInventory inv = player.getInventory();
 						if (inv.containsAtLeast(Ball.item, plugin.shotgunAmmo)) {
 							Utils.removeInventoryItems(inv, Ball.item, plugin.shotgunAmmo);
@@ -464,7 +464,7 @@ public class EventListener implements Listener {
 					
 				case STONE_AXE:
 					// PUMPGUN
-					if (plugin.pumpgun && isAirClick(action) && item.isSimilar(Pumpgun.item)) {
+					if (plugin.pumpgun && item.isSimilar(Pumpgun.item)) {
 						PlayerInventory inv = player.getInventory();
 						if (inv.containsAtLeast(Ball.item, plugin.pumpgunAmmo)) {
 							Utils.removeInventoryItems(inv, Ball.item, plugin.pumpgunAmmo);
@@ -478,7 +478,7 @@ public class EventListener implements Listener {
 
 				case DIODE:
 					// ROCKET LAUNCHER
-					if (plugin.rocket && isAirClick(action) && item.isSimilar(Rocket.item)) {
+					if (plugin.rocket && item.isSimilar(Rocket.item)) {
 						if (Rocket.getRocketCountMatch() < plugin.rocketMatchLimit) {
 							if (Rocket.getRocketCountPlayer(player.getName()) < plugin.rocketPlayerLimit) {
 								player.playSound(player.getLocation(), Sound.SILVERFISH_IDLE, 100L, 1L);
@@ -556,9 +556,9 @@ public class EventListener implements Listener {
 		}
 	}
 
-	private boolean isAirClick(Action action) {
+	/*private boolean isAirClick(Action action) {
 		return (action == Action.RIGHT_CLICK_AIR || action == Action.LEFT_CLICK_AIR);
-	}
+	}*/
 	
 	/*@EventHandler(priority = EventPriority.NORMAL)
 	public void onChunkUnload(ChunkUnloadEvent event) {
