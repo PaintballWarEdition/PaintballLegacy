@@ -24,7 +24,7 @@ public class MatchManager{
 		countdownStarted = false;
 	}
 
-	public void forceReload() {
+	public synchronized void forceReload() {
 		//closing all matches and kicking all players from lobby:
 		ArrayList<Match> mlist = new ArrayList<Match>();
 		for(Match m : matches) {
@@ -67,7 +67,7 @@ public class MatchManager{
 		}
 	}
 
-	public void gameStart() {
+	public synchronized void gameStart() {
 		//auto spec lobby
 		if(plugin.autoSpecLobby) {
 			for(Player player : Lobby.LOBBY.getMembers()) {
@@ -111,7 +111,7 @@ public class MatchManager{
 		matches.add(match);
 	}
 	
-	public void gameEnd(final Match match, boolean draw, HashMap<String, Location> playersLoc, ArrayList<Player> specs, 
+	public synchronized void gameEnd(final Match match, boolean draw, HashMap<String, Location> playersLoc, ArrayList<Player> specs, 
 			final HashMap<String, Integer> shots, final HashMap<String, Integer> hits, final HashMap<String, Integer> kills, final HashMap<String, Integer> deaths,
 			final HashMap<String, Integer> teamattacks, final HashMap<String, Integer> grenades, final HashMap<String, Integer> airstrikes) {
 		//TIME
@@ -412,14 +412,14 @@ public class MatchManager{
 		return false;
 	}
 
-	public Match getMatch(Player player) {
+	public synchronized Match getMatch(Player player) {
 		for(Match m : matches) {
 			if(m.inMatch(player)) return m;
 		}
 		return null;
 	}
 
-	public String ready() {
+	public synchronized String ready() {
 		//softreload-check:
 		if (softCheck()) plugin.reload(null);
 		//activated?

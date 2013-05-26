@@ -673,7 +673,7 @@ public class Match {
 
 	// AKTIONS
 
-	public void left(Player player) {
+	public synchronized void left(Player player) {
 		// team?
 		if (getTeam(player) != null) {
 			// 0 leben aka tot
@@ -702,7 +702,7 @@ public class Match {
 		return respawnsLeft.get(player);
 	}
 	
-	private void respawn(Player player) {
+	private synchronized void respawn(Player player) {
 		livesLeft.put(player, setting_lives);
 		if (setting_respawns != -1)
 			respawnsLeft.put(player, respawnsLeft.get(player) - 1);
@@ -738,7 +738,7 @@ public class Match {
 		airstrikes.put(player.getName(), airstrikes.get(player.getName()) + 1);
 	}
 
-	public void hitSnow(Player target, Player shooter, Origin source) {
+	public synchronized void hitSnow(Player target, Player shooter, Origin source) {
 		// math over already?
 		if (matchOver)
 			return;
@@ -805,7 +805,7 @@ public class Match {
 		}
 	}
 
-	public void frag(final Player target, Player killer, Origin source) {
+	public synchronized void frag(final Player target, Player killer, Origin source) {
 		// math over already?
 		if (matchOver)
 			return;
@@ -881,7 +881,7 @@ public class Match {
 
 	}
 
-	public void death(final Player target) {
+	public synchronized void death(final Player target) {
 		// math over already?
 		if (matchOver)
 			return;
@@ -946,7 +946,7 @@ public class Match {
 		}
 	}
 
-	private void gameEnd(final boolean draw, ArrayList<Player> winnerS,
+	private synchronized void gameEnd(final boolean draw, ArrayList<Player> winnerS,
 			ArrayList<Player> looserS, String winS, String looseS) {
 		matchOver = true;
 		endSchedulers();
