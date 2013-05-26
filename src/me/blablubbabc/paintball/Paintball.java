@@ -852,13 +852,8 @@ public class Paintball extends JavaPlugin{
 		//InSigns sign changer:
 		Plugin insignsPlugin = getServer().getPluginManager().getPlugin("InSigns");
 		if((insignsPlugin != null) && insignsPlugin.isEnabled()) {
-			String insignsVersion = insignsPlugin.getDescription().getVersion();
-			if (insignsVersion.equalsIgnoreCase("1.3")) {
-				isf = new InSignsFeature(insignsPlugin, this);
-				log("Plugin 'InSigns' found. Using it now.");
-			} else {
-				log("Your version of 'InSigns' is not supported. Additional sign features disabled.");
-			}
+			isf = new InSignsFeature(insignsPlugin, this);
+			log("Plugin 'InSigns' found. Using it now.");
 		} else {
 			log("Plugin 'InSigns' not found. Additional sign features disabled.");
 		}
