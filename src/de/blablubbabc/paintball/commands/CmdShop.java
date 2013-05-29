@@ -11,6 +11,7 @@ import de.blablubbabc.paintball.ShopGood;
 import de.blablubbabc.paintball.extras.Airstrike;
 import de.blablubbabc.paintball.extras.ItemManager;
 import de.blablubbabc.paintball.extras.Orbitalstrike;
+import de.blablubbabc.paintball.utils.Log;
 import de.blablubbabc.paintball.utils.Translator;
 
 
@@ -129,7 +130,7 @@ public class CmdShop {
 			}
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 		} else {
-			plugin.log(Translator.getString("COMMAND_NOT_AS_CONSOLE"));
+			Log.info(Translator.getString("COMMAND_NOT_AS_CONSOLE"));
 			return true;
 		}
 		return false;

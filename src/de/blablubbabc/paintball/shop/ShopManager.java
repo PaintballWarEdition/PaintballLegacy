@@ -55,24 +55,24 @@ public class ShopManager {
 				desc = (List<String>) css.getList("Description");
 				css = css.getConfigurationSection("Item");
 				if (css == null) {
-					Log.logWarning("ShopItem '" + name + "' is missing 'Item' information! Check the 'shops.cfg'!");
+					Log.warning("ShopItem '" + name + "' is missing 'Item' information! Check the 'shops.cfg'!");
 					continue;
 				}
 				id = css.getInt("ID");
 				if (id <= 0) {
-					Log.logWarning("ShopItem '" + name + "' has an invalid ID! Check the 'shops.cfg'!");
+					Log.warning("ShopItem '" + name + "' has an invalid ID! Check the 'shops.cfg'!");
 					continue;
 				}
 				subidInt = css.getInt("SubID");
 				subid = Utils.isShort(subidInt);
 				if (subid == null || subid < 0) {
-					Log.logWarning("ShopItem '" + name + "' has an invalid SubID! Check the 'shops.cfg'!");
+					Log.warning("ShopItem '" + name + "' has an invalid SubID! Check the 'shops.cfg'!");
 					continue;
 				}
 				
 				shopitems.add(new ShopItem(name, id, subid, desc));
 			} else {
-				Log.logWarning("ShopItem '" + name + "' has duplicates! Check the 'shops.cfg'!");
+				Log.warning("ShopItem '" + name + "' has duplicates! Check the 'shops.cfg'!");
 				continue;
 			}
 		}

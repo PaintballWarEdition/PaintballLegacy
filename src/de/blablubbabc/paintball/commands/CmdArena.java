@@ -9,6 +9,7 @@ import org.bukkit.entity.Player;
 import de.blablubbabc.paintball.ArenaManager;
 import de.blablubbabc.paintball.Lobby;
 import de.blablubbabc.paintball.Paintball;
+import de.blablubbabc.paintball.utils.Log;
 import de.blablubbabc.paintball.utils.Translator;
 
 public class CmdArena {
@@ -272,7 +273,7 @@ public class CmdArena {
 			}
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 		} else {
-			plugin.log(Translator.getString("COMMAND_NOT_AS_CONSOLE"));
+			Log.info(Translator.getString("COMMAND_NOT_AS_CONSOLE"));
 			return true;
 		}
 		return false;

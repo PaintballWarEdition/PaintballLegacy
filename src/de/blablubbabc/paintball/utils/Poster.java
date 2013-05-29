@@ -26,15 +26,15 @@ public class Poster {
 			try {
 				post();
 			} catch (IOException e) {
-				plugin.log(e.getMessage());
+				Log.severe(e.getMessage());
 			}
 		}
 		else {
-			plugin.logBlank("--------- Checking version ----------");
-			plugin.log("You denied version checking. :(");
-			plugin.log("If you want to be informed about a new version of paintball");
-			plugin.log("-> enable it in the config.");
-			plugin.logBlank("--------- ---------------- ----------");
+			Log.logColored("--------- Checking version ----------");
+			Log.info("You denied version checking. :(");
+			Log.info("If you want to be informed about a new version of paintball");
+			Log.info("-> enable it in the config.");
+			Log.logColored("--------- ---------------- ----------");
 		}
 	}
 
@@ -101,14 +101,14 @@ public class Poster {
 			throw new IOException(response); 
 		} else {
 			//version check:
-			plugin.logBlank("--------- Checking version ----------");
+			Log.info("--------- Checking version ----------");
 			if(!description.getVersion().equals(response)) {
-				plugin.log("There is a new version of paintball available: "+response);
-				plugin.log("Download at the bukkit dev page.");
+				Log.info("There is a new version of paintball available: "+response);
+				Log.info("Download at the bukkit dev page.");
 			}else{
-				plugin.log("You are running the latest version. :)");
+				Log.info("You are running the latest version. :)");
 			}
-			plugin.logBlank("--------- ---------------- ----------");
+			Log.info("--------- ---------------- ----------");
 		}
 	}
 

@@ -32,6 +32,7 @@ import de.blablubbabc.paintball.extras.Shotgun;
 import de.blablubbabc.paintball.extras.Turret;
 import de.blablubbabc.paintball.melodies.Musiker;
 import de.blablubbabc.paintball.utils.InSignsFeature;
+import de.blablubbabc.paintball.utils.Log;
 import de.blablubbabc.paintball.utils.Metrics;
 import de.blablubbabc.paintball.utils.Poster;
 import de.blablubbabc.paintball.utils.Serverlister;
@@ -734,14 +735,14 @@ public class Paintball extends JavaPlugin{
 		//TRANSLATOR
 		t = new Translator(this, local);
 		if(!Translator.success) {
-			log("ERROR: Couldn't find/load the default language file. Disables now..");
+			Log.severe("ERROR: Couldn't find/load the default language file. Disables now..");
 			getServer().getPluginManager().disablePlugin(this);
 			return;
 		}
 		//MELODIES
 		musik = new Musiker(this, melodyWin, winNbs, melodyDefeat, defeatNbs, melodyDraw, drawNbs);
 		if(!musik.success) {
-			log("ERROR: Couldn't find/load the default melodies. Disables now..");
+			Log.severe("ERROR: Couldn't find/load the default melodies. Disables now..");
 			getServer().getPluginManager().disablePlugin(this);
 			return;
 		}
@@ -863,9 +864,9 @@ public class Paintball extends JavaPlugin{
 		Plugin insignsPlugin = getServer().getPluginManager().getPlugin("InSigns");
 		if((insignsPlugin != null) && insignsPlugin.isEnabled()) {
 			isf = new InSignsFeature(insignsPlugin, this);
-			log("Plugin 'InSigns' found. Using it now.");
+			Log.info("Plugin 'InSigns' found. Using it now.");
 		} else {
-			log("Plugin 'InSigns' not found. Additional sign features disabled.");
+			Log.info("Plugin 'InSigns' not found. Additional sign features disabled.");
 		}
 		//TagAPI:
 		if (tags) {
@@ -873,19 +874,19 @@ public class Paintball extends JavaPlugin{
 			if((tagAPIPlugin != null) && tagAPIPlugin.isEnabled()) {
 				tagAPI = new TagAPIListener(this);
 				getServer().getPluginManager().registerEvents(tagAPI, this);
-				log("Plugin 'TagAPI' found. Using it now.");
+				Log.info("Plugin 'TagAPI' found. Using it now.");
 			} else {
-				log("Plugin 'TagAPI' not found. Additional tag features disabled.");
+				Log.info("Plugin 'TagAPI' not found. Additional tag features disabled.");
 			}
 		}
 		
 		//calculating turret angles:
-		log("Calculating turret angles...");
+		Log.info("Calculating turret angles...");
 		Turret.calculateTable(turretAngleMin, turretAngleMax, turretTicks, turretXSize, turretYSize, this);
-		log("Calculating done.");
+		Log.info("Calculating done.");
 
 		//Some license stuff: Usage on own risk, no warranties, do not modify the code, do not redistribute, do not copy, and do not use for commercial purposes! Neither direct nor indirect. So this also applies to add-ons made for this plugin! 
-		log("By blablubbabc enabled.");
+		Log.info("By blablubbabc enabled.");
 		
 		final Paintball plugin = this;
 		getServer().getScheduler().scheduleSyncDelayedTask(this, new Runnable() {
@@ -903,15 +904,15 @@ public class Paintball extends JavaPlugin{
 				@Override
 				public void run() {
 					
-					log("Balls: "+ Ball.count + " ; Rockets: " + Rocket.getRocketCountMatch());
+					Log.info("Balls: "+ Ball.count + " ; Rockets: " + Rocket.getRocketCountMatch());
 					for (String playerName : Ball.balls.keySet()) {
 						ArrayList<Ball> pballs = Ball.balls.get(playerName);
-						log ("Balls " + playerName +": " + pballs.size());
+						Log.info("Balls " + playerName +": " + pballs.size());
 						String ids = "";
 						for (Ball b : pballs) {
 							ids += b.getId() + ", ";
 						}
-						log("IDs: " + ids);
+						Log.info("IDs: " + ids);
 					}
 				}
 			}, 100L, 60L);
@@ -924,28 +925,7 @@ public class Paintball extends JavaPlugin{
 
 			@Override
 			public void run() {
-
-				logBlank(" ");
-				logBlank(ChatColor.YELLOW+" **************************************************");
-				logBlank(ChatColor.YELLOW+" ----------------- PAINTBALL INFO -----------------");
-				logBlank(" ");
-				logBlank(ChatColor.RED+" License stuff:");
-				logBlank(ChatColor.GOLD+"   - Usage on own risk. I give no warranties for anything.");
-				logBlank(ChatColor.GOLD+"   - Do not modify. Use it as it is!");
-				logBlank(ChatColor.GOLD+"   - Do not redistribute/upload/use parts of it/copy/give away.");
-				logBlank(ChatColor.GOLD+"   - Do not use for commercial purposes!");
-				logBlank(ChatColor.GOLD+"     -> No benefits for paying players/donors!");
-				logBlank(ChatColor.GOLD+"     -> This also applies to any kind of add-on you are using");
-				logBlank(ChatColor.GOLD+"        related to this plugin!");
-				logBlank(" ");
-				logBlank(ChatColor.DARK_GREEN+" If you like this plugin: Give feedback and donate at");
-				logBlank(ChatColor.DARK_GREEN+" ->http://dev.bukkit.org/server-mods/paintball_pure_war/ ");
-				logBlank(" ");
-				logBlank(ChatColor.GREEN+" Thank you and good shooting!");
-				logBlank(ChatColor.GREEN+"   - blablubbabc");
-				logBlank(" ");
-				logBlank(ChatColor.YELLOW+" **************************************************");
-				logBlank(" ");
+				Log.printInfo();
 			}
 		}, 20L);
 	}
@@ -954,16 +934,7 @@ public class Paintball extends JavaPlugin{
 		if(mm != null) mm.forceReload();
 		sql.closeConnection();
 		getServer().getScheduler().cancelTasks(this);
-		log("Disabled!");
-	}
-
-	public void log(String message) {
-		System.out.println("["+this.getName()+"] "+message);
-	}
-
-	public void logBlank(String message) {
-		getServer().getConsoleSender().sendMessage(message);
-		//System.out.println(message);
+		Log.info("Disabled!");
 	}
 
 	public void reload(CommandSender sender) {

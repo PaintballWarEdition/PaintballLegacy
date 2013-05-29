@@ -71,6 +71,7 @@ import de.blablubbabc.paintball.extras.Rocket;
 import de.blablubbabc.paintball.extras.Shotgun;
 import de.blablubbabc.paintball.extras.Sniper;
 import de.blablubbabc.paintball.extras.Turret;
+import de.blablubbabc.paintball.utils.Log;
 import de.blablubbabc.paintball.utils.Translator;
 import de.blablubbabc.paintball.utils.Utils;
 
@@ -893,8 +894,8 @@ public class EventListener implements Listener {
 			event.setDroppedExp(0);
 			event.setKeepLevel(false);
 			event.getDrops().clear();
-			plugin.log("WARNING: IllegalState! A player died while playing paintball. Report this to blablubbabc");
-			plugin.log("Report: " + event.toString());
+			Log.severe("WARNING: IllegalState! A player died while playing paintball. Report this to blablubbabc");
+			Log.info("Report: " + event.toString());
 		}
 	}
 
