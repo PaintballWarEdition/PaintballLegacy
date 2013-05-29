@@ -21,7 +21,6 @@ import org.bukkit.plugin.java.JavaPlugin;
 import org.bukkit.potion.PotionEffect;
 
 import de.blablubbabc.BlaDB.BlaSQLite;
-import de.blablubbabc.paintball.Metrics.Graph;
 import de.blablubbabc.paintball.extras.Airstrike;
 import de.blablubbabc.paintball.extras.Ball;
 import de.blablubbabc.paintball.extras.Gift;
@@ -31,6 +30,16 @@ import de.blablubbabc.paintball.extras.Orbitalstrike;
 import de.blablubbabc.paintball.extras.Rocket;
 import de.blablubbabc.paintball.extras.Shotgun;
 import de.blablubbabc.paintball.extras.Turret;
+import de.blablubbabc.paintball.melodies.Musiker;
+import de.blablubbabc.paintball.utils.InSignsFeature;
+import de.blablubbabc.paintball.utils.Metrics;
+import de.blablubbabc.paintball.utils.Poster;
+import de.blablubbabc.paintball.utils.Serverlister;
+import de.blablubbabc.paintball.utils.TagAPIListener;
+import de.blablubbabc.paintball.utils.TeleportFix;
+import de.blablubbabc.paintball.utils.Translator;
+import de.blablubbabc.paintball.utils.Utils;
+import de.blablubbabc.paintball.utils.Metrics.Graph;
 
 /**
  * This file is part of blablubbabc's paintball-plugin.

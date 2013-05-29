@@ -6,6 +6,9 @@ import java.util.LinkedHashMap;
 
 import org.bukkit.Location;
 
+import de.blablubbabc.paintball.utils.Translator;
+
+
 public class ArenaManager {
 	private static Paintball plugin;
 	private int zähler;

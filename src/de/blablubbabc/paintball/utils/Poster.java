@@ -1,4 +1,4 @@
-package de.blablubbabc.paintball;
+package de.blablubbabc.paintball.utils;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -10,6 +10,8 @@ import java.net.URL;
 import java.net.URLConnection;
 import java.net.URLEncoder;
 import org.bukkit.plugin.PluginDescriptionFile;
+
+import de.blablubbabc.paintball.Paintball;
 
 public class Poster {
 	private final Paintball plugin;

@@ -3,6 +3,9 @@ package de.blablubbabc.paintball;
 import java.util.HashMap;
 import org.bukkit.inventory.ItemStack;
 
+import de.blablubbabc.paintball.utils.Translator;
+
+
 public class ShopGood {
 	 /* goodsDef.add("10-Balls-332-0-15");
 		goodsDef.add("50-Balls-332-0-65");

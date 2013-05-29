@@ -5,6 +5,9 @@ import java.util.HashMap;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
+import de.blablubbabc.paintball.utils.Translator;
+
+
 
 public class Newsfeeder {
 	private Paintball plugin;

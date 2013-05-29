@@ -10,6 +10,9 @@ import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.PlayerInventory;
 import org.bukkit.potion.PotionEffect;
 
+import de.blablubbabc.paintball.utils.Translator;
+
+
 public class PlayerDataStore {
 	private Player player;
 	private Paintball plugin;

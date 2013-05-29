@@ -8,6 +8,9 @@ import org.bukkit.Location;
 import org.bukkit.Sound;
 import org.bukkit.entity.Player;
 
+import de.blablubbabc.paintball.utils.Translator;
+
+
 public class MatchManager{
 
 	private Paintball plugin;

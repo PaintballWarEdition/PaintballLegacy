@@ -8,10 +8,10 @@ import org.bukkit.inventory.ItemStack;
 import de.blablubbabc.paintball.Match;
 import de.blablubbabc.paintball.Paintball;
 import de.blablubbabc.paintball.ShopGood;
-import de.blablubbabc.paintball.Translator;
 import de.blablubbabc.paintball.extras.Airstrike;
 import de.blablubbabc.paintball.extras.ItemManager;
 import de.blablubbabc.paintball.extras.Orbitalstrike;
+import de.blablubbabc.paintball.utils.Translator;
 
 
 public class CmdShop {

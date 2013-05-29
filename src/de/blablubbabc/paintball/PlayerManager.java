@@ -7,6 +7,9 @@ import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.PlayerInventory;
 
+import de.blablubbabc.paintball.utils.Translator;
+
+
 public class PlayerManager {
 	private static Paintball plugin;
 	private HashMap<Player, Location> locations;

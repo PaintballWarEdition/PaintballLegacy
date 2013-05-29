@@ -15,7 +15,7 @@ import org.bukkit.util.Vector;
 
 import de.blablubbabc.paintball.Origin;
 import de.blablubbabc.paintball.Paintball;
-import de.blablubbabc.paintball.Utils;
+import de.blablubbabc.paintball.utils.Utils;
 
 public class Rocket {
 	

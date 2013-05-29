@@ -6,6 +6,9 @@ import org.bukkit.ChatColor;
 import org.bukkit.Color;
 import org.bukkit.entity.Player;
 
+import de.blablubbabc.paintball.utils.Translator;
+
+
 public enum Lobby {
 	
 	RED			("red", Color.RED, ChatColor.RED),

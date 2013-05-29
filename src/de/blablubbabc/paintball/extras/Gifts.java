@@ -11,8 +11,8 @@ import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 
 import de.blablubbabc.paintball.Paintball;
-import de.blablubbabc.paintball.Translator;
-import de.blablubbabc.paintball.Utils;
+import de.blablubbabc.paintball.utils.Translator;
+import de.blablubbabc.paintball.utils.Utils;
 
 public class Gifts {
 	

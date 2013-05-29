@@ -1,4 +1,4 @@
-package de.blablubbabc.paintball;
+package de.blablubbabc.paintball.melodies;
 
 import java.io.File;
 import java.io.FileInputStream;
@@ -10,6 +10,7 @@ import java.util.Scanner;
 import org.bukkit.Sound;
 import org.bukkit.entity.Player;
 import org.bukkit.plugin.Plugin;
+
 
 public class Musiker {
 	private Plugin plugin;

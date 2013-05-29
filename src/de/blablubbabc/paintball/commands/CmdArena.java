@@ -9,7 +9,7 @@ import org.bukkit.entity.Player;
 import de.blablubbabc.paintball.ArenaManager;
 import de.blablubbabc.paintball.Lobby;
 import de.blablubbabc.paintball.Paintball;
-import de.blablubbabc.paintball.Translator;
+import de.blablubbabc.paintball.utils.Translator;
 
 public class CmdArena {
 	private Paintball plugin;

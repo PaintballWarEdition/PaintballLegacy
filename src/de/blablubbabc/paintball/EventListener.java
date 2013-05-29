@@ -71,6 +71,8 @@ import de.blablubbabc.paintball.extras.Rocket;
 import de.blablubbabc.paintball.extras.Shotgun;
 import de.blablubbabc.paintball.extras.Sniper;
 import de.blablubbabc.paintball.extras.Turret;
+import de.blablubbabc.paintball.utils.Translator;
+import de.blablubbabc.paintball.utils.Utils;
 
 public class EventListener implements Listener {
 	private Paintball plugin;

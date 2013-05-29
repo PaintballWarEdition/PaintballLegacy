@@ -1,4 +1,4 @@
-package de.blablubbabc.paintball;
+package de.blablubbabc.paintball.utils;
 
 import org.bukkit.ChatColor;
 import org.bukkit.entity.Player;
@@ -6,6 +6,10 @@ import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.kitteh.tag.PlayerReceiveNameTagEvent;
+
+import de.blablubbabc.paintball.Lobby;
+import de.blablubbabc.paintball.Match;
+import de.blablubbabc.paintball.Paintball;
 
 public class TagAPIListener implements Listener {
 	private Paintball plugin;

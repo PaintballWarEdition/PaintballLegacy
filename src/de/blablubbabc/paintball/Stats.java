@@ -6,6 +6,9 @@ import java.util.HashMap;
 import java.util.LinkedHashMap;
 import org.bukkit.command.CommandSender;
 
+import de.blablubbabc.paintball.utils.Translator;
+
+
 public class Stats {
 
 	private Paintball plugin;

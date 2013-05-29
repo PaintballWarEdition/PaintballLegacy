@@ -1,4 +1,4 @@
-package de.blablubbabc.paintball;
+package de.blablubbabc.paintball.melodies;
 
 import org.bukkit.Location;
 import org.bukkit.Sound;

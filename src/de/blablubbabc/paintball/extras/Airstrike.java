@@ -21,7 +21,7 @@ import org.bukkit.util.Vector;
 
 import de.blablubbabc.paintball.Origin;
 import de.blablubbabc.paintball.Paintball;
-import de.blablubbabc.paintball.Translator;
+import de.blablubbabc.paintball.utils.Translator;
 
 public class Airstrike {
 	

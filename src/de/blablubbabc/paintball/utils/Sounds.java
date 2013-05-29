@@ -1,4 +1,4 @@
-package de.blablubbabc.paintball;
+package de.blablubbabc.paintball.utils;
 
 import org.bukkit.Sound;
 import org.bukkit.entity.Player;

@@ -1,4 +1,4 @@
-package de.blablubbabc.paintball;
+package de.blablubbabc.paintball.utils;
 
 import java.io.File;
 import java.io.IOException;

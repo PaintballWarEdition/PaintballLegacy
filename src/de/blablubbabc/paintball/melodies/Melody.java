@@ -1,4 +1,4 @@
-package de.blablubbabc.paintball;
+package de.blablubbabc.paintball.melodies;
 
 import java.util.ArrayList;
 import java.util.HashMap;

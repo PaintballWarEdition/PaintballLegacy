@@ -1,4 +1,4 @@
-package de.blablubbabc.paintball;
+package de.blablubbabc.paintball.utils;
 
 import java.util.ArrayList;
 import java.util.Random;

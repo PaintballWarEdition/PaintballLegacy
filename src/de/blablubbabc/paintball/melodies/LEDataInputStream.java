@@ -1,4 +1,4 @@
-package de.blablubbabc.paintball;
+package de.blablubbabc.paintball.melodies;
 
 import java.io.DataInput;
 import java.io.DataInputStream;

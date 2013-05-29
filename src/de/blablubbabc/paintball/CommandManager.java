@@ -11,6 +11,8 @@ import org.bukkit.entity.Player;
 import de.blablubbabc.paintball.commands.CmdAdmin;
 import de.blablubbabc.paintball.commands.CmdArena;
 import de.blablubbabc.paintball.commands.CmdShop;
+import de.blablubbabc.paintball.utils.Translator;
+import de.blablubbabc.paintball.utils.Utils;
 
 public class CommandManager implements CommandExecutor{
 	private Paintball plugin;

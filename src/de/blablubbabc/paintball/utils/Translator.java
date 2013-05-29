@@ -1,4 +1,4 @@
-package de.blablubbabc.paintball;
+package de.blablubbabc.paintball.utils;
 
 import java.io.File;
 import java.io.FileOutputStream;
@@ -9,6 +9,8 @@ import java.util.HashMap;
 import java.util.Scanner;
 import org.bukkit.ChatColor;
 import org.bukkit.plugin.Plugin;
+
+
 
 public class Translator {
 	public static boolean success = false;

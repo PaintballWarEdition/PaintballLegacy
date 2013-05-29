@@ -29,6 +29,7 @@ import de.blablubbabc.paintball.extras.Mine;
 import de.blablubbabc.paintball.extras.Orbitalstrike;
 import de.blablubbabc.paintball.extras.Sniper;
 import de.blablubbabc.paintball.extras.Turret;
+import de.blablubbabc.paintball.utils.Translator;
 
 public class Match {
 
