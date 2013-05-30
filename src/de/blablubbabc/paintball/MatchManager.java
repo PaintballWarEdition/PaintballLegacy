@@ -8,6 +8,7 @@ import org.bukkit.Location;
 import org.bukkit.Sound;
 import org.bukkit.entity.Player;
 
+import de.blablubbabc.paintball.utils.Timer;
 import de.blablubbabc.paintball.utils.Translator;
 
 
@@ -16,15 +17,11 @@ public class MatchManager{
 	private Paintball plugin;
 
 	private ArrayList<Match> matches;
-	public boolean countdownStarted;
-	private int taskID;
-	private int count;
+	private Timer countdown;
 
 	public MatchManager(Paintball pl) {
 		plugin = pl;
 		matches = new ArrayList<Match>();
-
-		countdownStarted = false;
 	}
 
 	public synchronized void forceReload() {
@@ -54,9 +51,9 @@ public class MatchManager{
 		//messages:
 		plugin.nf.status(Translator.getString("ALL_KICKED_FROM_MATCHES"));
 		//stop countdown:
-		if(countdownStarted) {
-			plugin.getServer().getScheduler().cancelTask(taskID);
-			countdownStarted = false;
+		if(countdown != null) {
+			countdown.end();
+			countdown = null;
 		}
 		// Kick all from Lobby:
 		plugin.nf.status(Translator.getString("ALL_KICKED_FROM_LOBBY"));
@@ -404,9 +401,9 @@ public class MatchManager{
 	
 	public boolean softCheck() {
 		if(plugin.softreload) {
-			if(countdownStarted) {
-				plugin.getServer().getScheduler().cancelTask(taskID);
-				countdownStarted = false;
+			if(countdown != null) {
+				countdown.end();
+				countdown = null;
 			}
 			if(matches.size() <= 0) {
 				return true;
@@ -439,46 +436,47 @@ public class MatchManager{
 	}
 
 	public void countdown(int number, int initial) {
-		if(!plugin.mm.countdownStarted && plugin.active) {
+		if(countdown == null && plugin.active) {
 			plugin.nf.status(Translator.getString("NEW_MATCH_STARTS_SOON"));
-			countdownStarted = true;
-			count = number;
-			taskID = plugin.getServer().getScheduler().runTaskTimer(plugin, new Runnable(){
-
+			countdown = new Timer(plugin, 20 * initial, 20L, number, new Runnable() {
+				
 				@Override
 				public void run() {
 					if (plugin.useXPBar) {
 						for (Player player : Lobby.LOBBY.getMembers()) {
-							player.setLevel(count);	
+							player.setLevel(countdown.getTime());	
 						}
 					}
-					if(( count % 10 ) == 0 && count >= 10 ) {
-						plugin.nf.counter(count);
-					}
-					if( count <= 5 && count > 0) {
-						plugin.nf.counter(count);
+					
+					if (countdown.getTime() <= 5) {
 						for (Player player : Lobby.LOBBY.getMembers()) {
 							player.playSound(player.getLocation(), Sound.ORB_PICKUP, 80L, 1L);	
 						}
 					}
-					count--;
-					if( count < 1) {
-						for (Player player : Lobby.LOBBY.getMembers()) {
-							player.playSound(player.getLocation(), Sound.ORB_PICKUP, 100L, 2L);	
-						}
-						plugin.getServer().getScheduler().cancelTask(taskID);
-						countdownStarted = false;
-						String status = ready();
-						if(status.equalsIgnoreCase(Translator.getString("READY"))) {
-							//start match
-							gameStart();
-						} else {
-							plugin.nf.status(status);
-						}
+				}
+			}, new Runnable() {
+				
+				@Override
+				public void run() {
+					plugin.nf.counter(countdown.getTime());
+				}
+			}, new Runnable() {
+				
+				@Override
+				public void run() {
+					countdown = null;
+					for (Player player : Lobby.LOBBY.getMembers()) {
+						player.playSound(player.getLocation(), Sound.ORB_PICKUP, 100L, 2L);	
+					}
+					String status = ready();
+					if(status.equalsIgnoreCase(Translator.getString("READY"))) {
+						//start match
+						gameStart();
+					} else {
+						plugin.nf.status(status);
 					}
 				}
-
-			}, (long) (20*initial), 20L).getTaskId();
+			});
 		}
 	}
 

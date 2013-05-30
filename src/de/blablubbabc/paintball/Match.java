@@ -165,7 +165,7 @@ public class Match {
 		// WAITING TIMER:
 		this.started = false;
 		
-		startTimer = new Timer(Paintball.instance, 20L, plugin.countdownStart, new Runnable() {
+		startTimer = new Timer(Paintball.instance, 0L, 20L, plugin.countdownStart, new Runnable() {
 			
 			@Override
 			public void run() {
@@ -226,7 +226,7 @@ public class Match {
 	}
 	
 	private void startRoundTimer() {
-		roundTimer = new Timer(Paintball.instance, 20L, setting_round_time, new Runnable() {
+		roundTimer = new Timer(Paintball.instance, 0L, 20L, setting_round_time, new Runnable() {
 			
 			@Override
 			public void run() {

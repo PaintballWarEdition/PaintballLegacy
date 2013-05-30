@@ -9,7 +9,7 @@ public class Timer {
 	private int task = -1;
 	private int time;
 
-	public Timer(Plugin plugin, long delay, final int times, final Runnable eachDelay,
+	public Timer(Plugin plugin, long preDelay, long delay, final int times, final Runnable eachDelay,
 			final Runnable send, final Runnable end) {
 		this.plugin = plugin;
 		time = times;
@@ -42,7 +42,7 @@ public class Timer {
 					end.run();
 				}
 			}
-		}, 0L, delay).getTaskId();
+		}, preDelay, delay).getTaskId();
 	}
 
 	public int getTime() {
