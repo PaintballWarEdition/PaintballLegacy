@@ -1,12 +1,16 @@
 package de.blablubbabc.paintball.utils;
 
 import java.util.ArrayList;
+import java.util.List;
 import java.util.Random;
 
+import org.bukkit.Color;
 import org.bukkit.block.BlockFace;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
+import org.bukkit.inventory.meta.ItemMeta;
+import org.bukkit.inventory.meta.LeatherArmorMeta;
 import org.bukkit.util.Vector;
 
 public class Utils {
@@ -29,6 +33,7 @@ public class Utils {
 	}
 
 	public static void clearInv(Player p) {
+		p.closeInventory();
 		p.getInventory().clear();
 		p.getInventory().setArmorContents(null);
 	}
@@ -52,6 +57,25 @@ public class Utils {
 				}
 			}
 		}
+	}
+	
+	public static ItemStack setLeatherArmorColor(ItemStack item, Color color) {
+		try {
+			LeatherArmorMeta meta = (LeatherArmorMeta) item.getItemMeta();
+			meta.setColor(color);
+			item.setItemMeta(meta);
+		} catch (ClassCastException e) {
+			e.printStackTrace();
+		}
+		return item;
+	}
+	
+	public static ItemStack setItemMeta(ItemStack item, String name, List<String> description) {
+		ItemMeta meta = item.getItemMeta();
+		if (name != null) meta.setDisplayName(name);
+		if (description != null) meta.setLore(description);
+		item.setItemMeta(meta);
+		return item;
 	}
 
 	private static ArrayList<Vector> upVectors = new ArrayList<Vector>();

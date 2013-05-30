@@ -10,14 +10,12 @@ import java.util.Map;
 import java.util.Random;
 import java.util.Set;
 
-import org.bukkit.Color;
 import org.bukkit.DyeColor;
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.Sound;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
-import org.bukkit.inventory.meta.LeatherArmorMeta;
 import org.kitteh.tag.TagAPI;
 
 import de.blablubbabc.paintball.extras.Airstrike;
@@ -30,6 +28,7 @@ import de.blablubbabc.paintball.extras.Orbitalstrike;
 import de.blablubbabc.paintball.extras.Sniper;
 import de.blablubbabc.paintball.extras.Turret;
 import de.blablubbabc.paintball.utils.Translator;
+import de.blablubbabc.paintball.utils.Utils;
 
 public class Match {
 
@@ -335,16 +334,16 @@ public class Match {
 		// INVENTORY
 
 		player.getInventory().setHelmet(
-				setColor(new ItemStack(Material.LEATHER_HELMET, 1),
+				Utils.setLeatherArmorColor(new ItemStack(Material.LEATHER_HELMET, 1),
 						Lobby.getTeam(getTeamName(player)).colorA()));
 		player.getInventory().setChestplate(
-				setColor(new ItemStack(Material.LEATHER_CHESTPLATE, 1),
+				Utils.setLeatherArmorColor(new ItemStack(Material.LEATHER_CHESTPLATE, 1),
 						Lobby.getTeam(getTeamName(player)).colorA()));
 		player.getInventory().setLeggings(
-				setColor(new ItemStack(Material.LEATHER_LEGGINGS, 1),
+				Utils.setLeatherArmorColor(new ItemStack(Material.LEATHER_LEGGINGS, 1),
 						Lobby.getTeam(getTeamName(player)).colorA()));
 		player.getInventory().setBoots(
-				setColor(new ItemStack(Material.LEATHER_BOOTS, 1),
+				Utils.setLeatherArmorColor(new ItemStack(Material.LEATHER_BOOTS, 1),
 						Lobby.getTeam(getTeamName(player)).colorA()));
 		
 		if (red) {
@@ -411,13 +410,13 @@ public class Match {
 		spawnSpec++;
 		// INVENTORY
 		player.getInventory().setHelmet(
-				setColor(new ItemStack(Material.LEATHER_HELMET, 1), Lobby.SPECTATE.colorA()));
+				Utils.setLeatherArmorColor(new ItemStack(Material.LEATHER_HELMET, 1), Lobby.SPECTATE.colorA()));
 		player.getInventory().setChestplate(
-				setColor(new ItemStack(Material.LEATHER_CHESTPLATE, 1), Lobby.SPECTATE.colorA()));
+				Utils.setLeatherArmorColor(new ItemStack(Material.LEATHER_CHESTPLATE, 1), Lobby.SPECTATE.colorA()));
 		player.getInventory().setLeggings(
-				setColor(new ItemStack(Material.LEATHER_LEGGINGS, 1), Lobby.SPECTATE.colorA()));
+				Utils.setLeatherArmorColor(new ItemStack(Material.LEATHER_LEGGINGS, 1), Lobby.SPECTATE.colorA()));
 		player.getInventory().setBoots(
-				setColor(new ItemStack(Material.LEATHER_BOOTS, 1), Lobby.SPECTATE.colorA()));
+				Utils.setLeatherArmorColor(new ItemStack(Material.LEATHER_BOOTS, 1), Lobby.SPECTATE.colorA()));
 		
 		player.getInventory().setItem(8, ItemManager.setMeta(new ItemStack(Material.WOOL, 1, (short)0, DyeColor.YELLOW.getWoolData())));
 		
@@ -465,13 +464,6 @@ public class Match {
 					pl.showPlayer(p);
 			}
 		}
-	}
-
-	public ItemStack setColor(ItemStack item, Color color) {
-		LeatherArmorMeta meta = (LeatherArmorMeta) item.getItemMeta();
-		meta.setColor(color);
-		item.setItemMeta(meta);
-		return item;
 	}
 
 	public void changeAllColors() {
