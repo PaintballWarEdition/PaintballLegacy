@@ -27,6 +27,7 @@ import de.blablubbabc.paintball.extras.Mine;
 import de.blablubbabc.paintball.extras.Orbitalstrike;
 import de.blablubbabc.paintball.extras.Sniper;
 import de.blablubbabc.paintball.extras.Turret;
+import de.blablubbabc.paintball.utils.Timer;
 import de.blablubbabc.paintball.utils.Translator;
 import de.blablubbabc.paintball.utils.Utils;
 
@@ -58,11 +59,8 @@ public class Match {
 	private ArrayList<Player> spec = new ArrayList<Player>();
 	private String arena;
 
-	private int startTaskId = -1;
-	private int startCount;
-
-	private int roundTime;
-	private int roundTimeTaskId = -1;
+	private Timer startTimer;
+	private Timer roundTimer;
 
 	private ArrayList<Location> redspawns;
 	private ArrayList<Location> bluespawns;
@@ -166,52 +164,55 @@ public class Match {
 
 		// WAITING TIMER:
 		this.started = false;
-		startCount = plugin.countdownStart;
 		
-		//first count, tasks starts 20 Ticks later
-		sendCountdown(startCount);
+		startTimer = new Timer(Paintball.instance, 20L, plugin.countdownStart, new Runnable() {
+			
+			@Override
+			public void run() {
+				for (Player p : getAllPlayer()) {
+					Location ploc = p.getLocation();
+					Location loc = playersLoc.get(p.getName());
+					loc.setPitch(ploc.getPitch());
+					loc.setYaw(ploc.getYaw());
+					p.teleport(loc);
+				}
+			}
+		}, new Runnable() {
+			
+			@Override
+			public void run() {
+				HashMap<String, String> vars = new HashMap<String, String>();
+				vars.put("seconds", String.valueOf(startTimer.getTime()));
+				String msg = Translator.getString("COUNTDOWN_START", vars);
+				for (Player player : getAll()) {
+					if (plugin.useXPBar) player.setLevel(startTimer.getTime());
+					player.sendMessage(msg);
+				}
+			}
+		}, new Runnable() {
+			
+			@Override
+			public void run() {
+				startTimer = null;
+				// START:
+				started = true;
+				// lives + start!:
+				HashMap<String, String> vars = new HashMap<String, String>();
+				vars.put("lives", String.valueOf(setting_lives));
+				if (setting_respawns == -1)
+					vars.put("respawns", Translator.getString("INFINITE"));
+				else
+					vars.put("respawns", String.valueOf(setting_respawns));
+				vars.put("round_time", String.valueOf(setting_round_time));
+
+				plugin.nf.status(Translator.getString("MATCH_SETTINGS_INFO", vars));
+				plugin.nf.status(Translator.getString("MATCH_START"));
+
+				makeAllVisible();
+				startRoundTimer();
+			}
+		});
 		
-		startTaskId = plugin.getServer().getScheduler()
-				.runTaskTimer(plugin, new Runnable() {
-
-					@Override
-					public void run() {
-						startCount--;
-						
-						for (Player p : getAllPlayer()) {
-							Location ploc = p.getLocation();
-							Location loc = playersLoc.get(p.getName()).clone();
-							loc.setPitch(ploc.getPitch());
-							loc.setYaw(ploc.getYaw());
-							p.teleport(loc);
-						}
-
-						if ((startCount > 30 && (startCount % 30) == 0) 
-								|| (startCount > 5 && startCount <= 30 && (startCount % 10) == 0)
-								|| (startCount > 0 && startCount <= 5)) {
-							sendCountdown(startCount);
-						} else if (startCount < 1) {
-							plugin.getServer().getScheduler().cancelTask(startTaskId);
-							// START:
-							started = true;
-							// lives + start!:
-							HashMap<String, String> vars = new HashMap<String, String>();
-							vars.put("lives", String.valueOf(setting_lives));
-							if (setting_respawns == -1)
-								vars.put("respawns", Translator.getString("INFINITE"));
-							else
-								vars.put("respawns", String.valueOf(setting_respawns));
-							vars.put("round_time", String.valueOf(setting_round_time));
-
-							plugin.nf.status(Translator.getString("MATCH_SETTINGS_INFO", vars));
-							plugin.nf.status(Translator.getString("MATCH_START"));
-
-							makeAllVisible();
-							startRoundTimer();
-						}
-						
-					}
-				}, 20L, 20L).getTaskId();
 	}
 
 	private void addToPlayerLists(Player p) {
@@ -219,70 +220,64 @@ public class Match {
 		this.bothTeams.add(p);
 	}
 
-	public void endSchedulers() {
-		if (plugin.getServer().getScheduler().isCurrentlyRunning(startTaskId)
-				|| plugin.getServer().getScheduler().isQueued(startTaskId))
-			plugin.getServer().getScheduler().cancelTask(startTaskId);
-		if (plugin.getServer().getScheduler().isCurrentlyRunning(roundTimeTaskId)
-				|| plugin.getServer().getScheduler().isQueued(roundTimeTaskId))
-			plugin.getServer().getScheduler().cancelTask(roundTimeTaskId);
+	public void endTimers() {
+		if (startTimer != null) startTimer.end();
+		if (roundTimer != null) roundTimer.end();
 	}
 	
 	private void startRoundTimer() {
-		roundTime = setting_round_time;
-
-		roundTimeTaskId = plugin.getServer().getScheduler()
-				.runTaskTimer(plugin, new Runnable() {
-
-					@Override
-					public void run() {
-						// Spawn protection:
-						Iterator<Map.Entry<Player, Integer>> iter = protection.entrySet()
-								.iterator();
-						while (iter.hasNext()) {
-							Map.Entry<Player, Integer> entry = iter.next();
-							Player p = entry.getKey();
-							int t = entry.getValue() - 1;
-							if (t <= 0) {
-								if (p.isOnline() && isSurvivor(p))
-									p.sendMessage(Translator.getString("PROTECTION_OVER"));
-								iter.remove();
-							} else {
-								protection.put(p, t);
-							}
-						}
-						// timer
-						roundTime--;
-						if (plugin.useXPBar) {
-							for (Player player : Lobby.LOBBY.getMembers()) {
-								player.setLevel(roundTime);
-							}
-						}
-						
-						if ( (roundTime >= 60 && (roundTime % 30) == 0) 
-								|| (roundTime > 20 && roundTime < 60 && (roundTime % 15) == 0) 
-								|| (roundTime > 5 && roundTime <= 20 && (roundTime % 10) == 0) 
-								|| (roundTime < 6 && roundTime > 0)) {
-							plugin.nf.roundTime(roundTime);
-						} else if (roundTime < 1) {
-							plugin.getServer().getScheduler().cancelTask(roundTimeTaskId);
-							// END:
-							if (matchOver)
-								return;
-							// winner?
-							ArrayList<Player> winnerTeam = getWinner();
-							if (winnerTeam == null) {
-								// draw:
-								gameEnd(true, null, null, null, null);
-							} else {
-								Player p = winnerTeam.get(0);
-								gameEnd(false, winnerTeam, getEnemyTeam(p), getTeamName(p),
-										getEnemyTeamName(p));
-							}
-						}
-						
+		roundTimer = new Timer(Paintball.instance, 20L, setting_round_time, new Runnable() {
+			
+			@Override
+			public void run() {
+				// Spawn protection:
+				Iterator<Map.Entry<Player, Integer>> iter = protection.entrySet()
+						.iterator();
+				while (iter.hasNext()) {
+					Map.Entry<Player, Integer> entry = iter.next();
+					Player p = entry.getKey();
+					int t = entry.getValue() - 1;
+					if (t <= 0) {
+						if (p.isOnline() && isSurvivor(p))
+							p.sendMessage(Translator.getString("PROTECTION_OVER"));
+						iter.remove();
+					} else {
+						protection.put(p, t);
 					}
-				}, 20L, 20L).getTaskId();
+				}
+				// level bar
+				if (plugin.useXPBar) {
+					for (Player player : Lobby.LOBBY.getMembers()) {
+						player.setLevel(roundTimer.getTime());
+					}
+				}
+			}
+		}, new Runnable() {
+			
+			@Override
+			public void run() {
+				plugin.nf.roundTime(roundTimer.getTime());
+			}
+		}, new Runnable() {
+			
+			@Override
+			public void run() {
+				roundTimer = null;
+				// END:
+				if (matchOver)
+					return;
+				// winner?
+				ArrayList<Player> winnerTeam = getWinner();
+				if (winnerTeam == null) {
+					// draw:
+					gameEnd(true, null, null, null, null);
+				} else {
+					Player p = winnerTeam.get(0);
+					gameEnd(false, winnerTeam, getEnemyTeam(p), getTeamName(p),
+							getEnemyTeamName(p));
+				}
+			}
+		});
 	}
 
 	private ArrayList<Player> getWinner() {
@@ -293,15 +288,6 @@ public class Match {
 			return blueT;
 		// else: survivors(blueT) == survivors(redT)-> DRAW
 		return null;
-	}
-
-	private void sendCountdown(int counter) {
-		HashMap<String, String> vars = new HashMap<String, String>();
-		vars.put("seconds", String.valueOf(counter));
-		for (Player player : getAll()) {
-			if (plugin.useXPBar) player.setLevel(counter);
-			player.sendMessage(Translator.getString("COUNTDOWN_START", vars));
-		}
 	}
 
 	// SPAWNS
@@ -943,7 +929,7 @@ public class Match {
 	private synchronized void gameEnd(final boolean draw, ArrayList<Player> winnerS,
 			ArrayList<Player> looserS, String winS, String looseS) {
 		matchOver = true;
-		endSchedulers();
+		endTimers();
 		undoAllColors();
 		for (Player p : getAllPlayer()) {
 			resetWeaponStuffEnd(p);

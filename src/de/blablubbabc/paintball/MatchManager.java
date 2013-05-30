@@ -47,7 +47,7 @@ public class MatchManager{
 
 			//close match
 			plugin.am.setNotActive(match.getArena());
-			match.endSchedulers();
+			match.endTimers();
 			match.updateTags();
 			matches.remove(match);	
 		}
