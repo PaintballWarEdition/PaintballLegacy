@@ -72,7 +72,8 @@ public class Paintball extends JavaPlugin{
 	public boolean happyhour;
 	public boolean softreload;
 	public boolean nometrics = false;
-
+	public boolean needsUpdate = false;
+	
 	//LOBBYSPAWNS
 	public int lobbyspawn;
 	private LinkedList<Location> lobbyspawns;

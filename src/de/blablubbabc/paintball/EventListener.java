@@ -915,6 +915,11 @@ public class EventListener implements Listener {
 			}
 		}, 1L);
 
+		// notify admins on update:
+		if (plugin.needsUpdate && player.hasPermission("paintball.admin")) {
+			player.sendMessage(ChatColor.AQUA + "[" +  ChatColor.GOLD + "PAINTBALL" + ChatColor.AQUA + "] " + ChatColor.DARK_PURPLE + "There is a new version available! Check out the bukkit dev page for this plugin!");
+		}
+		
 	}
 
 	@EventHandler(priority = EventPriority.NORMAL)

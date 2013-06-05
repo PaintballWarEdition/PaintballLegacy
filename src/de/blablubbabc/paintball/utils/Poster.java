@@ -28,8 +28,7 @@ public class Poster {
 			} catch (IOException e) {
 				Log.severe(e.getMessage());
 			}
-		}
-		else {
+		} else {
 			Log.logColored("--------- Checking version ----------");
 			Log.info("You denied version checking. :(");
 			Log.info("If you want to be informed about a new version of paintball");
@@ -103,7 +102,8 @@ public class Poster {
 			//version check:
 			Log.info("--------- Checking version ----------");
 			if(!description.getVersion().equals(response)) {
-				Log.info("There is a new version of paintball available: "+response);
+				Paintball.instance.needsUpdate = true;
+				Log.warning("There is a new version of paintball available: " + response);
 				Log.info("Download at the bukkit dev page.");
 			}else{
 				Log.info("You are running the latest version. :)");
