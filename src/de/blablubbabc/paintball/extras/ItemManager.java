@@ -22,6 +22,14 @@ public class ItemManager {
 			meta.setDisplayName(Translator.getString("WEAPON_GRENADE"));
 			break;
 			
+		case GHAST_TEAR:
+			meta.setDisplayName(Translator.getString("WEAPON_FLASHBANG"));
+			break;
+			
+		case SLIME_BALL:
+			meta.setDisplayName(Translator.getString("WEAPON_GRENADE2"));
+			break;
+			
 		case DIODE:
 			meta.setDisplayName(Translator.getString("WEAPON_ROCKET"));
 			break;

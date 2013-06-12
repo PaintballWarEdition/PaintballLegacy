@@ -193,6 +193,7 @@ public class Paintball extends JavaPlugin{
 	public int grenadeTime;
 	public double grenadeSpeed;
 	public int grenadeAmount;
+	public double grenadeShrapnelSpeed;
 
 	public boolean airstrike;
 	public int airstrikeRange;
@@ -251,6 +252,17 @@ public class Paintball extends JavaPlugin{
 	public int orbitalstrikeMatchLimit;
 	public int orbitalstrikePlayerLimit;
 	
+	public boolean flashbang;
+	public double flashbangSpeed;
+	public double flashRange;
+	public int flashDuration;
+	
+	public boolean grenade2;
+	public double grenade2Time;
+	public double grenade2TimeUntilExplosion;
+	public double grenade2Speed;
+	public double grenade2ShrapnelSpeed;
+	
 	
 	//TODO
 	//shop-items
@@ -290,6 +302,8 @@ public class Paintball extends JavaPlugin{
 		goodsDef.add("50-Balls-332-0-50");
 		goodsDef.add("100-Balls-332-0-100");
 		goodsDef.add("1-Grenade-344-0-20");
+		goodsDef.add("1-Grenade Mark 2-341-0-20");
+		goodsDef.add("1-Flashbang-370-0-20");
 		goodsDef.add("1-Mine-390-0-10");
 		goodsDef.add("1-Rocket Launcher-356-0-20");
 		goodsDef.add("1-Airstrike-280-0-60");
@@ -416,6 +430,18 @@ public class Paintball extends JavaPlugin{
 		if(getConfig().get("Paintball.Extras.Grenades.Explosion-Time-Radius in Ticks") == null)getConfig().set("Paintball.Extras.Grenades.Explosion-Time-Radius in Ticks", 60);
 		if(getConfig().get("Paintball.Extras.Grenades.Speed multi") == null)getConfig().set("Paintball.Extras.Grenades.Speed multi", 1.5);
 		if(getConfig().get("Paintball.Extras.Grenades.Amount") == null)getConfig().set("Paintball.Extras.Grenades.Amount", 0);
+		if(getConfig().get("Paintball.Extras.Grenades.Shrapnel Speed") == null)getConfig().set("Paintball.Extras.Grenades.Shrapnel Speed", 2.0);
+		
+		if(getConfig().get("Paintball.Extras.Grenades2.enabled") == null)getConfig().set("Paintball.Extras.Grenades2.enabled", true);
+		if(getConfig().get("Paintball.Extras.Grenades2.Explosion-Time-Radius in Ticks") == null)getConfig().set("Paintball.Extras.Grenades2.Explosion-Time-Radius in Ticks", 60);
+		if(getConfig().get("Paintball.Extras.Grenades2.Speed multi") == null)getConfig().set("Paintball.Extras.Grenades2.Speed multi", 1.5);
+		if(getConfig().get("Paintball.Extras.Grenades2.Seconds Until Explosion") == null)getConfig().set("Paintball.Extras.Grenades2.Seconds Until Explosion", 3.0);
+		if(getConfig().get("Paintball.Extras.Grenades2.Shrapnel Speed") == null)getConfig().set("Paintball.Extras.Grenades2.Shrapnel Speed", 2.0);
+		
+		if(getConfig().get("Paintball.Extras.Flashbang.enabled") == null)getConfig().set("Paintball.Extras.Flashbang.enabled", true);
+		if(getConfig().get("Paintball.Extras.Flashbang.Speed multi") == null)getConfig().set("Paintball.Extras.Flashbang.Speed multi", 1.5);
+		if(getConfig().get("Paintball.Extras.Flashbang.Flash Range") == null)getConfig().set("Paintball.Extras.Flashbang.Flash Range", 4.5);
+		if(getConfig().get("Paintball.Extras.Flashbang.FLash Duration in Seconds") == null)getConfig().set("Paintball.Extras.Flashbang.Flash Duration in Seconds", 5);
 		
 		if(getConfig().get("Paintball.Extras.Airstrike.enabled") == null)getConfig().set("Paintball.Extras.Airstrike.enabled", true);
 		if(getConfig().get("Paintball.Extras.Airstrike.Height") == null)getConfig().set("Paintball.Extras.Airstrike.Height", 15);
@@ -639,6 +665,19 @@ public class Paintball extends JavaPlugin{
 		grenadeSpeed = getConfig().getDouble("Paintball.Extras.Grenades.Speed multi", 1.5);
 		grenadeAmount = getConfig().getInt("Paintball.Extras.Grenades.Amount", 0);
 		if(grenadeAmount < -1) grenadeAmount = -1;
+		grenadeShrapnelSpeed = getConfig().getDouble("Paintball.Extras.Grenades.Shrapnel Speed", 2.0);
+		
+		grenade2 = getConfig().getBoolean("Paintball.Extras.Grenades2.enabled", true);
+		grenade2Time = getConfig().getInt("Paintball.Extras.Grenades2.Explosion-Time-Radius in Ticks", 60);
+		if (grenade2Time < 1) grenade2Time = 1;
+		grenade2Speed = getConfig().getDouble("Paintball.Extras.Grenades2.Speed multi", 1.5);
+		grenade2TimeUntilExplosion = getConfig().getDouble("Paintball.Extras.Grenades2.Seconds Until Explosion", 3.0);
+		grenade2ShrapnelSpeed = getConfig().getDouble("Paintball.Extras.Grenades2.Shrapnel Speed", 2.0);
+		
+		flashbang = getConfig().getBoolean("Paintball.Extras.Flashbang.enabled", true);
+		flashbangSpeed = getConfig().getDouble("Paintball.Extras.Flashbang.Speed multi", 1.5);
+		flashRange = getConfig().getDouble("Paintball.Extras.Flashbang.Flash Range", 4.5);
+		flashDuration = getConfig().getInt("Paintball.Extras.Flashbang.Flash Duration in Seconds", 5);
 
 		airstrike = getConfig().getBoolean("Paintball.Extras.Airstrike.enabled", true);
 		airstrikeHeight = getConfig().getInt("Paintball.Extras.Airstrike.Height", 15);

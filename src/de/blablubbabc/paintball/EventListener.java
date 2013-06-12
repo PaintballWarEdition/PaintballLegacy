@@ -20,6 +20,7 @@ import org.bukkit.block.Sign;
 import org.bukkit.entity.Egg;
 import org.bukkit.entity.EntityType;
 import org.bukkit.entity.Fireball;
+import org.bukkit.entity.Item;
 import org.bukkit.entity.Player;
 import org.bukkit.entity.Projectile;
 import org.bukkit.entity.Snowball;
@@ -62,8 +63,10 @@ import org.bukkit.util.BlockIterator;
 
 import de.blablubbabc.paintball.extras.Airstrike;
 import de.blablubbabc.paintball.extras.Ball;
+import de.blablubbabc.paintball.extras.Flashbang;
 import de.blablubbabc.paintball.extras.Gifts;
 import de.blablubbabc.paintball.extras.Grenade;
+import de.blablubbabc.paintball.extras.Grenade2;
 import de.blablubbabc.paintball.extras.Mine;
 import de.blablubbabc.paintball.extras.Orbitalstrike;
 import de.blablubbabc.paintball.extras.Pumpgun;
@@ -448,6 +451,38 @@ public class EventListener implements Listener {
 							}
 						} else {
 							player.playSound(player.getEyeLocation(), Sound.FIRE_IGNITE, 100F, 2F);
+						}
+					}
+					break;
+					
+				case SLIME_BALL:
+					// GRENADE 2
+					if (plugin.grenade2 && item.isSimilar(Grenade2.item)) {
+						player.playSound(player.getLocation(), Sound.SILVERFISH_IDLE, 100L, 1L);
+						Item nade = player.getWorld().dropItem(player.getEyeLocation(), Grenade2.item);
+						nade.setVelocity(player.getLocation().getDirection().normalize().multiply(plugin.grenade2Speed));
+						Grenade2.registerNade(nade, player.getName(), Origin.GRENADE2);
+						if (item.getAmount() <= 1)
+							player.setItemInHand(null);
+						else {
+							item.setAmount(item.getAmount() - 1);
+							player.setItemInHand(item);
+						}
+					}
+					break;
+					
+				case GHAST_TEAR:
+					// FLASHBANG
+					if (plugin.flashbang && item.isSimilar(Flashbang.item)) {
+						player.playSound(player.getLocation(), Sound.SILVERFISH_IDLE, 100L, 1L);
+						Item nade = player.getWorld().dropItem(player.getEyeLocation(), Flashbang.item);
+						nade.setVelocity(player.getLocation().getDirection().normalize().multiply(plugin.flashbangSpeed));
+						Flashbang.registerNade(nade, player.getName(), Origin.FLASHBANG);
+						if (item.getAmount() <= 1)
+							player.setItemInHand(null);
+						else {
+							item.setAmount(item.getAmount() - 1);
+							player.setItemInHand(item);
 						}
 					}
 					break;

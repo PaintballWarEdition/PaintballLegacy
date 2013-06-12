@@ -11,5 +11,7 @@ public enum Origin {
 	ROCKET,
 	SNIPER,
 	TURRET,
-	MELEE
+	MELEE,
+	FLASHBANG,
+	GRENADE2;
 }
