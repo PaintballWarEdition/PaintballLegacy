@@ -21,6 +21,11 @@ import de.blablubbabc.paintball.Paintball;
 public class Flashbang {
 
 	public final static ItemStack item = ItemManager.setMeta(new ItemStack(Material.GHAST_TEAR));
+	private static int next = 0;
+	
+	public static int getNext() {
+		return ++next;
+	}
 	
 	private static HashMap<String, ArrayList<Flashbang>> nades = new HashMap<String, ArrayList<Flashbang>>();
 	
@@ -62,6 +67,7 @@ public class Flashbang {
 			}
 		}
 		nades.clear();
+		next = 0;
 	}
 
 	private final Item entity;
@@ -104,8 +110,8 @@ public class Flashbang {
 							Player p = (Player) e;
 							Match m = Paintball.instance.mm.getMatch(p);
 							if (match == m && match.enemys(player, p)) {
-								p.addPotionEffect(new PotionEffect(PotionEffectType.BLINDNESS, Paintball.instance.flashDuration, 3), true);
-								p.addPotionEffect(new PotionEffect(PotionEffectType.CONFUSION, Paintball.instance.flashDuration, 3), true);
+								p.addPotionEffect(new PotionEffect(PotionEffectType.BLINDNESS, 20 * Paintball.instance.flashDuration, 3), true);
+								p.addPotionEffect(new PotionEffect(PotionEffectType.CONFUSION, 20 * Paintball.instance.flashDuration, 3), true);
 							}
 							
 						}
@@ -114,6 +120,7 @@ public class Flashbang {
 			}
 		}
 		getNade(entity.getEntityId(), shooterName, true);
+		entity.remove();
 	}
 	
 	void remove() {

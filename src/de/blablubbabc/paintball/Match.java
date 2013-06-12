@@ -23,7 +23,7 @@ import de.blablubbabc.paintball.extras.Ball;
 import de.blablubbabc.paintball.extras.Flashbang;
 import de.blablubbabc.paintball.extras.Gifts;
 import de.blablubbabc.paintball.extras.Grenade;
-import de.blablubbabc.paintball.extras.Grenade2;
+import de.blablubbabc.paintball.extras.GrenadeM2;
 import de.blablubbabc.paintball.extras.ItemManager;
 import de.blablubbabc.paintball.extras.Mine;
 import de.blablubbabc.paintball.extras.Orbitalstrike;
@@ -983,7 +983,7 @@ public class Match {
 		Orbitalstrike.clear();
 		//remove grenades
 		Grenade.clear();
-		Grenade2.clear();
+		GrenadeM2.clear();
 		Flashbang.clear();
 		Ball.clear();
 	}

@@ -59,6 +59,7 @@ import org.bukkit.event.player.PlayerPickupItemEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.PlayerInventory;
+import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.util.BlockIterator;
 
 import de.blablubbabc.paintball.extras.Airstrike;
@@ -66,7 +67,7 @@ import de.blablubbabc.paintball.extras.Ball;
 import de.blablubbabc.paintball.extras.Flashbang;
 import de.blablubbabc.paintball.extras.Gifts;
 import de.blablubbabc.paintball.extras.Grenade;
-import de.blablubbabc.paintball.extras.Grenade2;
+import de.blablubbabc.paintball.extras.GrenadeM2;
 import de.blablubbabc.paintball.extras.Mine;
 import de.blablubbabc.paintball.extras.Orbitalstrike;
 import de.blablubbabc.paintball.extras.Pumpgun;
@@ -457,11 +458,15 @@ public class EventListener implements Listener {
 					
 				case SLIME_BALL:
 					// GRENADE 2
-					if (plugin.grenade2 && item.isSimilar(Grenade2.item)) {
+					if (plugin.grenade2 && item.isSimilar(GrenadeM2.item)) {
 						player.playSound(player.getLocation(), Sound.SILVERFISH_IDLE, 100L, 1L);
-						Item nade = player.getWorld().dropItem(player.getEyeLocation(), Grenade2.item);
+						ItemStack nadeItem = GrenadeM2.item.clone();
+						ItemMeta meta = nadeItem.getItemMeta();
+						meta.setDisplayName("GrenadeM2 " + Flashbang.getNext());
+						nadeItem.setItemMeta(meta);
+						Item nade = player.getWorld().dropItem(player.getEyeLocation(), nadeItem);
 						nade.setVelocity(player.getLocation().getDirection().normalize().multiply(plugin.grenade2Speed));
-						Grenade2.registerNade(nade, player.getName(), Origin.GRENADE2);
+						GrenadeM2.registerNade(nade, player.getName(), Origin.GRENADE2);
 						if (item.getAmount() <= 1)
 							player.setItemInHand(null);
 						else {
@@ -475,7 +480,11 @@ public class EventListener implements Listener {
 					// FLASHBANG
 					if (plugin.flashbang && item.isSimilar(Flashbang.item)) {
 						player.playSound(player.getLocation(), Sound.SILVERFISH_IDLE, 100L, 1L);
-						Item nade = player.getWorld().dropItem(player.getEyeLocation(), Flashbang.item);
+						ItemStack nadeItem = Flashbang.item.clone();
+						ItemMeta meta = nadeItem.getItemMeta();
+						meta.setDisplayName("Flashbang " + Flashbang.getNext());
+						nadeItem.setItemMeta(meta);
+						Item nade = player.getWorld().dropItem(player.getEyeLocation(), nadeItem);
 						nade.setVelocity(player.getLocation().getDirection().normalize().multiply(plugin.flashbangSpeed));
 						Flashbang.registerNade(nade, player.getName(), Origin.FLASHBANG);
 						if (item.getAmount() <= 1)

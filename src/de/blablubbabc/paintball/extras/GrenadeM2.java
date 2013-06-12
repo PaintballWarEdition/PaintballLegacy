@@ -14,26 +14,32 @@ import de.blablubbabc.paintball.Origin;
 import de.blablubbabc.paintball.Paintball;
 import de.blablubbabc.paintball.utils.Utils;
 
-public class Grenade2 {
+public class GrenadeM2 {
 
 	public final static ItemStack item = ItemManager.setMeta(new ItemStack(Material.SLIME_BALL));
+	private static int next = 0;
 	
-	private static HashMap<String, ArrayList<Grenade2>> nades = new HashMap<String, ArrayList<Grenade2>>();
+	public static int getNext() {
+		return ++next;
+	}
+	
+	
+	private static HashMap<String, ArrayList<GrenadeM2>> nades = new HashMap<String, ArrayList<GrenadeM2>>();
 	
 	public static void registerNade(Item nade, String shooterName, Origin source) {
-		ArrayList<Grenade2> pnades = nades.get(shooterName);
+		ArrayList<GrenadeM2> pnades = nades.get(shooterName);
 		if (pnades == null) {
-			pnades = new ArrayList<Grenade2>();
+			pnades = new ArrayList<GrenadeM2>();
 			nades.put(shooterName, pnades);
 		}
-		pnades.add(new Grenade2(shooterName, nade, source));
+		pnades.add(new GrenadeM2(shooterName, nade, source));
 	}
 
-	public static Grenade2 getNade(int id, String shooterName, boolean remove) {
-		ArrayList<Grenade2> pnades = nades.get(shooterName);
+	public static GrenadeM2 getNade(int id, String shooterName, boolean remove) {
+		ArrayList<GrenadeM2> pnades = nades.get(shooterName);
 		if (pnades == null)
 			return null;
-		Grenade2 nade = getNadeFromList(pnades, id);
+		GrenadeM2 nade = getNadeFromList(pnades, id);
 		if (remove && nade != null) {
 			if (pnades.remove(nade)) {
 				if (pnades.size() == 0) nades.remove(shooterName);
@@ -42,8 +48,8 @@ public class Grenade2 {
 		return nade;
 	}
 	
-	private static Grenade2 getNadeFromList(ArrayList<Grenade2> pnades, int id) {
-		for (Grenade2 nade : pnades) {
+	private static GrenadeM2 getNadeFromList(ArrayList<GrenadeM2> pnades, int id) {
+		for (GrenadeM2 nade : pnades) {
 			if (nade.getId() == id)
 				return nade;
 		}
@@ -52,19 +58,20 @@ public class Grenade2 {
 	
 	public static void clear() {
 		for (String playerName : nades.keySet()) {
-			ArrayList<Grenade2> pnades = new ArrayList<Grenade2>(nades.get(playerName));
-			for (Grenade2 g : pnades) {
+			ArrayList<GrenadeM2> pnades = new ArrayList<GrenadeM2>(nades.get(playerName));
+			for (GrenadeM2 g : pnades) {
 				g.remove();
 			}
 		}
 		nades.clear();
+		next = 0;
 	}
 
 	private final Item entity;
 	private final String shooterName;
 	private final Origin source;
 
-	public Grenade2(String shooterName, Item entity, Origin source) {
+	public GrenadeM2(String shooterName, Item entity, Origin source) {
 		this.entity = entity;
 		this.shooterName = shooterName;
 		this.source = source;
@@ -115,6 +122,7 @@ public class Grenade2 {
 			}
 		}
 		getNade(entity.getEntityId(), shooterName, true);
+		entity.remove();
 	}
 	
 	void remove() {
