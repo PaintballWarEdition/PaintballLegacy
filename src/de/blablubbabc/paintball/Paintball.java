@@ -295,6 +295,9 @@ public class Paintball extends JavaPlugin{
 	@SuppressWarnings("unchecked")
 	public void onEnable(){	
 		instance = this;
+		
+		// LOGGER
+		Log.init(this);
 		//CONFIG
 		ArrayList<String> goodsDef = new ArrayList<String>();
 		
