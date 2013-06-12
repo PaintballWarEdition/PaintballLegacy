@@ -68,6 +68,14 @@ public class Grenade2 {
 		this.entity = entity;
 		this.shooterName = shooterName;
 		this.source = source;
+		
+		Paintball.instance.getServer().getScheduler().runTaskLater(Paintball.instance, new Runnable() {
+			
+			@Override
+			public void run() {
+				explode();
+			}
+		}, 20L * Paintball.instance.grenade2TimeUntilExplosion);
 	}
 
 	public Origin getSource() {
@@ -78,32 +86,35 @@ public class Grenade2 {
 		return entity.getEntityId();
 	}
 	
-	public void explode(Location location) {
-		location.getWorld().createExplosion(location, -1F);
-		Player player = Paintball.instance.getServer().getPlayerExact(shooterName);
-		if (player != null) {
-			for (Vector v : Utils.getDirections()) {
-				final Snowball s  = location.getWorld().spawn(location, Snowball.class);
-				s.setShooter(player);
-				Ball.registerBall(s, shooterName, source);
-				Vector v2 = v.clone();
-				v2.setX(v.getX() + Math.random() - Math.random());
-				v2.setY(v.getY() + Math.random() - Math.random());
-				v2.setZ(v.getZ() + Math.random() - Math.random());
-				s.setVelocity(v2.normalize().multiply(Paintball.instance.grenade2ShrapnelSpeed));
-				Paintball.instance.getServer().getScheduler().scheduleSyncDelayedTask(Paintball.instance, new Runnable() {
+	public void explode() {
+		if (!entity.isDead() && entity.isValid()) {
+			Location location = entity.getLocation();
+			location.getWorld().createExplosion(location, -1F);
+			Player player = Paintball.instance.getServer().getPlayerExact(shooterName);
+			if (player != null) {
+				for (Vector v : Utils.getDirections()) {
+					final Snowball s  = location.getWorld().spawn(location, Snowball.class);
+					s.setShooter(player);
+					Ball.registerBall(s, shooterName, source);
+					Vector v2 = v.clone();
+					v2.setX(v.getX() + Math.random() - Math.random());
+					v2.setY(v.getY() + Math.random() - Math.random());
+					v2.setZ(v.getZ() + Math.random() - Math.random());
+					s.setVelocity(v2.normalize().multiply(Paintball.instance.grenade2ShrapnelSpeed));
+					Paintball.instance.getServer().getScheduler().scheduleSyncDelayedTask(Paintball.instance, new Runnable() {
 
-					@Override
-					public void run() {
-						if (!s.isDead() || s.isValid()) {
-							Ball.getBall(s.getEntityId(), shooterName, true);
-							s.remove();
+						@Override
+						public void run() {
+							if (!s.isDead() || s.isValid()) {
+								Ball.getBall(s.getEntityId(), shooterName, true);
+								s.remove();
+							}
 						}
-					}
-				}, (long) Paintball.instance.grenade2Time);
+					}, (long) Paintball.instance.grenade2Time);
+				}
 			}
 		}
-		
+		getNade(entity.getEntityId(), shooterName, true);
 	}
 	
 	void remove() {

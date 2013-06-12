@@ -72,6 +72,14 @@ public class Flashbang {
 		this.entity = entity;
 		this.shooterName = shooterName;
 		this.source = source;
+		
+		Paintball.instance.getServer().getScheduler().runTaskLater(Paintball.instance, new Runnable() {
+			
+			@Override
+			public void run() {
+				explode();
+			}
+		}, 20L * Paintball.instance.flashbangTimeUntilExplosion);
 	}
 
 	int getId() {
@@ -82,26 +90,30 @@ public class Flashbang {
 		return source;
 	}
 	
-	public void explode(Location location) {
-		location.getWorld().createExplosion(location, -1F);
-		Player player = Paintball.instance.getServer().getPlayerExact(shooterName);
-		if (player != null) {
-			Match match = Paintball.instance.mm.getMatch(player);
-			if (match != null) {
-				List<Entity> near = entity.getNearbyEntities(Paintball.instance.flashRange, Paintball.instance.flashRange, Paintball.instance.flashRange);
-				for (Entity e : near) {
-					if (e.getType() == EntityType.PLAYER) {
-						Player p = (Player) e;
-						Match m = Paintball.instance.mm.getMatch(p);
-						if (match == m && match.enemys(player, p)) {
-							p.addPotionEffect(new PotionEffect(PotionEffectType.BLINDNESS, Paintball.instance.flashDuration, 3), true);
-							p.addPotionEffect(new PotionEffect(PotionEffectType.CONFUSION, Paintball.instance.flashDuration, 3), true);
+	public void explode() {
+		if (!entity.isDead() && entity.isValid()) {
+			Location location = entity.getLocation();
+			location.getWorld().createExplosion(location, -1F);
+			Player player = Paintball.instance.getServer().getPlayerExact(shooterName);
+			if (player != null) {
+				Match match = Paintball.instance.mm.getMatch(player);
+				if (match != null) {
+					List<Entity> near = entity.getNearbyEntities(Paintball.instance.flashRange, Paintball.instance.flashRange, Paintball.instance.flashRange);
+					for (Entity e : near) {
+						if (e.getType() == EntityType.PLAYER) {
+							Player p = (Player) e;
+							Match m = Paintball.instance.mm.getMatch(p);
+							if (match == m && match.enemys(player, p)) {
+								p.addPotionEffect(new PotionEffect(PotionEffectType.BLINDNESS, Paintball.instance.flashDuration, 3), true);
+								p.addPotionEffect(new PotionEffect(PotionEffectType.CONFUSION, Paintball.instance.flashDuration, 3), true);
+							}
+							
 						}
-						
 					}
 				}
 			}
 		}
+		getNade(entity.getEntityId(), shooterName, true);
 	}
 	
 	void remove() {
