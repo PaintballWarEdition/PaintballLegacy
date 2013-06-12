@@ -4,7 +4,6 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 
-
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.entity.Entity;
@@ -38,6 +37,13 @@ public class Flashbang {
 		pnades.add(new Flashbang(shooterName, nade, source));
 	}
 
+	public static boolean isNade(int id) {
+		for (ArrayList<Flashbang> pnades : nades.values()) {
+			if (getNadeFromList(pnades, id) != null) return true; 
+		}
+		return false;
+	}
+	
 	public static Flashbang getNade(int id, String shooterName, boolean remove) {
 		ArrayList<Flashbang> pnades = nades.get(shooterName);
 		if (pnades == null)

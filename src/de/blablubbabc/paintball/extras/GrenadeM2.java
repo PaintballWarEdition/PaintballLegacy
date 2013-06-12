@@ -35,6 +35,13 @@ public class GrenadeM2 {
 		pnades.add(new GrenadeM2(shooterName, nade, source));
 	}
 
+	public static boolean isNade(int id) {
+		for (ArrayList<GrenadeM2> pnades : nades.values()) {
+			if (getNadeFromList(pnades, id) != null) return true; 
+		}
+		return false;
+	}
+	
 	public static GrenadeM2 getNade(int id, String shooterName, boolean remove) {
 		ArrayList<GrenadeM2> pnades = nades.get(shooterName);
 		if (pnades == null)

@@ -837,6 +837,11 @@ public class EventListener implements Listener {
 
 	@EventHandler(priority = EventPriority.NORMAL)
 	public void onPlayerItemsI(PlayerPickupItemEvent event) {
+		int id = event.getItem().getEntityId();
+		if (Flashbang.isNade(id) || GrenadeM2.isNade(id)) {
+			event.setCancelled(true);
+			return;
+		}
 		Player player = event.getPlayer();
 		if (Lobby.LOBBY.isMember(player)) {
 			// if (!player.isOp() && !player.hasPermission("paintball.admin"))
