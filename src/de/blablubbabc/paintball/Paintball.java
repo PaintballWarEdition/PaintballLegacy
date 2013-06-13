@@ -269,32 +269,6 @@ public class Paintball extends JavaPlugin{
 	public int grenade2TimeUntilExplosion;
 	public double grenade2Speed;
 	public double grenade2ShrapnelSpeed;
-	
-	
-	//TODO
-	//shop-items
-	//Extras: Luftschlag, verschiedene munition, airdrops, punktesystem abhängig von spieler im match, evt. bester spieler der runde, mehr extras :D
-	//schneemann-geschütz
-	//Lobby schilder für points und rank und tops
-	//map rotation with size-matters
-	//map vote
-	//map restriction
-	//config in-game ändern
-	//grenade
-	//luftschlag
-	//friendly-fire on/off
-	//friendly-fire-detection on/off
-	//mySQL support für online stats
-	//- arena disable/enable
-	//- airstrike finalMark bleibt
-
-
-	//Permissions:
-	//paintball.general
-	//paintball.arena
-	//paintball.admin
-	//paintball.shop.not<id> (starting with 1) // removed
-
 
 	public BlaSQLite sql;
 	//public BlaDB data;
