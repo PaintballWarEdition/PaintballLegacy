@@ -21,7 +21,7 @@ public class Poster {
 
 	public Poster(Paintball plugin) {
 		this.plugin = plugin;
-		serverid = (String) plugin.slist.get("serverid");
+		serverid = (String) plugin.slist.get("Server.Id");
 		if(plugin.versioncheck) {
 			try {
 				post();
@@ -70,7 +70,7 @@ public class Poster {
 		encodeDataPair(data, "everplayed", Integer.toString(numberp));
 		encodeDataPair(data, "everjoined", Integer.toString(numberj));
 		encodeDataPair(data, "autolobby", Boolean.toString(plugin.autoLobby));
-		encodeDataPair(data, "list", Boolean.toString((Boolean)plugin.slist.get("serverlist")));
+		encodeDataPair(data, "list", Boolean.toString((Boolean)plugin.slist.get("Server.List")));
 
 		// Create the url
 		URL url = new URL(URL);
