@@ -63,7 +63,7 @@ public class MatchManager{
 			list.add(p);
 		}
 		for(Player p : list) {
-			plugin.leaveLobby(p, false, true, true);
+			plugin.leaveLobby(p, false);
 		}
 	}
 

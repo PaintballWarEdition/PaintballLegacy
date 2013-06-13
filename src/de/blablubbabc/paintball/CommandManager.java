@@ -152,7 +152,7 @@ public class CommandManager implements CommandExecutor{
 							if(plugin.autoLobby && !player.hasPermission("paintball.admin")) {
 								player.sendMessage(Translator.getString("CANNOT_LEAVE_LOBBY"));
 							} else {
-								plugin.leaveLobby(player, true, true, true);
+								plugin.leaveLobby(player, true);
 							}
 						}
 						return true;
@@ -401,12 +401,12 @@ public class CommandManager implements CommandExecutor{
 			return false;
 		}
 		//wenig leben
-		if(player.getHealth() < 20  && plugin.checkHealth) {
+		if(player.getHealth() < player.getMaxHealth()  && plugin.checkHealth) {
 			player.sendMessage(Translator.getString("NEED_FULL_HEALTH"));
 			return false;
 		}
 		//hungert
-		if(player.getFoodLevel() < 20  && plugin.checkFood) {
+		if(player.getFoodLevel() < 20 && plugin.checkFood) {
 			player.sendMessage(Translator.getString("NEED_FULL_FOOD"));
 			return false;
 		}
@@ -415,12 +415,6 @@ public class CommandManager implements CommandExecutor{
 			player.sendMessage(Translator.getString("NEED_NO_EFFECTS"));
 			return false;
 		}
-
-		//save Location
-		plugin.pm.setLoc(player, player.getLocation());
-		//lobby add
-		Lobby.LOBBY.addMember(player);
-		plugin.nf.join(player.getName());
 
 		plugin.joinLobbyFresh(player);
 

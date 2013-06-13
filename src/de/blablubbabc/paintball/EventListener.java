@@ -142,7 +142,7 @@ public class EventListener implements Listener {
 					else plugin.cm.joinLobbyPre(player);
 				}
 			} else if (fromPb && !toPb) {
-				plugin.leaveLobby(player, true, true, true);
+				plugin.leaveLobby(player, true);
 			}
 		}
 	}
@@ -942,13 +942,12 @@ public class EventListener implements Listener {
 	@EventHandler(priority = EventPriority.HIGH)
 	public void onPlayerDead(PlayerDeathEvent event) {
 		Player player = (Player) event.getEntity();
-		if (plugin.leaveLobby(player, true, true, true)) {
+		if (plugin.leaveLobby(player, true)) {
 			// drops?
 			event.setDroppedExp(0);
 			event.setKeepLevel(false);
 			event.getDrops().clear();
 			Log.severe("WARNING: IllegalState! A player died while playing paintball. Report this to blablubbabc");
-			Log.info("Report: " + event.toString());
 		}
 	}
 
@@ -986,7 +985,7 @@ public class EventListener implements Listener {
 	}
 
 	private void onPlayerDisconnect(Player player) {
-		plugin.leaveLobby(player, true, true, true);
+		plugin.leaveLobby(player, true);
 
 	}
 

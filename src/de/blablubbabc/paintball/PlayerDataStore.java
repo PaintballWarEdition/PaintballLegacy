@@ -14,9 +14,7 @@ import de.blablubbabc.paintball.utils.Translator;
 
 
 public class PlayerDataStore {
-	private Player player;
-	private Paintball plugin;
-
+	
 	// DATA
 	// Names
 	private String listname;
@@ -31,6 +29,7 @@ public class PlayerDataStore {
 	private boolean allowFlight;
 	private boolean isFlying;
 	// Status
+	private float walkspeed;
 	private float exhaustion;
 	private float saturation;
 	private int foodlevel;
@@ -47,18 +46,26 @@ public class PlayerDataStore {
 	private int level;
 	private float exp;
 
-	public PlayerDataStore(Player player, Paintball plugin) {
-		this.player = player;
+	public PlayerDataStore(Player player, Location to) {
+		teleportStoreClearPlayer(player, to);
 	}
 
-	public void storePlayer() {
+	public void teleportStoreClearPlayer(Player player, Location to) {
+		// PREPARE
+		player.closeInventory();
+		player.leaveVehicle();
+		// LOCATION
+		location = player.getLocation();
+		player.teleport(to);
+		// GAMEMODE
+		gamemode = player.getGameMode();
+		player.setGameMode(GameMode.SURVIVAL);
+		
 		// STORE DATA
 		// Names
 		listname = player.getPlayerListName();
-		// Location
-		location = player.getLocation();
 		// Inventory
-		if (plugin.saveInventory) {
+		if (Paintball.instance.saveInventory) {
 			player.closeInventory();
 			PlayerInventory inv = player.getInventory();
 			invContent = inv.getContents();
@@ -71,6 +78,7 @@ public class PlayerDataStore {
 		allowFlight = player.getAllowFlight();
 		isFlying = player.isFlying();
 		// Status
+		walkspeed = player.getWalkSpeed();
 		exhaustion = player.getExhaustion();
 		saturation = player.getSaturation();
 		foodlevel = player.getFoodLevel();
@@ -80,7 +88,6 @@ public class PlayerDataStore {
 		ticksLived = player.getTicksLived();
 		noDamageTicks = player.getNoDamageTicks();
 		fallDistance = player.getFallDistance();
-		gamemode = player.getGameMode();
 		lastDamage = player.getLastDamage();
 		lastDamageCause = player.getLastDamageCause();
 		// vehicle
@@ -88,55 +95,21 @@ public class PlayerDataStore {
 		level = player.getLevel();
 		exp = player.getExp();
 
-		// CLEAR
-		clearPlayer(true);
+		// CLEAR COMPLETE
+		clearPlayer(player, true, true);
 	}
 
-	public void clearPlayer(boolean checkListname) {
-		// CLEAR PLAYER
-		// Names
-		// listname
-		if (checkListname && plugin.listnames)
-			player.setPlayerListName(null);
-		// displayname
-		// location
-		// Inventory
-		player.closeInventory();
-		player.getInventory().clear(-1, -1);
-		// PotionEffects
-		for (PotionEffect effect : player.getActivePotionEffects()) {
-			player.removePotionEffect(effect.getType());
-		}
-		// Flying
-		player.setAllowFlight(false);
-		player.setFlying(false);
-		// Status
-		// exhaustion
-		// saturation
-		player.setFoodLevel(20);
-		player.setHealth(20);
-		player.setFireTicks(0);
-		// remainingAir
-		// ticksLived
-		// noDamageTicks
-		// fallDistance
-		player.setGameMode(GameMode.SURVIVAL);
-		// lastDamage
-		// lastDamageCause
-		player.leaveVehicle();
-		// Level / exp
-		player.setLevel(0);
-		player.setExp(0F);
-	}
-
-	public void restorePlayer() {
-		clearPlayer(true);
+	@SuppressWarnings("deprecation")
+	public void restoreTeleportPlayer(Player player) {
+		// PREPARE
+		clearPlayer(player, true, true);
 		// RESTORE PLAYER
+		
 		// Names
-		if(plugin.listnames) player.setPlayerListName(listname);
+		if(Paintball.instance.listnames) player.setPlayerListName(listname);
 		//player.setDisplayName(displayname);
 		// Inventory
-		if (plugin.saveInventory) {
+		if (Paintball.instance.saveInventory) {
 			if (invContent != null) {
 				player.getInventory().setContents(invContent);
 			}
@@ -153,6 +126,7 @@ public class PlayerDataStore {
 		player.setAllowFlight(allowFlight);
 		player.setFlying(isFlying);
 		// Status
+		player.setWalkSpeed(walkspeed);
 		player.setExhaustion(exhaustion);
 		player.setSaturation(saturation);
 		player.setFoodLevel(foodlevel);
@@ -162,13 +136,46 @@ public class PlayerDataStore {
 		player.setTicksLived(ticksLived);
 		player.setNoDamageTicks(noDamageTicks);
 		player.setFallDistance(fallDistance);
-		player.setGameMode(gamemode);
 		player.setLastDamage(lastDamage);
 		player.setLastDamageCause(lastDamageCause);
 		// Level / exp
 		player.setLevel(level);
 		player.setExp(exp);
-		// location
+		
+		player.setGameMode(gamemode);
+		player.updateInventory();
+		
+		// TELEPORT BACK
 		player.teleport(location);
+	}
+	
+	@SuppressWarnings("deprecation")
+	public static void clearPlayer(Player player, boolean checkListname, boolean changeLevel) {
+		// PREPARE
+		player.closeInventory();
+		player.leaveVehicle();
+		player.setGameMode(GameMode.SURVIVAL);
+		// CLEAR PLAYER
+		player.getInventory().clear(-1, -1);
+		if (checkListname && Paintball.instance.listnames) {
+			player.setPlayerListName(null);
+		}
+		if (player.getActivePotionEffects().size() > 0) {
+			for (PotionEffect effect : player.getActivePotionEffects()) {
+				player.removePotionEffect(effect.getType());
+			}
+		}
+		if (player.getAllowFlight()) player.setAllowFlight(false);
+		if (player.isFlying()) player.setFlying(false);
+		if (player.getWalkSpeed() != 0.2F) player.setWalkSpeed(0.2F);
+		if (player.getFoodLevel() != 20) player.setFoodLevel(20);
+		if (player.getHealth() != 20) player.setHealth(20);
+		if (player.getFireTicks() != 0) player.setFireTicks(0);
+		if (Paintball.instance.useXPBar) {
+			if (changeLevel && player.getLevel() != 0) player.setLevel(0);
+			if (player.getExp() != 1F) player.setExp(1F);
+		}
+		
+		player.updateInventory();
 	}
 }

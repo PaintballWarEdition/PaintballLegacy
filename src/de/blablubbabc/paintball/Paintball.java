@@ -809,7 +809,7 @@ public class Paintball extends JavaPlugin{
 		//WAKE TEAM-ENUMS
 		Lobby.values();
 		//PLAYERMANAGER
-		pm = new PlayerManager(this);
+		pm = new PlayerManager();
 		//Newsfeeder
 		nf = new Newsfeeder(this);
 		//MATCHMANAGER|LISTENER
@@ -1111,17 +1111,9 @@ public class Paintball extends JavaPlugin{
 	}
 	
 	public void joinLobbyFresh(Player player) {
-		if(player.isInsideVehicle()) player.leaveVehicle();
-		player.teleport(getNextLobbySpawn());
-		//inventory
-		if(saveInventory) {
-			pm.storeInventory(player);
-			player.sendMessage(Translator.getString("INVENTORY_SAVED"));
-		}
-		//exp und level:
-		if (useXPBar) pm.storeExp(player);
-		
-		checks(player, true, true);
+		Lobby.LOBBY.addMember(player);
+		nf.join(player.getName());
+		pm.teleportStoreClearPlayer(player, getNextLobbySpawn());
 	}
 	
 	private synchronized void enterLobby(Player player) {
@@ -1131,23 +1123,16 @@ public class Paintball extends JavaPlugin{
 		player.teleport(getNextLobbySpawn());
 	}
 	
-	public synchronized boolean leaveLobby(Player player, boolean messages, boolean teleport, boolean restoreInventory) {
+	public synchronized boolean leaveLobby(Player player, boolean messages) {
 		if (Lobby.LOBBY.isMember(player)) {
 			if (Lobby.isPlaying(player) || Lobby.isSpectating(player))
 				mm.getMatch(player).left(player);
 			//lobby remove:
 			Lobby.remove(player);
-			checks(player, true, true);
-			//restore saved inventory
-			if(restoreInventory && saveInventory) {
-				pm.restoreInventory(player);
-			}
-			//restore xp und level
-			if (useXPBar) pm.restoreExp(player);
-			//teleport:
-			if(teleport) player.teleport(pm.getLoc(player));
+			// restore and teleport back:
+			pm.clearRestoreTeleportPlayer(player);
+			//messages:
 			if(messages) {
-				//messages:
 				player.sendMessage(Translator.getString("YOU_LEFT_LOBBY"));
 				nf.leave(player.getName());
 			}

@@ -2,29 +2,17 @@ package de.blablubbabc.paintball;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.Map;
+
 import org.bukkit.Location;
 import org.bukkit.entity.Player;
-import org.bukkit.inventory.ItemStack;
-import org.bukkit.inventory.PlayerInventory;
-
-import de.blablubbabc.paintball.utils.Translator;
 
 
 public class PlayerManager {
-	private static Paintball plugin;
-	private HashMap<Player, Location> locations;
-	private HashMap<Player, ItemStack[]> invContent;
-	private HashMap<Player, ItemStack[]> invArmor;
-	private HashMap<Player, Integer> level;
-	private HashMap<Player, Float> exp;
+	private Map<String, PlayerDataStore> playerStore;
 
-	public PlayerManager(Paintball pl) {
-		plugin = pl;
-		locations = new HashMap<Player, Location>();
-		invContent = new HashMap<Player, ItemStack[]>();
-		invArmor = new HashMap<Player, ItemStack[]>();
-		level = new HashMap<Player, Integer>();
-		exp = new HashMap<Player, Float>();
+	public PlayerManager() {
+		playerStore = new HashMap<String, PlayerDataStore>();
 		
 		addAllOnlinePlayers();
 	}
@@ -32,12 +20,12 @@ public class PlayerManager {
 	// METHODS
 	// SETTER
 	public void addAllOnlinePlayers() {
-		plugin.getServer().getScheduler()
-				.runTaskAsynchronously(plugin, new Runnable() {
+		Paintball.instance.getServer().getScheduler()
+				.runTaskAsynchronously(Paintball.instance, new Runnable() {
 
 					@Override
 					public void run() {
-						for (Player p : plugin.getServer().getOnlinePlayers()) {
+						for (Player p : Paintball.instance.getServer().getOnlinePlayers()) {
 							addPlayer(p.getName());
 						}
 					}
@@ -45,8 +33,8 @@ public class PlayerManager {
 	}
 	
 	public void addPlayerAsync(final String name) {
-		plugin.getServer().getScheduler()
-				.runTaskAsynchronously(plugin, new Runnable() {
+		Paintball.instance.getServer().getScheduler()
+				.runTaskAsynchronously(Paintball.instance, new Runnable() {
 
 					@Override
 					public void run() {
@@ -56,146 +44,96 @@ public class PlayerManager {
 	}
 	
 	private void addPlayer(final String name) {
-		if (!plugin.sql.sqlPlayers.isPlayerExisting(name)) {
-			plugin.sql.sqlPlayers.addNewPlayer(name);
+		if (!Paintball.instance.sql.sqlPlayers.isPlayerExisting(name)) {
+			Paintball.instance.sql.sqlPlayers.addNewPlayer(name);
 		}
 	}
 
 	public void resetData() {
-		plugin.getServer().getScheduler()
-				.runTaskAsynchronously(plugin, new Runnable() {
+		Paintball.instance.getServer().getScheduler()
+				.runTaskAsynchronously(Paintball.instance, new Runnable() {
 
 					@Override
 					public void run() {
-						plugin.sql.sqlPlayers.resetAllPlayerStats();
+						Paintball.instance.sql.sqlPlayers.resetAllPlayerStats();
 					}
 				});
 	}
 
 	public void resetDataSameThread() {
-		plugin.sql.sqlPlayers.resetAllPlayerStats();
+		Paintball.instance.sql.sqlPlayers.resetAllPlayerStats();
 	}
 
 	public void resetData(final String player) {
-		plugin.getServer().getScheduler()
-				.runTaskAsynchronously(plugin, new Runnable() {
+		Paintball.instance.getServer().getScheduler()
+				.runTaskAsynchronously(Paintball.instance, new Runnable() {
 
 					@Override
 					public void run() {
-						plugin.sql.sqlPlayers.resetPlayerStats(player);
+						Paintball.instance.sql.sqlPlayers.resetPlayerStats(player);
 					}
 				});
 	}
 
 	public boolean exists(String player) {
-		return plugin.sql.sqlPlayers.isPlayerExisting(player);
+		return Paintball.instance.sql.sqlPlayers.isPlayerExisting(player);
 	}
 
 	// STATS
 	public void addStatsAsync(final String player,
 			final HashMap<String, Integer> stats) {
-		plugin.getServer().getScheduler()
-				.runTaskAsynchronously(plugin, new Runnable() {
+		Paintball.instance.getServer().getScheduler()
+				.runTaskAsynchronously(Paintball.instance, new Runnable() {
 
 					@Override
 					public void run() {
-						plugin.sql.sqlPlayers.addPlayerStats(player, stats);
-						plugin.sql.sqlPlayers.calculateStats(player);
+						Paintball.instance.sql.sqlPlayers.addPlayerStats(player, stats);
+						Paintball.instance.sql.sqlPlayers.calculateStats(player);
 					}
 				});
 	}
 
 	public void addStats(final String player,
 			final HashMap<String, Integer> stats) {
-		plugin.sql.sqlPlayers.addPlayerStats(player, stats);
-		plugin.sql.sqlPlayers.calculateStats(player);
+		Paintball.instance.sql.sqlPlayers.addPlayerStats(player, stats);
+		Paintball.instance.sql.sqlPlayers.calculateStats(player);
 	}
 
 	public void setStats(final String player,
 			final HashMap<String, Integer> stats) {
-		plugin.getServer().getScheduler()
-				.runTaskAsynchronously(plugin, new Runnable() {
+		Paintball.instance.getServer().getScheduler()
+				.runTaskAsynchronously(Paintball.instance, new Runnable() {
 
 					@Override
 					public void run() {
-						plugin.sql.sqlPlayers.setPlayerStats(player, stats);
-						plugin.sql.sqlPlayers.calculateStats(player);
+						Paintball.instance.sql.sqlPlayers.setPlayerStats(player, stats);
+						Paintball.instance.sql.sqlPlayers.calculateStats(player);
 					}
 				});
 	}
 
 	// GETTER
 	public ArrayList<String> getAllPlayerNames() {
-		return plugin.sql.sqlPlayers.getAllPlayerNames();
+		return Paintball.instance.sql.sqlPlayers.getAllPlayerNames();
 	}
 
 	public int getPlayerCount() {
-		return plugin.sql.sqlPlayers.getPlayerCount();
+		return Paintball.instance.sql.sqlPlayers.getPlayerCount();
 	}
 
 	public HashMap<String, Integer> getStats(String player) {
-		return plugin.sql.sqlPlayers.getPlayerStats(player);
+		return Paintball.instance.sql.sqlPlayers.getPlayerStats(player);
 	}
 
-	public synchronized Location getLoc(Player player) {
-		if (locations.get(player) != null) {
-			Location loc = locations.get(player);
-			locations.remove(player);
-			return loc;
-		} else
-			return null;
+	public void teleportStoreClearPlayer(Player player, Location to) {
+		playerStore.put(player.getName(), new PlayerDataStore(player, to));
 	}
-
-	public void restoreInventory(Player player) {
-		//PlayerInventory
-		//null check added:
-		ItemStack[] isc = getInvContent(player);
-		if(isc != null) {
-			player.getInventory().setContents(isc);
+	
+	public void clearRestoreTeleportPlayer(Player player) {
+		PlayerDataStore playerData = playerStore.remove(player.getName());
+		if (playerData != null) {
+			playerData.restoreTeleportPlayer(player);
 		}
-		ItemStack[] isa = getInvArmor(player);
-		if(isa != null) {
-			player.getInventory().setArmorContents(isa);
-		}
-
-		player.sendMessage(Translator.getString("INVENTORY_RESTORED"));
-	}
-	
-	private ItemStack[] getInvContent(Player player) {
-		ItemStack[] inv = invContent.get(player);
-		invContent.remove(player);
-		return inv;
-	}
-
-	private ItemStack[] getInvArmor(Player player) {
-		ItemStack[] inv = invArmor.get(player);
-		invArmor.remove(player);
-		return inv;
-	}
-
-	public void setLoc(Player player, Location loc) {
-		locations.put(player, loc);
-	}
-
-	public void storeInventory(Player player) {
-		PlayerInventory inv = player.getInventory();
-		invContent.put(player, inv.getContents());
-		invArmor.put(player, inv.getArmorContents());
-	}
-	
-	public void restoreExp(Player player) {
-		Integer levelInt = level.get(player);
-		if (levelInt != null) player.setLevel(levelInt);
-		Float expFloat = exp.get(player);
-		if (exp != null) player.setExp(expFloat);
-		
-		level.remove(player);
-		exp.remove(player);
-	}
-	
-	public void storeExp(Player player) {
-		level.put(player, player.getLevel());
-		exp.put(player, player.getExp());
 	}
 
 }
