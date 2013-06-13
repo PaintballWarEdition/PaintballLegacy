@@ -858,18 +858,22 @@ public class EventListener implements Listener {
 		}
 	}
 
-	@EventHandler(priority = EventPriority.NORMAL)
+	@EventHandler(priority = EventPriority.HIGHEST, ignoreCancelled = false)
 	public void onPlayerCommand(PlayerCommandPreprocessEvent event) {
-		if (Lobby.LOBBY.isMember(event.getPlayer()) && !event.getMessage().startsWith("/pb")
-				&& (!plugin.allowedCommands.isEmpty() ? !isAllowedCommand(event.getMessage()) : true)) {
-			if (!event.getPlayer().hasPermission("paintball.admin") && !event.getPlayer().isOp()) {
-				event.getPlayer().sendMessage(Translator.getString("COMMAND_NOT_ALLOWED"));
-				event.setCancelled(true);
-			}
-		} else if (!event.getMessage().startsWith("/pb") && plugin.checkBlacklist && isBlacklistedCommand(event.getMessage())) {
-			if (!plugin.blacklistAdminOverride && !event.getPlayer().hasPermission("paintball.admin") && !event.getPlayer().isOp()) {
-				event.getPlayer().sendMessage(Translator.getString("COMMAND_BLACKLISTED"));
-				event.setCancelled(true);
+		// always allow pb commands:
+		if (event.getMessage().startsWith("/pb")) {
+			if (event.isCancelled()) event.setCancelled(false);
+		} else {
+			if (Lobby.LOBBY.isMember(event.getPlayer()) && (!plugin.allowedCommands.isEmpty() ? !isAllowedCommand(event.getMessage()) : true)) {
+				if (!event.getPlayer().hasPermission("paintball.admin") && !event.getPlayer().isOp()) {
+					event.getPlayer().sendMessage(Translator.getString("COMMAND_NOT_ALLOWED"));
+					event.setCancelled(true);
+				}
+			} else if (plugin.checkBlacklist && isBlacklistedCommand(event.getMessage())) {
+				if (!plugin.blacklistAdminOverride && !event.getPlayer().hasPermission("paintball.admin") && !event.getPlayer().isOp()) {
+					event.getPlayer().sendMessage(Translator.getString("COMMAND_BLACKLISTED"));
+					event.setCancelled(true);
+				}
 			}
 		}
 	}
