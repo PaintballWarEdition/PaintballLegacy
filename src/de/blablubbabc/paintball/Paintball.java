@@ -40,6 +40,7 @@ import de.blablubbabc.paintball.utils.TagAPIListener;
 import de.blablubbabc.paintball.utils.TeleportFix;
 import de.blablubbabc.paintball.utils.Translator;
 import de.blablubbabc.paintball.utils.Utils;
+import de.blablubbabc.paintball.utils.VoteListener;
 import de.blablubbabc.paintball.utils.Metrics.Graph;
 
 /**
@@ -61,6 +62,7 @@ public class Paintball extends JavaPlugin{
 	public MatchManager mm;
 	public EventListener listener;
 	public TagAPIListener tagAPI;
+	public VoteListener voteListener;
 	public Newsfeeder nf;
 	public ArenaManager am;
 	public Translator t;
@@ -139,6 +141,10 @@ public class Paintball extends JavaPlugin{
 	public boolean autoSpecLobby;
 	public boolean effects;
 	public boolean debug;
+	
+	public boolean vote;
+	public int voteCash;
+	
 	public boolean teleportFix;
 	public boolean useXPBar;
 	public int protectionTime;
@@ -347,6 +353,8 @@ public class Paintball extends JavaPlugin{
 		if(getConfig().get("Paintball.Language") == null)getConfig().set("Paintball.Language", "enUS");
 		if(getConfig().get("Paintball.No Permissions") == null)getConfig().set("Paintball.No Permissions", false);
 		if(getConfig().get("Paintball.Debug") == null)getConfig().set("Paintball.Debug", false);
+		if(getConfig().get("Paintball.VoteListener.enabled") == null)getConfig().set("Paintball.VoteListener.enabled", true);
+		if(getConfig().get("Paintball.VoteListener.Cash") == null)getConfig().set("Paintball.VoteListener.Cash", 100);
 		if(getConfig().get("Paintball.Auto Lobby") == null)getConfig().set("Paintball.Auto Lobby", false);
 		if(getConfig().get("Paintball.Auto Team") == null)getConfig().set("Paintball.Auto Team", false);
 		if(getConfig().get("Paintball.Points per Kill") == null)getConfig().set("Paintball.Points per Kill", 2);
@@ -533,6 +541,10 @@ public class Paintball extends JavaPlugin{
 		local = getConfig().getString("Paintball.Language", "enUS");
 		noPerms = getConfig().getBoolean("Paintball.No Permissions", false);
 		debug = getConfig().getBoolean("Paintball.Debug", false);
+		
+		vote = getConfig().getBoolean("Paintball.VoteListener.enabled", true);
+		voteCash = getConfig().getInt("Paintball.VoteListener.Cash", 100);
+		
 		teleportFix = getConfig().getBoolean("Paintball.Teleport Fix", true);
 		useXPBar = getConfig().getBoolean("Paintball.Use XP Bar", true);
 		autoLobby = getConfig().getBoolean("Paintball.Auto Lobby", false);
@@ -923,6 +935,17 @@ public class Paintball extends JavaPlugin{
 				Log.info("Plugin 'TagAPI' found. Using it now.");
 			} else {
 				Log.info("Plugin 'TagAPI' not found. Additional tag features disabled.");
+			}
+		}
+		//VoteListener:
+		if (vote) {
+			Plugin votifierPlugin = getServer().getPluginManager().getPlugin("Votifier");
+			if ((votifierPlugin != null) && votifierPlugin.isEnabled()) {
+				voteListener = new VoteListener();
+				getServer().getPluginManager().registerEvents(voteListener, this);
+				Log.info("Plugin 'Votifier' found. Using it now.");
+			} else {
+				Log.info("Plugin 'Votifier' not found. Additional vote features disabled.");
 			}
 		}
 		
