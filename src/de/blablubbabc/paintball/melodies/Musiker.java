@@ -210,9 +210,9 @@ public class Musiker {
 		} else {
 			// ./nbs
 			Melody melodie = new Melody();
-			LEDataInputStream scanner = null;
+			LittleEndianStream scanner = null;
 			try {
-				scanner = new LEDataInputStream(new FileInputStream(file));
+				scanner = new LittleEndianStream(new FileInputStream(file));
 				// header
 				short length = scanner.readShort();
 				short height = scanner.readShort();
