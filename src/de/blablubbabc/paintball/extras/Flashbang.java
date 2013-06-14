@@ -4,7 +4,6 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 
-import org.bukkit.Effect;
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.entity.Entity;
@@ -117,10 +116,8 @@ public class Flashbang {
 							Player p = (Player) e;
 							Match m = Paintball.instance.mm.getMatch(p);
 							if (match == m && match.enemys(player, p)) {
-								p.getWorld().playEffect(p.getEyeLocation(), Effect.SMOKE, 4);
-								p.addPotionEffect(new PotionEffect(PotionEffectType.NIGHT_VISION, 20 * Paintball.instance.flashDuration, 5), true);
-								p.addPotionEffect(new PotionEffect(PotionEffectType.CONFUSION, 20 * Paintball.instance.flashDuration, 5), true);
-								p.addPotionEffect(new PotionEffect(PotionEffectType.BLINDNESS, 20 * Paintball.instance.flashDuration, 5), true);
+								p.addPotionEffect(new PotionEffect(PotionEffectType.CONFUSION, 20 * Paintball.instance.flashDuration, 3), true);
+								p.addPotionEffect(new PotionEffect(PotionEffectType.BLINDNESS, 20 * Paintball.instance.flashDuration, 3), true);
 							}
 							
 						}
