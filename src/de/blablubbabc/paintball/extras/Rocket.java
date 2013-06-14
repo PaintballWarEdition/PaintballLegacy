@@ -148,24 +148,15 @@ public class Rocket {
 							if (Paintball.instance.effects) {
 								Location loc = entity.getLocation();
 								// effect
-								entity.getWorld().playEffect(loc, Effect.SMOKE,
-										1);
-								entity.getWorld().playEffect(loc, Effect.SMOKE,
-										2);
-								entity.getWorld().playEffect(loc, Effect.SMOKE,
-										3);
-								entity.getWorld().playEffect(loc, Effect.SMOKE,
-										4);
-								entity.getWorld().playEffect(loc, Effect.SMOKE,
-										5);
-								entity.getWorld().playEffect(loc, Effect.SMOKE,
-										6, 50);
-								entity.getWorld().playEffect(loc, Effect.SMOKE,
-										7);
-								entity.getWorld().playEffect(loc, Effect.SMOKE,
-										8);
-								entity.getWorld().playEffect(loc,
-										Effect.MOBSPAWNER_FLAMES, 4);
+								entity.getWorld().playEffect(loc, Effect.SMOKE, 1);
+								entity.getWorld().playEffect(loc, Effect.SMOKE, 2);
+								entity.getWorld().playEffect(loc, Effect.SMOKE, 3);
+								entity.getWorld().playEffect(loc, Effect.SMOKE, 4);
+								entity.getWorld().playEffect(loc, Effect.SMOKE, 5);
+								entity.getWorld().playEffect(loc, Effect.SMOKE, 6, 50);
+								entity.getWorld().playEffect(loc, Effect.SMOKE, 7);
+								entity.getWorld().playEffect(loc, Effect.SMOKE, 8);
+								entity.getWorld().playEffect(loc, Effect.MOBSPAWNER_FLAMES, 4);
 							}
 							tick();
 						} else {

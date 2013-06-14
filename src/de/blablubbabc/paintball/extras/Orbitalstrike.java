@@ -115,20 +115,18 @@ public class Orbitalstrike {
 	 * list; }
 	 */
 
-	private final Player player;
 	private final String playerName;
 	private final Match match;
 	private int task = -1;
 
 	public Orbitalstrike(Player player, Match match) {
-		this.player = player;
 		this.playerName = player.getName();
 		this.match = match;
-		addOrbitalstrike(this, player.getName());
-		call();
+		addOrbitalstrike(this, playerName);
+		call(player);
 	}
 
-	private void call() {
+	private void call(final Player player) {
 		Block block = marks.get(playerName);
 		demark(player);
 		finalMark(block, player);
@@ -234,7 +232,7 @@ public class Orbitalstrike {
 	private void remove(boolean removeFromList) {
 		if (this.task != -1)
 			Paintball.instance.getServer().getScheduler().cancelTask(task);
-		definalMark(player, match);
+		definalMark(playerName, match);
 		if (removeFromList) removeOrbitalstrike(this, playerName);
 	}
 
@@ -253,10 +251,9 @@ public class Orbitalstrike {
 		player.sendBlockChange(last.getLocation(), Material.REDSTONE_BLOCK, (byte) 0);
 	}
 
-	private static void definalMark(Player player, Match match) {
-		String name = player.getName();
-		if (finalmarks.get(name) != null) {
-			Block last = finalmarks.get(name);
+	private static void definalMark(String playerName, Match match) {
+		if (finalmarks.get(playerName) != null) {
+			Block last = finalmarks.get(playerName);
 			for (int i = 0; i < 40; i++) {
 				last = last.getRelative(BlockFace.UP);
 				Location loc = last.getLocation();
@@ -265,7 +262,7 @@ public class Orbitalstrike {
 					p.sendBlockChange(loc, last.getType(), last.getData());
 				}
 			}
-			finalmarks.remove(name);
+			finalmarks.remove(playerName);
 		}
 	}
 

@@ -8,6 +8,7 @@ import java.util.Map;
 import org.bukkit.Effect;
 import org.bukkit.Location;
 import org.bukkit.Material;
+import org.bukkit.Sound;
 import org.bukkit.entity.Player;
 import org.bukkit.entity.Snowball;
 import org.bukkit.entity.Snowman;
@@ -229,6 +230,8 @@ public class Turret {
 										.toDegrees(Math.acos(y)));
 								entity.teleport(changed);
 
+								entity.getWorld().playSound(entity.getEyeLocation(), Sound.IRONGOLEM_THROW, 200L, 1L);
+								entity.getWorld().playSound(entity.getEyeLocation(), Sound.CHICKEN_EGG_POP, 200L, 1L);
 								Snowball s = entity
 										.getLocation()
 										.getWorld()
@@ -271,23 +274,16 @@ public class Turret {
 		removeTurret(playerName, this);
 		// some effect here:
 		if(effect) {
-			Location loc = entity.getLocation();
-			entity.getWorld().playEffect(loc.add(0, 1, 0),
-					Effect.SMOKE, 1);
-			entity.getWorld().playEffect(loc.add(0, 1, 0),
-					Effect.SMOKE, 2);
-			entity.getWorld().playEffect(loc.add(0, 1, 0),
-					Effect.SMOKE, 3);
-			entity.getWorld().playEffect(loc.add(0, 1, 0),
-					Effect.SMOKE, 5);
-			entity.getWorld().playEffect(loc.add(0, 1, 0),
-					Effect.SMOKE, 6);
-			entity.getWorld().playEffect(loc.add(0, 1, 0),
-					Effect.SMOKE, 7);
-			entity.getWorld().playEffect(loc.add(0, 1, 0),
-					Effect.SMOKE, 8);
-			entity.getWorld().playEffect(loc.add(0, 1, 0),
-					Effect.MOBSPAWNER_FLAMES, 4);
+			Location loc = entity.getLocation().add(0, 1, 0);
+			entity.getWorld().playSound(loc, Sound.IRONGOLEM_DEATH, 100L, 2L);
+			entity.getWorld().playEffect(loc, Effect.SMOKE, 1);
+			entity.getWorld().playEffect(loc, Effect.SMOKE, 2);
+			entity.getWorld().playEffect(loc, Effect.SMOKE, 3);
+			entity.getWorld().playEffect(loc, Effect.SMOKE, 5);
+			entity.getWorld().playEffect(loc, Effect.SMOKE, 6);
+			entity.getWorld().playEffect(loc, Effect.SMOKE, 7);
+			entity.getWorld().playEffect(loc, Effect.SMOKE, 8);
+			entity.getWorld().playEffect(loc, Effect.MOBSPAWNER_FLAMES, 4);
 		}
 
 		if (entity.isValid() && !entity.isDead())
@@ -298,6 +294,8 @@ public class Turret {
 		this.lives--;
 		if(this.lives <= 0) {
 			this.die(true);
+		} else {
+			entity.getWorld().playSound(entity.getEyeLocation(), Sound.IRONGOLEM_HIT, 100L, 2L);
 		}
 	}
 

@@ -7,6 +7,7 @@ import java.util.Map;
 
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
+import org.bukkit.Sound;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 
@@ -58,6 +59,7 @@ public class Gifts {
 	
 	@SuppressWarnings("deprecation")
 	public static void unwrapGift(Player player) {
+		player.playSound(player.getEyeLocation(), Sound.LEVEL_UP, 100F, 1F);
 		//remove chest from hand
 		ItemStack i = player.getItemInHand();
 		if (i.getAmount() <= 1)
@@ -73,7 +75,7 @@ public class Gifts {
 			for(Gift g : Paintball.instance.gifts) {
 				chance += (g.getChance()*Paintball.instance.giftChanceFactor);
 				if(r < chance) {
-					player.sendMessage(ChatColor.GREEN+g.getMessage());
+					player.sendMessage(ChatColor.GREEN + g.getMessage());
 					ItemStack item = ItemManager.setMeta(g.getItem(true));
 					player.getInventory().addItem(item);
 					//airstrike item in hand update
