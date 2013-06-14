@@ -152,12 +152,12 @@ public class Match {
 			this.grenades.put(p.getName(), 0);
 			this.airstrikes.put(p.getName(), 0);
 
-			plugin.checks(p, true, true);
+			PlayerDataStore.clearPlayer(p, true, true);
 			spawnPlayer(p);
 		}
 
 		for (Player p : this.spec) {
-			plugin.checks(p, true, true);
+			PlayerDataStore.clearPlayer(p, true, true);
 			spawnSpec(p);
 		}
 		// colorchanges:
@@ -318,7 +318,7 @@ public class Match {
 		// afk Location
 		playersLoc.put(player.getName(), loc);
 		// PLAYER
-		plugin.checks(player, false, false);
+		PlayerDataStore.clearPlayer(player, false, false);
 		// INVENTORY
 
 		player.getInventory().setHelmet(

@@ -10,7 +10,6 @@ import java.util.List;
 import java.util.regex.Pattern;
 
 import org.bukkit.ChatColor;
-import org.bukkit.GameMode;
 import org.bukkit.Location;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
@@ -18,7 +17,6 @@ import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.Player;
 import org.bukkit.plugin.Plugin;
 import org.bukkit.plugin.java.JavaPlugin;
-import org.bukkit.potion.PotionEffect;
 
 import de.blablubbabc.BlaDB.BlaSQLite;
 import de.blablubbabc.paintball.extras.Airstrike;
@@ -39,7 +37,6 @@ import de.blablubbabc.paintball.utils.Serverlister;
 import de.blablubbabc.paintball.utils.TagAPIListener;
 import de.blablubbabc.paintball.utils.TeleportFix;
 import de.blablubbabc.paintball.utils.Translator;
-import de.blablubbabc.paintball.utils.Utils;
 import de.blablubbabc.paintball.utils.VoteListener;
 import de.blablubbabc.paintball.utils.Metrics.Graph;
 
@@ -1043,44 +1040,8 @@ public class Paintball extends JavaPlugin{
 		return entries;
 	}
 
-	public void checks(Player player, boolean checkListname, boolean changeLevel) {
-		player.closeInventory();
-		if(!Utils.isEmptyInventory(player)) Utils.clearInv(player);
-		//gamemode
-		if(!player.getGameMode().equals(GameMode.SURVIVAL)) player.setGameMode(GameMode.SURVIVAL);
-		//flymode (built-in)
-		if(player.getAllowFlight()) player.setAllowFlight(false);
-		if(player.isFlying()) player.setFlying(false);
-		//feuer
-		if(player.getFireTicks() > 0) player.setFireTicks(0);
-		//Health + Food
-		if(player.getHealth() < 20) player.setHealth(20);
-		if(player.getFoodLevel() < 20) player.setFoodLevel(20);
-		//effekte entfernen
-		if(player.getActivePotionEffects().size() > 0) {
-			ArrayList<PotionEffect> effects = new ArrayList<PotionEffect>();
-			for(PotionEffect eff : player.getActivePotionEffects()) {
-				effects.add(eff);
-			}
-			for(PotionEffect eff : effects) {
-				player.removePotionEffect(eff.getType());
-			}	
-		}
-		//Vehicle
-		if(player.isInsideVehicle()) player.leaveVehicle();
-		//walkspeed
-		if(player.getWalkSpeed() != 0.2) player.setWalkSpeed(0.2F);
-		//listname
-		if(checkListname && listnames) player.setPlayerListName(null);
-		//xp bar
-		if (useXPBar) {
-			if (changeLevel) player.setLevel(0);
-			player.setExp(1F);
-		}
-	}
-
 	public void joinLobby(Player player) {
-		checks(player, true, true);
+		PlayerDataStore.clearPlayer(player, true, true);
 		enterLobby(player);
 	}
 	
