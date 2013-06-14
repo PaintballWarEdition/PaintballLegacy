@@ -28,16 +28,16 @@ import de.blablubbabc.paintball.extras.Orbitalstrike;
 import de.blablubbabc.paintball.extras.Rocket;
 import de.blablubbabc.paintball.extras.Shotgun;
 import de.blablubbabc.paintball.extras.Turret;
+import de.blablubbabc.paintball.features.InSignsFeature;
+import de.blablubbabc.paintball.features.TagAPIListener;
+import de.blablubbabc.paintball.features.VoteListener;
 import de.blablubbabc.paintball.melodies.Musiker;
-import de.blablubbabc.paintball.utils.InSignsFeature;
 import de.blablubbabc.paintball.utils.Log;
 import de.blablubbabc.paintball.utils.Metrics;
 import de.blablubbabc.paintball.utils.Poster;
 import de.blablubbabc.paintball.utils.Serverlister;
-import de.blablubbabc.paintball.utils.TagAPIListener;
 import de.blablubbabc.paintball.utils.TeleportFix;
 import de.blablubbabc.paintball.utils.Translator;
-import de.blablubbabc.paintball.utils.VoteListener;
 import de.blablubbabc.paintball.utils.Metrics.Graph;
 
 /**

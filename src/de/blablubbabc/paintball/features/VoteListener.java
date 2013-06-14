@@ -1,4 +1,4 @@
-package de.blablubbabc.paintball.utils;
+package de.blablubbabc.paintball.features;
 
 import java.util.HashMap;
 

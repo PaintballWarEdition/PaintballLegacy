@@ -1,9 +1,10 @@
-package de.blablubbabc.paintball.utils;
+package de.blablubbabc.paintball.features;
 
 import java.text.DecimalFormat;
 import de.blablubbabc.insigns.Changer;
 import de.blablubbabc.insigns.InSigns;
 import de.blablubbabc.paintball.Paintball;
+import de.blablubbabc.paintball.utils.Translator;
 
 import org.bukkit.Location;
 import org.bukkit.entity.Player;
