@@ -30,7 +30,7 @@ public class Shotgun {
 		Location loc = player.getEyeLocation();
 		Vector dir = loc.getDirection().normalize();
 		Vector dirY = (new Location(loc.getWorld(), 0, 0, 0, loc.getYaw(), 0)).getDirection().normalize();
-		player.getWorld().playSound(loc, Sound.FIRE_IGNITE, 100F, 0F);
+		player.getWorld().playSound(loc, Sound.FIRE_IGNITE, 1F, 0F);
 		
 		String playerName = player.getName();
 		

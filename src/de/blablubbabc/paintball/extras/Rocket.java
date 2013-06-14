@@ -127,7 +127,7 @@ public class Rocket {
 	public Rocket(Player player, Fireball rocket) {
 		this.entity = rocket;
 		this.player = player;
-		this.lives = Paintball.instance.rocketRange*10;
+		this.lives = Paintball.instance.rocketRange * 10;
 		registerRocket(this, player.getName());
 		tick();
 	}
