@@ -382,14 +382,14 @@ public class Paintball extends JavaPlugin{
 			}
 		}
 		//lobby join checks
-		if(getConfig().get("Paintball.Lobby join.Checks.Inventory") == null)getConfig().set("Paintball.Lobby join.Checks.Inventory", true);
+		if(getConfig().get("Paintball.Lobby join.Checks.Inventory") == null)getConfig().set("Paintball.Lobby join.Checks.Inventory", false);
 		if(getConfig().get("Paintball.Lobby join.Checks.Inventory Save") == null)getConfig().set("Paintball.Lobby join.Checks.Inventory Save", true);
-		if(getConfig().get("Paintball.Lobby join.Checks.Gamemode") == null)getConfig().set("Paintball.Lobby join.Checks.Gamemode", true);
-		if(getConfig().get("Paintball.Lobby join.Checks.Creative-Fly-Mode") == null)getConfig().set("Paintball.Lobby join.Checks.Creative-Fly-Mode", true);
+		if(getConfig().get("Paintball.Lobby join.Checks.Gamemode") == null)getConfig().set("Paintball.Lobby join.Checks.Gamemode", false);
+		if(getConfig().get("Paintball.Lobby join.Checks.Creative-Fly-Mode") == null)getConfig().set("Paintball.Lobby join.Checks.Creative-Fly-Mode", false);
 		if(getConfig().get("Paintball.Lobby join.Checks.Burning, Falling, Immersion") == null)getConfig().set("Paintball.Lobby join.Checks.Burning, Falling, Immersion", true);
 		if(getConfig().get("Paintball.Lobby join.Checks.Health") == null)getConfig().set("Paintball.Lobby join.Checks.Health", true);
 		if(getConfig().get("Paintball.Lobby join.Checks.FoodLevel") == null)getConfig().set("Paintball.Lobby join.Checks.FoodLevel", true);
-		if(getConfig().get("Paintball.Lobby join.Checks.Effects") == null)getConfig().set("Paintball.Lobby join.Checks.Effects", true);
+		if(getConfig().get("Paintball.Lobby join.Checks.Effects") == null)getConfig().set("Paintball.Lobby join.Checks.Effects", false);
 
 		if(getConfig().get("Paintball.Match.Damage.FallDamage") == null)getConfig().set("Paintball.Match.Damage.FallDamage", false);
 		if(getConfig().get("Paintball.Match.Damage.Other Damage") == null)getConfig().set("Paintball.Match.Damage.Other Damage", true);
@@ -424,7 +424,7 @@ public class Paintball extends JavaPlugin{
 		if(getConfig().get("Paintball.Extras.Flashbang.enabled") == null)getConfig().set("Paintball.Extras.Flashbang.enabled", true);
 		if(getConfig().get("Paintball.Extras.Flashbang.Speed multi") == null)getConfig().set("Paintball.Extras.Flashbang.Speed multi", 1.5);
 		if(getConfig().get("Paintball.Extras.Flashbang.Flash Range") == null)getConfig().set("Paintball.Extras.Flashbang.Flash Range", 5.5);
-		if(getConfig().get("Paintball.Extras.Flashbang.Flash Duration in Seconds") == null)getConfig().set("Paintball.Extras.Flashbang.Flash Duration in Seconds", 8);
+		if(getConfig().get("Paintball.Extras.Flashbang.Flash Duration in Seconds") == null)getConfig().set("Paintball.Extras.Flashbang.Flash Duration in Seconds", 7);
 		if(getConfig().get("Paintball.Extras.Flashbang.Seconds Until Explosion") == null)getConfig().set("Paintball.Extras.Flashbang.Seconds Until Explosion", 2);
 		
 		if(getConfig().get("Paintball.Extras.Airstrike.enabled") == null)getConfig().set("Paintball.Extras.Airstrike.enabled", true);
@@ -463,14 +463,14 @@ public class Paintball extends JavaPlugin{
 		if(getConfig().get("Paintball.Extras.Shotgun.enabled") == null)getConfig().set("Paintball.Extras.Shotgun.enabled", true);
 		if(getConfig().get("Paintball.Extras.Shotgun.Angle1") == null)getConfig().set("Paintball.Extras.Shotgun.Angle1", 5);
 		if(getConfig().get("Paintball.Extras.Shotgun.Angle2") == null)getConfig().set("Paintball.Extras.Shotgun.Angle2", 10);
-		if(getConfig().get("Paintball.Extras.Shotgun.AngleVertical") == null)getConfig().set("Paintball.Extras.Shotgun.AngleVertical", 3);
-		if(getConfig().get("Paintball.Extras.Shotgun.Speedmulti") == null)getConfig().set("Paintball.Extras.Shotgun.Speedmulti", 1.0);
-		if(getConfig().get("Paintball.Extras.Shotgun.Needed Ammo") == null)getConfig().set("Paintball.Extras.Shotgun.Needed Ammo", 15);
+		if(getConfig().get("Paintball.Extras.Shotgun.AngleVertical") == null)getConfig().set("Paintball.Extras.Shotgun.AngleVertical", 0);
+		if(getConfig().get("Paintball.Extras.Shotgun.Speedmulti") == null)getConfig().set("Paintball.Extras.Shotgun.Speedmulti", 1.3);
+		if(getConfig().get("Paintball.Extras.Shotgun.Needed Ammo") == null)getConfig().set("Paintball.Extras.Shotgun.Needed Ammo", 5);
 		
 		if(getConfig().get("Paintball.Extras.Pumpgun.enabled") == null)getConfig().set("Paintball.Extras.Pumpgun.enabled", true);
 		if(getConfig().get("Paintball.Extras.Pumpgun.Bullets") == null)getConfig().set("Paintball.Extras.Pumpgun.Bullets", 10);
 		if(getConfig().get("Paintball.Extras.Pumpgun.Spray (higher number means less spray)") == null)getConfig().set("Paintball.Extras.Pumpgun.Spray (higher number means less spray)", 3.5);
-		if(getConfig().get("Paintball.Extras.Pumpgun.Speedmulti") == null)getConfig().set("Paintball.Extras.Pumpgun.Speedmulti", 1.0);
+		if(getConfig().get("Paintball.Extras.Pumpgun.Speedmulti") == null)getConfig().set("Paintball.Extras.Pumpgun.Speedmulti", 1.3);
 		if(getConfig().get("Paintball.Extras.Pumpgun.Needed Ammo") == null)getConfig().set("Paintball.Extras.Pumpgun.Needed Ammo", 10);
 		
 		if(getConfig().get("Paintball.Extras.Sniper.enabled") == null)getConfig().set("Paintball.Extras.Sniper.enabled", true);
@@ -664,8 +664,8 @@ public class Paintball extends JavaPlugin{
 		
 		flashbang = getConfig().getBoolean("Paintball.Extras.Flashbang.enabled", true);
 		flashbangSpeed = getConfig().getDouble("Paintball.Extras.Flashbang.Speed multi", 1.5);
-		flashRange = getConfig().getDouble("Paintball.Extras.Flashbang.Flash Range", 4.5);
-		flashDuration = getConfig().getInt("Paintball.Extras.Flashbang.Flash Duration in Seconds", 8);
+		flashRange = getConfig().getDouble("Paintball.Extras.Flashbang.Flash Range", 5.5);
+		flashDuration = getConfig().getInt("Paintball.Extras.Flashbang.Flash Duration in Seconds", 7);
 		flashbangTimeUntilExplosion = getConfig().getInt("Paintball.Extras.Flashbang.Seconds Until Explosion", 2);
 
 		airstrike = getConfig().getBoolean("Paintball.Extras.Airstrike.enabled", true);
@@ -730,7 +730,7 @@ public class Paintball extends JavaPlugin{
 		shotgunAngle1 = getConfig().getInt("Paintball.Extras.Shotgun.Angle1", 5);
 		shotgunAngle2 = getConfig().getInt("Paintball.Extras.Shotgun.Angle2", 10);
 		shotgunAngleVert = getConfig().getInt("Paintball.Extras.Shotgun.AngleVertical", 3);
-		shotgunSpeedmulti = getConfig().getDouble("Paintball.Extras.Shotgun.Speedmulti", 1.0);
+		shotgunSpeedmulti = getConfig().getDouble("Paintball.Extras.Shotgun.Speedmulti", 1.3);
 		shotgunAmmo = getConfig().getInt("Paintball.Extras.Shotgun.Needed Ammo", 5);
 		if(shotgunAmmo < 0) shotgunAmmo = 0;
 		
@@ -738,7 +738,7 @@ public class Paintball extends JavaPlugin{
 		pumpgunBullets = getConfig().getInt("Paintball.Extras.Pumpgun.Bullets", 15);
 		if(pumpgunBullets < 0) pumpgunBullets = 0;
 		pumpgunSpray = getConfig().getDouble("Paintball.Extras.Pumpgun.Spray (higher number means less spray)", 2.7);
-		pumpgunSpeedmulti = getConfig().getDouble("Paintball.Extras.Pumpgun.Speedmulti", 1.0);
+		pumpgunSpeedmulti = getConfig().getDouble("Paintball.Extras.Pumpgun.Speedmulti", 1.3);
 		pumpgunAmmo = getConfig().getInt("Paintball.Extras.Pumpgun.Needed Ammo", 5);
 		if(pumpgunAmmo < 0) pumpgunAmmo = 0;
 		
