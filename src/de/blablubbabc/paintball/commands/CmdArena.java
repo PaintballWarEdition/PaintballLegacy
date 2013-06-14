@@ -110,7 +110,7 @@ public class CmdArena {
 					vars.put("spawns", String.valueOf(specspawnsize));
 					player.sendMessage(Translator.getString("ARENA_INFO_SPAWNS", vars));
 					
-					if(!am.isReady(name)) {
+					if(am.inUse(name) || !am.isReady(name)) {
 						player.sendMessage(Translator.getString("ARENA_INFO_NEEDS_HEADER"));
 						if(am.inUse(name)) player.sendMessage(Translator.getString("ARENA_INFO_NEEDS_NO_USE"));
 						if(am.isDisabled(name)) player.sendMessage(Translator.getString("ARENA_INFO_NEEDS_ENABLE"));

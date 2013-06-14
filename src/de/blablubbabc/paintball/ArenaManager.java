@@ -3,20 +3,21 @@ package de.blablubbabc.paintball;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
+import java.util.List;
 
 import org.bukkit.Location;
 
 import de.blablubbabc.paintball.utils.Translator;
+import de.blablubbabc.paintball.utils.Utils;
 
 
 public class ArenaManager {
 	private static Paintball plugin;
-	private int zähler;
+	private String last = null;
 	private String nextArenaForce;
 
 	public ArenaManager(Paintball pl) {
 		plugin = pl;
-		zähler = 0;
 		nextArenaForce = "";
 	}
 	//METHODS
@@ -49,7 +50,7 @@ public class ArenaManager {
 	}
 	
 	public boolean isReady(String arena) {
-		if(!inUse(arena) && !isDisabled(arena)) {
+		if(!isDisabled(arena)) {
 			//spawns?
 			if(hasAllSpawns(arena)) {
 				return true;
@@ -120,17 +121,31 @@ public class ArenaManager {
 
 	//GETTING ARENAS
 	public String getNextArena() {
+		// ready arenas:
+		List<String> ready = readyArenas();
 		//force map:
-		if(!nextArenaForce.equalsIgnoreCase("")) {
-			if(readyArenas().contains(nextArenaForce)) {
-				return nextArenaForce;
+		String next = null;
+		if(!nextArenaForce.equalsIgnoreCase("") && ready.contains(nextArenaForce)) {
+			next = nextArenaForce;
+		} else {
+			//random next arena:
+			if (ready.size() >= 2) {
+				int index = Utils.random.nextInt(ready.size());
+				next = ready.get(index);
+				if (last != null) {
+					// get next arena which is not last:
+					while (next.equals(last)) {
+						index += 1;
+						next = ready.get(index >= ready.size() ? 0 : index);
+					}
+				}
+			} else {
+				// there is only one ready arena..:
+				next = ready.get(0);
 			}
 		}
-		//rotation:
-		if(zähler > (readyArenas().size()-1)) zähler = 0;
-		String arena = readyArenas().get(zähler);
-		zähler++;
-		return arena;
+		last = next;
+		return next;
 	}
 	/////////////////////////////
 

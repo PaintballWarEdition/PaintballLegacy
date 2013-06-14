@@ -244,7 +244,7 @@ public class CmdAdmin {
 					sender.sendMessage(Translator.getString("ARENA_NOT_FOUND", vars));
 					return true;
 				}
-				if(!plugin.am.inUse(arena) && !plugin.am.isReady(arena)) {
+				if(!plugin.am.isReady(arena)) {
 					sender.sendMessage(Translator.getString("ARENA_NOT_READY"));
 					return true;
 				}
