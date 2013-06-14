@@ -26,7 +26,7 @@ public class Poster {
 			try {
 				post();
 			} catch (IOException e) {
-				Log.severe(e.getMessage());
+				Log.severe("Wasn't able to check version: " + e.getMessage());
 			}
 		} else {
 			Log.logColored("--------- Checking version ----------");
