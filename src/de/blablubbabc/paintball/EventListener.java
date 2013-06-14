@@ -113,14 +113,14 @@ public class EventListener implements Listener {
 		for (String s : plugin.sql.sqlPlayers.statsList) {
 			if (s.equals("teamattacks"))
 				s = "ta";
-			if (s.equals("hitquote"))
+			else if (s.equals("hitquote"))
 				s = "hq";
-			if (s.equals("airstrikes"))
+			else if (s.equals("airstrikes"))
 				s = "as";
-			if (s.equals("money_spent"))
+			else if (s.equals("money_spent"))
 				s = "spent";
 
-			if (l.equalsIgnoreCase("[PB " + s.toUpperCase() + "]")) {
+			if (l.equalsIgnoreCase("[PB " + s.toUpperCase() + "]") || l.equalsIgnoreCase("[PB R " + s.toUpperCase() + "]") || l.equalsIgnoreCase("[PB RANK]")) {
 				if (!player.isOp() && !player.hasPermission("paintball.admin")) {
 					event.setCancelled(true);
 					player.sendMessage(Translator.getString("NO_PERMISSION"));
@@ -169,44 +169,56 @@ public class EventListener implements Listener {
 
 	@EventHandler(priority = EventPriority.NORMAL)
 	public void onInteract(PlayerInteractEvent event) {
-		if (event.getClickedBlock() != null) {
-			Block block = event.getClickedBlock();
+		Block block = event.getClickedBlock();
+		if (block != null) {
 			BlockState state = block.getState();
 			if (state instanceof Sign) {
 				Sign sign = (Sign) state;
 				String l = ChatColor.stripColor(sign.getLine(0));
 
-				for (String stat : plugin.sql.sqlPlayers.statsList) {
-					String s = stat;
-					if (s.equals("teamattacks"))
-						s = "ta";
-					if (s.equals("hitquote"))
-						s = "hq";
-					if (s.equals("airstrikes"))
-						s = "as";
-					if (s.equals("money_spent"))
-						s = "spent";
+				if (l.equalsIgnoreCase("[PB RANK]")) {
+					changeSign(event.getPlayer().getName(), sign, "points", true);
+				} else {
+					for (String stat : plugin.sql.sqlPlayers.statsList) {
+						String s = stat;
+						if (s.equals("teamattacks"))
+							s = "ta";
+						else if (s.equals("hitquote"))
+							s = "hq";
+						else if (s.equals("airstrikes"))
+							s = "as";
+						else if (s.equals("money_spent"))
+							s = "spent";
 
-					if (l.equalsIgnoreCase("[PB " + s.toUpperCase() + "]")) {
-						changeSign(event.getPlayer().getName(), sign, stat);
-						break;
+						if (l.equalsIgnoreCase("[PB " + s.toUpperCase() + "]")) {
+							changeSign(event.getPlayer().getName(), sign, stat, false);
+							break;
+						} else if (l.equalsIgnoreCase("[PB R " + s.toUpperCase() + "]")) {
+							changeSign(event.getPlayer().getName(), sign, stat, true);
+							break;
+						}
 					}
 				}
 			}
 		}
 	}
 
-	private void changeSign(String player, Sign sign, String stat) {
-		if ((System.currentTimeMillis() - lastSignUpdate) > (500)) {
+	private void changeSign(String player, Sign sign, String stat, boolean rank) {
+		if ((System.currentTimeMillis() - lastSignUpdate) > (250)) {
 			HashMap<String, String> vars = new HashMap<String, String>();
 			vars.put("player", player);
 			if (plugin.pm.exists(player)) {
-				if (stat.equals("hitquote") || stat.equals("kd")) {
-					DecimalFormat dec = new DecimalFormat("###.##");
-					float statF = (float) (Integer) plugin.pm.getStats(player).get(stat) / 100;
-					vars.put("value", dec.format(statF));
-				} else
-					vars.put("value", "" + plugin.pm.getStats(player).get(stat));
+				if (rank) {
+					vars.put("value", "" + plugin.stats.getRank(player, stat));
+				} else {
+					if (stat.equals("hitquote") || stat.equals("kd")) {
+						DecimalFormat dec = new DecimalFormat("###.##");
+						float statF = (float) (Integer) plugin.pm.getStats(player).get(stat) / 100;
+						vars.put("value", dec.format(statF));
+					} else {
+						vars.put("value", "" + plugin.pm.getStats(player).get(stat));
+					}
+				}
 			} else
 				vars.put("value", Translator.getString("NOT_FOUND"));
 			sign.setLine(1, Translator.getString("SIGN_LINE_TWO", vars));
