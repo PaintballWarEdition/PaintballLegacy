@@ -59,7 +59,7 @@ public class Sniper {
 	public static void shoot(Player player) {
 		Location loc = player.getEyeLocation();
 		Vector dir = loc.getDirection().normalize();
-		player.getWorld().playSound(loc, Sound.FIRE_IGNITE, 200F, 0F);
+		player.getWorld().playSound(loc, Sound.FIRE_IGNITE, 100F, 0F);
 
 		moveSnow(loc.getWorld().spawn(loc, Snowball.class), dir, player);
 

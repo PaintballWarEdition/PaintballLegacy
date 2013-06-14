@@ -22,7 +22,7 @@ public class Pumpgun {
 		
 		Vector dir = loc.getDirection().normalize();
 		
-		player.getWorld().playSound(loc, Sound.FIRE_IGNITE, 200F, 0F);
+		player.getWorld().playSound(loc, Sound.FIRE_IGNITE, 100F, 0F);
 		String playerName = player.getName();
 		
 		for (int i = 0; i < Paintball.instance.pumpgunBullets ; i++) {

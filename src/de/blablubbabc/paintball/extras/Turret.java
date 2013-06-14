@@ -230,8 +230,8 @@ public class Turret {
 										.toDegrees(Math.acos(y)));
 								entity.teleport(changed);
 
-								entity.getWorld().playSound(entity.getEyeLocation(), Sound.IRONGOLEM_THROW, 200L, 1L);
-								entity.getWorld().playSound(entity.getEyeLocation(), Sound.CHICKEN_EGG_POP, 200L, 1L);
+								entity.getWorld().playSound(entity.getEyeLocation(), Sound.IRONGOLEM_THROW, 60L, 1L);
+								entity.getWorld().playSound(entity.getEyeLocation(), Sound.CHICKEN_EGG_POP, 60L, 1L);
 								Snowball s = entity
 										.getLocation()
 										.getWorld()

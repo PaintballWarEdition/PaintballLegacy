@@ -361,7 +361,7 @@ public class EventListener implements Listener {
 						PlayerInventory inv = player.getInventory();
 						if (match.setting_balls == -1 || inv.contains(Material.SNOW_BALL, 1)) {
 							Snowball ball = (Snowball) player.getWorld().spawnEntity(player.getEyeLocation(), EntityType.SNOWBALL);
-							player.getWorld().playSound(player.getEyeLocation(), Sound.CHICKEN_EGG_POP, 200L, 1L);
+							player.getWorld().playSound(player.getEyeLocation(), Sound.CHICKEN_EGG_POP, 100L, 2L);
 							ball.setShooter(player);
 							// register snowball
 							Ball.registerBall(ball, player.getName(), Origin.MARKER);
@@ -376,7 +376,7 @@ public class EventListener implements Listener {
 								Utils.removeInventoryItems(inv, Ball.item, 1);
 							}
 						} else {
-							player.playSound(player.getEyeLocation(), Sound.FIRE_IGNITE, 200F, 2F);
+							player.playSound(player.getEyeLocation(), Sound.FIRE_IGNITE, 100F, 2F);
 						}
 					}
 					break;
@@ -439,7 +439,7 @@ public class EventListener implements Listener {
 						PlayerInventory inv = player.getInventory();
 						if (match.setting_grenades == -1 || inv.containsAtLeast(Grenade.item,  1)) {
 							player.sendMessage(Translator.getString("GRENADE_THROW"));
-							player.getWorld().playSound(player.getLocation(), Sound.SILVERFISH_IDLE, 200L, 1L);
+							player.getWorld().playSound(player.getLocation(), Sound.SILVERFISH_IDLE, 100L, 1L);
 							Egg egg = (Egg) player.getWorld().spawnEntity(player.getEyeLocation(), EntityType.EGG);
 							egg.setShooter(player);
 							// boosting:
@@ -460,7 +460,7 @@ public class EventListener implements Listener {
 				case SLIME_BALL:
 					// GRENADE 2
 					if (plugin.grenade2 && item.isSimilar(GrenadeM2.item)) {
-						player.getWorld().playSound(player.getLocation(), Sound.IRONGOLEM_THROW, 200L, 1L);
+						player.getWorld().playSound(player.getLocation(), Sound.IRONGOLEM_THROW, 100L, 1L);
 						player.sendMessage(Translator.getString("GRENADE_THROW"));
 						ItemStack nadeItem = GrenadeM2.item.clone();
 						ItemMeta meta = nadeItem.getItemMeta();
@@ -481,7 +481,7 @@ public class EventListener implements Listener {
 				case GHAST_TEAR:
 					// FLASHBANG
 					if (plugin.flashbang && item.isSimilar(Flashbang.item)) {
-						player.getWorld().playSound(player.getLocation(), Sound.IRONGOLEM_THROW, 200L, 1L);
+						player.getWorld().playSound(player.getLocation(), Sound.IRONGOLEM_THROW, 100L, 1L);
 						ItemStack nadeItem = Flashbang.item.clone();
 						ItemMeta meta = nadeItem.getItemMeta();
 						meta.setDisplayName("Flashbang " + Flashbang.getNext());
@@ -531,7 +531,7 @@ public class EventListener implements Listener {
 					if (plugin.rocket && item.isSimilar(Rocket.item)) {
 						if (Rocket.getRocketCountMatch() < plugin.rocketMatchLimit) {
 							if (Rocket.getRocketCountPlayer(player.getName()) < plugin.rocketPlayerLimit) {
-								player.playSound(player.getLocation(), Sound.SILVERFISH_IDLE, 100L, 1L);
+								player.getWorld().playSound(player.getLocation(), Sound.SILVERFISH_IDLE, 100L, 1L);
 								Fireball rocket = (Fireball) player.getWorld().spawnEntity(player.getEyeLocation(), EntityType.FIREBALL);
 								rocket.setIsIncendiary(false);
 								rocket.setYield(0F);
