@@ -127,6 +127,11 @@ public class Utils {
 		vectors.addAll(downVectors);
 		return vectors;
 	}
+	//////////////////////////////
+	
+	public static int calculateQuote(int top, int bottom) {
+		return (int)(top*100) / (bottom > 0 ? bottom:1);
+	}
 	
 	// ///////////////////////////
 	public static final BlockFace[] axis = { BlockFace.NORTH, BlockFace.EAST, BlockFace.SOUTH, BlockFace.WEST };

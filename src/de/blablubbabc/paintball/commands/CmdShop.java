@@ -1,6 +1,8 @@
 package de.blablubbabc.paintball.commands;
 
 import java.util.HashMap;
+import java.util.Map;
+
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
@@ -11,6 +13,8 @@ import de.blablubbabc.paintball.ShopGood;
 import de.blablubbabc.paintball.extras.Airstrike;
 import de.blablubbabc.paintball.extras.ItemManager;
 import de.blablubbabc.paintball.extras.Orbitalstrike;
+import de.blablubbabc.paintball.statistics.general.GeneralStat;
+import de.blablubbabc.paintball.statistics.player.PlayerStat;
 import de.blablubbabc.paintball.utils.Log;
 import de.blablubbabc.paintball.utils.Translator;
 
@@ -49,7 +53,7 @@ public class CmdShop {
 				player.sendMessage(Translator.getString("SHOP_HEADER"));
 				player.sendMessage("");
 				if(plugin.happyhour) player.sendMessage(Translator.getString("HAPPYHOUR"));
-				HashMap<String, String> vars = new HashMap<String, String>();
+				Map<String, String> vars = new HashMap<String, String>();
 				//boolean admin = (player.isOp() || player.hasPermission("paintball.admin"));
 				for(int i = 0; i < goods.length; i++) {
 					vars.put("id", String.valueOf(i+1));
@@ -78,7 +82,7 @@ public class CmdShop {
 						int price = good.getPrice();
 						int amount = good.getAmount();
 						if(!plugin.happyhour) {
-							int cash = (Integer) plugin.pm.getStats(player.getName()).get("money");
+							int cash = plugin.pm.getStats(player.getName()).get(PlayerStat.MONEY);
 							if(cash < price) {
 								player.sendMessage(Translator.getString("NOT_ENOUGH_MONEY"));
 								return true;
@@ -91,18 +95,20 @@ public class CmdShop {
 						}
 						//money
 						if(!plugin.happyhour) {
-							HashMap<String, Integer> pStats = new HashMap<String, Integer>();
-							pStats.put("money", -price);
-							pStats.put("money_spent", price);
+							Map<PlayerStat, Integer> pStats = new HashMap<PlayerStat, Integer>();
+							pStats.put(PlayerStat.MONEY, -price);
+							pStats.put(PlayerStat.MONEY_SPENT, price);
 							plugin.pm.addStatsAsync(player.getName(), pStats);
-							plugin.stats.addGeneralStats(pStats);
+							Map<GeneralStat, Integer> gStats = new HashMap<GeneralStat, Integer>();
+							gStats.put(GeneralStat.MONEY_SPENT, price);
+							plugin.stats.addGeneralStats(gStats);
 						}
 						//item
 						ItemStack item = good.getItemStack();
 						player.getInventory().addItem(ItemManager.setMeta(item));
 						player.updateInventory();
 						
-						HashMap<String, String> vars = new HashMap<String, String>();
+						Map<String, String> vars = new HashMap<String, String>();
 						vars.put("amount", String.valueOf(amount));
 						vars.put("good", good.getName());
 						if(!plugin.happyhour) vars.put("price", String.valueOf(price));

@@ -1,7 +1,8 @@
 package de.blablubbabc.paintball.commands;
 
-import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 import java.util.Map.Entry;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
@@ -31,8 +32,8 @@ public class CmdArena {
 			Player player = (Player) sender;
 			if(args[1].equalsIgnoreCase("list")) {
 				//list
-				ArrayList<String> arenas = am.getAllArenaNames();
-				HashMap<String, String> vars = new HashMap<String, String>();
+				List<String> arenas = am.getAllArenaNames();
+				Map<String, String> vars = new HashMap<String, String>();
 				vars.put("arenas", String.valueOf(arenas.size()));
 				player.sendMessage(Translator.getString("ARENA_LIST_HEADER", vars));
 				for(String name : arenas) {
@@ -44,7 +45,7 @@ public class CmdArena {
 				return true;
 			} else {
 				String name = args[1];
-				HashMap<String, String> vars = new HashMap<String, String>();
+				Map<String, String> vars = new HashMap<String, String>();
 				vars.put("arena", name);
 				if(!am.existing(name)) {
 					if(args.length == 2) {
@@ -62,7 +63,7 @@ public class CmdArena {
 				//Existing:
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 				if(args[2].equalsIgnoreCase("info")) {
-					HashMap<String, Integer> arenaStats = am.getArenaStats(name);
+					Map<String, Integer> arenaStats = am.getArenaStats(name);
 					vars.put("status", am.getArenaStatus(name));
 					for(Entry<String, Integer> entry : arenaStats.entrySet()) {
 						vars.put(entry.getKey(), String.valueOf(entry.getValue()));
@@ -76,7 +77,7 @@ public class CmdArena {
 					player.sendMessage(Translator.getString("ARENA_INFO_STATS_GRENADES", vars));
 					player.sendMessage(Translator.getString("ARENA_INFO_STATS_AIRSTRIKES", vars));
 					
-					HashMap<String, Integer> arenaSettings = am.getArenaSettings(name);
+					Map<String, Integer> arenaSettings = am.getArenaSettings(name);
 					for(Entry<String, Integer> entry : arenaSettings.entrySet()) {
 						vars.put(entry.getKey(), String.valueOf(entry.getValue()));
 					}
@@ -223,7 +224,7 @@ public class CmdArena {
 					if(args.length == 5 && plugin.sql.sqlArenaLobby.settingsList.contains(args[3])) {
 						try {
 							int value = Integer.parseInt(args[4]);
-							HashMap<String, Integer> newSettings = new HashMap<String, Integer>();
+							Map<String, Integer> newSettings = new HashMap<String, Integer>();
 							newSettings.put(args[3], value);
 							am.setSettings(name, newSettings);
 							vars.put("setting", args[3]);

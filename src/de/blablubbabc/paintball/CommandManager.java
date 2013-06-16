@@ -1,6 +1,8 @@
 package de.blablubbabc.paintball;
 
 import java.util.HashMap;
+import java.util.Map;
+
 import org.bukkit.ChatColor;
 import org.bukkit.GameMode;
 import org.bukkit.command.Command;
@@ -11,6 +13,7 @@ import org.bukkit.entity.Player;
 import de.blablubbabc.paintball.commands.CmdAdmin;
 import de.blablubbabc.paintball.commands.CmdArena;
 import de.blablubbabc.paintball.commands.CmdShop;
+import de.blablubbabc.paintball.statistics.player.PlayerStat;
 import de.blablubbabc.paintball.utils.Translator;
 import de.blablubbabc.paintball.utils.Utils;
 
@@ -169,8 +172,17 @@ public class CommandManager implements CommandExecutor{
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 					} else if(args[0].equalsIgnoreCase("rank")) {
-						if(args.length == 1) plugin.stats.sendRank(player, player.getName(), "points");
-						else plugin.stats.sendRank(player, player.getName(), args[1]);
+						if(args.length == 1) plugin.stats.sendRank(player, player.getName(), PlayerStat.POINTS);
+						else {
+							PlayerStat stat = PlayerStat.getFromKey(args[1]);
+							if (stat != null) {
+								plugin.stats.sendRank(player, player.getName(), stat);
+							} else {
+								Map<String, String> vars = new HashMap<String, String>();
+								vars.put("values", PlayerStat.getKeysAsString());
+								sender.sendMessage(Translator.getString("VALUE_NOT_FOUND", vars));
+							}
+						}
 						return true;
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 					} else if(args[0].equalsIgnoreCase("stats")) {
@@ -190,8 +202,17 @@ public class CommandManager implements CommandExecutor{
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 				//CONSOLE AND PLAYER
 				if(args[0].equalsIgnoreCase("top")) {
-					if(args.length == 1) plugin.stats.sendTop(sender, "points");
-					else plugin.stats.sendTop(sender, args[1]);
+					if(args.length == 1) plugin.stats.sendTop(sender, PlayerStat.POINTS);
+					else {
+						PlayerStat stat = PlayerStat.getFromKey(args[1]);
+						if (stat != null) {
+							plugin.stats.sendTop(sender, stat);
+						} else {
+							Map<String, String> vars = new HashMap<String, String>();
+							vars.put("values", PlayerStat.getKeysAsString());
+							sender.sendMessage(Translator.getString("VALUE_NOT_FOUND", vars));
+						}
+					}
 					return true;
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 				} else if(args[0].equalsIgnoreCase("list")) {

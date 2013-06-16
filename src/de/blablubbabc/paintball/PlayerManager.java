@@ -1,11 +1,13 @@
 package de.blablubbabc.paintball;
 
-import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import org.bukkit.Location;
 import org.bukkit.entity.Player;
+
+import de.blablubbabc.paintball.statistics.player.PlayerStat;
 
 
 public class PlayerManager {
@@ -44,6 +46,7 @@ public class PlayerManager {
 	}
 	
 	private void addPlayer(final String name) {
+		// TODO is exits check really necessary here ?
 		if (!Paintball.instance.sql.sqlPlayers.isPlayerExisting(name)) {
 			Paintball.instance.sql.sqlPlayers.addNewPlayer(name);
 		}
@@ -80,40 +83,40 @@ public class PlayerManager {
 	}
 
 	// STATS
-	public void addStatsAsync(final String player,
-			final HashMap<String, Integer> stats) {
+	public void addStatsAsync(final String player, final Map<PlayerStat, Integer> stats) {
 		Paintball.instance.getServer().getScheduler()
 				.runTaskAsynchronously(Paintball.instance, new Runnable() {
 
 					@Override
 					public void run() {
-						Paintball.instance.sql.sqlPlayers.addPlayerStats(player, stats);
-						Paintball.instance.sql.sqlPlayers.calculateStats(player);
+						addStats(player, stats);
 					}
 				});
 	}
 
-	public void addStats(final String player,
-			final HashMap<String, Integer> stats) {
+	public void addStats(final String player, final Map<PlayerStat, Integer> stats) {
 		Paintball.instance.sql.sqlPlayers.addPlayerStats(player, stats);
 		Paintball.instance.sql.sqlPlayers.calculateStats(player);
 	}
 
-	public void setStats(final String player,
-			final HashMap<String, Integer> stats) {
+	public void setStatsAsync(final String player, final Map<PlayerStat, Integer> stats) {
 		Paintball.instance.getServer().getScheduler()
 				.runTaskAsynchronously(Paintball.instance, new Runnable() {
 
 					@Override
 					public void run() {
-						Paintball.instance.sql.sqlPlayers.setPlayerStats(player, stats);
-						Paintball.instance.sql.sqlPlayers.calculateStats(player);
+						setStats(player, stats);
 					}
 				});
 	}
+	
+	public void setStats(final String player, final Map<PlayerStat, Integer> stats) {
+		Paintball.instance.sql.sqlPlayers.setPlayerStats(player, stats);
+		Paintball.instance.sql.sqlPlayers.calculateStats(player);
+	}
 
 	// GETTER
-	public ArrayList<String> getAllPlayerNames() {
+	public List<String> getAllPlayerNames() {
 		return Paintball.instance.sql.sqlPlayers.getAllPlayerNames();
 	}
 
@@ -121,7 +124,7 @@ public class PlayerManager {
 		return Paintball.instance.sql.sqlPlayers.getPlayerCount();
 	}
 
-	public HashMap<String, Integer> getStats(String player) {
+	public Map<PlayerStat, Integer> getStats(String player) {
 		return Paintball.instance.sql.sqlPlayers.getPlayerStats(player);
 	}
 

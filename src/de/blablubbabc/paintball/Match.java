@@ -36,37 +36,37 @@ import de.blablubbabc.paintball.utils.Utils;
 public class Match {
 
 	private Paintball plugin;
-	private HashMap<Player, Integer> livesLeft = new HashMap<Player, Integer>();
-	private HashMap<Player, Integer> respawnsLeft = new HashMap<Player, Integer>();
-	private ArrayList<Player> redT = new ArrayList<Player>();
-	private ArrayList<Player> blueT = new ArrayList<Player>();
-	private ArrayList<Player> bothTeams = new ArrayList<Player>();
-	private ArrayList<Player> allPlayers = new ArrayList<Player>();
-	private HashMap<Player, Integer> protection = new HashMap<Player, Integer>();
+	private Map<Player, Integer> livesLeft = new HashMap<Player, Integer>();
+	private Map<Player, Integer> respawnsLeft = new HashMap<Player, Integer>();
+	private List<Player> redT = new ArrayList<Player>();
+	private List<Player> blueT = new ArrayList<Player>();
+	private List<Player> bothTeams = new ArrayList<Player>();
+	private List<Player> allPlayers = new ArrayList<Player>();
+	private Map<Player, Integer> protection = new HashMap<Player, Integer>();
 	private Set<String> justRespawned = new HashSet<String>();
 	// STATS
-	private HashMap<String, Integer> shots = new HashMap<String, Integer>();
-	private HashMap<String, Integer> hits = new HashMap<String, Integer>();
-	private HashMap<String, Integer> kills = new HashMap<String, Integer>();
-	private HashMap<String, Integer> deaths = new HashMap<String, Integer>();
-	private HashMap<String, Integer> teamattacks = new HashMap<String, Integer>();
-	private HashMap<String, Integer> grenades = new HashMap<String, Integer>();
-	private HashMap<String, Integer> airstrikes = new HashMap<String, Integer>();
+	private Map<String, Integer> shots = new HashMap<String, Integer>();
+	private Map<String, Integer> hits = new HashMap<String, Integer>();
+	private Map<String, Integer> kills = new HashMap<String, Integer>();
+	private Map<String, Integer> deaths = new HashMap<String, Integer>();
+	private Map<String, Integer> teamattacks = new HashMap<String, Integer>();
+	private Map<String, Integer> grenades = new HashMap<String, Integer>();
+	private Map<String, Integer> airstrikes = new HashMap<String, Integer>();
 
 	private Random random;
 
-	private HashMap<String, Location> playersLoc = new HashMap<String, Location>();;
+	private Map<String, Location> playersLoc = new HashMap<String, Location>();;
 	private boolean matchOver = false;
 
-	private ArrayList<Player> spec = new ArrayList<Player>();
+	private List<Player> spec = new ArrayList<Player>();
 	private String arena;
 
 	private Timer startTimer;
 	private Timer roundTimer;
 
-	private ArrayList<Location> redspawns;
-	private ArrayList<Location> bluespawns;
-	private ArrayList<Location> specspawns;
+	private List<Location> redspawns;
+	private List<Location> bluespawns;
+	private List<Location> specspawns;
 
 	private int spawnBlue;
 	private int spawnRed;
@@ -81,8 +81,8 @@ public class Match {
 
 	public boolean started = false;
 
-	public ArrayList<Player> winners = new ArrayList<Player>();
-	public ArrayList<Player> loosers = new ArrayList<Player>();
+	public List<Player> winners = new ArrayList<Player>();
+	public List<Player> loosers = new ArrayList<Player>();
 	public String win = "";
 	public String loose = "";
 
@@ -269,7 +269,7 @@ public class Match {
 				if (matchOver)
 					return;
 				// winner?
-				ArrayList<Player> winnerTeam = getWinner();
+				List<Player> winnerTeam = getWinner();
 				if (winnerTeam == null) {
 					// draw:
 					gameEnd(true, null, null, null, null);
@@ -282,7 +282,7 @@ public class Match {
 		});
 	}
 
-	private ArrayList<Player> getWinner() {
+	private List<Player> getWinner() {
 		// compare survivors:
 		if (survivors(redT) > survivors(blueT))
 			return redT;
@@ -410,7 +410,7 @@ public class Match {
 		
 		player.updateInventory();
 		// MESSAGE
-		HashMap<String, String> vars = new HashMap<String, String>();
+		Map<String, String> vars = new HashMap<String, String>();
 		vars.put("team_color", Lobby.getTeam(player).color().toString());
 		vars.put("team", Lobby.getTeam(player).getName());
 		player.sendMessage(Translator.getString("BE_SPECTATOR", vars));
@@ -418,7 +418,7 @@ public class Match {
 
 	// INVENTORY
 	private void calculateSettings() {
-		HashMap<String, Integer> settings = plugin.am.getArenaSettings(arena);
+		Map<String, Integer> settings = plugin.am.getArenaSettings(arena);
 		// BALLS
 		setting_balls = plugin.balls + settings.get("balls");
 		if (setting_balls < -1)
@@ -523,7 +523,7 @@ public class Match {
 		return this.arena;
 	}
 
-	public synchronized int survivors(ArrayList<Player> team) {
+	public synchronized int survivors(List<Player> team) {
 		int survivors = 0;
 		for (Player p : team) {
 			if (isSurvivor(p)) {
@@ -583,7 +583,7 @@ public class Match {
 			return false;
 	}
 
-	public ArrayList<Player> getTeam(Player player) {
+	public List<Player> getTeam(Player player) {
 		if (redT.contains(player))
 			return redT;
 		if (blueT.contains(player))
@@ -591,7 +591,7 @@ public class Match {
 		return null;
 	}
 
-	public ArrayList<Player> getEnemyTeam(Player player) {
+	public List<Player> getEnemyTeam(Player player) {
 		if (redT.contains(player))
 			return blueT;
 		if (blueT.contains(player))
@@ -625,14 +625,14 @@ public class Match {
 		return false;
 	}
 
-	public ArrayList<Player> getAllPlayer() {
+	public List<Player> getAllPlayer() {
 		// ArrayList<Player> players = new ArrayList<Player>();
 		// players.addAll(redT);
 		// players.addAll(blueT);
 		return bothTeams;
 	}
 
-	public ArrayList<Player> getAllSpec() {
+	public List<Player> getAllSpec() {
 		/*
 		 * ArrayList<Player> list = new ArrayList<Player>(); for (Player p :
 		 * spec) { list.add(p); } return list;
@@ -640,7 +640,7 @@ public class Match {
 		return spec;
 	}
 
-	public ArrayList<Player> getAll() {
+	public List<Player> getAll() {
 		/*
 		 * // return players; ArrayList<Player> list = new
 		 * ArrayList<Player>(getAllPlayer()); for (Player p : spec) {
@@ -667,7 +667,7 @@ public class Match {
 			if (plugin.afkDetection) {
 				plugin.afkRemove(player.getName());
 			}
-			resetWeaponStuffDeath(player);
+			resetWeaponStuff(player);
 			// survivors?->endGame
 			// math over already?
 			if (matchOver)
@@ -846,7 +846,7 @@ public class Match {
 			} else
 				respawn(target);
 		} else {
-			resetWeaponStuffDeath(target);
+			resetWeaponStuff(target);
 			plugin.getServer().getScheduler().scheduleSyncDelayedTask(plugin, new Runnable() {
 				@Override
 				public void run() {
@@ -898,7 +898,7 @@ public class Match {
 				// consequences after being afk:
 				plugin.afkRemove(name);
 				respawnsLeft.put(target, 0);
-				resetWeaponStuffDeath(target);
+				resetWeaponStuff(target);
 				plugin.getServer().getScheduler().scheduleSyncDelayedTask(plugin, new Runnable() {
 					@Override
 					public void run() {
@@ -912,7 +912,7 @@ public class Match {
 			} else
 				respawn(target);
 		} else {
-			resetWeaponStuffDeath(target);
+			resetWeaponStuff(target);
 			plugin.getServer().getScheduler().scheduleSyncDelayedTask(plugin, new Runnable() {
 				@Override
 				public void run() {
@@ -928,15 +928,15 @@ public class Match {
 		}
 	}
 
-	private synchronized void gameEnd(final boolean draw, ArrayList<Player> winnerS,
-			ArrayList<Player> looserS, String winS, String looseS) {
+	private synchronized void gameEnd(final boolean draw, List<Player> winnerS,
+			List<Player> looserS, String winS, String looseS) {
 		matchOver = true;
 		endTimers();
 		undoAllColors();
 		for (Player p : getAllPlayer()) {
-			resetWeaponStuffEnd(p);
+			resetWeaponStuff(p);
 		}
-		resetMainWeaponStuffEnd();
+		resetWeaponStuffEnd();
 		if (!draw) {
 			for (Player p : winnerS) {
 				this.winners.add(p);
@@ -958,7 +958,7 @@ public class Match {
 		}, 1L);
 	}
 
-	public void resetWeaponStuffEnd(Player p) {
+	public void resetWeaponStuff(Player p) {
 		// remove turrets:
 		ArrayList<Turret> pturrets = new ArrayList<Turret>(Turret.getTurrets(p.getName()));
 		for (Turret t : pturrets) {
@@ -976,7 +976,7 @@ public class Match {
 		
 	}
 	
-	public void resetMainWeaponStuffEnd() {
+	public void resetWeaponStuffEnd() {
 		//remove airstrikes
 		Airstrike.clear();
 		//remove orbitalstrikes
@@ -988,7 +988,7 @@ public class Match {
 		Ball.clear();
 	}
 
-	public void resetWeaponStuffDeath(Player p) {
+	/*public void resetWeaponStuffDeath(Player p) {
 		// remove turrets:
 		ArrayList<Turret> pturrets = new ArrayList<Turret>(Turret.getTurrets(p.getName()));
 		for (Turret t : pturrets) {
@@ -1002,6 +1002,6 @@ public class Match {
 		// remove zooming
 		if (Sniper.isZooming(p))
 			Sniper.setNotZooming(p);
-	}
+	}*/
 
 }

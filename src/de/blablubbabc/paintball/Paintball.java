@@ -758,7 +758,7 @@ public class Paintball extends JavaPlugin{
 		
 
 		//SQLite with version: 110
-		sql = new BlaSQLite(new File(this.getDataFolder().toString()+"/"+"pbdata_110"+".db"), this);
+		sql = new BlaSQLite(new File(this.getDataFolder().toString()+"/"+"pbdata_110"+".db"));
 		//DB
 		loadDB();
 		//TRANSLATOR

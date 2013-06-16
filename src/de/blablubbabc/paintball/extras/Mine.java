@@ -70,46 +70,6 @@ public class Mine {
 		}
 		return null;
 	}
-	
-	
-	/*private static ArrayList<Mine> mines = new ArrayList<Mine>();
-
-	public static synchronized void addMine(Mine mine) {
-		mines.add(mine);
-	}
-
-	public static synchronized void removeMine(Mine mine) {
-		mines.remove(mine);
-	}
-
-	public static synchronized Mine isMine(Block mine) {
-		for (Mine m : mines) {
-			if (m.block.equals(mine)) {
-				return m;
-			}
-		}
-		return null;
-	}
-
-	public static synchronized ArrayList<Mine> getMines(Match match) {
-		ArrayList<Mine> list = new ArrayList<Mine>();
-		for (Mine m : mines) {
-			if (m.match.equals(match)) {
-				list.add(m);
-			}
-		}
-		return list;
-	}
-
-	public static synchronized ArrayList<Mine> getMines(Player player) {
-		ArrayList<Mine> list = new ArrayList<Mine>();
-		for (Mine m : mines) {
-			if (m.player.equals(player)) {
-				list.add(m);
-			}
-		}
-		return list;
-	}*/
 
 	public final Block block;
 	public final Location loc;

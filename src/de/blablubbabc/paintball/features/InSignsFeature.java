@@ -4,6 +4,7 @@ import java.text.DecimalFormat;
 import de.blablubbabc.insigns.Changer;
 import de.blablubbabc.insigns.InSigns;
 import de.blablubbabc.paintball.Paintball;
+import de.blablubbabc.paintball.statistics.player.PlayerStat;
 import de.blablubbabc.paintball.utils.Translator;
 
 import org.bukkit.Location;
@@ -21,8 +22,9 @@ public class InSignsFeature {
 		format = new DecimalFormat("####.##");
 		
 		//Create changers for all player stats
-		for(final String stat : plugin.sql.sqlPlayers.statsList) {
-			String s = stat;
+		for(final PlayerStat stat : PlayerStat.values()) {
+			final String key = stat.getKey();
+			String s = key;
 			if(s.equals("teamattacks")) s = "ta";
 			else if(s.equals("hitquote")) s = "hq";
 			else if(s.equals("airstrikes")) s = "as";
@@ -35,10 +37,10 @@ public class InSignsFeature {
 					String playerName = player.getName();
 					if(!plugin.sql.isConnected()) return Translator.getString("NOT_CONNECTED");
 					else if(plugin.pm.exists(playerName)) {
-						if(stat.equals("hitquote") || stat.equals("kd")) {
+						if(stat == PlayerStat.ACCURACY || stat == PlayerStat.KD) {
 							float statF = ((float)plugin.pm.getStats(playerName).get(stat)) / 100;
 							return format.format(statF);
-						} else return "" + plugin.pm.getStats(playerName).get(stat);
+						} else return String.valueOf(plugin.pm.getStats(playerName).get(stat));
 					}
 					else return Translator.getString("NOT_FOUND");
 				}
@@ -54,7 +56,7 @@ public class InSignsFeature {
 					if (!plugin.sql.isConnected())
 						return Translator.getString("NOT_CONNECTED");
 					else if (plugin.pm.exists(playerName)) {
-						return "" + plugin.stats.getRank(playerName, stat);
+						return String.valueOf(plugin.stats.getRank(playerName, stat));
 					} else
 						return Translator.getString("NOT_FOUND");
 				}
@@ -71,7 +73,7 @@ public class InSignsFeature {
 				if (!plugin.sql.isConnected())
 					return Translator.getString("NOT_CONNECTED");
 				else if (plugin.pm.exists(playerName)) {
-					return "" + plugin.stats.getRank(playerName, "points");
+					return String.valueOf(plugin.stats.getRank(playerName, PlayerStat.POINTS));
 				} else
 					return Translator.getString("NOT_FOUND");
 			}

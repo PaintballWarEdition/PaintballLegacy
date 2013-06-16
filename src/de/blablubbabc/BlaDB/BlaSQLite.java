@@ -6,26 +6,21 @@ import java.sql.*;
 import java.util.HashMap;
 import java.util.Map.Entry;
 
-import de.blablubbabc.paintball.Paintball;
-
-
 public class BlaSQLite {
 
 	private File databaseFile;
 	private Connection connection;
-	private static Paintball plugin;
 
 	public SQLArenaLobby sqlArenaLobby;
 	public SQLPlayers sqlPlayers;
 	public SQLGeneralStats sqlGeneralStats;
 
-	public BlaSQLite(File databaseFile, Paintball pl) {
+	public BlaSQLite(File databaseFile) {
 		this.databaseFile = databaseFile;
-		plugin = pl;
 
-		sqlArenaLobby = new SQLArenaLobby(this, plugin);
-		sqlPlayers = new SQLPlayers(this, plugin);
-		sqlGeneralStats = new SQLGeneralStats(this, plugin);
+		sqlArenaLobby = new SQLArenaLobby(this);
+		sqlPlayers = new SQLPlayers(this);
+		sqlGeneralStats = new SQLGeneralStats(this);
 
 		//CREATE TABLES
 		sqlArenaLobby.createDefaultTables();

@@ -1,13 +1,18 @@
-package de.blablubbabc.paintball.player;
+package de.blablubbabc.paintball.statistics.player;
 
 import java.util.HashMap;
 import java.util.Map;
 
+import de.blablubbabc.paintball.Paintball;
+import de.blablubbabc.paintball.utils.Utils;
+
 public class PlayerStats {
+	private final String playerName;
 	private Map<PlayerStat, Integer> stats = new HashMap<PlayerStat, Integer>();
 	private boolean dirty = false;
 	
-	public PlayerStats() {
+	public PlayerStats(String playerName) {
+		this.playerName = playerName;
 		load();
 		calculate();
 		dirty = false;
@@ -36,16 +41,14 @@ public class PlayerStats {
 	}
 	
 	public void calculate() {
-		setStat(PlayerStat.ACCURACY, StatsUtils.calculateQuote(getStat(PlayerStat.HITS), getStat(PlayerStat.SHOTS)));
-		setStat(PlayerStat.KD, StatsUtils.calculateQuote(getStat(PlayerStat.KILLS), getStat(PlayerStat.DEATHS)));
+		setStat(PlayerStat.ACCURACY, Utils.calculateQuote(getStat(PlayerStat.HITS), getStat(PlayerStat.SHOTS)));
+		setStat(PlayerStat.KD, Utils.calculateQuote(getStat(PlayerStat.KILLS), getStat(PlayerStat.DEATHS)));
 		dirty = true;
 	}
 	
 	public void save() {
 		if (dirty) {
-			for(PlayerStat stat : PlayerStat.values()) {
-				//sql save
-			}
+			Paintball.instance.pm.setStats(playerName, stats);
 			dirty = false;
 		}
 	}

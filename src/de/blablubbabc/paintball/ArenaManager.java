@@ -1,9 +1,8 @@
 package de.blablubbabc.paintball;
 
 import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Map;
 
 import org.bukkit.Location;
 
@@ -26,7 +25,7 @@ public class ArenaManager {
 		return plugin.sql.sqlArenaLobby.isArenaExisting(name);
 	}
 	//GETTER
-	public ArrayList<String> getAllArenaNames() {
+	public List<String> getAllArenaNames() {
 		return plugin.sql.sqlArenaLobby.getAllArenaNames();
 	}
 	
@@ -82,8 +81,8 @@ public class ArenaManager {
 		return true;
 	}*/
 
-	private ArrayList<String> readyArenas() {
-		ArrayList<String> arenas = new ArrayList<String>();
+	private List<String> readyArenas() {
+		List<String> arenas = new ArrayList<String>();
 		for(String arena : getAllArenaNames()) {
 			if(!inUse(arena) && isReady(arena)) arenas.add(arena);
 		}
@@ -149,11 +148,11 @@ public class ArenaManager {
 	}
 	/////////////////////////////
 
-	public LinkedHashMap<String, Integer> getArenaStats(String name) {
+	public Map<String, Integer> getArenaStats(String name) {
 		return plugin.sql.sqlArenaLobby.getArenaStats(name);
 	}
 
-	public LinkedHashMap<String, Integer> getArenaSettings(String name) {
+	public Map<String, Integer> getArenaSettings(String name) {
 		return plugin.sql.sqlArenaLobby.getArenaSettings(name);
 	}
 
@@ -170,15 +169,15 @@ public class ArenaManager {
 		return plugin.sql.sqlArenaLobby.getSpecspawnsSize(name);
 	}
 
-	public ArrayList<Location> getBlueSpawns(String name) {
+	public List<Location> getBlueSpawns(String name) {
 		return plugin.sql.sqlArenaLobby.getBluespawns(name);
 	}
 
-	public ArrayList<Location> getRedSpawns(String name) {
+	public List<Location> getRedSpawns(String name) {
 		return plugin.sql.sqlArenaLobby.getRedspawns(name);
 	}
 
-	public ArrayList<Location> getSpecSpawns(String name) {
+	public List<Location> getSpecSpawns(String name) {
 		return plugin.sql.sqlArenaLobby.getSpecspawns(name);
 	}
 
@@ -196,7 +195,7 @@ public class ArenaManager {
 	}
 
 	//STATS
-	public void addStats(final String arena, final HashMap<String, Integer> stats) {
+	public void addStats(final String arena, final Map<String, Integer> stats) {
 		plugin.getServer().getScheduler().runTaskAsynchronously(plugin, new Runnable() {
 			
 			@Override
@@ -207,7 +206,7 @@ public class ArenaManager {
 		});
 	}
 
-	public void setStats(final String arena, final HashMap<String, Integer> stats) {
+	public void setStats(final String arena, final Map<String, Integer> stats) {
 		plugin.getServer().getScheduler().runTaskAsynchronously(plugin, new Runnable() {
 			
 			@Override
@@ -217,7 +216,7 @@ public class ArenaManager {
 		});
 	}
 	//SETTINGS
-	public void setSettings(final String arena, final HashMap<String, Integer> settings) {
+	public void setSettings(final String arena, final Map<String, Integer> settings) {
 		plugin.getServer().getScheduler().runTaskAsynchronously(plugin, new Runnable() {
 			
 			@Override

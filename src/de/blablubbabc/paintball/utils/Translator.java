@@ -6,6 +6,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.util.HashMap;
+import java.util.Map;
 import java.util.Scanner;
 import org.bukkit.ChatColor;
 import org.bukkit.plugin.Plugin;
@@ -15,8 +16,8 @@ import org.bukkit.plugin.Plugin;
 public class Translator {
 	public static boolean success = false;
 
-	private static HashMap<String, String> translation;
-	private static HashMap<String, String> def_language;
+	private static Map<String, String> translation;
+	private static Map<String, String> def_language;
 	private static boolean use_def = false;
 
 	public Translator(Plugin plugin, String filename) {
@@ -147,7 +148,7 @@ public class Translator {
 		}
 	}
 
-	public static String getString(String key, HashMap<String, String> vars) {
+	public static String getString(String key, Map<String, String> vars) {
 		if (!success) {
 			return "ERROR:couldn't load language!";
 		}
@@ -169,7 +170,7 @@ public class Translator {
 		}
 	}
 
-	public static HashMap<String, String> getTranslations() {
+	public static Map<String, String> getTranslations() {
 		if (!success) return null;
 		if (use_def)
 			return def_language;
@@ -177,8 +178,8 @@ public class Translator {
 			return translation;
 	}
 
-	private HashMap<String, String> loadLanguage(File file) {
-		HashMap<String, String> language = new HashMap<String, String>();
+	private Map<String, String> loadLanguage(File file) {
+		Map<String, String> language = new HashMap<String, String>();
 		Scanner scanner = null;
 		try {
 			scanner = new Scanner(file);

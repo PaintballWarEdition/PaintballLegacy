@@ -2,6 +2,7 @@ package de.blablubbabc.paintball.commands;
 
 import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Entity;
@@ -11,6 +12,7 @@ import org.bukkit.entity.Player;
 import de.blablubbabc.paintball.Lobby;
 import de.blablubbabc.paintball.Paintball;
 import de.blablubbabc.paintball.extras.Gifts;
+import de.blablubbabc.paintball.statistics.player.PlayerStat;
 import de.blablubbabc.paintball.utils.Translator;
 
 
@@ -92,30 +94,32 @@ public class CmdAdmin {
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////		
 			} else if(args[1].equalsIgnoreCase("set")) {
 				if(args.length == 5) {
-					if(plugin.pm.exists(args[2])) {
-						if(plugin.sql.sqlPlayers.statsList.contains(args[3])) {
+					String playerName = args[2];
+					if(plugin.pm.exists(playerName)) {
+						String key = args[3];
+						PlayerStat stat = PlayerStat.getFromKey(key);
+						if(stat != null) {
 							try {
-								String stat = args[3];
 								int value = Integer.parseInt(args[4]);
-								HashMap<String, Integer> setStat = new HashMap<String, Integer>();
-								setStat.put(args[3], value);
-								plugin.pm.setStats(args[2], setStat);
-								HashMap<String,String> vars = new HashMap<String, String>();
-								vars.put("player", args[2]);
-								vars.put("stat", stat);
+								Map<PlayerStat, Integer> setStat = new HashMap<PlayerStat, Integer>();
+								setStat.put(stat, value);
+								plugin.pm.setStatsAsync(playerName, setStat);
+								Map<String,String> vars = new HashMap<String, String>();
+								vars.put("player", playerName);
+								vars.put("stat", key);
 								vars.put("value", String.valueOf(value));
 								sender.sendMessage(Translator.getString("PLAYER_STAT_SET", vars));
 							} catch(Exception e) {
 								sender.sendMessage(Translator.getString("INVALID_NUMBER"));
 							}
 						} else {
-							HashMap<String, String> vars = new HashMap<String, String>();
-							vars.put("values", plugin.sql.sqlPlayers.getStatsListString());
+							Map<String, String> vars = new HashMap<String, String>();
+							vars.put("values", PlayerStat.getKeysAsString());
 							sender.sendMessage(Translator.getString("VALUE_NOT_FOUND", vars));
 						}
 					} else {
-						HashMap<String, String> vars = new HashMap<String, String>();
-						vars.put("player", args[2]);
+						Map<String, String> vars = new HashMap<String, String>();
+						vars.put("player", playerName);
 						sender.sendMessage(Translator.getString("PLAYER_NOT_FOUND", vars));
 					}
 					return true;
@@ -123,30 +127,32 @@ public class CmdAdmin {
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 			} else if(args[1].equalsIgnoreCase("add")) {
 				if(args.length == 5) {
-					if(plugin.pm.exists(args[2])) {
-						if(plugin.sql.sqlPlayers.statsList.contains(args[3])) {
+					String playerName = args[2];
+					if(plugin.pm.exists(playerName)) {
+						String key = args[3];
+						PlayerStat stat = PlayerStat.getFromKey(key);
+						if(stat != null) {
 							try {
-								String stat = args[3];
 								int value = Integer.parseInt(args[4]);
-								HashMap<String, Integer> setStat = new HashMap<String, Integer>();
-								setStat.put(args[3], value);
-								plugin.pm.addStatsAsync(args[2], setStat);
+								Map<PlayerStat, Integer> setStat = new HashMap<PlayerStat, Integer>();
+								setStat.put(stat, value);
+								plugin.pm.addStatsAsync(playerName, setStat);
 								HashMap<String,String> vars = new HashMap<String, String>();
-								vars.put("player", args[2]);
-								vars.put("stat", stat);
+								vars.put("player", playerName);
+								vars.put("stat", key);
 								vars.put("value", String.valueOf(value));
 								sender.sendMessage(Translator.getString("PLAYER_STAT_ADDED", vars));
 							} catch(Exception e) {
 								sender.sendMessage(Translator.getString("INVALID_NUMBER"));
 							}
 						} else {
-							HashMap<String, String> vars = new HashMap<String, String>();
-							vars.put("values", plugin.sql.sqlPlayers.getStatsListString());
+							Map<String, String> vars = new HashMap<String, String>();
+							vars.put("values", PlayerStat.getKeysAsString());
 							sender.sendMessage(Translator.getString("VALUE_NOT_FOUND", vars));
 						}
 					} else {
-						HashMap<String, String> vars = new HashMap<String, String>();
-						vars.put("player", args[2]);
+						Map<String, String> vars = new HashMap<String, String>();
+						vars.put("player", playerName);
 						sender.sendMessage(Translator.getString("PLAYER_NOT_FOUND", vars));
 					}
 					return true;
@@ -192,23 +198,26 @@ public class CmdAdmin {
 				}
 				return true;
 			} else if(args.length == 4) {
-				if(plugin.pm.exists(args[2])) {
-					if(plugin.sql.sqlPlayers.statsList.contains(args[3])) {
-						HashMap<String, Integer> setStat = new HashMap<String, Integer>();
-						setStat.put(args[3], 0);
-						plugin.pm.setStats(args[2], setStat);
-						HashMap<String, String> vars = new HashMap<String, String>();
-						vars.put("player", args[2]);
-						vars.put("stat", args[3]);
+				String playerName = args[2];
+				if(plugin.pm.exists(playerName)) {
+					String key = args[3];
+					PlayerStat stat = PlayerStat.getFromKey(key);
+					if(stat != null) {
+						Map<PlayerStat, Integer> setStat = new HashMap<PlayerStat, Integer>();
+						setStat.put(stat, 0);
+						plugin.pm.setStatsAsync(playerName, setStat);
+						Map<String, String> vars = new HashMap<String, String>();
+						vars.put("player", playerName);
+						vars.put("stat", key);
 						sender.sendMessage(Translator.getString("PLAYER_STAT_RESET", vars));
 					} else {
-						HashMap<String, String> vars = new HashMap<String, String>();
-						vars.put("values", plugin.sql.sqlPlayers.getStatsListString());
+						Map<String, String> vars = new HashMap<String, String>();
+						vars.put("values", PlayerStat.getKeysAsString());
 						sender.sendMessage(Translator.getString("VALUE_NOT_FOUND", vars));
 					}
 				} else {
-					HashMap<String, String> vars = new HashMap<String, String>();
-					vars.put("player", args[2]);
+					Map<String, String> vars = new HashMap<String, String>();
+					vars.put("player", playerName);
 					sender.sendMessage(Translator.getString("PLAYER_NOT_FOUND", vars));
 				}
 				return true;
@@ -222,13 +231,24 @@ public class CmdAdmin {
 			}
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 		} else if(args[1].equalsIgnoreCase("rank")) {
-			if(args.length >= 3) {
-				if(plugin.pm.exists(args[2])) {
-					if(args.length == 3) plugin.stats.sendRank(sender, args[2], "points");
-					else if(args.length == 4) plugin.stats.sendRank(sender, args[2], args[3]);
-					else return false;
+			if (args.length >= 3) {
+				String name = args[2];
+				if (plugin.pm.exists(name)) {
+					if (args.length == 3) {
+						plugin.stats.sendRank(sender, name, PlayerStat.POINTS);
+					} else if(args.length == 4) {
+						PlayerStat stat = PlayerStat.getFromKey(args[3]);
+						if (stat != null) {
+							plugin.stats.sendRank(sender, name, stat);
+						} else {
+							Map<String, String> vars = new HashMap<String, String>();
+							vars.put("player", name);
+							vars.put("values", PlayerStat.getKeysAsString());
+							sender.sendMessage(Translator.getString("VALUE_NOT_FOUND", vars));
+						}
+					} else return false;
 				} else {
-					HashMap<String, String> vars = new HashMap<String, String>();
+					Map<String, String> vars = new HashMap<String, String>();
 					vars.put("player", args[2]);
 					sender.sendMessage(Translator.getString("PLAYER_NOT_FOUND", vars));
 				}
@@ -239,7 +259,7 @@ public class CmdAdmin {
 			if(args.length == 3) {
 				String arena = args[2];
 				if(!plugin.am.existing(arena)) {
-					HashMap<String, String> vars = new HashMap<String, String>();
+					Map<String, String> vars = new HashMap<String, String>();
 					vars.put("arena", arena);
 					sender.sendMessage(Translator.getString("ARENA_NOT_FOUND", vars));
 					return true;
@@ -249,7 +269,7 @@ public class CmdAdmin {
 					return true;
 				}
 				plugin.am.setNext(arena);
-				HashMap<String, String> vars = new HashMap<String, String>();
+				Map<String, String> vars = new HashMap<String, String>();
 				vars.put("plugin", plugin.nf.pluginName);
 				vars.put("arena", arena);
 				plugin.nf.text(sender, Translator.getString("NEXT_ARENA_SET", vars));
@@ -265,7 +285,7 @@ public class CmdAdmin {
 				plugin.active = true;
 				status = Translator.getString("ON");
 			}
-			HashMap<String, String> vars = new HashMap<String, String>();
+			Map<String, String> vars = new HashMap<String, String>();
 			vars.put("status", status);
 			sender.sendMessage(Translator.getString("PLUGIN_STATUS", vars));
 			return true;

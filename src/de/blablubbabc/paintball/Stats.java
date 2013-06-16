@@ -4,8 +4,12 @@ import java.text.DecimalFormat;
 import java.util.AbstractMap.SimpleEntry;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
+import java.util.Map;
+
 import org.bukkit.command.CommandSender;
 
+import de.blablubbabc.paintball.statistics.general.GeneralStat;
+import de.blablubbabc.paintball.statistics.player.PlayerStat;
 import de.blablubbabc.paintball.utils.Translator;
 
 
@@ -22,7 +26,7 @@ public class Stats {
 	////////////////////////////////////
 
 	//SETTER
-	public void addGeneralStats(final HashMap<String, Integer> stats) {
+	public void addGeneralStats(final Map<GeneralStat, Integer> stats) {
 		plugin.getServer().getScheduler().runTaskAsynchronously(plugin, new Runnable() {
 			
 			@Override
@@ -32,7 +36,7 @@ public class Stats {
 		});
 	}
 
-	public void matchEndStats(final HashMap<String, Integer> stats, final int playerAmount) {
+	public void matchEndStats(final Map<GeneralStat, Integer> stats, final int playerAmount) {
 		plugin.getServer().getScheduler().runTaskAsynchronously(plugin, new Runnable() {
 			
 			@Override
@@ -42,7 +46,7 @@ public class Stats {
 		});
 	}
 
-	public void setGeneralStats(final HashMap<String, Integer> stats) {
+	public void setGeneralStats(final Map<GeneralStat, Integer> stats) {
 		plugin.getServer().getScheduler().runTaskAsynchronously(plugin, new Runnable() {
 			
 			@Override
@@ -52,34 +56,33 @@ public class Stats {
 		});
 	}
 	//GETTER
-	public LinkedHashMap<String, Integer> getGerneralStats() {
+	public Map<GeneralStat, Integer> getGerneralStats() {
 		return plugin.sql.sqlGeneralStats.getStats();
 	}
 
-	public int getRank(String name, String stat) {
+	public int getRank(String name, PlayerStat stat) {
 		return plugin.sql.sqlPlayers.getRank(name, stat);
 	}
 
-	public void sendTop(final CommandSender sender, final String stat) {
+	public void sendTop(final CommandSender sender, final PlayerStat stat) {
 		plugin.getServer().getScheduler().runTaskAsynchronously(plugin, new Runnable() {
 			
 			@Override
 			public void run() {
-				HashMap<String, String> vars = new HashMap<String, String>();
-				if(plugin.sql.sqlPlayers.statsList.contains(stat)) {
-					vars.put("stats", stat);
-					LinkedHashMap<String, Integer> topStats = plugin.sql.sqlPlayers.getTop10Stats(stat);
+				Map<String, String> vars = new HashMap<String, String>();
+				if (plugin.sql.sqlPlayers.statsList.contains(stat)) {
+					vars.put("stats", stat.getKey());
+					Map<PlayerStat, Integer> topStats = plugin.sql.sqlPlayers.getTop10Stats(stat);
 					sender.sendMessage(Translator.getString("TOP_TEN", vars));
-					for(int i = 1; i <= 10; i++) {
-						if(i <= topStats.keySet().toArray().length) {
+					for (int i = 1; i <= 10; i++) {
+						if (i <= topStats.keySet().toArray().length) {
 							vars.put("rank", String.valueOf(i));
 							vars.put("player", (String)topStats.keySet().toArray()[i-1]);
-							if(stat.equalsIgnoreCase("kd")||stat.equalsIgnoreCase("hitquote")) {
+							if (stat.equalsIgnoreCase("kd")||stat.equalsIgnoreCase("hitquote")) {
 								float valueF = (float)(Integer)topStats.values().toArray()[i-1] / 100;
 								DecimalFormat dec = new DecimalFormat("###.##");
 								vars.put("value", dec.format(valueF));
-							}
-							else vars.put("value", String.valueOf((Integer)topStats.values().toArray()[i-1]));
+							} else vars.put("value", String.valueOf((Integer)topStats.values().toArray()[i-1]));
 							sender.sendMessage(Translator.getString("TOP_TEN_ENTRY", vars));
 						}
 						else break;
@@ -92,17 +95,17 @@ public class Stats {
 		});
 	}
 
-	public void sendRank(final CommandSender sender, final String name, final String stat) {
+	public void sendRank(final CommandSender sender, final String name, final PlayerStat stat) {
 		plugin.getServer().getScheduler().runTaskAsynchronously(plugin, new Runnable() {
 			
 			@Override
 			public void run() {
-				HashMap<String, String> vars = new HashMap<String, String>();
+				Map<String, String> vars = new HashMap<String, String>();
 				vars.put("player", name);
-				if(plugin.pm.exists(name)) {
-					if(plugin.sql.sqlPlayers.statsList.contains(stat)) {
+				if (plugin.pm.exists(name)) {
+					if (plugin.sql.sqlPlayers.statsList.contains(stat)) {
 						vars.put("rank", String.valueOf(getRank(name, stat)));
-						vars.put("stats", stat);
+						vars.put("stats", stat.getKey());
 						sender.sendMessage(Translator.getString("RANK_PLAYER", vars));
 					} else {
 						vars.put("values", plugin.sql.sqlPlayers.getStatsListString());
@@ -120,11 +123,11 @@ public class Stats {
 			
 			@Override
 			public void run() {
-				HashMap<String, String> vars = new HashMap<String, String>();
+				Map<String, String> vars = new HashMap<String, String>();
 				vars.put("player", name);
-				if(plugin.pm.exists(name)) {
-					HashMap<String, Integer> pStats = plugin.sql.sqlPlayers.getPlayerStats(name);
-					vars.put("money", String.valueOf(pStats.get("money")));
+				if (plugin.pm.exists(name)) {
+					Map<PlayerStat, Integer> pStats = plugin.sql.sqlPlayers.getPlayerStats(name);
+					vars.put("money", String.valueOf(pStats.get(PlayerStat.MONEY)));
 					sender.sendMessage(Translator.getString("CASH_PLAYER", vars));
 				} else {
 					sender.sendMessage(Translator.getString("PLAYER_NOT_FOUND", vars));
@@ -136,15 +139,15 @@ public class Stats {
 	private void sendGeneralStats(CommandSender sender) {
 		HashMap<String, String> vars = new HashMap<String, String>();
 		//GENERAL STATS
-		LinkedHashMap<String, Integer> gStats = getGerneralStats();
-		for(String stat : gStats.keySet()) {
-			vars.put(stat, String.valueOf(gStats.get(stat)));
+		Map<GeneralStat, Integer> gStats = getGerneralStats();
+		for (GeneralStat stat : gStats.keySet()) {
+			vars.put(stat.getKey(), String.valueOf(gStats.get(stat)));
 		}
 
 		//SEND
 		sender.sendMessage(Translator.getString("STATS_GENERAL"));
-		for(String stat : gStats.keySet()) {
-			sender.sendMessage(Translator.getString("STATS_GENERAL_"+stat.toUpperCase(), vars));
+		for (GeneralStat stat : gStats.keySet()) {
+			sender.sendMessage(Translator.getString("STATS_GENERAL_" + stat.getKey().toUpperCase(), vars));
 		}
 	}
 
