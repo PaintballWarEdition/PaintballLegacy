@@ -55,7 +55,6 @@ public class Log {
 	}
 	
 	public static void printInfo() {
-		Log.logColored(" ");
 		Log.logColored(ChatColor.YELLOW+" **************************************************");
 		Log.logColored(ChatColor.YELLOW+" ----------------- PAINTBALL INFO -----------------");
 		Log.logColored(" ");
@@ -79,6 +78,5 @@ public class Log {
 		printWarnings();
 		Log.logColored(" ");
 		Log.logColored(ChatColor.YELLOW+" **************************************************");
-		Log.logColored(" ");
 	}
 }
