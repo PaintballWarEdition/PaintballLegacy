@@ -234,19 +234,9 @@ public class CmdAdmin {
 			if (args.length >= 3) {
 				String name = args[2];
 				if (plugin.pm.exists(name)) {
-					if (args.length == 3) {
-						plugin.stats.sendRank(sender, name, PlayerStat.POINTS);
-					} else if(args.length == 4) {
-						PlayerStat stat = PlayerStat.getFromKey(args[3]);
-						if (stat != null) {
-							plugin.stats.sendRank(sender, name, stat);
-						} else {
-							Map<String, String> vars = new HashMap<String, String>();
-							vars.put("player", name);
-							vars.put("values", PlayerStat.getKeysAsString());
-							sender.sendMessage(Translator.getString("VALUE_NOT_FOUND", vars));
-						}
-					} else return false;
+					if (args.length == 3) plugin.stats.sendRank(sender, name, PlayerStat.POINTS);
+					else if (args.length == 4) plugin.stats.sendRank(sender, name, args[3]);
+					else return false;
 				} else {
 					Map<String, String> vars = new HashMap<String, String>();
 					vars.put("player", args[2]);

@@ -147,6 +147,7 @@ public class Turret {
 					@Override
 					public void run() {
 						if (target == null) {
+							//TODO range depending on config settings ?
 							target = searchTarget(50, 15);
 						}
 

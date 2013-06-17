@@ -200,8 +200,8 @@ public class SQLPlayers {
 		sql.updateQuery("UPDATE OR IGNORE players SET "+query+" WHERE name='"+player+"';");
 	}
 
-	public Map<PlayerStat, SimpleEntry<String, Integer>> getTopStats() {
-		Map<PlayerStat, SimpleEntry<String, Integer>> topStats = new LinkedHashMap<PlayerStat, SimpleEntry<String, Integer>>();
+	public LinkedHashMap<PlayerStat, SimpleEntry<String, Integer>> getTopStats() {
+		LinkedHashMap<PlayerStat, SimpleEntry<String, Integer>> topStats = new LinkedHashMap<PlayerStat, SimpleEntry<String, Integer>>();
 		for (PlayerStat stat : PlayerStat.values()) {
 			String key = stat.getKey();
 			Result r = sql.resultQuery("SELECT name," + key + " FROM players ORDER BY " + key + " DESC LIMIT 1");
@@ -219,14 +219,15 @@ public class SQLPlayers {
 		return topStats;
 	}
 
-	public Map<String, Integer> getTop10Stats(String stat) {
-		Map<String, Integer> topStats = new LinkedHashMap<String, Integer>();
+	public LinkedHashMap<String, Integer> getTop10Stats(PlayerStat stat) {
+		String key = stat.getKey();
+		LinkedHashMap<String, Integer> topStats = new LinkedHashMap<String, Integer>();
 		Result r = sql.resultQuery("SELECT name," + stat + " FROM players ORDER BY " + stat + " DESC LIMIT 10");
 		ResultSet rs = r.getResultSet();
 		try {
 			if(rs != null) {
 				while(rs.next()) {
-					topStats.put(rs.getString("name"), rs.getInt(stat));
+					topStats.put(rs.getString("name"), rs.getInt(key));
 				}
 			}
 		} catch(Exception e) {
