@@ -29,6 +29,7 @@ import de.blablubbabc.paintball.extras.Mine;
 import de.blablubbabc.paintball.extras.Orbitalstrike;
 import de.blablubbabc.paintball.extras.Sniper;
 import de.blablubbabc.paintball.extras.Turret;
+import de.blablubbabc.paintball.statistics.arena.ArenaSetting;
 import de.blablubbabc.paintball.utils.Timer;
 import de.blablubbabc.paintball.utils.Translator;
 import de.blablubbabc.paintball.utils.Utils;
@@ -418,29 +419,29 @@ public class Match {
 
 	// INVENTORY
 	private void calculateSettings() {
-		Map<String, Integer> settings = plugin.am.getArenaSettings(arena);
+		Map<ArenaSetting, Integer> settings = plugin.am.getArenaSettings(arena);
 		// BALLS
-		setting_balls = plugin.balls + settings.get("balls");
+		setting_balls = plugin.balls + settings.get(ArenaSetting.BALLS);
 		if (setting_balls < -1)
 			setting_balls = -1;
 		// GRENADES
-		setting_grenades = plugin.grenadeAmount + settings.get("grenades");
+		setting_grenades = plugin.grenadeAmount + settings.get(ArenaSetting.GRENADES);
 		if (setting_grenades < -1)
 			setting_grenades = -1;
 		// AIRSTRIKES
-		setting_airstrikes = plugin.airstrikeAmount + settings.get("airstrikes");
+		setting_airstrikes = plugin.airstrikeAmount + settings.get(ArenaSetting.AIRSTRIKES);
 		if (setting_airstrikes < -1)
 			setting_airstrikes = -1;
 		// LIVES
-		setting_lives = plugin.lives + settings.get("lives");
+		setting_lives = plugin.lives + settings.get(ArenaSetting.LIVES);
 		if (setting_lives < 1)
 			setting_lives = 1;
 		// RESPAWNS
-		setting_respawns = plugin.respawns + settings.get("respawns");
+		setting_respawns = plugin.respawns + settings.get(ArenaSetting.RESPAWNS);
 		if (setting_respawns < -1)
 			setting_respawns = -1;
 		// ROUND TIME
-		setting_round_time = plugin.roundTimer + settings.get("round_time");
+		setting_round_time = plugin.roundTimer + settings.get(ArenaSetting.ROUND_TIME);
 		if (setting_round_time < 30)
 			setting_round_time = 30;
 	}

@@ -10,6 +10,8 @@ import org.bukkit.entity.Player;
 import de.blablubbabc.paintball.ArenaManager;
 import de.blablubbabc.paintball.Lobby;
 import de.blablubbabc.paintball.Paintball;
+import de.blablubbabc.paintball.statistics.arena.ArenaSetting;
+import de.blablubbabc.paintball.statistics.arena.ArenaStat;
 import de.blablubbabc.paintball.utils.Log;
 import de.blablubbabc.paintball.utils.Translator;
 
@@ -23,20 +25,20 @@ public class CmdArena {
 	}
 
 	public boolean command(CommandSender sender, String[] args) {
-		if(sender instanceof Player) {
+		if (sender instanceof Player) {
 			//PERMISSION CHECK
 			/*if(!sender.isOp() && !sender.hasPermission("paintball.arena")) {
 				sender.sendMessage(plugin.t.getString("NO_PERMISSION"));
 				return true;
 			}*/
 			Player player = (Player) sender;
-			if(args[1].equalsIgnoreCase("list")) {
+			if (args[1].equalsIgnoreCase("list")) {
 				//list
 				List<String> arenas = am.getAllArenaNames();
 				Map<String, String> vars = new HashMap<String, String>();
 				vars.put("arenas", String.valueOf(arenas.size()));
 				player.sendMessage(Translator.getString("ARENA_LIST_HEADER", vars));
-				for(String name : arenas) {
+				for (String name : arenas) {
 					HashMap<String, String> vars2 = new HashMap<String, String>();
 					vars2.put("arena", name);
 					vars2.put("status", am.getArenaStatus(name));
@@ -47,8 +49,8 @@ public class CmdArena {
 				String name = args[1];
 				Map<String, String> vars = new HashMap<String, String>();
 				vars.put("arena", name);
-				if(!am.existing(name)) {
-					if(args.length == 2) {
+				if (!am.existing(name)) {
+					if (args.length == 2) {
 						am.addArena(name);
 						player.sendMessage(Translator.getString("ARENA_CREATED", vars));
 						return true;
@@ -56,17 +58,17 @@ public class CmdArena {
 						player.sendMessage(Translator.getString("ARENA_NOT_FOUND", vars));
 						return true;
 					}
-				} else if(args.length == 2) {
+				} else if (args.length == 2) {
 					player.sendMessage(Translator.getString("ARENA_ALREADY_EXISTS", vars));
 					return true;
 				}
 				//Existing:
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-				if(args[2].equalsIgnoreCase("info")) {
-					Map<String, Integer> arenaStats = am.getArenaStats(name);
+				if (args[2].equalsIgnoreCase("info")) {
+					Map<ArenaStat, Integer> arenaStats = am.getArenaStats(name);
 					vars.put("status", am.getArenaStatus(name));
-					for(Entry<String, Integer> entry : arenaStats.entrySet()) {
-						vars.put(entry.getKey(), String.valueOf(entry.getValue()));
+					for (Entry<ArenaStat, Integer> entry : arenaStats.entrySet()) {
+						vars.put(entry.getKey().getKey(), String.valueOf(entry.getValue()));
 					}
 					
 					player.sendMessage(Translator.getString("ARENA_INFO_HEADER", vars));
@@ -77,9 +79,9 @@ public class CmdArena {
 					player.sendMessage(Translator.getString("ARENA_INFO_STATS_GRENADES", vars));
 					player.sendMessage(Translator.getString("ARENA_INFO_STATS_AIRSTRIKES", vars));
 					
-					Map<String, Integer> arenaSettings = am.getArenaSettings(name);
-					for(Entry<String, Integer> entry : arenaSettings.entrySet()) {
-						vars.put(entry.getKey(), String.valueOf(entry.getValue()));
+					Map<ArenaSetting, Integer> arenaSettings = am.getArenaSettings(name);
+					for (Entry<ArenaSetting, Integer> entry : arenaSettings.entrySet()) {
+						vars.put(entry.getKey().getKey(), String.valueOf(entry.getValue()));
 					}
 					vars.put("balls_def", String.valueOf(plugin.balls));
 					vars.put("grenades_def", String.valueOf(plugin.grenadeAmount));
@@ -111,20 +113,20 @@ public class CmdArena {
 					vars.put("spawns", String.valueOf(specspawnsize));
 					player.sendMessage(Translator.getString("ARENA_INFO_SPAWNS", vars));
 					
-					if(am.inUse(name) || !am.isReady(name)) {
+					if (!am.isReady(name)) {
 						player.sendMessage(Translator.getString("ARENA_INFO_NEEDS_HEADER"));
-						if(am.inUse(name)) player.sendMessage(Translator.getString("ARENA_INFO_NEEDS_NO_USE"));
-						if(am.isDisabled(name)) player.sendMessage(Translator.getString("ARENA_INFO_NEEDS_ENABLE"));
+						if (am.inUse(name)) player.sendMessage(Translator.getString("ARENA_INFO_NEEDS_NO_USE"));
+						if (am.isDisabled(name)) player.sendMessage(Translator.getString("ARENA_INFO_NEEDS_ENABLE"));
 						//if(!am.pvpEnabled(name)) player.sendMessage(plugin.t.getString("ARENA_INFO_NEEDS_PVP"));
-						if(redspawnsize == 0) {
+						if (redspawnsize == 0) {
 							vars.put("team", Lobby.RED.getName());
 							player.sendMessage(Translator.getString("ARENA_INFO_NEEDS_SPAWN", vars));
 						}
-						if(bluespawnsize == 0) {
+						if (bluespawnsize == 0) {
 							vars.put("team", Lobby.BLUE.getName());
 							player.sendMessage(Translator.getString("ARENA_INFO_NEEDS_SPAWN", vars));
 						}
-						if(specspawnsize == 0) {
+						if (specspawnsize == 0) {
 							vars.put("team", Lobby.SPECTATE.getName());
 							player.sendMessage(Translator.getString("ARENA_INFO_NEEDS_SPAWN", vars));
 						}
@@ -132,8 +134,8 @@ public class CmdArena {
 
 					return true;
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-				} else if(args[2].equalsIgnoreCase("blue")) {
-					if(am.inUse(name)) {
+				} else if (args[2].equalsIgnoreCase("blue")) {
+					if (am.inUse(name)) {
 						player.sendMessage(Translator.getString("ARENA_NO_EDIT_IN_USE"));
 						return true;
 					}
@@ -144,8 +146,8 @@ public class CmdArena {
 					player.sendMessage(Translator.getString("ARENA_SPAWN_ADDED", vars));
 					return true;
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-				} else if(args[2].equalsIgnoreCase("red")) {
-					if(am.inUse(name)) {
+				} else if (args[2].equalsIgnoreCase("red")) {
+					if (am.inUse(name)) {
 						player.sendMessage(Translator.getString("ARENA_NO_EDIT_IN_USE"));
 						return true;
 					}
@@ -156,8 +158,8 @@ public class CmdArena {
 					player.sendMessage(Translator.getString("ARENA_SPAWN_ADDED", vars));
 					return true;
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-				} else if(args[2].equalsIgnoreCase("spec")) {
-					if(am.inUse(name)) {
+				} else if (args[2].equalsIgnoreCase("spec")) {
+					if (am.inUse(name)) {
 						player.sendMessage(Translator.getString("ARENA_NO_EDIT_IN_USE"));
 						return true;
 					}
@@ -168,8 +170,8 @@ public class CmdArena {
 					player.sendMessage(Translator.getString("ARENA_SPAWN_ADDED", vars));
 					return true;
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-				} else if(args[2].equalsIgnoreCase("remove")) {
-					if(am.inUse(name)) {
+				} else if (args[2].equalsIgnoreCase("remove")) {
+					if (am.inUse(name)) {
 						player.sendMessage(Translator.getString("ARENA_NO_EDIT_IN_USE"));
 						return true;
 					}
@@ -177,8 +179,8 @@ public class CmdArena {
 					player.sendMessage(Translator.getString("ARENA_REMOVED", vars));
 					return true;
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-				} else if(args[2].equalsIgnoreCase("delblue")) {
-					if(am.inUse(name)) {
+				} else if (args[2].equalsIgnoreCase("delblue")) {
+					if (am.inUse(name)) {
 						player.sendMessage(Translator.getString("ARENA_NO_EDIT_IN_USE"));
 						return true;
 					}
@@ -190,8 +192,8 @@ public class CmdArena {
 					player.sendMessage(Translator.getString("ARENA_SPAWNS_REMOVED", vars));
 					return true;
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-				} else if(args[2].equalsIgnoreCase("delred")) {
-					if(am.inUse(name)) {
+				} else if (args[2].equalsIgnoreCase("delred")) {
+					if (am.inUse(name)) {
 						player.sendMessage(Translator.getString("ARENA_NO_EDIT_IN_USE"));
 						return true;
 					}
@@ -203,8 +205,8 @@ public class CmdArena {
 					player.sendMessage(Translator.getString("ARENA_SPAWNS_REMOVED", vars));
 					return true;
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-				} else if(args[2].equalsIgnoreCase("delspec")) {
-					if(am.inUse(name)) {
+				} else if (args[2].equalsIgnoreCase("delspec")) {
+					if (am.inUse(name)) {
 						player.sendMessage(Translator.getString("ARENA_NO_EDIT_IN_USE"));
 						return true;
 					}
@@ -216,38 +218,34 @@ public class CmdArena {
 					player.sendMessage(Translator.getString("ARENA_SPAWNS_REMOVED", vars));
 					return true;
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-				} else if(args[2].equalsIgnoreCase("set")) {
-					if(am.inUse(name)) {
+				} else if (args[2].equalsIgnoreCase("set")) {
+					if (am.inUse(name)) {
 						player.sendMessage(Translator.getString("ARENA_NO_EDIT_IN_USE"));
 						return true;
 					}
-					if(args.length == 5 && plugin.sql.sqlArenaLobby.settingsList.contains(args[3])) {
+					ArenaSetting setting = null;
+					if (args.length == 5 && (setting = ArenaSetting.getFromKey(args[3])) != null) {
 						try {
 							int value = Integer.parseInt(args[4]);
-							Map<String, Integer> newSettings = new HashMap<String, Integer>();
-							newSettings.put(args[3], value);
+							Map<ArenaSetting, Integer> newSettings = new HashMap<ArenaSetting, Integer>();
+							newSettings.put(setting, value);
 							am.setSettings(name, newSettings);
-							vars.put("setting", args[3]);
+							vars.put("setting", setting.getKey());
 							vars.put("value", String.valueOf(value));
 							player.sendMessage(Translator.getString("ARENA_SET_SETTING", vars));
 							return true;
-						}catch(Exception e) {
+						} catch(Exception e) {
 							player.sendMessage(Translator.getString("INVALID_NUMBER"));
 							return true;
 						}
 					} else {
-						String settings = "";
-						for(String s : plugin.sql.sqlArenaLobby.settingsList) {
-							settings += s+",";
-						}
-						if(settings.length() > 1) settings = settings.substring(0, settings.length()-1);
-						vars.put("settings", settings);
+						vars.put("settings", ArenaSetting.getKeysAsString());
 						player.sendMessage(Translator.getString("ARENA_INVALID_SETTING", vars));
 						return true;
 					}
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-				} else if(args[2].equalsIgnoreCase("disable")) {
-					if(am.inUse(name)) {
+				} else if (args[2].equalsIgnoreCase("disable")) {
+					if (am.inUse(name)) {
 						player.sendMessage(Translator.getString("ARENA_NO_EDIT_IN_USE"));
 						return true;
 					}
@@ -258,8 +256,8 @@ public class CmdArena {
 					}
 					return true;
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-				} else if(args[2].equalsIgnoreCase("enable")) {
-					if(am.inUse(name)) {
+				} else if (args[2].equalsIgnoreCase("enable")) {
+					if (am.inUse(name)) {
 						player.sendMessage(Translator.getString("ARENA_NO_EDIT_IN_USE"));
 						return true;
 					}

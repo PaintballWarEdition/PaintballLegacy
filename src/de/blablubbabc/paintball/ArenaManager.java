@@ -6,12 +6,14 @@ import java.util.Map;
 
 import org.bukkit.Location;
 
+import de.blablubbabc.paintball.statistics.arena.ArenaSetting;
+import de.blablubbabc.paintball.statistics.arena.ArenaStat;
 import de.blablubbabc.paintball.utils.Translator;
 import de.blablubbabc.paintball.utils.Utils;
 
 
 public class ArenaManager {
-	private static Paintball plugin;
+	private Paintball plugin;
 	private String last = null;
 	private String nextArenaForce;
 
@@ -37,7 +39,7 @@ public class ArenaManager {
 	}
 	
 	public boolean hasAllSpawns(String arena) {
-		if(getBlueSpawnsSize(arena) > 0 && getRedSpawnsSize(arena) > 0 && getSpecSpawnsSize(arena) > 0) return true;
+		if (getBlueSpawnsSize(arena) > 0 && getRedSpawnsSize(arena) > 0 && getSpecSpawnsSize(arena) > 0) return true;
 		else return false;
 	}
 	
@@ -49,7 +51,7 @@ public class ArenaManager {
 	}
 	
 	public boolean isReady(String arena) {
-		if(!isDisabled(arena)) {
+		if(!isDisabled(arena) && !inUse(arena)) {
 			//spawns?
 			if(hasAllSpawns(arena)) {
 				return true;
@@ -148,11 +150,11 @@ public class ArenaManager {
 	}
 	/////////////////////////////
 
-	public Map<String, Integer> getArenaStats(String name) {
+	public Map<ArenaStat, Integer> getArenaStats(String name) {
 		return plugin.sql.sqlArenaLobby.getArenaStats(name);
 	}
 
-	public Map<String, Integer> getArenaSettings(String name) {
+	public Map<ArenaSetting, Integer> getArenaSettings(String name) {
 		return plugin.sql.sqlArenaLobby.getArenaSettings(name);
 	}
 
@@ -195,7 +197,7 @@ public class ArenaManager {
 	}
 
 	//STATS
-	public void addStats(final String arena, final Map<String, Integer> stats) {
+	public void addStats(final String arena, final Map<ArenaStat, Integer> stats) {
 		plugin.getServer().getScheduler().runTaskAsynchronously(plugin, new Runnable() {
 			
 			@Override
@@ -206,7 +208,7 @@ public class ArenaManager {
 		});
 	}
 
-	public void setStats(final String arena, final Map<String, Integer> stats) {
+	public void setStats(final String arena, final Map<ArenaStat, Integer> stats) {
 		plugin.getServer().getScheduler().runTaskAsynchronously(plugin, new Runnable() {
 			
 			@Override
@@ -216,7 +218,7 @@ public class ArenaManager {
 		});
 	}
 	//SETTINGS
-	public void setSettings(final String arena, final Map<String, Integer> settings) {
+	public void setSettings(final String arena, final Map<ArenaSetting, Integer> settings) {
 		plugin.getServer().getScheduler().runTaskAsynchronously(plugin, new Runnable() {
 			
 			@Override

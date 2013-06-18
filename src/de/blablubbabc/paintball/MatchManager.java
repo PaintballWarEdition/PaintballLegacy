@@ -10,6 +10,8 @@ import org.bukkit.Location;
 import org.bukkit.Sound;
 import org.bukkit.entity.Player;
 
+import de.blablubbabc.paintball.statistics.arena.ArenaSetting;
+import de.blablubbabc.paintball.statistics.arena.ArenaStat;
 import de.blablubbabc.paintball.statistics.general.GeneralStat;
 import de.blablubbabc.paintball.statistics.player.PlayerStat;
 import de.blablubbabc.paintball.utils.Timer;
@@ -295,12 +297,12 @@ public class MatchManager{
 		});
 		
 		//ARENA STATS
-		Map<String, Integer> aStats = new HashMap<String, Integer>();
-		aStats.put("shots", shotsAll);
-		aStats.put("kills", killsAll);
-		aStats.put("rounds", 1);
-		aStats.put("grenades", grenadesAll);
-		aStats.put("airstrikes", airstrikesAll);
+		Map<ArenaStat, Integer> aStats = new HashMap<ArenaStat, Integer>();
+		aStats.put(ArenaStat.SHOTS, shotsAll);
+		aStats.put(ArenaStat.KILLS, killsAll);
+		aStats.put(ArenaStat.ROUNDS, 1);
+		aStats.put(ArenaStat.GRENADES, grenadesAll);
+		aStats.put(ArenaStat.AIRSTRIKES, airstrikesAll);
 		
 		plugin.am.addStats(match.getArena(), aStats);
 
