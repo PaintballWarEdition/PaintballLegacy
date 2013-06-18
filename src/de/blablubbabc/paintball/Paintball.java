@@ -921,11 +921,8 @@ public class Paintball extends JavaPlugin{
 		}
 		
 		//calculating turret angles:
-		Log.info("Calculating turret angles...");
 		Turret.calculateTable(turretAngleMin, turretAngleMax, turretTicks, turretXSize, turretYSize, this);
-		Log.info("Calculating done.");
 
-		//Some license stuff: Usage on own risk, no warranties, do not modify the code, do not redistribute, do not copy, and do not use for commercial purposes! Neither direct nor indirect. So this also applies to add-ons made for this plugin! 
 		Log.info("By blablubbabc enabled.");
 		
 		final Paintball plugin = this;

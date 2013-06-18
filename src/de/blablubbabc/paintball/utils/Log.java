@@ -50,11 +50,12 @@ public class Log {
 			Log.logColored(ChatColor.RED+" There might be additional information above.");
 			warnings.clear();
 		} else {
-			Log.logColored(ChatColor.GREEN+" No warnings found. :)");
+			Log.logColored(ChatColor.GREEN+" No problems found. :)");
 		}
 	}
 	
 	public static void printInfo() {
+		Log.logColored(" ");
 		Log.logColored(ChatColor.YELLOW+" **************************************************");
 		Log.logColored(ChatColor.YELLOW+" ----------------- PAINTBALL INFO -----------------");
 		Log.logColored(" ");
@@ -71,12 +72,13 @@ public class Log {
 		Log.logColored(ChatColor.DARK_GREEN+" ->http://dev.bukkit.org/server-mods/paintball_pure_war/ ");
 		Log.logColored(" ");
 		Log.logColored(ChatColor.GREEN+" Thank you and good shooting!");
-		Log.logColored(ChatColor.GREEN+"   - blablubbabc");
+		Log.logColored(ChatColor.GREEN+"   - blablubbabc :)");
 		Log.logColored(" ");
 		Log.logColored(ChatColor.YELLOW+" ---------------- Detected Problems ---------------");
 		Log.logColored(" ");
 		printWarnings();
 		Log.logColored(" ");
 		Log.logColored(ChatColor.YELLOW+" **************************************************");
+		Log.logColored(" ");
 	}
 }

@@ -78,7 +78,7 @@ public class MatchManager{
 			for (Player player : Lobby.LOBBY.getMembers()) {
 				if (Lobby.getTeam(player).equals(Lobby.LOBBY)) {
 					Lobby.SPECTATE.addMember(player);
-					HashMap<String, String> vars = new HashMap<String, String>();
+					Map<String, String> vars = new HashMap<String, String>();
 					vars.put("color_team", Lobby.SPECTATE.color().toString());
 					vars.put("team", Lobby.SPECTATE.getName());
 					player.sendMessage(Translator.getString("YOU_JOINED_SPECTATORS", vars));
