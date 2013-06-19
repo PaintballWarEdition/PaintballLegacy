@@ -85,6 +85,8 @@ public class EventListener implements Listener {
 	private MatchManager mm;
 	
 	private long lastSignUpdate = 0;
+	// used to override creature-spawn-cancelling of other plugins for turrets
+	private Location nextTurretSpawn = null;
 
 	// private HashMap<Player, String> chatMessages;
 
@@ -778,27 +780,8 @@ public class EventListener implements Listener {
 
 	@EventHandler(priority = EventPriority.HIGHEST, ignoreCancelled = false)
 	public void onCreatureSpawn(CreatureSpawnEvent event) {
-		if (event.getEntityType() == EntityType.SNOWMAN) {
-			if (Turret.getIsTurret((Snowman) event.getEntity()) != null) {
-				if (event.isCancelled())  {
-					event.setCancelled(false);
-					//TODO debug
-					Log.info("Event was cancelled but is now not cancelled anymore");
-				} else {
-					//TODO debug
-					Log.info("Event was not cancelled in the first place");
-				}
-			}
-		}
-	}
-	
-	@EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = false)
-	public void onCreatureSpawnMonitor(CreatureSpawnEvent event) {
-		//TODO debug
-		if (event.getEntityType() == EntityType.SNOWMAN) {
-			if (Turret.getIsTurret((Snowman) event.getEntity()) != null) {
-				if (event.isCancelled()) Log.info("!!! Event was cancelled !!!");
-			}
+		if (nextTurretSpawn != null && event.getLocation().equals(nextTurretSpawn)) {
+			event.setCancelled(false);
 		}
 	}
 
@@ -818,7 +801,13 @@ public class EventListener implements Listener {
 					// turret:
 					if (Turret.getTurretCountMatch() < plugin.turretMatchLimit) {
 						if (Turret.getTurrets(player.getName()).size() < plugin.turretPlayerLimit) {
-							Snowman snowman = (Snowman) block.getLocation().getWorld().spawnEntity(block.getLocation(), EntityType.SNOWMAN);
+							Location spawnLoc = block.getLocation();
+							if (nextTurretSpawn != null) {
+								Log.severe("[!] IllegalState: A turret snowman tried to set nextTurretSpawn, but this was already set! Report this to blablubbabc. Thank you!");
+							}
+							nextTurretSpawn = spawnLoc;
+							Snowman snowman = (Snowman) block.getLocation().getWorld().spawnEntity(spawnLoc, EntityType.SNOWMAN);
+							spawnLoc = null;
 							new Turret(player, snowman, plugin.mm.getMatch(player));
 							if (item.getAmount() <= 1)
 								player.setItemInHand(null);

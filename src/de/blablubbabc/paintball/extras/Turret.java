@@ -2,6 +2,7 @@ package de.blablubbabc.paintball.extras;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 
@@ -62,7 +63,7 @@ public class Turret {
 	}
 	
 	public static Turret getIsTurret(Snowman snowman) {
-		for (ArrayList<Turret> pturrets : turrets.values()) {
+		for (List<Turret> pturrets : turrets.values()) {
 			for (Turret t : pturrets) {
 				if (t.entity.equals(snowman)) {
 					return t;
