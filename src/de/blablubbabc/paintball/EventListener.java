@@ -26,6 +26,7 @@ import org.bukkit.entity.Player;
 import org.bukkit.entity.Projectile;
 import org.bukkit.entity.Snowball;
 import org.bukkit.entity.Snowman;
+import org.bukkit.event.Event;
 import org.bukkit.event.Event.Result;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
@@ -240,7 +241,7 @@ public class EventListener implements Listener {
 		}
 	}
 	
-	@EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = false)
+	@EventHandler(priority = EventPriority.NORMAL, ignoreCancelled = false)
 	public void onPlayerHit(EntityDamageByEntityEvent event) {
 		if (event.getDamager() instanceof Projectile) {
 			Projectile shot = (Projectile) event.getDamager();
@@ -270,7 +271,7 @@ public class EventListener implements Listener {
 						}
 					} else {
 						// turret hit on hit via snowball:
-						handleTurretHit(event.getEntity(), matchA, shooter);
+						handleTurretHit(event, event.getEntity(), matchA, shooter);
 					}
 				}
 			}
@@ -297,19 +298,20 @@ public class EventListener implements Listener {
 						}
 					} else {
 						// turret hit on punch
-						handleTurretHit(event.getEntity(), matchA, attacker);
+						handleTurretHit(event, event.getEntity(), matchA, attacker);
 					}
 				}
 			}
 		}
 	}
 	
-	private void handleTurretHit(Entity entity, Match match, Player attacker) {
+	private void handleTurretHit(EntityDamageByEntityEvent event, Entity entity, Match match, Player attacker) {
 		if (entity.getType() == EntityType.SNOWMAN) {
 			Snowman snowman = (Snowman) entity;
 			Turret turret = Turret.getIsTurret(snowman);
 			if (turret != null && match == turret.match && match.enemys(attacker, turret.player)) {
 				turret.hit();
+				event.setCancelled(true);
 			}
 		}
 	}
@@ -780,13 +782,6 @@ public class EventListener implements Listener {
 						}
 					}
 				}
-			}
-		} else if (event.getEntityType() == EntityType.SNOWMAN) {
-			Snowman snowman = (Snowman) event.getEntity();
-			Turret turret = Turret.getIsTurret(snowman);
-			// no damage to turrets if through projectile or entity attack:
-			if (turret != null && (event.getCause() == DamageCause.PROJECTILE || event.getCause() == DamageCause.ENTITY_ATTACK)) {
-				event.setCancelled(true);
 			}
 		}
 	}
