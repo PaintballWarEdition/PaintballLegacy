@@ -175,9 +175,11 @@ public class Match {
 				for (Player p : getAllPlayer()) {
 					Location ploc = p.getLocation();
 					Location loc = playersLoc.get(p.getName());
-					loc.setPitch(ploc.getPitch());
-					loc.setYaw(ploc.getYaw());
-					p.teleport(loc);
+					if (ploc.getBlockX() != loc.getBlockX() || ploc.getBlockY() != loc.getBlockY() || ploc.getBlockZ() != loc.getBlockZ()) {
+						loc.setPitch(ploc.getPitch());
+						loc.setYaw(ploc.getYaw());
+						p.teleport(loc);
+					}	
 				}
 			}
 		}, new Runnable() {
