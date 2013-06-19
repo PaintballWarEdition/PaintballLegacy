@@ -802,9 +802,6 @@ public class EventListener implements Listener {
 					if (Turret.getTurretCountMatch() < plugin.turretMatchLimit) {
 						if (Turret.getTurrets(player.getName()).size() < plugin.turretPlayerLimit) {
 							Location spawnLoc = block.getLocation();
-							if (nextTurretSpawn != null) {
-								Log.severe("[!] IllegalState: A turret snowman tried to set nextTurretSpawn, but this was already set! Report this to blablubbabc. Thank you!");
-							}
 							nextTurretSpawn = spawnLoc;
 							Snowman snowman = (Snowman) block.getLocation().getWorld().spawnEntity(spawnLoc, EntityType.SNOWMAN);
 							nextTurretSpawn = null;
