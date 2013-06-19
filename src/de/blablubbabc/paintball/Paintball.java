@@ -764,14 +764,14 @@ public class Paintball extends JavaPlugin{
 		//TRANSLATOR
 		t = new Translator(this, local);
 		if(!Translator.success) {
-			Log.severe("ERROR: Couldn't find/load the default language file. Disables now..");
+			Log.severe("Couldn't find/load the default language file. Disables now..", true);
 			getServer().getPluginManager().disablePlugin(this);
 			return;
 		}
 		//MELODIES
 		musik = new Musiker(this, melodyWin, winNbs, melodyDefeat, defeatNbs, melodyDraw, drawNbs);
 		if(!musik.success) {
-			Log.severe("ERROR: Couldn't find/load the default melodies. Disables now..");
+			Log.severe("Couldn't find/load the default melodies. Disables now..", true);
 			getServer().getPluginManager().disablePlugin(this);
 			return;
 		}

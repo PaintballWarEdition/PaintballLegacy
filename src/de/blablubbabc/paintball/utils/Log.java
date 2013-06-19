@@ -30,12 +30,12 @@ public class Log {
 		consoleSender.sendMessage(message);
 	}
 	
-	public static void severe(String message) {
+	public static void severe(String message, boolean warn) {
 		logger.severe(message);
 		warnings.add(message);
 	}
 	
-	public static void warning(String message) {
+	public static void warning(String message, boolean warn) {
 		logger.warning(message);
 		warnings.add(message);
 	}

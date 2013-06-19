@@ -50,11 +50,11 @@ public class Translator {
 					len = in.read(buffer);
 				}
 			} else {
-				Log.warning("ERROR: Couldn't load the default language file from jar!");
+				Log.severe("Couldn't load the default language file from jar!", true);
 				return;
 			}
 		} catch (Exception e) {
-			Log.warning("ERROR: Couldn't write the default language file!");
+			Log.severe("Couldn't write the default language file!", true);
 			e.printStackTrace();
 			return;
 		} finally {
@@ -83,8 +83,8 @@ public class Translator {
 		// get translation:
 		localisationFile = new File(path + "/" + filename + ".txt");
 		if (!localisationFile.exists()) {
-			Log.info("ERROR: Couldn't find the specified language file.");
-			Log.warning("Using the default language now: " + def_file.getName());
+			Log.warning("Couldn't find the specified language file.", true);
+			Log.warning("Using the default language now: " + def_file.getName(), true);
 			use_def = true;
 		} else {
 			if (!localisationFile.equals(def_file)) {
@@ -92,32 +92,32 @@ public class Translator {
 						+ localisationFile.getName());
 				translation = loadLanguage(localisationFile);
 				if (translation == null) {
-					Log.info("ERROR: Couldn't load the specified language file!");
-					Log.info("Do you use the right translation?");
-					Log.warning("Using the default language now: " + def_file.getName());
+					Log.warning("Couldn't load the specified language file!", true);
+					Log.warning("Do you use the right translation?", false);
+					Log.warning("Using the default language now: " + def_file.getName(), true);
 					use_def = true;
 				} else {
 					// length check
 					if (translation.size() != def_language.size()) {
-						Log.warning("WARNING: Size-Missmatch between the keys of the loaded and the default language file detected! (translation-default: "
+						Log.warning("Size-Missmatch between the keys of the loaded and the default language file detected! (translation-default: "
 								+ translation.size()
 								+ "-"
-								+ def_language.size() + " )");
-						Log.info("Do you use the right translation?");
+								+ def_language.size() + " )", true);
+						Log.warning("Do you use the right translation?", false);
 					}
 					// keys missing?
 					boolean key_missing = false;
 					for (String s : def_language.keySet()) {
 						if (!translation.containsKey(s)) {
-							Log.info("ERROR: Key missing: " + s);
+							Log.warning("Key missing: " + s, false);
 							key_missing = true;
 						}
 					}
 					if (key_missing) {
-						Log.warning("ERROR: There are keys missing in the loaded language-file!");
-						Log.info("Do you use the right translation-version?");
+						Log.warning("There are keys missing in the loaded language-file!", true);
+						Log.warning("Do you use the right translation-version?", false);
 						Log.warning("Using the default language now: "
-								+ def_file.getName());
+								+ def_file.getName(), true);
 						use_def = true;
 					}
 				}
@@ -207,7 +207,7 @@ public class Translator {
 				// get key and value
 				int delimeter = text.indexOf('=');
 				if (delimeter == -1) {
-					Log.info("ERROR: No '=' found in line " + line);
+					Log.warning("No '=' found in line " + line, false);
 					return null;
 				}
 				String key = text.substring(0, delimeter).replaceAll(" ", "")
@@ -216,12 +216,12 @@ public class Translator {
 				// get correct value
 				int start = value.indexOf('"');
 				if (start == -1) {
-					Log.info("ERROR: No '\"' found in line " + line);
+					Log.warning("No '\"' found in line " + line, false);
 					return null;
 				}
 				int end = value.lastIndexOf('"');
 				if (end == start) {
-					Log.info("ERROR: No second '\"' found in line " + line);
+					Log.warning("No second '\"' found in line " + line, false);
 					return null;
 				}
 				// too many '"'?
@@ -231,22 +231,22 @@ public class Translator {
 						gaense++;
 				}
 				if (gaense > 2) {
-					Log.info("ERROR: Too many '\"' found in line " + line);
+					Log.warning("Too many '\"' found in line " + line, false);
 					return null;
 				}
 				value = value.substring(start + 1, end);
 				// checks
 				if (key.isEmpty()) {
-					Log.info("ERROR: No key found in line " + line);
+					Log.warning("No key found in line " + line, false);
 					break;
 				}
 				if (value.isEmpty()) {
-					Log.info("ERROR: No value found in line " + line);
+					Log.warning("No value found in line " + line, false);
 					return null;
 				}
 				// already existing?
 				if (language.containsKey(key)) {
-					Log.info("WARNING: Duplicate key: " + key);
+					Log.warning("Duplicate key: " + key, false);
 				}
 				// Add to translation map:
 				language.put(key, value);
@@ -255,7 +255,7 @@ public class Translator {
 			Log.info("Scanned lines: " + line + " | Skipped lines: " + line_skipped);
 			return language;
 		} catch (Exception e) {
-			Log.info("ERROR: Couldn't load the specified language file.");
+			Log.severe("Couldn't load the specified language file.", false);
 			e.printStackTrace();
 			return null;
 		} finally {

@@ -26,7 +26,6 @@ import org.bukkit.entity.Player;
 import org.bukkit.entity.Projectile;
 import org.bukkit.entity.Snowball;
 import org.bukkit.entity.Snowman;
-import org.bukkit.event.Event;
 import org.bukkit.event.Event.Result;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
@@ -989,7 +988,7 @@ public class EventListener implements Listener {
 			event.setDroppedExp(0);
 			event.setKeepLevel(false);
 			event.getDrops().clear();
-			Log.severe("WARNING: IllegalState! A player died while playing paintball. Report this to blablubbabc");
+			Log.severe("WARNING: IllegalState! A player died while playing paintball. Report this to blablubbabc", false);
 		}
 	}
 
