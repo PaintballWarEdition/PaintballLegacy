@@ -807,7 +807,7 @@ public class EventListener implements Listener {
 							}
 							nextTurretSpawn = spawnLoc;
 							Snowman snowman = (Snowman) block.getLocation().getWorld().spawnEntity(spawnLoc, EntityType.SNOWMAN);
-							spawnLoc = null;
+							nextTurretSpawn = null;
 							new Turret(player, snowman, plugin.mm.getMatch(player));
 							if (item.getAmount() <= 1)
 								player.setItemInHand(null);
