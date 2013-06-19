@@ -171,7 +171,7 @@ public class CmdAdmin {
 					@Override
 					public void run() {
 						long time1 = System.currentTimeMillis();
-						plugin.pm.resetDataSameThread();
+						plugin.pm.resetAllData();
 						long time2 = System.currentTimeMillis();
 						long delta = time2 - time1;
 						
@@ -187,7 +187,7 @@ public class CmdAdmin {
 			} else if(args.length == 3) {
 				if(plugin.pm.exists(args[2])) {
 					String name = args[2];
-					plugin.pm.resetData(name);
+					plugin.pm.resetDataOfPlayerAsync(name);
 					HashMap<String, String> vars = new HashMap<String, String>();
 					vars.put("player", name);
 					sender.sendMessage(Translator.getString("PLAYER_ALL_STATS_RESET", vars));

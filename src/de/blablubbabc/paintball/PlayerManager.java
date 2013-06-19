@@ -8,13 +8,16 @@ import org.bukkit.Location;
 import org.bukkit.entity.Player;
 
 import de.blablubbabc.paintball.statistics.player.PlayerStat;
+import de.blablubbabc.paintball.statistics.player.PlayerStats;
 
 
 public class PlayerManager {
 	private Map<String, PlayerDataStore> playerStore;
+	private Map<String, PlayerStats> playerStats;
 
 	public PlayerManager() {
 		playerStore = new HashMap<String, PlayerDataStore>();
+		playerStats = new HashMap<String, PlayerStats>();
 		
 		addAllOnlinePlayers();
 	}
@@ -52,7 +55,7 @@ public class PlayerManager {
 		}
 	}
 
-	public void resetData() {
+	public void resetAllDataAsync() {
 		Paintball.instance.getServer().getScheduler()
 				.runTaskAsynchronously(Paintball.instance, new Runnable() {
 
@@ -63,11 +66,11 @@ public class PlayerManager {
 				});
 	}
 
-	public void resetDataSameThread() {
+	public void resetAllData() {
 		Paintball.instance.sql.sqlPlayers.resetAllPlayerStats();
 	}
 
-	public void resetData(final String player) {
+	public void resetDataOfPlayerAsync(final String player) {
 		Paintball.instance.getServer().getScheduler()
 				.runTaskAsynchronously(Paintball.instance, new Runnable() {
 

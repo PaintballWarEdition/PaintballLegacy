@@ -776,11 +776,28 @@ public class EventListener implements Listener {
 		}
 	}
 
-	@EventHandler(priority = EventPriority.HIGHEST)
+	@EventHandler(priority = EventPriority.HIGHEST, ignoreCancelled = false)
 	public void onCreatureSpawn(CreatureSpawnEvent event) {
 		if (event.getEntityType() == EntityType.SNOWMAN) {
 			if (Turret.getIsTurret((Snowman) event.getEntity()) != null) {
-				event.setCancelled(false);
+				if (event.isCancelled())  {
+					event.setCancelled(false);
+					//TODO debug
+					Log.info("Event was cancelled but is now not cancelled anymore");
+				} else {
+					//TODO debug
+					Log.info("Event was not cancelled in the first place");
+				}
+			}
+		}
+	}
+	
+	@EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = false)
+	public void onCreatureSpawnMonitor(CreatureSpawnEvent event) {
+		//TODO debug
+		if (event.getEntityType() == EntityType.SNOWMAN) {
+			if (Turret.getIsTurret((Snowman) event.getEntity()) != null) {
+				if (event.isCancelled()) Log.info("!!! Event was cancelled !!!");
 			}
 		}
 	}

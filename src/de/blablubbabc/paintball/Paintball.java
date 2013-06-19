@@ -971,6 +971,7 @@ public class Paintball extends JavaPlugin{
 		if(mm != null) mm.forceReload();
 		sql.closeConnection();
 		getServer().getScheduler().cancelTasks(this);
+		instance = null;
 		Log.info("Disabled!");
 	}
 
