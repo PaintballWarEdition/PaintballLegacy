@@ -18,6 +18,7 @@ import org.bukkit.block.Block;
 import org.bukkit.block.BlockState;
 import org.bukkit.block.Sign;
 import org.bukkit.entity.Egg;
+import org.bukkit.entity.Entity;
 import org.bukkit.entity.EntityType;
 import org.bukkit.entity.Fireball;
 import org.bukkit.entity.Item;
@@ -267,34 +268,48 @@ public class EventListener implements Listener {
 								}
 							}
 						}
-					} else if (event.getEntityType() == EntityType.SNOWMAN) {
-						Snowman snowman = (Snowman) event.getEntity();
-						Turret turret = Turret.getIsTurret(snowman);
-						if (turret != null && matchA == turret.match && matchA.enemys(shooter, turret.player)) {
-							turret.hit();
-						}
+					} else {
+						// turret hit on hit via snowball:
+						handleTurretHit(event.getEntity(), matchA, shooter);
 					}
 				}
 			}
-		} else if (plugin.allowMelee && event.getDamager() instanceof Player && event.getEntity() instanceof Player && event.getCause() == DamageCause.ENTITY_ATTACK) {
-			Player attacker = (Player) event.getDamager();
-			Player target = (Player) event.getEntity();
-			if (attacker != target) {
+		} else if (plugin.allowMelee && event.getCause() == DamageCause.ENTITY_ATTACK) {
+			if (event.getDamager() instanceof Player) {
+				Player attacker = (Player) event.getDamager();
 				Match matchA = mm.getMatch(attacker);
 				if (matchA != null) {
-					Match matchT = mm.getMatch(target);
-					if (matchT != null) {
-						if (matchA == matchT) {
-							if (matchA.enemys(attacker, target) && matchA.isSurvivor(attacker) && matchA.isSurvivor(target) && matchA.started) {
-								if (target.getHealth() > plugin.meleeDamage)
-									target.setHealth(target.getHealth() - plugin.meleeDamage);
-								else {
-									matchA.frag(target, attacker, Origin.MELEE);
-								}
+					if (event.getEntity() instanceof Player) {
+						Player target = (Player) event.getEntity();
+						if (attacker != target) {
+							Match matchT = mm.getMatch(target);
+							if (matchT != null) {
+								if (matchA == matchT) {
+									if (matchA.enemys(attacker, target) && matchA.isSurvivor(attacker) && matchA.isSurvivor(target) && matchA.started) {
+										if (target.getHealth() > plugin.meleeDamage)
+											target.setHealth(target.getHealth() - plugin.meleeDamage);
+										else {
+											matchA.frag(target, attacker, Origin.MELEE);
+										}
+									}
+								}	
 							}
-						}	
+						}
+					} else {
+						// turret hit on punch
+						handleTurretHit(event.getEntity(), matchA, attacker);
 					}
 				}
+			}
+		}
+	}
+	
+	private void handleTurretHit(Entity entity, Match match, Player attacker) {
+		if (entity.getType() == EntityType.SNOWMAN) {
+			Snowman snowman = (Snowman) entity;
+			Turret turret = Turret.getIsTurret(snowman);
+			if (turret != null && match == turret.match && match.enemys(attacker, turret.player)) {
+				turret.hit();
 			}
 		}
 	}
@@ -766,6 +781,13 @@ public class EventListener implements Listener {
 					}
 				}
 			}
+		} else if (event.getEntityType() == EntityType.SNOWMAN) {
+			Snowman snowman = (Snowman) event.getEntity();
+			Turret turret = Turret.getIsTurret(snowman);
+			// no damage to turrets if through projectile or entity attack:
+			if (turret != null && (event.getCause() == DamageCause.PROJECTILE || event.getCause() == DamageCause.ENTITY_ATTACK)) {
+				event.setCancelled(true);
+			}
 		}
 	}
 
@@ -780,7 +802,7 @@ public class EventListener implements Listener {
 
 	@EventHandler(priority = EventPriority.HIGHEST, ignoreCancelled = false)
 	public void onCreatureSpawn(CreatureSpawnEvent event) {
-		if (nextTurretSpawn != null && event.getLocation().equals(nextTurretSpawn)) {
+		if (nextTurretSpawn != null && event.getEntityType() == EntityType.SNOWMAN && event.getLocation().equals(nextTurretSpawn)) {
 			event.setCancelled(false);
 		}
 	}
