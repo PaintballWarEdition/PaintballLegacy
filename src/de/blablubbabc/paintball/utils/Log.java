@@ -32,12 +32,12 @@ public class Log {
 	
 	public static void severe(String message, boolean warn) {
 		logger.severe(message);
-		warnings.add(message);
+		if (warn) warnings.add(message);
 	}
 	
 	public static void warning(String message, boolean warn) {
 		logger.warning(message);
-		warnings.add(message);
+		if (warn) warnings.add(message);
 	}
 	
 	private static void printWarnings() {
