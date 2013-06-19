@@ -1,6 +1,5 @@
 package de.blablubbabc.paintball.statistics.player;
 
-import java.util.HashMap;
 import java.util.Map;
 
 import de.blablubbabc.paintball.Paintball;
@@ -8,14 +7,12 @@ import de.blablubbabc.paintball.utils.Utils;
 
 public class PlayerStats {
 	private final String playerName;
-	private Map<PlayerStat, Integer> stats = new HashMap<PlayerStat, Integer>();
+	private Map<PlayerStat, Integer> stats = null;
 	private boolean dirty = false;
 	
 	public PlayerStats(String playerName) {
 		this.playerName = playerName;
-		load();
-		calculate();
-		dirty = false;
+		loadAsync();
 	}
 	
 	public void resetStats() {
@@ -46,19 +43,39 @@ public class PlayerStats {
 		dirty = true;
 	}
 	
+	
+	
 	public void save() {
 		if (dirty) {
 			Paintball.instance.pm.setStats(playerName, stats);
 			dirty = false;
 		}
 	}
+	
+	public void saveAsync() {
+		Paintball.instance.getServer().getScheduler().runTaskAsynchronously(Paintball.instance, new Runnable() {
+			
+			@Override
+			public void run() {
+				save();
+			}
+		});
+	}
 
 	public void load() {
-		for(PlayerStat stat : PlayerStat.values()) {
-			// sql load
-			int value = 0;
-			setStat(stat, value);
-		}
+		stats = Paintball.instance.pm.getStats(playerName);
+		calculate();
+		dirty = false;
+	}
+	
+	public void loadAsync() {
+		Paintball.instance.getServer().getScheduler().runTaskAsynchronously(Paintball.instance, new Runnable() {
+			
+			@Override
+			public void run() {
+				load();
+			}
+		});
 	}
 	
 }
