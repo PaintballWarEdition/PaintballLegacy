@@ -22,6 +22,23 @@ public class PlayerManager {
 		addAllOnlinePlayers();
 	}
 
+	// PLAYERSTATS
+	
+	public void loadPlayerStats(String playerName) {
+		
+	}
+	
+	public PlayerStats getPlayerStats(String playerName) {
+		// check if in cache, if not return temporary retrieved PlayerStats:
+		PlayerStats stats = playerStats.get(playerName);
+		if (stats == null) {
+			stats = new PlayerStats(playerName);
+		}
+		return stats;
+	}
+	
+	
+	
 	// METHODS
 	// SETTER
 	public void addAllOnlinePlayers() {

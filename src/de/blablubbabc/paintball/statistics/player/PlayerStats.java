@@ -12,7 +12,7 @@ public class PlayerStats {
 	
 	public PlayerStats(String playerName) {
 		this.playerName = playerName;
-		loadAsync();
+		load();
 	}
 	
 	public void resetStats() {
@@ -53,29 +53,21 @@ public class PlayerStats {
 	}
 	
 	public void saveAsync() {
-		Paintball.instance.getServer().getScheduler().runTaskAsynchronously(Paintball.instance, new Runnable() {
-			
-			@Override
-			public void run() {
-				save();
-			}
-		});
+		if (dirty) {
+			Paintball.instance.getServer().getScheduler().runTaskAsynchronously(Paintball.instance, new Runnable() {
+				
+				@Override
+				public void run() {
+					save();
+				}
+			});
+		}
 	}
 
 	public void load() {
 		stats = Paintball.instance.pm.getStats(playerName);
 		calculate();
 		dirty = false;
-	}
-	
-	public void loadAsync() {
-		Paintball.instance.getServer().getScheduler().runTaskAsynchronously(Paintball.instance, new Runnable() {
-			
-			@Override
-			public void run() {
-				load();
-			}
-		});
 	}
 	
 }
