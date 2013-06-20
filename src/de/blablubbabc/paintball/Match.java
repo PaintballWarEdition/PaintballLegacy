@@ -460,7 +460,7 @@ public class Match {
 	public void changeAllColors() {
 		for (Player p : redT) {
 			// chatnames
-			String n = plugin.red + p.getName();
+			String n = Lobby.RED.color() + p.getName();
 			if (n.length() > 16)
 				n = (String) n.subSequence(0, n.length() - (n.length() - 16));
 			/*
@@ -473,7 +473,7 @@ public class Match {
 		}
 		for (Player p : blueT) {
 			// chatnames
-			String n = plugin.blue + p.getName();
+			String n = Lobby.BLUE.color() + p.getName();
 			if (n.length() > 16)
 				n = (String) n.subSequence(0, n.length() - (n.length() - 16));
 			/*

@@ -275,7 +275,7 @@ public class Turret {
 			Paintball.instance.getServer().getScheduler().cancelTask(salveTask);
 		removeTurret(playerName, this);
 		// some effect here:
-		if(effect) {
+		if(effect && Paintball.instance.effects) {
 			Location loc = entity.getLocation().add(0, 1, 0);
 			entity.getWorld().playSound(loc, Sound.IRONGOLEM_DEATH, 100L, 2L);
 			entity.getWorld().playEffect(loc, Effect.SMOKE, 1);

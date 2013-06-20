@@ -7,9 +7,9 @@ import java.util.Arrays;
 import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Map;
 import java.util.regex.Pattern;
 
-import org.bukkit.ChatColor;
 import org.bukkit.Location;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
@@ -75,27 +75,10 @@ public class Paintball extends JavaPlugin{
 	
 	//LOBBYSPAWNS
 	public int lobbyspawn;
-	private LinkedList<Location> lobbyspawns;
+	private List<Location> lobbyspawns;
 
 	//Public afk detection
-	public HashMap <String, Integer> afkMatchCount;
-
-	//ChatColors
-	public ChatColor gray = ChatColor.GRAY;
-	public ChatColor gold = ChatColor.GOLD;
-	public ChatColor green = ChatColor.GREEN;
-	public ChatColor aqua = ChatColor.AQUA;
-	public ChatColor red = ChatColor.RED;
-	public ChatColor blue = ChatColor.BLUE;
-	public ChatColor yellow = ChatColor.YELLOW;
-	public ChatColor light_purple = ChatColor.LIGHT_PURPLE;
-	public ChatColor dark_green = ChatColor.DARK_GREEN;
-	public ChatColor dark_red = ChatColor.DARK_RED;
-	public ChatColor white = ChatColor.WHITE;
-
-	public ChatColor bold = ChatColor.BOLD;
-	public ChatColor italic = ChatColor.ITALIC;
-	public ChatColor reset = ChatColor.RESET;
+	public Map<String, Integer> afkMatchCount;
 	
 	//CONFIG:
 	//general:
@@ -114,9 +97,9 @@ public class Paintball extends JavaPlugin{
 	public boolean listnames;
 	public boolean chatnames;
 	public boolean shop;
-	public ArrayList<String> shopGoods;
-	public ArrayList<String> allowedCommands;
-	public ArrayList<String> blacklistedCommandsRegex;
+	public List<String> shopGoods;
+	public List<String> allowedCommands;
+	public List<String> blacklistedCommandsRegex;
 	public boolean checkBlacklist;
 	
 	public boolean blacklistAdminOverride;
