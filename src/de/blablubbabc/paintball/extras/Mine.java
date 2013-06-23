@@ -10,6 +10,7 @@ import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.Sound;
 import org.bukkit.block.Block;
+import org.bukkit.block.BlockState;
 import org.bukkit.entity.Player;
 import org.bukkit.entity.Snowball;
 import org.bukkit.inventory.ItemStack;
@@ -72,6 +73,7 @@ public class Mine {
 	}
 
 	public final Block block;
+	public final BlockState oldState;
 	public final Location loc;
 	public final Player player;
 	public final Match match;
@@ -79,8 +81,9 @@ public class Mine {
 	private int tickTask = -1;
 	private boolean exploded = false;
 
-	public Mine(Player player, Block mine, Match match) {
+	public Mine(Player player, Block mine, BlockState oldState, Match match) {
 		this.block = mine;
+		this.oldState = oldState;
 		this.loc = block.getLocation();
 		this.match = match;
 		this.player = player;
@@ -165,8 +168,8 @@ public class Mine {
 			exploded = true;
 			if (tickTask != -1)
 				Paintball.instance.getServer().getScheduler().cancelTask(tickTask);
-			if (block.getType() == Material.FLOWER_POT)
-				block.setType(Material.AIR);
+			if (block.getType() == Material.FLOWER_POT) 
+				oldState.update();
 			final String playerName = player.getName();
 			removeMine(playerName, this);
 

@@ -848,7 +848,7 @@ public class EventListener implements Listener {
 									block.setData((byte) 0);
 								}
 							}, 1L);
-							new Mine(player, block, plugin.mm.getMatch(player));
+							new Mine(player, block, event.getBlockReplacedState(), plugin.mm.getMatch(player));
 							if (item.getAmount() <= 1)
 								player.setItemInHand(null);
 							else {
