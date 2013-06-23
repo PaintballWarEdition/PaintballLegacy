@@ -1,6 +1,7 @@
 package de.blablubbabc.paintball.statistics.player;
 
 import java.util.Map;
+import java.util.Map.Entry;
 
 import de.blablubbabc.paintball.Paintball;
 import de.blablubbabc.paintball.utils.Utils;
@@ -24,8 +25,13 @@ public class PlayerStats {
 	}
 	
 	public void addStat(PlayerStat stat, int value) {
-		setStat(stat, getStat(stat)+value);
-		dirty = true;
+		setStat(stat, getStat(stat) + value);
+	}
+	
+	public void addStats(Map<PlayerStat, Integer> otherStats) {
+		for (Entry<PlayerStat, Integer> entry : otherStats.entrySet()) {
+			addStat(entry.getKey(), entry.getValue());
+		}
 	}
 	
 	public void setStat(PlayerStat stat, int value) {
@@ -33,8 +39,18 @@ public class PlayerStats {
 		dirty = true;
 	}
 	
+	public void setStats(Map<PlayerStat, Integer> otherStats) {
+		for (Entry<PlayerStat, Integer> entry : otherStats.entrySet()) {
+			setStat(entry.getKey(), entry.getValue());
+		}
+	}
+	
 	public int getStat(PlayerStat stat) {
 		return stats.get(stat);
+	}
+	
+	public Map<PlayerStat, Integer> getStats() {
+		return stats;
 	}
 	
 	public void calculate() {

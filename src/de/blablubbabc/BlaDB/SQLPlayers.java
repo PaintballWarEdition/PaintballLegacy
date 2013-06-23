@@ -3,10 +3,8 @@ package de.blablubbabc.BlaDB;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.AbstractMap.SimpleEntry;
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
-import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 
@@ -66,7 +64,7 @@ public class SQLPlayers {
 		return a;
 	}
 
-	public List<String> getAllPlayerNames() {
+	/*public List<String> getAllPlayerNames() {
 		List<String> players = new ArrayList<String>();
 
 		Result r = sql.resultQuery("SELECT name FROM players;");
@@ -83,6 +81,24 @@ public class SQLPlayers {
 			r.close();
 		}
 		return players;
+	}*/
+	
+	public int getPlayersEverPlayedCount() {
+		Result r = sql.resultQuery("SELECT COUNT(*) FROM players WHERE rounds > 0;");
+		ResultSet rs = r.getResultSet();
+		int result = 0;
+		try {
+			if(rs != null) {
+				while(rs.next()) {
+					result = rs.getInt(1);
+				}
+			}
+		} catch (SQLException e) {
+			e.printStackTrace();
+		} finally {
+			r.close();
+		}
+		return result;
 	}
 
 	public boolean isPlayerExisting(String player) {

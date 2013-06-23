@@ -57,16 +57,10 @@ public class Poster {
 		encodeDataPair(data, "whitelist", Boolean.toString(plugin.getServer().hasWhitelist()));
 		encodeDataPair(data, "pluginversion", description.getVersion());
 		encodeDataPair(data, "nometrics", Boolean.toString(plugin.nometrics));
-		int numberp = 0;
-		int numberj = 0;
-		try {
-			for(String name : plugin.pm.getAllPlayerNames()) {
-				numberj++;
-				if(plugin.pm.getStats(name).get("rounds") > 0) numberp++;
-			}
-		} catch (Exception e) {
-			numberp = 0;
-		}
+		
+		int numberp = plugin.pm.getPlayersEverPlayedCount();
+		int numberj = plugin.pm.getPlayerCount();
+		
 		encodeDataPair(data, "everplayed", Integer.toString(numberp));
 		encodeDataPair(data, "everjoined", Integer.toString(numberj));
 		encodeDataPair(data, "autolobby", Boolean.toString(plugin.autoLobby));

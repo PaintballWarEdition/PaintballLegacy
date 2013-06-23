@@ -854,11 +854,7 @@ public class Paintball extends JavaPlugin{
 				@Override
 				public int getValue() {
 					try {
-						int number = 0;
-						for(String name : pm.getAllPlayerNames()) {
-							if(pm.getStats(name).get("rounds") > 0) number++;
-						}
-						return number;
+						return pm.getPlayersEverPlayedCount();
 					} catch (Exception e) {
 						// Failed to get the value :(
 						return 0;

@@ -16,7 +16,7 @@ import de.blablubbabc.paintball.utils.Translator;
 public class Stats {
 
 	private Paintball plugin;
-	private DecimalFormat dec = new DecimalFormat("###.##");
+	public static DecimalFormat decimalFormat = new DecimalFormat("###.##");
 
 	public Stats (Paintball pl) {
 		plugin = pl;
@@ -93,7 +93,7 @@ public class Stats {
 						vars.put("player", players[i-1]);
 						if (stat == PlayerStat.KD || stat == PlayerStat.ACCURACY) {
 							float valueF = (float) values[i-1] / 100;
-							vars.put("value", dec.format(valueF));
+							vars.put("value", decimalFormat.format(valueF));
 						} else vars.put("value", String.valueOf(values[i-1]));
 						sender.sendMessage(Translator.getString("TOP_TEN_ENTRY", vars));
 					} else break;
@@ -192,11 +192,11 @@ public class Stats {
 						vars.put(key + "_top", String.valueOf(topStats.get(stat).getValue()));
 					}
 					//KD
-					vars.put("kd", dec.format(kdF));
-					vars.put("kd_top", dec.format(kdFT));
+					vars.put("kd", decimalFormat.format(kdF));
+					vars.put("kd_top", decimalFormat.format(kdFT));
 					//HITQUOTE
-					vars.put("hitquote", dec.format(hitquoteF));
-					vars.put("hitquote_top", dec.format(hitquoteFT));
+					vars.put("hitquote", decimalFormat.format(hitquoteF));
+					vars.put("hitquote_top", decimalFormat.format(hitquoteFT));
 
 					//SEND
 					sender.sendMessage(Translator.getString("STATS_HEADER"));

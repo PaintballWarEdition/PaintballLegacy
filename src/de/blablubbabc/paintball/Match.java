@@ -46,13 +46,13 @@ public class Match {
 	private Map<Player, Integer> protection = new HashMap<Player, Integer>();
 	private Set<String> justRespawned = new HashSet<String>();
 	// STATS
-	private Map<String, Integer> shots = new HashMap<String, Integer>();
+	/*private Map<String, Integer> shots = new HashMap<String, Integer>();
 	private Map<String, Integer> hits = new HashMap<String, Integer>();
 	private Map<String, Integer> kills = new HashMap<String, Integer>();
 	private Map<String, Integer> deaths = new HashMap<String, Integer>();
 	private Map<String, Integer> teamattacks = new HashMap<String, Integer>();
 	private Map<String, Integer> grenades = new HashMap<String, Integer>();
-	private Map<String, Integer> airstrikes = new HashMap<String, Integer>();
+	private Map<String, Integer> airstrikes = new HashMap<String, Integer>();*/
 
 	private Random random;
 

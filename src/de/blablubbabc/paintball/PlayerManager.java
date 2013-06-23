@@ -25,7 +25,7 @@ public class PlayerManager {
 	// PLAYERSTATS
 	
 	public void loadPlayerStats(String playerName) {
-		
+		playerStats.put(playerName, new PlayerStats(playerName));
 	}
 	
 	public PlayerStats getPlayerStats(String playerName) {
@@ -78,7 +78,7 @@ public class PlayerManager {
 
 					@Override
 					public void run() {
-						Paintball.instance.sql.sqlPlayers.resetAllPlayerStats();
+						resetAllData();
 					}
 				});
 	}
@@ -87,7 +87,7 @@ public class PlayerManager {
 		Paintball.instance.sql.sqlPlayers.resetAllPlayerStats();
 	}
 
-	public void resetDataOfPlayerAsync(final String player) {
+	/*public void resetDataOfPlayerAsync(final String player) {
 		Paintball.instance.getServer().getScheduler()
 				.runTaskAsynchronously(Paintball.instance, new Runnable() {
 
@@ -96,14 +96,14 @@ public class PlayerManager {
 						Paintball.instance.sql.sqlPlayers.resetPlayerStats(player);
 					}
 				});
-	}
+	}*/
 
 	public boolean exists(String player) {
 		return Paintball.instance.sql.sqlPlayers.isPlayerExisting(player);
 	}
 
 	// STATS
-	public void addStatsAsync(final String player, final Map<PlayerStat, Integer> stats) {
+	/*public void addStatsAsync(final String player, final Map<PlayerStat, Integer> stats) {
 		Paintball.instance.getServer().getScheduler()
 				.runTaskAsynchronously(Paintball.instance, new Runnable() {
 
@@ -133,20 +133,21 @@ public class PlayerManager {
 	public void setStats(final String player, final Map<PlayerStat, Integer> stats) {
 		Paintball.instance.sql.sqlPlayers.setPlayerStats(player, stats);
 		Paintball.instance.sql.sqlPlayers.calculateStats(player);
-	}
+	}*/
 
 	// GETTER
-	public List<String> getAllPlayerNames() {
-		return Paintball.instance.sql.sqlPlayers.getAllPlayerNames();
+	
+	public int getPlayersEverPlayedCount() {
+		return Paintball.instance.sql.sqlPlayers.getPlayersEverPlayedCount();
 	}
 
 	public int getPlayerCount() {
 		return Paintball.instance.sql.sqlPlayers.getPlayerCount();
 	}
 
-	public Map<PlayerStat, Integer> getStats(String player) {
+	/*public Map<PlayerStat, Integer> getStats(String player) {
 		return Paintball.instance.sql.sqlPlayers.getPlayerStats(player);
-	}
+	}*/
 
 	public void teleportStoreClearPlayer(Player player, Location to) {
 		playerStore.put(player.getName(), new PlayerDataStore(player, to));

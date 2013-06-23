@@ -1,9 +1,9 @@
 package de.blablubbabc.paintball;
 
-import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 import java.util.regex.Pattern;
 
@@ -215,18 +215,17 @@ public class EventListener implements Listener {
 		if ((System.currentTimeMillis() - lastSignUpdate) > (250)) {
 			PlayerStat pStat = PlayerStat.getFromKey(stat);
 			if (pStat != null) {
-				HashMap<String, String> vars = new HashMap<String, String>();
+				Map<String, String> vars = new HashMap<String, String>();
 				vars.put("player", player);
 				if (plugin.pm.exists(player)) {
 					if (rank) {
 						vars.put("value", String.valueOf(plugin.stats.getRank(player, pStat)));
 					} else {
 						if (pStat == PlayerStat.ACCURACY|| pStat == PlayerStat.KD) {
-							DecimalFormat dec = new DecimalFormat("###.##");
-							float statF = (float) plugin.pm.getStats(player).get(pStat) / 100;
-							vars.put("value", dec.format(statF));
+							float statF = (float) plugin.pm.getPlayerStats(player).getStat(pStat) / 100;
+							vars.put("value", Stats.decimalFormat.format(statF));
 						} else {
-							vars.put("value", "" + plugin.pm.getStats(player).get(pStat));
+							vars.put("value", String.valueOf(plugin.pm.getPlayerStats(player).getStat(pStat)));
 						}
 					}
 				} else
@@ -843,16 +842,18 @@ public class EventListener implements Listener {
 
 								@Override
 								public void run() {
+									
+									// TODO save old block
 									block.setType(Material.FLOWER_POT);
+									block.setData((byte) 0);
 								}
 							}, 1L);
 							new Mine(player, block, plugin.mm.getMatch(player));
-							ItemStack i = player.getItemInHand();
-							if (i.getAmount() <= 1)
+							if (item.getAmount() <= 1)
 								player.setItemInHand(null);
 							else {
-								i.setAmount(i.getAmount() - 1);
-								player.setItemInHand(i);
+								item.setAmount(item.getAmount() - 1);
+								player.setItemInHand(item);
 							}
 						} else {
 							player.sendMessage(Translator.getString("MINE_PLAYER_LIMIT_REACHED"));
