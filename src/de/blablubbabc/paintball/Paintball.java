@@ -290,6 +290,11 @@ public class Paintball extends JavaPlugin{
 		
 		allowedCommands = new ArrayList<String>();
 		allowedCommands.add("/list");
+		allowedCommands.add("/msg");
+		allowedCommands.add("/m");
+		allowedCommands.add("/r");
+		allowedCommands.add("/whisper");
+		allowedCommands.add("/tell");
 		allowedCommands.add("/login *");
 		allowedCommands.add("/register *");
 		
