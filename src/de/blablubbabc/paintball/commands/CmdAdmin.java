@@ -95,12 +95,16 @@ public class CmdAdmin {
 			} else if(args[1].equalsIgnoreCase("set")) {
 				if(args.length == 5) {
 					String playerName = args[2];
-					if(plugin.pm.exists(playerName)) {
+					PlayerStat stats = plugin.pm.getPlayerStats(playerName);
+					// stats for this player even exist ?
+					if(stats != null) {
 						String key = args[3];
 						PlayerStat stat = PlayerStat.getFromKey(key);
 						if(stat != null) {
 							try {
 								int value = Integer.parseInt(args[4]);
+								stat
+								
 								Map<PlayerStat, Integer> setStat = new HashMap<PlayerStat, Integer>();
 								setStat.put(stat, value);
 								plugin.pm.setStatsAsync(playerName, setStat);

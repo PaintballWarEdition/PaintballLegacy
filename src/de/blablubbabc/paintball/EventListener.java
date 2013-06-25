@@ -77,6 +77,7 @@ import de.blablubbabc.paintball.extras.Shotgun;
 import de.blablubbabc.paintball.extras.Sniper;
 import de.blablubbabc.paintball.extras.Turret;
 import de.blablubbabc.paintball.statistics.player.PlayerStat;
+import de.blablubbabc.paintball.statistics.player.PlayerStats;
 import de.blablubbabc.paintball.utils.Log;
 import de.blablubbabc.paintball.utils.Translator;
 import de.blablubbabc.paintball.utils.Utils;
@@ -217,19 +218,22 @@ public class EventListener implements Listener {
 			if (pStat != null) {
 				Map<String, String> vars = new HashMap<String, String>();
 				vars.put("player", player);
-				if (plugin.pm.exists(player)) {
+				PlayerStats stats = Paintball.instance.pm.getPlayerStats(player);
+				// stats for this player even exist ?
+				if (stats != null) {
 					if (rank) {
 						vars.put("value", String.valueOf(plugin.stats.getRank(player, pStat)));
 					} else {
 						if (pStat == PlayerStat.ACCURACY|| pStat == PlayerStat.KD) {
-							float statF = (float) plugin.pm.getPlayerStats(player).getStat(pStat) / 100;
+							float statF = (float) stats.getStat(pStat) / 100;
 							vars.put("value", Stats.decimalFormat.format(statF));
 						} else {
-							vars.put("value", String.valueOf(plugin.pm.getPlayerStats(player).getStat(pStat)));
+							vars.put("value", String.valueOf(stats.getStat(pStat)));
 						}
 					}
-				} else
+				} else {
 					vars.put("value", Translator.getString("NOT_FOUND"));
+				}
 				sign.setLine(1, Translator.getString("SIGN_LINE_TWO", vars));
 				sign.setLine(2, Translator.getString("SIGN_LINE_THREE", vars));
 				sign.setLine(3, Translator.getString("SIGN_LINE_FOUR", vars));
@@ -405,7 +409,7 @@ public class EventListener implements Listener {
 							// boosting:
 							// test: no normalizing
 							ball.setVelocity(player.getLocation().getDirection().normalize().multiply(plugin.speedmulti));
-							// zählen
+							// zï¿½hlen
 							match.addShots(player, 1);
 							
 							if (match.setting_balls != -1) {
@@ -425,7 +429,7 @@ public class EventListener implements Listener {
 							if (Airstrike.getAirstrikeCountMatch() < plugin.airstrikeMatchLimit) {
 								if (Airstrike.getAirstrikeCountPlayer(player.getName()) < plugin.airstrikePlayerLimit) {
 									new Airstrike(player);
-									// zählen
+									// zï¿½hlen
 									match.airstrike(player);
 									// remove stick if not infinite
 									if (match.setting_airstrikes != -1) {
@@ -482,7 +486,7 @@ public class EventListener implements Listener {
 							// boosting:
 							egg.setVelocity(player.getLocation().getDirection().multiply(plugin.grenadeSpeed));
 							Grenade.registerGrenade(egg, player.getName(), Origin.GRENADE);
-							// zählen
+							// zï¿½hlen
 							match.grenade(player);
 							if (match.setting_grenades != -1) {
 								// -1 egg

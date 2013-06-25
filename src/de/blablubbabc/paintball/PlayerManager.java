@@ -28,11 +28,12 @@ public class PlayerManager {
 		playerStats.put(playerName, new PlayerStats(playerName));
 	}
 	
-	public PlayerStats getPlayerStats(String playerName) {
-		// check if in cache, if not return temporary retrieved PlayerStats:
+	public PlayerStats getPlayerStats(String playerName, boolean t) {
+		// check if in cache, if not return temporary retrieved PlayerStats or null, 
+		// if no stats exist for this player:
 		PlayerStats stats = playerStats.get(playerName);
 		if (stats == null) {
-			stats = new PlayerStats(playerName);
+			if (exists(playerName)) stats = new PlayerStats(playerName);
 		}
 		return stats;
 	}
@@ -98,7 +99,7 @@ public class PlayerManager {
 				});
 	}*/
 
-	public boolean exists(String player) {
+	private boolean exists(String player) {
 		return Paintball.instance.sql.sqlPlayers.isPlayerExisting(player);
 	}
 
