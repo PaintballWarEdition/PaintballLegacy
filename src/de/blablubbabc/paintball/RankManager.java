@@ -36,7 +36,7 @@ public class RankManager {
 		} else {
 			ranks = new ArrayList<Rank>();
 			// READ RANKS:
-			for (String name : config.getKeys(false)) {
+			for (String name : ranksSection.getKeys(false)) {
 				ConfigurationSection rankSection = ranksSection.getConfigurationSection(name);
 				if (rankSection == null) {
 					Log.warning("Couldn't read rank section for rank: " + name, true);
