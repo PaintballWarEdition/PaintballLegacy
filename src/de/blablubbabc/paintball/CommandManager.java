@@ -351,7 +351,7 @@ public class CommandManager implements CommandExecutor{
 					//only random + auto random
 					if (rb && plugin.onlyRandom && plugin.autoRandom) {
 						Lobby.RANDOM.addMember(player);
-						HashMap<String, String> vars = new HashMap<String, String>();
+						Map<String, String> vars = new HashMap<String, String>();
 						vars.put("color_random", Lobby.RANDOM.color().toString());
 						player.sendMessage(Translator.getString("AUTO_JOIN_RANDOM", vars));
 					} else {
