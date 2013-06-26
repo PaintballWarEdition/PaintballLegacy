@@ -421,7 +421,7 @@ public class CommandManager implements CommandExecutor{
 			player.sendMessage(Translator.getString("NEED_FULL_FOOD"));
 			return;
 		}
-		//hat effecte auf sich
+		//hat effekte auf sich
 		if(player.getActivePotionEffects().size() > 0  && plugin.checkEffects) {
 			player.sendMessage(Translator.getString("NEED_NO_EFFECTS"));
 			return;

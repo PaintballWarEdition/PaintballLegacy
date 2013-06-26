@@ -1092,6 +1092,8 @@ public class Paintball extends JavaPlugin{
 					feeder.join(playerName);
 					playerManager.teleportStoreClearPlayer(player, getNextLobbySpawn());
 					currentlyLoading.remove(playerName);
+					// ASSIGN RANK
+					rankManager.getRank(playerName).assignArmorToPlayer(player);
 					
 					// continue afterwards:
 					if (runAfterwards != null) runAfterwards.run();
@@ -1101,10 +1103,13 @@ public class Paintball extends JavaPlugin{
 	}
 	
 	private synchronized void enterLobby(Player player) {
+		String playerName = player.getName();
 		//set waiting
 		if(Lobby.isPlaying(player) || Lobby.isSpectating(player)) Lobby.getTeam(player).setWaiting(player);
 		//Lobbyteleport
 		player.teleport(getNextLobbySpawn());
+		// ASSIGN RANK
+		rankManager.getRank(playerName).assignArmorToPlayer(player);
 	}
 	
 	public synchronized boolean leaveLobby(Player player, boolean messages) {
