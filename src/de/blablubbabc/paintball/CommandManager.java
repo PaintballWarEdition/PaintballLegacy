@@ -319,64 +319,70 @@ public class CommandManager implements CommandExecutor{
 				
 				@Override
 				public void run() {	
-					if(Lobby.isPlaying(player) || Lobby.isSpectating(player)) {
-						player.sendMessage(Translator.getString("CANNOT_CHANGE_TEAM_PLAYING"));
-						return;
-					}
-					
-					boolean rb = false;
-					boolean spec = false;
-					if (team == Lobby.RED || team == Lobby.BLUE) rb = true;
-					else if (team == Lobby.SPECTATE) spec = true;
-					
-					//Max Players Check:
-					if (!spec) {
-						if (!Lobby.inTeam(player) || Lobby.SPECTATE.isMember(player)) {
-							int players = Lobby.RED.number() + Lobby.BLUE.number() + Lobby.RANDOM.number();
-							if (players >= plugin.maxPlayers) {
-								player.sendMessage(Translator.getString("CANNOT_JOIN_TEAM_FULL"));
-								return;
-							}
-						}
-						if (rb && plugin.onlyRandom) {
-							player.sendMessage(Translator.getString("ONLY_RANDOM"));
-							if (!plugin.autoRandom)
-								return;
-						}
-					}
-					if (Lobby.inTeam(player) || Lobby.SPECTATE.isMember(player)) {
-						Lobby.getTeam(player).removeMember(player);
-						player.sendMessage(Translator.getString("YOU_LEFT_CURRENT_TEAM"));
-					}
-					//only random + auto random
-					if (rb && plugin.onlyRandom && plugin.autoRandom) {
-						Lobby.RANDOM.addMember(player);
-						Map<String, String> vars = new HashMap<String, String>();
-						vars.put("color_random", Lobby.RANDOM.color().toString());
-						player.sendMessage(Translator.getString("AUTO_JOIN_RANDOM", vars));
-					} else {
-						team.addMember(player);
-						Map<String, String> vars = new HashMap<String, String>();
-						vars.put("color_team", team.color().toString());
-						vars.put("team", team.getName());
-						if(rb) player.sendMessage(Translator.getString("YOU_JOINED_TEAM", vars));
-						else if (team.equals(Lobby.RANDOM)) player.sendMessage(Translator.getString("YOU_JOINED_RANDOM", vars));
-						else if (spec) player.sendMessage(Translator.getString("YOU_JOINED_SPECTATORS", vars));
-					}
-					if (!spec) {
-						String ready = plugin.matchManager.ready();
-						if (ready.equalsIgnoreCase(Translator.getString("READY"))) {
-							plugin.matchManager.countdown(plugin.countdown, plugin.countdownInit);
-						} else {
-							plugin.feeder.status(player, ready);
-						}
-					}
-					//players:
-					plugin.feeder.players(player);
+					handleJoinTeam(player, team);
 				}
 			});
+		} else {
+			handleJoinTeam(player, team);
 		}
 		
+	}
+	
+	private void handleJoinTeam(Player player, Lobby team) {
+		if(Lobby.isPlaying(player) || Lobby.isSpectating(player)) {
+			player.sendMessage(Translator.getString("CANNOT_CHANGE_TEAM_PLAYING"));
+			return;
+		}
+		
+		boolean rb = false;
+		boolean spec = false;
+		if (team == Lobby.RED || team == Lobby.BLUE) rb = true;
+		else if (team == Lobby.SPECTATE) spec = true;
+		
+		//Max Players Check:
+		if (!spec) {
+			if (!Lobby.inTeam(player) || Lobby.SPECTATE.isMember(player)) {
+				int players = Lobby.RED.number() + Lobby.BLUE.number() + Lobby.RANDOM.number();
+				if (players >= plugin.maxPlayers) {
+					player.sendMessage(Translator.getString("CANNOT_JOIN_TEAM_FULL"));
+					return;
+				}
+			}
+			if (rb && plugin.onlyRandom) {
+				player.sendMessage(Translator.getString("ONLY_RANDOM"));
+				if (!plugin.autoRandom)
+					return;
+			}
+		}
+		if (Lobby.inTeam(player) || Lobby.SPECTATE.isMember(player)) {
+			Lobby.getTeam(player).removeMember(player);
+			player.sendMessage(Translator.getString("YOU_LEFT_CURRENT_TEAM"));
+		}
+		//only random + auto random
+		if (rb && plugin.onlyRandom && plugin.autoRandom) {
+			Lobby.RANDOM.addMember(player);
+			Map<String, String> vars = new HashMap<String, String>();
+			vars.put("color_random", Lobby.RANDOM.color().toString());
+			player.sendMessage(Translator.getString("AUTO_JOIN_RANDOM", vars));
+		} else {
+			team.addMember(player);
+			Map<String, String> vars = new HashMap<String, String>();
+			vars.put("color_team", team.color().toString());
+			vars.put("team", team.getName());
+			if(rb) player.sendMessage(Translator.getString("YOU_JOINED_TEAM", vars));
+			else if (team.equals(Lobby.RANDOM)) player.sendMessage(Translator.getString("YOU_JOINED_RANDOM", vars));
+			else if (spec) player.sendMessage(Translator.getString("YOU_JOINED_SPECTATORS", vars));
+		}
+		if (!spec) {
+			String ready = plugin.matchManager.ready();
+			if (ready.equalsIgnoreCase(Translator.getString("READY"))) {
+				plugin.matchManager.countdown(plugin.countdown, plugin.countdownInit);
+			} else {
+				plugin.feeder.status(player, ready);
+			}
+		}
+		//players:
+		plugin.feeder.players(player);
 	}
 
 	public void joinLobbyPre(Player player, Runnable runOnSuccess) {
