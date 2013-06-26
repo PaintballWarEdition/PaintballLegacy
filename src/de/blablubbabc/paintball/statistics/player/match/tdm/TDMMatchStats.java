@@ -2,7 +2,6 @@ package de.blablubbabc.paintball.statistics.player.match.tdm;
 
 import java.util.HashMap;
 import java.util.Map;
-import java.util.Map.Entry;
 
 import de.blablubbabc.paintball.statistics.player.PlayerStats;
 import de.blablubbabc.paintball.utils.Utils;
@@ -20,24 +19,14 @@ public class TDMMatchStats {
 	
 	public void resetStats() {
 		for(TDMMatchStat stat : TDMMatchStat.values()) {
-			setStat(stat, 0, false);
+			stats.put(stat, 0);
 		}
 		calculateQuotes();
 	}
 	
 	public void addStat(TDMMatchStat stat, int value) {
-		setStat(stat, getStat(stat) + value, true);
-	}
-	
-	public void addStats(Map<TDMMatchStat, Integer> otherStats) {
-		for (Entry<TDMMatchStat, Integer> entry : otherStats.entrySet()) {
-			addStat(entry.getKey(), entry.getValue());
-		}
-	}
-	
-	public void setStat(TDMMatchStat stat, int value, boolean mirror) {
-		stats.put(stat, value);
-		if (mirror && playerStats != null && stat.getPlayerStat() != null) playerStats.setStat(stat.getPlayerStat(), value);
+		stats.put(stat, getStat(stat) + value);
+		if (playerStats != null && stat.getPlayerStat() != null) playerStats.addStat(stat.getPlayerStat(), value);
 	}
 	
 	public int getStat(TDMMatchStat stat) {
