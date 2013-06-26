@@ -2,7 +2,6 @@ package de.blablubbabc.paintball.extras;
 
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
@@ -20,27 +19,17 @@ import de.blablubbabc.paintball.Match;
 import de.blablubbabc.paintball.Origin;
 import de.blablubbabc.paintball.Paintball;
 import de.blablubbabc.paintball.utils.Translator;
+import de.blablubbabc.paintball.utils.Utils;
 
 public class Orbitalstrike {
 
 	public final static ItemStack item = ItemManager.setMeta(new ItemStack(Material.BLAZE_ROD));
 	
 	private static ConcurrentHashMap<String, Integer> taskIds;
-	private static HashSet<Byte> transparent = null;
 	final static Vector[] vectors = new Vector[36];
 
 	public static void init() {
 		taskIds = new ConcurrentHashMap<String, Integer>();
-
-		transparent = new HashSet<Byte>();
-		transparent.add((byte) 0);
-		transparent.add((byte) 8);
-		transparent.add((byte) 10);
-		transparent.add((byte) 51);
-		transparent.add((byte) 90);
-		transparent.add((byte) 119);
-		transparent.add((byte) 321);
-		transparent.add((byte) 85);
 		
 		for (int j = 0; j < 36; j += 1) {
 			double x = Math.cos(j * 10.0D * 0.01856444444444445D) * 3.0;
@@ -310,7 +299,7 @@ public class Orbitalstrike {
 						@Override
 						public void run() {
 							if (player.getItemInHand().isSimilar(Orbitalstrike.item)) {
-								Block block = player.getTargetBlock(transparent, 1000);
+								Block block = player.getTargetBlock(Utils.getTransparentBlocks(), 1000);
 								if (!Orbitalstrike.isBlock(block, name)) {
 									Orbitalstrike.demark(player);
 									Orbitalstrike.mark(block, player);

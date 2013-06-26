@@ -5,7 +5,6 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Map.Entry;
 import org.bukkit.Location;
 import org.bukkit.Sound;
 import org.bukkit.entity.Player;
@@ -13,6 +12,9 @@ import org.bukkit.entity.Player;
 import de.blablubbabc.paintball.statistics.arena.ArenaStat;
 import de.blablubbabc.paintball.statistics.general.GeneralStat;
 import de.blablubbabc.paintball.statistics.player.PlayerStat;
+import de.blablubbabc.paintball.statistics.player.PlayerStats;
+import de.blablubbabc.paintball.statistics.player.match.tdm.TDMMatchStat;
+import de.blablubbabc.paintball.statistics.player.match.tdm.TDMMatchStats;
 import de.blablubbabc.paintball.utils.Timer;
 import de.blablubbabc.paintball.utils.Translator;
 
@@ -116,70 +118,63 @@ public class MatchManager{
 		matches.add(match);
 	}
 	
-	public synchronized void gameEnd(final Match match, boolean draw, Map<String, Location> playersLoc, List<Player> specs, 
-			final Map<String, Integer> shots, final Map<String, Integer> hits, final Map<String, Integer> kills, final Map<String, Integer> deaths,
-			final Map<String, Integer> teamattacks, final Map<String, Integer> grenades, final Map<String, Integer> airstrikes) {
-		//TIME
+	public synchronized void gameEnd(final Match match, boolean draw, Map<String, Location> playersLoc, List<Player> specs, Map<String, TDMMatchStats> matchStats) {
+		// TIME
 		final long time1 = System.nanoTime();
-		//STATS
-		final Map<String, Integer> wins = new HashMap<String, Integer>();
-		final Map<String, Integer> defeats = new HashMap<String, Integer>();
-		final Map<String, Integer> draws = new HashMap<String, Integer>();
-		final Map<String, Integer> points = new HashMap<String, Integer>();
-		final Map<String, Integer> money = new HashMap<String, Integer>();
 
-		for (Player p : match.getAllPlayer()) {
-			String pName = p.getName();
-			points.put(pName, plugin.pointsPerRound);
-			money.put(pName, plugin.cashPerRound);
-			if (draw) {
-				draws.put(pName, 1);
-				wins.put(pName, 0);
-				defeats.put(pName, 0);
-			} else draws.put(pName, 0);
-		}
-		
-		//if(!draw) {
-		for (Player p : match.winners) {
-			String pName = p.getName();
-			//stats
-			wins.put(pName, 1);
-			defeats.put(pName, 0);
-			//bonus
-			points.put(pName, points.get(pName) + plugin.pointsPerWin);
-			money.put(pName, points.get(pName) + plugin.cashPerWin);
+		// STATS and TELEPORT TO LOBBY for the players:
+		for (Player player : match.getAll()) {
+			String playerName = player.getName();
+			
+			// player ?
+			if (match.getAllPlayer().contains(player)) {
+				// STATS
+				PlayerStats stats = plugin.pm.getPlayerStats(playerName);
+				stats.addStat(PlayerStat.POINTS, plugin.pointsPerRound);
+				stats.addStat(PlayerStat.MONEY, plugin.cashPerRound);
 
-		}
-		for (Player p :  match.loosers) {
-			String pName = p.getName();
-			//stats
-			wins.put(pName, 0);
-			defeats.put(pName, 1);
-		}
-		//}
-
-		//Teleport all remaining players back to lobby:
-		for (Player p : match.getAll()) {
-			//if is a remaining player:
-			if (Lobby.isPlaying(p) || Lobby.isSpectating(p)){
-
-				//afk detection update on match end
-				if (plugin.afkDetection && !match.isSpec(p)) {
-					if (p.getLocation().getWorld().equals(playersLoc.get(p.getName()).getWorld()) && p.getLocation().distance(playersLoc.get(p.getName())) <= plugin.afkRadius && shots.get(p.getName()) == 0 && kills.get(p.getName()) == 0) {
-						plugin.afkSet(p.getName(), plugin.afkGet(p.getName())+1);
+				if (draw) {
+					stats.addStat(PlayerStat.DRAWS, 1);
+				} else {
+					if (match.winners.contains(player)) {
+						stats.addStat(PlayerStat.WINS, 1);
+						stats.addStat(PlayerStat.POINTS, plugin.pointsPerWin);
+						stats.addStat(PlayerStat.MONEY, plugin.cashPerWin);
 					} else {
-						plugin.afkRemove(p.getName());
+						stats.addStat(PlayerStat.DEFEATS, 1);
 					}
-				}
 
-				//teleport is survivor:
-				plugin.joinLobby(p);
+				}
+				
+				// AFK DETECTION
+				if (Lobby.isPlaying(player)) {
+					//afk detection update on match end
+					if (plugin.afkDetection && !match.isSpec(player)) {
+						if (player.getLocation().getWorld().equals(playersLoc.get(playerName).getWorld()) 
+								&& player.getLocation().distance(playersLoc.get(playerName)) <= plugin.afkRadius 
+								&& stats.getStat(PlayerStat.SHOTS) == 0 && stats.getStat(PlayerStat.KILLS) == 0) {
+							plugin.afkSet(playerName, plugin.afkGet(playerName) + 1);
+						} else {
+							plugin.afkRemove(playerName);
+						}
+					}
+					
+					// TELEPORT SURVIVOR TO LOBBY:
+					plugin.joinLobby(player);
+				}
+				
+			} else {
+				// SPECTATOR:
+				if (Lobby.isSpectating(player)) {
+					// TELEPORT SPECTATOR TO LOBBY:
+					plugin.joinLobby(player);
+				}
 			}
 		}
 
 		//afk detection clean up and consequences:
 		if (plugin.afkDetection) {
-			//clearing players from hashmap which didn't play the during the last match or can't be found
+			//clearing players from map which didn't play the during the last match or can't be found
 			List<String> entries = plugin.afkGetEntries();
 			
 			for (String afkP : entries) {
@@ -187,7 +182,7 @@ public class MatchManager{
 				if (player != null) {
 					if (!playersLoc.containsKey(afkP)) {
 						plugin.afkRemove(afkP);
-					} else if(plugin.afkGet(afkP) >= plugin.afkMatchAmount){
+					} else if (plugin.afkGet(afkP) >= plugin.afkMatchAmount){
 						//afk detection consequences after being afk:
 						plugin.afkRemove(afkP);
 						Lobby.getTeam(player).removeMember(player);
@@ -200,7 +195,7 @@ public class MatchManager{
 			}
 		}
 
-		//MORE STATS
+		// MATCH STATS SUMMARY
 		int shotsAll = 0;
 		int hitsAll = 0;
 		int killsAll = 0;
@@ -208,37 +203,16 @@ public class MatchManager{
 		int grenadesAll = 0;
 		int airstrikesAll = 0;
 
-		//shots
-		for (Entry<String, Integer> e : shots.entrySet()) {
-			shotsAll += e.getValue();
-		}
-		//hits
-		for (Entry<String, Integer> e : hits.entrySet()) {
-			points.put(e.getKey(), points.get(e.getKey()) + ( e.getValue() * plugin.pointsPerHit ));
-			money.put(e.getKey(), money.get(e.getKey()) + ( e.getValue() * plugin.cashPerHit ));
-			hitsAll += e.getValue();
-		}
-		//kills
-		for (Entry<String, Integer> e : kills.entrySet()) {
-			points.put(e.getKey(), points.get(e.getKey()) + ( e.getValue() * plugin.pointsPerKill ));
-			money.put(e.getKey(), money.get(e.getKey()) + ( e.getValue() * plugin.cashPerKill ));
-			killsAll += e.getValue();
-		}
-		//teamattacks
-		for (Entry<String, Integer> e : teamattacks.entrySet()) {
-			points.put(e.getKey(), points.get(e.getKey()) + ( e.getValue() * plugin.pointsPerTeamattack ));
-			teamattacksAll += e.getValue();
-		}
-		//grenades
-		for (Entry<String, Integer> e : grenades.entrySet()) {
-			grenadesAll += e.getValue();
-		}
-		//airstrikes
-		for (Entry<String, Integer> e : airstrikes.entrySet()) {
-			airstrikesAll += e.getValue();
+		for (TDMMatchStats stats : matchStats.values()) {
+			shotsAll += stats.getStat(TDMMatchStat.SHOTS);
+			hitsAll += stats.getStat(TDMMatchStat.HITS);
+			killsAll += stats.getStat(TDMMatchStat.KILLS);
+			teamattacksAll += stats.getStat(TDMMatchStat.TEAMATTACKS);
+			grenadesAll += stats.getStat(TDMMatchStat.GRENADES);
+			airstrikesAll += stats.getStat(TDMMatchStat.AIRSTRIKES);
 		}
 		
-		//PLAYER STATS
+		// SAVE PLAYER STATS TO DATABASE
 		plugin.getServer().getScheduler().runTaskAsynchronously(plugin, new Runnable() {
 			
 			@Override
@@ -246,23 +220,10 @@ public class MatchManager{
 				boolean auto = plugin.sql.getAutoCommit();
 				plugin.sql.setAutoCommit(false);
 				
-				for (Player p : match.getAllPlayer()) {
-					final Map<PlayerStat, Integer> pStats = new HashMap<PlayerStat, Integer>();
-					final String name = p.getName();
-					pStats.put(PlayerStat.SHOTS, shots.get(name));
-					pStats.put(PlayerStat.HITS, hits.get(name));
-					pStats.put(PlayerStat.KILLS, kills.get(name));
-					pStats.put(PlayerStat.DEATHS, deaths.get(name));
-					pStats.put(PlayerStat.TEAMATTACKS, teamattacks.get(name));
-					pStats.put(PlayerStat.GRENADES, grenades.get(name));
-					pStats.put(PlayerStat.AIRSTRIKES, airstrikes.get(name));
-					pStats.put(PlayerStat.POINTS, points.get(name));
-					pStats.put(PlayerStat.MONEY, money.get(name));
-					pStats.put(PlayerStat.WINS, wins.get(name));
-					pStats.put(PlayerStat.DEFEATS, defeats.get(name));
-					pStats.put(PlayerStat.DRAWS, draws.get(name));
-					
-					plugin.pm.addStats(name, pStats);
+				for (Player player : match.getAllPlayer()) {
+					String playerName = player.getName();
+					PlayerStats stats = plugin.pm.getPlayerStats(playerName);
+					stats.save();
 				}
 				plugin.sql.commit();
 				plugin.sql.setAutoCommit(auto);
@@ -296,24 +257,24 @@ public class MatchManager{
 		});
 		
 		//ARENA STATS
-		Map<ArenaStat, Integer> aStats = new HashMap<ArenaStat, Integer>();
-		aStats.put(ArenaStat.SHOTS, shotsAll);
-		aStats.put(ArenaStat.KILLS, killsAll);
-		aStats.put(ArenaStat.ROUNDS, 1);
-		aStats.put(ArenaStat.GRENADES, grenadesAll);
-		aStats.put(ArenaStat.AIRSTRIKES, airstrikesAll);
+		Map<ArenaStat, Integer> arenaStats = new HashMap<ArenaStat, Integer>();
+		arenaStats.put(ArenaStat.SHOTS, shotsAll);
+		arenaStats.put(ArenaStat.KILLS, killsAll);
+		arenaStats.put(ArenaStat.ROUNDS, 1);
+		arenaStats.put(ArenaStat.GRENADES, grenadesAll);
+		arenaStats.put(ArenaStat.AIRSTRIKES, airstrikesAll);
 		
-		plugin.am.addStats(match.getArena(), aStats);
+		plugin.am.addStats(match.getArena(), arenaStats);
 
 		//GENERAL STATS
-		Map<GeneralStat, Integer> gStats = new HashMap<GeneralStat, Integer>();
-		gStats.put(GeneralStat.ROUNDS, 1);
-		gStats.put(GeneralStat.SHOTS, shotsAll);
-		gStats.put(GeneralStat.KILLS, killsAll);
-		gStats.put(GeneralStat.GRENADES, grenadesAll);
-		gStats.put(GeneralStat.AIRSTRIKES, airstrikesAll);
+		Map<GeneralStat, Integer> generalStats = new HashMap<GeneralStat, Integer>();
+		generalStats.put(GeneralStat.ROUNDS, 1);
+		generalStats.put(GeneralStat.SHOTS, shotsAll);
+		generalStats.put(GeneralStat.KILLS, killsAll);
+		generalStats.put(GeneralStat.GRENADES, grenadesAll);
+		generalStats.put(GeneralStat.AIRSTRIKES, airstrikesAll);
 		
-		plugin.stats.matchEndStats(gStats, match.getAllPlayer().size());
+		plugin.stats.matchEndStats(generalStats, match.getAllPlayer().size());
 
 		//messages:
 		Map<String, String> vars = new HashMap<String, String>();
@@ -366,7 +327,7 @@ public class MatchManager{
 				}
 
 			}
-			for(final Player p :  match.loosers) {
+			for (final Player p :  match.loosers) {
 				if (Lobby.getTeam(p) != null) {
 					plugin.nf.status(p, Translator.getString("YOU_LOST"));
 					if (plugin.melody) {
@@ -403,7 +364,7 @@ public class MatchManager{
 		long time2 = System.nanoTime();
 		Double delta = (time2 - time1)/10E6;
 		DecimalFormat dec = new DecimalFormat("#.###");
-		if(plugin.debug) plugin.nf.text("Main-Thread: Took " + dec.format(delta) + " ms");
+		if (plugin.debug) plugin.nf.text("Main-Thread: Took " + dec.format(delta) + " ms");
 	}
 	
 	public boolean softCheck() {

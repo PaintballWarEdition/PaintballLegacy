@@ -1,13 +1,11 @@
 package de.blablubbabc.paintball;
 
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 
 import org.bukkit.Location;
 import org.bukkit.entity.Player;
 
-import de.blablubbabc.paintball.statistics.player.PlayerStat;
 import de.blablubbabc.paintball.statistics.player.PlayerStats;
 
 
@@ -28,7 +26,7 @@ public class PlayerManager {
 		playerStats.put(playerName, new PlayerStats(playerName));
 	}
 	
-	public PlayerStats getPlayerStats(String playerName, boolean t) {
+	public PlayerStats getPlayerStats(String playerName) {
 		// check if in cache, if not return temporary retrieved PlayerStats or null, 
 		// if no stats exist for this player:
 		PlayerStats stats = playerStats.get(playerName);
@@ -85,6 +83,11 @@ public class PlayerManager {
 	}
 
 	public void resetAllData() {
+		// reset stats in cache:
+		for (PlayerStats stats : playerStats.values()) {
+			stats.resetStats();
+		}
+		// reset in databse:
 		Paintball.instance.sql.sqlPlayers.resetAllPlayerStats();
 	}
 
@@ -99,7 +102,7 @@ public class PlayerManager {
 				});
 	}*/
 
-	private boolean exists(String player) {
+	public boolean exists(String player) {
 		return Paintball.instance.sql.sqlPlayers.isPlayerExisting(player);
 	}
 

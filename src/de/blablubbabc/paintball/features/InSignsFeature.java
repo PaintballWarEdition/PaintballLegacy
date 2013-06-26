@@ -5,6 +5,7 @@ import de.blablubbabc.insigns.Changer;
 import de.blablubbabc.insigns.InSigns;
 import de.blablubbabc.paintball.Paintball;
 import de.blablubbabc.paintball.statistics.player.PlayerStat;
+import de.blablubbabc.paintball.statistics.player.PlayerStats;
 import de.blablubbabc.paintball.utils.Translator;
 
 import org.bukkit.Location;
@@ -35,14 +36,20 @@ public class InSignsFeature {
 				@Override
 				public String getValue(Player player, Location location) {
 					String playerName = player.getName();
-					if(!plugin.sql.isConnected()) return Translator.getString("NOT_CONNECTED");
-					else if(plugin.pm.exists(playerName)) {
-						if(stat == PlayerStat.ACCURACY || stat == PlayerStat.KD) {
-							float statF = ((float)plugin.pm.getStats(playerName).get(stat)) / 100;
-							return format.format(statF);
-						} else return String.valueOf(plugin.pm.getStats(playerName).get(stat));
+					if(!plugin.sql.isConnected()) {
+						return Translator.getString("NOT_CONNECTED");
+					} else {
+						PlayerStats stats = plugin.pm.getPlayerStats(playerName);
+						if(stats != null) {
+							Integer statValue = stats.getStat(stat);
+							if(stat == PlayerStat.ACCURACY || stat == PlayerStat.KD) {
+								float statF = ((float) statValue) / 100;
+								return format.format(statF);
+							} else return String.valueOf(statValue);
+						} else {
+							return Translator.getString("NOT_FOUND");
+						}
 					}
-					else return Translator.getString("NOT_FOUND");
 				}
 
 			});
@@ -53,12 +60,13 @@ public class InSignsFeature {
 				@Override
 				public String getValue(Player player, Location location) {
 					String playerName = player.getName();
-					if (!plugin.sql.isConnected())
+					if (!plugin.sql.isConnected()) {
 						return Translator.getString("NOT_CONNECTED");
-					else if (plugin.pm.exists(playerName)) {
+					} else if (plugin.pm.exists(playerName)) {
 						return String.valueOf(plugin.stats.getRank(playerName, stat));
-					} else
+					} else {
 						return Translator.getString("NOT_FOUND");
+					}
 				}
 
 			});
@@ -74,8 +82,9 @@ public class InSignsFeature {
 					return Translator.getString("NOT_CONNECTED");
 				else if (plugin.pm.exists(playerName)) {
 					return String.valueOf(plugin.stats.getRank(playerName, PlayerStat.POINTS));
-				} else
+				} else {
 					return Translator.getString("NOT_FOUND");
+				}
 			}
 
 		});

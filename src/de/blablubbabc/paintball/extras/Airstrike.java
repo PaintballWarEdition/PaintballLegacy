@@ -2,7 +2,6 @@ package de.blablubbabc.paintball.extras;
 
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
@@ -22,28 +21,16 @@ import org.bukkit.util.Vector;
 import de.blablubbabc.paintball.Origin;
 import de.blablubbabc.paintball.Paintball;
 import de.blablubbabc.paintball.utils.Translator;
+import de.blablubbabc.paintball.utils.Utils;
 
 public class Airstrike {
 	
 	public final static ItemStack item = ItemManager.setMeta(new ItemStack(Material.STICK));
 	
 	private static ConcurrentHashMap<String, Integer> taskIds;
-	private static HashSet<Byte> transparent = null;
 	
 	public static void init() {
 		taskIds = new ConcurrentHashMap<String, Integer>();
-		
-		transparent = new HashSet<Byte>();
-		transparent.add((byte) 0);
-		transparent.add((byte) 8);
-		transparent.add((byte) 10);
-		transparent.add((byte) 51);
-		transparent.add((byte) 90);
-		transparent.add((byte) 119);
-		transparent.add((byte) 321);
-		transparent.add((byte) 85);
-		
-		
 	}
 	
 	
@@ -269,7 +256,7 @@ public class Airstrike {
 						@Override
 						public void run() {
 							if (player.getItemInHand().isSimilar(Airstrike.item)) {
-								Block block = player.getTargetBlock(transparent, 1000);
+								Block block = player.getTargetBlock(Utils.getTransparentBlocks(), 1000);
 								if (!Airstrike.isBlock(block, name)) {
 									Airstrike.demark(player);
 									Airstrike.mark(block, player);
@@ -284,8 +271,9 @@ public class Airstrike {
 					taskIds.put(name, taskId);
 				}
 			} else {
-				if (taskIds.containsKey(name)) {
-					Paintball.instance.getServer().getScheduler().cancelTask(taskIds.get(name));
+				Integer id = taskIds.get(name);
+				if (id != null) {
+					Paintball.instance.getServer().getScheduler().cancelTask(id);
 					taskIds.remove(name);
 					Airstrike.demark(player);
 				}

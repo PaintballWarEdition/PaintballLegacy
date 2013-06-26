@@ -3,6 +3,7 @@ package de.blablubbabc.paintball.extras;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import org.bukkit.Location;
 import org.bukkit.Material;
@@ -26,7 +27,7 @@ public class Flashbang {
 		return ++next;
 	}
 	
-	private static HashMap<String, ArrayList<Flashbang>> nades = new HashMap<String, ArrayList<Flashbang>>();
+	private static Map<String, ArrayList<Flashbang>> nades = new HashMap<String, ArrayList<Flashbang>>();
 	
 	public static void registerNade(Item nade, String shooterName, Origin source) {
 		ArrayList<Flashbang> pnades = nades.get(shooterName);

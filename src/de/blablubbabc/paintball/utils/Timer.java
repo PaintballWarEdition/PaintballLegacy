@@ -1,6 +1,5 @@
 package de.blablubbabc.paintball.utils;
 
-
 import org.bukkit.plugin.Plugin;
 
 public class Timer {

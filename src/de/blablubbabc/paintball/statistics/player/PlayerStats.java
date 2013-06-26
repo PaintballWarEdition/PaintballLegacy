@@ -9,6 +9,7 @@ import de.blablubbabc.paintball.utils.Utils;
 public class PlayerStats {
 	private final String playerName;
 	private Map<PlayerStat, Integer> stats = null;
+	
 	private boolean dirty = false;
 	
 	public PlayerStats(String playerName) {
@@ -20,7 +21,7 @@ public class PlayerStats {
 		for(PlayerStat stat : PlayerStat.values()) {
 			setStat(stat, 0);
 		}
-		calculate();
+		calculateQuotes();
 		// calculate already marks this stats as "dirty"
 	}
 	
@@ -53,17 +54,16 @@ public class PlayerStats {
 		return stats;
 	}
 	
-	public void calculate() {
+	public void calculateQuotes() {
 		setStat(PlayerStat.ACCURACY, Utils.calculateQuote(getStat(PlayerStat.HITS), getStat(PlayerStat.SHOTS)));
 		setStat(PlayerStat.KD, Utils.calculateQuote(getStat(PlayerStat.KILLS), getStat(PlayerStat.DEATHS)));
-		dirty = true;
 	}
-	
-	
 	
 	public void save() {
 		if (dirty) {
-			Paintball.instance.pm.setStats(playerName, stats);
+			Paintball.instance.sql.sqlPlayers.setPlayerStats(playerName, stats);
+			
+			//Paintball.instance.pm.setStats(playerName, stats);
 			dirty = false;
 		}
 	}
@@ -81,8 +81,9 @@ public class PlayerStats {
 	}
 
 	public void load() {
-		stats = Paintball.instance.pm.getStats(playerName);
-		calculate();
+		stats = Paintball.instance.sql.sqlPlayers.getPlayerStats(playerName);
+		//stats = Paintball.instance.pm.getStats(playerName);
+		calculateQuotes();
 		dirty = false;
 	}
 	

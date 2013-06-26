@@ -13,6 +13,7 @@ import de.blablubbabc.paintball.Lobby;
 import de.blablubbabc.paintball.Paintball;
 import de.blablubbabc.paintball.extras.Gifts;
 import de.blablubbabc.paintball.statistics.player.PlayerStat;
+import de.blablubbabc.paintball.statistics.player.PlayerStats;
 import de.blablubbabc.paintball.utils.Translator;
 
 
@@ -65,7 +66,7 @@ public class CmdAdmin {
 				}
 			} else if(args[1].equalsIgnoreCase("check")) {
 				List<Entity> entities = player.getWorld().getEntities();
-				player.sendMessage("Entities: "+entities.size());
+				player.sendMessage("Entities: " + entities.size());
 				int snowballs = 0;
 				for(Entity e : entities) {
 					if(e.getType() == EntityType.SNOWBALL) {
@@ -95,19 +96,22 @@ public class CmdAdmin {
 			} else if(args[1].equalsIgnoreCase("set")) {
 				if(args.length == 5) {
 					String playerName = args[2];
-					PlayerStat stats = plugin.pm.getPlayerStats(playerName);
+					PlayerStats stats = plugin.pm.getPlayerStats(playerName);
 					// stats for this player even exist ?
 					if(stats != null) {
 						String key = args[3];
 						PlayerStat stat = PlayerStat.getFromKey(key);
 						if(stat != null) {
 							try {
+								// get value if number, else catch exception:
 								int value = Integer.parseInt(args[4]);
-								stat
-								
-								Map<PlayerStat, Integer> setStat = new HashMap<PlayerStat, Integer>();
-								setStat.put(stat, value);
-								plugin.pm.setStatsAsync(playerName, setStat);
+								// set the players stats:
+								stats.setStat(stat, value);
+								// calculate quotes that could have changed:
+								stats.calculateQuotes();
+								// save stats asynchron:
+								stats.saveAsync();
+								// print messages:
 								Map<String,String> vars = new HashMap<String, String>();
 								vars.put("player", playerName);
 								vars.put("stat", key);
@@ -132,15 +136,22 @@ public class CmdAdmin {
 			} else if(args[1].equalsIgnoreCase("add")) {
 				if(args.length == 5) {
 					String playerName = args[2];
-					if(plugin.pm.exists(playerName)) {
+					PlayerStats stats = plugin.pm.getPlayerStats(playerName);
+					// stats for this player even exist ?
+					if(stats != null) {
 						String key = args[3];
 						PlayerStat stat = PlayerStat.getFromKey(key);
 						if(stat != null) {
 							try {
+								// get value if number, else catch exception:
 								int value = Integer.parseInt(args[4]);
-								Map<PlayerStat, Integer> setStat = new HashMap<PlayerStat, Integer>();
-								setStat.put(stat, value);
-								plugin.pm.addStatsAsync(playerName, setStat);
+								// add to the players stats:
+								stats.addStat(stat, value);
+								// calculate quotes that could have changed:
+								stats.calculateQuotes();
+								// save stats asynchron:
+								stats.saveAsync();
+								// print messages:
 								HashMap<String,String> vars = new HashMap<String, String>();
 								vars.put("player", playerName);
 								vars.put("stat", key);
@@ -175,13 +186,14 @@ public class CmdAdmin {
 					@Override
 					public void run() {
 						long time1 = System.currentTimeMillis();
+						// reset all playerdata:
 						plugin.pm.resetAllData();
 						long time2 = System.currentTimeMillis();
 						long delta = time2 - time1;
 						
 						int amount = plugin.pm.getPlayerCount();
 						
-						HashMap<String, String> vars = new HashMap<String, String>();
+						Map<String, String> vars = new HashMap<String, String>();
 						vars.put("time", String.valueOf(delta));
 						vars.put("amount", String.valueOf(amount));
 						sender.sendMessage(Translator.getString("ALL_STATS_RESET", vars));
@@ -189,27 +201,37 @@ public class CmdAdmin {
 				});
 				return true;
 			} else if(args.length == 3) {
-				if(plugin.pm.exists(args[2])) {
-					String name = args[2];
-					plugin.pm.resetDataOfPlayerAsync(name);
-					HashMap<String, String> vars = new HashMap<String, String>();
-					vars.put("player", name);
+				String playerName = args[2];
+				PlayerStats stats = plugin.pm.getPlayerStats(playerName);
+				// stats for this player even exist ?
+				if(stats != null) {
+					// reset the players stats:
+					stats.resetStats();
+					// save asynchron:
+					stats.saveAsync();
+					// send messages
+					Map<String, String> vars = new HashMap<String, String>();
+					vars.put("player", playerName);
 					sender.sendMessage(Translator.getString("PLAYER_ALL_STATS_RESET", vars));
 				} else {
-					HashMap<String, String> vars = new HashMap<String, String>();
+					Map<String, String> vars = new HashMap<String, String>();
 					vars.put("player", args[2]);
 					sender.sendMessage(Translator.getString("PLAYER_NOT_FOUND", vars));
 				}
 				return true;
 			} else if(args.length == 4) {
 				String playerName = args[2];
-				if(plugin.pm.exists(playerName)) {
+				PlayerStats stats = plugin.pm.getPlayerStats(playerName);
+				// stats for this player even exist ?
+				if(stats != null) {
 					String key = args[3];
 					PlayerStat stat = PlayerStat.getFromKey(key);
 					if(stat != null) {
-						Map<PlayerStat, Integer> setStat = new HashMap<PlayerStat, Integer>();
-						setStat.put(stat, 0);
-						plugin.pm.setStatsAsync(playerName, setStat);
+						// reset the players stat:
+						stats.setStat(stat, 0);
+						// save asynchron:
+						stats.saveAsync();
+						// send messages
 						Map<String, String> vars = new HashMap<String, String>();
 						vars.put("player", playerName);
 						vars.put("stat", key);
@@ -226,7 +248,7 @@ public class CmdAdmin {
 				}
 				return true;
 			}
-			//moved ad and set up
+			//moved add and set up
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 		} else if(args[1].equalsIgnoreCase("stats")) {
 			if(args.length == 3) {
@@ -236,10 +258,11 @@ public class CmdAdmin {
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 		} else if(args[1].equalsIgnoreCase("rank")) {
 			if (args.length >= 3) {
-				String name = args[2];
-				if (plugin.pm.exists(name)) {
-					if (args.length == 3) plugin.stats.sendRank(sender, name, PlayerStat.POINTS);
-					else if (args.length == 4) plugin.stats.sendRank(sender, name, args[3]);
+				String playerName = args[2];
+				// stats for this player even exist ?
+				if(plugin.pm.exists(playerName)) {
+					if (args.length == 3) plugin.stats.sendRank(sender, playerName, PlayerStat.POINTS);
+					else if (args.length == 4) plugin.stats.sendRank(sender, playerName, args[3]);
 					else return false;
 				} else {
 					Map<String, String> vars = new HashMap<String, String>();

@@ -10,6 +10,7 @@ import org.bukkit.command.CommandSender;
 
 import de.blablubbabc.paintball.statistics.general.GeneralStat;
 import de.blablubbabc.paintball.statistics.player.PlayerStat;
+import de.blablubbabc.paintball.statistics.player.PlayerStats;
 import de.blablubbabc.paintball.utils.Translator;
 
 
@@ -138,9 +139,9 @@ public class Stats {
 			public void run() {
 				Map<String, String> vars = new HashMap<String, String>();
 				vars.put("player", name);
-				if (plugin.pm.exists(name)) {
-					Map<PlayerStat, Integer> pStats = plugin.sql.sqlPlayers.getPlayerStats(name);
-					vars.put("money", String.valueOf(pStats.get(PlayerStat.MONEY)));
+				PlayerStats stats = plugin.pm.getPlayerStats(name);
+				if (stats != null) {
+					vars.put("money", String.valueOf(stats.getStat(PlayerStat.MONEY)));
 					sender.sendMessage(Translator.getString("CASH_PLAYER", vars));
 				} else {
 					sender.sendMessage(Translator.getString("PLAYER_NOT_FOUND", vars));
@@ -152,14 +153,14 @@ public class Stats {
 	private void sendGeneralStats(CommandSender sender) {
 		Map<String, String> vars = new HashMap<String, String>();
 		//GENERAL STATS
-		Map<GeneralStat, Integer> gStats = getGerneralStats();
-		for (GeneralStat stat : gStats.keySet()) {
-			vars.put(stat.getKey(), String.valueOf(gStats.get(stat)));
+		Map<GeneralStat, Integer> generalStats = getGerneralStats();
+		for (GeneralStat stat : generalStats.keySet()) {
+			vars.put(stat.getKey(), String.valueOf(generalStats.get(stat)));
 		}
 
 		//SEND
 		sender.sendMessage(Translator.getString("STATS_GENERAL"));
-		for (GeneralStat stat : gStats.keySet()) {
+		for (GeneralStat stat : generalStats.keySet()) {
 			sender.sendMessage(Translator.getString("STATS_GENERAL_" + stat.getKey().toUpperCase(), vars));
 		}
 	}
@@ -169,25 +170,25 @@ public class Stats {
 			
 			@Override
 			public void run() {
-				HashMap<String, String> vars = new HashMap<String, String>();
+				Map<String, String> vars = new HashMap<String, String>();
 				vars.put("player", name);
-				if (plugin.pm.exists(name)) {
+				PlayerStats stats = plugin.pm.getPlayerStats(name);
+				if (stats != null) {
 					//GET STATS
-					Map<PlayerStat, Integer> pStats = plugin.sql.sqlPlayers.getPlayerStats(name);
 					LinkedHashMap<PlayerStat, SimpleEntry<String, Integer>> topStats = plugin.sql.sqlPlayers.getTopStats();
 
 					//KD + HITQUOTE
-					float kdF = (float)pStats.get(PlayerStat.KD) / 100;
-					float hitquoteF = (float)pStats.get(PlayerStat.ACCURACY) / 100;
+					float kdF = (float)stats.getStat(PlayerStat.KD) / 100;
+					float hitquoteF = (float)stats.getStat(PlayerStat.ACCURACY) / 100;
 					//TOP
 					int kdT = topStats.get(PlayerStat.KD).getValue();
 					int hitquoteT = topStats.get(PlayerStat.ACCURACY).getValue();
 					float kdFT = (float)kdT / 100;
 					float hitquoteFT = (float)hitquoteT / 100;
 
-					for (PlayerStat stat : pStats.keySet()) {
+					for (PlayerStat stat : PlayerStat.values()) {
 						String key = stat.getKey();
-						vars.put(key, String.valueOf(pStats.get(stat)));
+						vars.put(key, String.valueOf(stats.getStat(stat)));
 						vars.put("player_" + key + "_top", topStats.get(stat).getKey());
 						vars.put(key + "_top", String.valueOf(topStats.get(stat).getValue()));
 					}
@@ -202,7 +203,7 @@ public class Stats {
 					sender.sendMessage(Translator.getString("STATS_HEADER"));
 					sendGeneralStats(sender);
 					sender.sendMessage(Translator.getString("STATS_PLAYER", vars));
-					for (PlayerStat stat : pStats.keySet()) {
+					for (PlayerStat stat : PlayerStat.values()) {
 						String key = stat.getKey();
 						sender.sendMessage(Translator.getString("STATS_" + key.toUpperCase(), vars));
 					}

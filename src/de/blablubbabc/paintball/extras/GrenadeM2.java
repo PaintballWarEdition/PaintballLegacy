@@ -2,6 +2,8 @@ package de.blablubbabc.paintball.extras;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.Map;
+
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.entity.Item;
@@ -24,7 +26,7 @@ public class GrenadeM2 {
 	}
 	
 	
-	private static HashMap<String, ArrayList<GrenadeM2>> nades = new HashMap<String, ArrayList<GrenadeM2>>();
+	private static Map<String, ArrayList<GrenadeM2>> nades = new HashMap<String, ArrayList<GrenadeM2>>();
 	
 	public static void registerNade(Item nade, String shooterName, Origin source) {
 		ArrayList<GrenadeM2> pnades = nades.get(shooterName);

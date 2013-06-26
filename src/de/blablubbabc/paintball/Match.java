@@ -30,6 +30,8 @@ import de.blablubbabc.paintball.extras.Orbitalstrike;
 import de.blablubbabc.paintball.extras.Sniper;
 import de.blablubbabc.paintball.extras.Turret;
 import de.blablubbabc.paintball.statistics.arena.ArenaSetting;
+import de.blablubbabc.paintball.statistics.player.match.tdm.TDMMatchStat;
+import de.blablubbabc.paintball.statistics.player.match.tdm.TDMMatchStats;
 import de.blablubbabc.paintball.utils.Timer;
 import de.blablubbabc.paintball.utils.Translator;
 import de.blablubbabc.paintball.utils.Utils;
@@ -46,6 +48,7 @@ public class Match {
 	private Map<Player, Integer> protection = new HashMap<Player, Integer>();
 	private Set<String> justRespawned = new HashSet<String>();
 	// STATS
+	private Map<String, TDMMatchStats> playerMatchStats = new HashMap<String, TDMMatchStats>();
 	/*private Map<String, Integer> shots = new HashMap<String, Integer>();
 	private Map<String, Integer> hits = new HashMap<String, Integer>();
 	private Map<String, Integer> kills = new HashMap<String, Integer>();
@@ -99,10 +102,9 @@ public class Match {
 		this.specspawns = plugin.am.getSpecSpawns(arena);
 
 		// random spawns
-		Random randSpawns = new Random();
-		this.spawnBlue = randSpawns.nextInt(bluespawns.size());
-		this.spawnRed = randSpawns.nextInt(redspawns.size());
-		this.spawnSpec = randSpawns.nextInt(specspawns.size());
+		this.spawnBlue = Utils.random.nextInt(bluespawns.size());
+		this.spawnRed = Utils.random.nextInt(redspawns.size());
+		this.spawnSpec = Utils.random.nextInt(specspawns.size());
 
 		calculateSettings();
 
@@ -145,13 +147,8 @@ public class Match {
 			livesLeft.put(p, setting_lives);
 			respawnsLeft.put(p, setting_respawns);
 			// STATS
-			this.shots.put(p.getName(), 0);
-			this.hits.put(p.getName(), 0);
-			this.kills.put(p.getName(), 0);
-			this.deaths.put(p.getName(), 0);
-			this.teamattacks.put(p.getName(), 0);
-			this.grenades.put(p.getName(), 0);
-			this.airstrikes.put(p.getName(), 0);
+			String playerName = p.getName();
+			playerMatchStats.put(playerName, new TDMMatchStats(plugin.pm.getPlayerStats(playerName)));
 
 			PlayerDataStore.clearPlayer(p, true, true);
 			spawnPlayer(p);
@@ -186,7 +183,7 @@ public class Match {
 			
 			@Override
 			public void run() {
-				HashMap<String, String> vars = new HashMap<String, String>();
+				Map<String, String> vars = new HashMap<String, String>();
 				vars.put("seconds", String.valueOf(startTimer.getTime()));
 				String msg = Translator.getString("COUNTDOWN_START", vars);
 				for (Player player : getAll()) {
@@ -202,12 +199,13 @@ public class Match {
 				// START:
 				started = true;
 				// lives + start!:
-				HashMap<String, String> vars = new HashMap<String, String>();
+				Map<String, String> vars = new HashMap<String, String>();
 				vars.put("lives", String.valueOf(setting_lives));
-				if (setting_respawns == -1)
+				if (setting_respawns == -1) {
 					vars.put("respawns", Translator.getString("INFINITE"));
-				else
+				} else {
 					vars.put("respawns", String.valueOf(setting_respawns));
+				}
 				vars.put("round_time", String.valueOf(setting_round_time));
 
 				plugin.nf.status(Translator.getString("MATCH_SETTINGS_INFO", vars));
@@ -364,7 +362,7 @@ public class Match {
 		}
 		player.updateInventory();
 		// MESSAGE
-		HashMap<String, String> vars = new HashMap<String, String>();
+		Map<String, String> vars = new HashMap<String, String>();
 		vars.put("team_color", Lobby.getTeam(getTeamName(player)).color().toString());
 		vars.put("team", getTeamName(player));
 		player.sendMessage(Translator.getString("BE_IN_TEAM", vars));
@@ -692,7 +690,7 @@ public class Match {
 		if (setting_respawns != -1)
 			respawnsLeft.put(player, respawnsLeft.get(player) - 1);
 		// message
-		HashMap<String, String> vars = new HashMap<String, String>();
+		Map<String, String> vars = new HashMap<String, String>();
 		vars.put("lives", String.valueOf(setting_lives));
 		if (setting_respawns == -1)
 			vars.put("respawns", Translator.getString("INFINITE"));
@@ -705,25 +703,29 @@ public class Match {
 		spawnPlayer(player);
 	}
 
-	public void addShots(Player player, int amount) {
-		// add 1
-		shots.put(player.getName(), shots.get(player.getName()) + amount);
-		// effekt
-		Location loc = player.getLocation();
-		player.playSound(loc, Sound.WOOD_CLICK, 100F, 0F);
+	public void onShot(Player player) {
+		String playerName = player.getName();
+		// STATS
+		TDMMatchStats matchStats = playerMatchStats.get(playerName);
+		matchStats.addStat(TDMMatchStat.SHOTS, 1);
+		matchStats.calculateQuotes();
 	}
 
-	public void grenade(Player player) {
-		// add 1
-		grenades.put(player.getName(), grenades.get(player.getName()) + 1);
+	public void onGrenade(Player player) {
+		String playerName = player.getName();
+		// STATS
+		TDMMatchStats matchStats = playerMatchStats.get(playerName);
+		matchStats.addStat(TDMMatchStat.GRENADES, 1);
 	}
 
-	public void airstrike(Player player) {
-		// add 1
-		airstrikes.put(player.getName(), airstrikes.get(player.getName()) + 1);
+	public void onAirstrike(Player player) {
+		String playerName = player.getName();
+		// STATS
+		TDMMatchStats matchStats = playerMatchStats.get(playerName);
+		matchStats.addStat(TDMMatchStat.AIRSTRIKES, 1);
 	}
 
-	public synchronized void hitSnow(Player target, Player shooter, Origin source) {
+	public synchronized void onHitByBall(Player target, Player shooter, Origin source) {
 		// math over already?
 		if (matchOver)
 			return;
@@ -735,7 +737,7 @@ public class Match {
 		String targetName = target.getName();
 		String shooterName = shooter.getName();
 		
-		HashMap<String, String> vars = new HashMap<String, String>();
+		Map<String, String> vars = new HashMap<String, String>();
 		vars.put("target", targetName);
 		vars.put("shooter", shooterName);
 		
@@ -751,10 +753,16 @@ public class Match {
 					target.sendMessage(Translator.getString("YOU_WERE_HIT_PROTECTED", vars));
 				} else {
 					int healthLeft = livesLeft.get(target) - 1;
-					// -1 live
+					// -1 life
 					livesLeft.put(target, healthLeft);
-					// stats
-					hits.put(shooter.getName(), hits.get(shooter.getName()) + 1);
+					
+					// STATS
+					TDMMatchStats matchStats = playerMatchStats.get(shooterName);
+					matchStats.addStat(TDMMatchStat.HITS, 1);
+					matchStats.addStat(TDMMatchStat.POINTS, plugin.pointsPerHit);
+					matchStats.addStat(TDMMatchStat.MONEY, plugin.cashPerHit);
+					matchStats.calculateQuotes();
+					
 					// dead?->frag
 					// message:
 					if (healthLeft <= 0) {
@@ -777,10 +785,14 @@ public class Match {
 				}
 			}
 		} else if (friendly(target, shooter)) {
-			// message
-			// -points
-			teamattacks.put(shooterName, teamattacks.get(shooter.getName()) + 1);
+			// STATS
+			TDMMatchStats matchStats = playerMatchStats.get(shooterName);
+			matchStats.addStat(TDMMatchStat.TEAMATTACKS, 1);
+			matchStats.addStat(TDMMatchStat.POINTS, plugin.pointsPerTeamattack);
+			
+			// SOUND EFFECT
 			shooter.playSound(shooter.getLocation(), Sound.ANVIL_LAND, 70F, 1F);
+			
 			if (plugin.pointsPerTeamattack != 0) {
 				vars.put("points", String.valueOf(plugin.pointsPerTeamattack));
 				shooter.sendMessage(Translator.getString("YOU_HIT_MATE_POINTS", vars));
@@ -794,22 +806,34 @@ public class Match {
 		// math over already?
 		if (matchOver)
 			return;
+		
+		String targetName = target.getName();
+		String killerName = killer.getName();
+		
 		killer.playSound(killer.getLocation(), Sound.MAGMACUBE_WALK, 100F, 0F);
 		target.playSound(target.getLocation(), Sound.GHAST_SCREAM2, 100F, 0F);
 
 		// STATS
-		deaths.put(target.getName(), deaths.get(target.getName()) + 1);
-		kills.put(killer.getName(), kills.get(killer.getName()) + 1);
+		// KILLER:
+		TDMMatchStats killerStats = playerMatchStats.get(killerName);
+		killerStats.addStat(TDMMatchStat.KILLS, 1);
+		killerStats.addStat(TDMMatchStat.POINTS, plugin.pointsPerHit);
+		killerStats.addStat(TDMMatchStat.MONEY, plugin.cashPerHit);
+		killerStats.calculateQuotes();
+		// TARGET:
+		TDMMatchStats targetStats = playerMatchStats.get(targetName);
+		targetStats.addStat(TDMMatchStat.DEATHS, 1);
+		targetStats.calculateQuotes();
 		
-		// 0 leben aka tot
+		// 0 lives = -> out
 		livesLeft.put(target, 0);
 		// spawn protection
 		protection.remove(target);
 
-		// feed
-		HashMap<String, String> vars = new HashMap<String, String>();
-		vars.put("target", target.getName());
-		vars.put("killer", killer.getName());
+		// FEED
+		Map<String, String> vars = new HashMap<String, String>();
+		vars.put("target", targetName);
+		vars.put("killer", killerName);
 		vars.put("points", String.valueOf(plugin.pointsPerKill));
 		vars.put("money", String.valueOf(plugin.cashPerKill));
 		killer.sendMessage(Translator.getString("YOU_KILLED", vars));
@@ -818,23 +842,21 @@ public class Match {
 
 		// afk detection on frag
 		if (plugin.afkDetection) {
-			String name = target.getName();
-			if (target.getLocation().getWorld().equals(playersLoc.get(name).getWorld())
-					&& target.getLocation().distance(playersLoc.get(name)) <= plugin.afkRadius
-					&& shots.get(name) == 0 && kills.get(name) == 0) {
-				plugin.afkSet(name, plugin.afkGet(name) + 1);
+			if (target.getLocation().getWorld().equals(playersLoc.get(targetName).getWorld())
+					&& target.getLocation().distance(playersLoc.get(targetName)) <= plugin.afkRadius
+					&& targetStats.getStat(TDMMatchStat.SHOTS) == 0 && targetStats.getStat(TDMMatchStat.KILLS) == 0) {
+				plugin.afkSet(targetName, plugin.afkGet(targetName) + 1);
 			} else {
-				plugin.afkRemove(name);
+				plugin.afkRemove(targetName);
 			}
 		}
 
 		if (isSurvivor(target)) {
 			// respawn(target);
 			// afk check
-			String name = target.getName();
-			if (plugin.afkDetection && (plugin.afkGet(name) >= plugin.afkMatchAmount)) {
+			if (plugin.afkDetection && (plugin.afkGet(targetName) >= plugin.afkMatchAmount)) {
 				// consequences after being afk:
-				plugin.afkRemove(name);
+				plugin.afkRemove(targetName);
 				respawnsLeft.put(target, 0);
 				plugin.getServer().getScheduler().scheduleSyncDelayedTask(plugin, new Runnable() {
 					@Override
@@ -871,35 +893,39 @@ public class Match {
 		if (matchOver)
 			return;
 
-		// feed
+		String targetName = target.getName();
+		
+		// STATS
+		// TARGET:
+		TDMMatchStats targetStats = playerMatchStats.get(targetName);
+		targetStats.addStat(TDMMatchStat.DEATHS, 1);
+		targetStats.calculateQuotes();
+		
+		// FEED
 		target.sendMessage(Translator.getString("YOU_DIED"));
 		plugin.nf.death(target, this);
-		// points+cash+kill+death
-		deaths.put(target.getName(), (deaths.get(target.getName()) + 1));
-		// survivors?->endGame
-		// 0 leben aka tot
+		// no survivors? -> endGame
+		// 0 lives -> out
 		livesLeft.put(target, 0);
 		// spawn protection
 		protection.remove(target);
 
 		// afk detection on death
 		if (plugin.afkDetection) {
-			String name = target.getName();
-			if (target.getLocation().getWorld().equals(playersLoc.get(name).getWorld())
-					&& target.getLocation().distance(playersLoc.get(name)) <= plugin.afkRadius
-					&& shots.get(name) == 0 && kills.get(name) == 0) {
-				plugin.afkSet(name, plugin.afkGet(name) + 1);
+			if (target.getLocation().getWorld().equals(playersLoc.get(targetName).getWorld())
+					&& target.getLocation().distance(playersLoc.get(targetName)) <= plugin.afkRadius
+					&& targetStats.getStat(TDMMatchStat.SHOTS) == 0 && targetStats.getStat(TDMMatchStat.KILLS) == 0) {
+				plugin.afkSet(targetName, plugin.afkGet(targetName) + 1);
 			} else {
-				plugin.afkRemove(name);
+				plugin.afkRemove(targetName);
 			}
 		}
 
 		if (isSurvivor(target)) {
 			// afk check
-			String name = target.getName();
-			if (plugin.afkDetection && (plugin.afkGet(name) >= plugin.afkMatchAmount)) {
+			if (plugin.afkDetection && (plugin.afkGet(targetName) >= plugin.afkMatchAmount)) {
 				// consequences after being afk:
-				plugin.afkRemove(name);
+				plugin.afkRemove(targetName);
 				respawnsLeft.put(target, 0);
 				resetWeaponStuff(target);
 				plugin.getServer().getScheduler().scheduleSyncDelayedTask(plugin, new Runnable() {
@@ -955,8 +981,7 @@ public class Match {
 
 			@Override
 			public void run() {
-				plugin.mm.gameEnd(this2, draw, playersLoc, spec, shots, hits, kills, deaths,
-						teamattacks, grenades, airstrikes);
+				plugin.mm.gameEnd(this2, draw, playersLoc, spec, playerMatchStats);
 			}
 		}, 1L);
 	}

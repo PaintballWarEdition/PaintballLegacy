@@ -14,6 +14,7 @@ import org.bukkit.GameMode;
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.Sound;
+import org.bukkit.World;
 import org.bukkit.block.Block;
 import org.bukkit.block.BlockState;
 import org.bukkit.block.Sign;
@@ -264,7 +265,7 @@ public class EventListener implements Listener {
 											// match
 											Ball ball = Ball.getBall(shot.getEntityId(), shooter.getName(), false);
 											if (ball != null) {
-												matchA.hitSnow(target, shooter, ball.getSource());
+												matchA.onHitByBall(target, shooter, ball.getSource());
 											}
 										}
 									}
@@ -394,6 +395,7 @@ public class EventListener implements Listener {
 				if (item.getType() != Material.POTION) event.setUseItemInHand(Result.DENY);
 				if (!match.started || match.isJustRespawned(player.getName())) return;
 				Action action = event.getAction();
+				String playerName = player.getName();
 				
 				switch (item.getType()) {
 				case SNOW_BALL:
@@ -401,16 +403,25 @@ public class EventListener implements Listener {
 					if (item.isSimilar(Ball.item)) {
 						PlayerInventory inv = player.getInventory();
 						if (match.setting_balls == -1 || inv.contains(Material.SNOW_BALL, 1)) {
-							Snowball ball = (Snowball) player.getWorld().spawnEntity(player.getEyeLocation(), EntityType.SNOWBALL);
-							player.getWorld().playSound(player.getEyeLocation(), Sound.CHICKEN_EGG_POP, 1.5F, 2F);
+							// SOUND EFFECT
+							Location eyeLoc = player.getEyeLocation();
+							World world = player.getWorld();
+							world.playSound(eyeLoc, Sound.WOOD_CLICK, 1.5F, 0F);
+							world.playSound(eyeLoc, Sound.CHICKEN_EGG_POP, 1.5F, 2F);
+							
+							// SHOOT SNOWBALL
+							Snowball ball = (Snowball) world.spawnEntity(eyeLoc, EntityType.SNOWBALL);
 							ball.setShooter(player);
-							// register snowball
-							Ball.registerBall(ball, player.getName(), Origin.MARKER);
-							// boosting:
-							// test: no normalizing
+							// REGISTER:
+							Ball.registerBall(ball, playerName, Origin.MARKER);
+							// BOOST:
 							ball.setVelocity(player.getLocation().getDirection().normalize().multiply(plugin.speedmulti));
-							// z�hlen
-							match.addShots(player, 1);
+							// STATS
+							// PLAYERSTATS
+							PlayerStats playerStats = plugin.pm.getPlayerStats(playerName);
+							playerStats.addStat(PlayerStat.SHOTS, 1);
+							// INFORM MATCH
+							match.onShot(player);
 							
 							if (match.setting_balls != -1) {
 								// -1 ball
@@ -427,10 +438,10 @@ public class EventListener implements Listener {
 					if (plugin.airstrike && item.isSimilar(Airstrike.item)) {
 						if (Airstrike.marked(player.getName())) {
 							if (Airstrike.getAirstrikeCountMatch() < plugin.airstrikeMatchLimit) {
-								if (Airstrike.getAirstrikeCountPlayer(player.getName()) < plugin.airstrikePlayerLimit) {
+								if (Airstrike.getAirstrikeCountPlayer(playerName) < plugin.airstrikePlayerLimit) {
 									new Airstrike(player);
-									// z�hlen
-									match.airstrike(player);
+									// INFORM MATCH
+									match.onAirstrike(player);
 									// remove stick if not infinite
 									if (match.setting_airstrikes != -1) {
 										if (item.getAmount() <= 1)
@@ -455,7 +466,7 @@ public class EventListener implements Listener {
 					if (plugin.orbitalstrike && item.isSimilar(Orbitalstrike.item)) {
 						if (Orbitalstrike.marked(player.getName())) {
 							if (Orbitalstrike.getOrbitalstrikeCountMatch() < plugin.orbitalstrikeMatchLimit) {
-								if (Orbitalstrike.getOrbitalstrikeCountPlayer(player.getName()) < plugin.orbitalstrikePlayerLimit) {
+								if (Orbitalstrike.getOrbitalstrikeCountPlayer(playerName) < plugin.orbitalstrikePlayerLimit) {
 									new Orbitalstrike(player, match);
 									// remove stick if not infinite
 									if (item.getAmount() <= 1)
@@ -485,9 +496,9 @@ public class EventListener implements Listener {
 							egg.setShooter(player);
 							// boosting:
 							egg.setVelocity(player.getLocation().getDirection().multiply(plugin.grenadeSpeed));
-							Grenade.registerGrenade(egg, player.getName(), Origin.GRENADE);
-							// z�hlen
-							match.grenade(player);
+							Grenade.registerGrenade(egg, playerName, Origin.GRENADE);
+							// INFORM MATCH
+							match.onGrenade(player);
 							if (match.setting_grenades != -1) {
 								// -1 egg
 								Utils.removeInventoryItems(inv, Grenade.item, 1);
@@ -509,7 +520,7 @@ public class EventListener implements Listener {
 						nadeItem.setItemMeta(meta);
 						Item nade = player.getWorld().dropItem(player.getEyeLocation(), nadeItem);
 						nade.setVelocity(player.getLocation().getDirection().normalize().multiply(plugin.grenade2Speed));
-						GrenadeM2.registerNade(nade, player.getName(), Origin.GRENADE2);
+						GrenadeM2.registerNade(nade, playerName, Origin.GRENADE2);
 						if (item.getAmount() <= 1)
 							player.setItemInHand(null);
 						else {
@@ -529,7 +540,7 @@ public class EventListener implements Listener {
 						nadeItem.setItemMeta(meta);
 						Item nade = player.getWorld().dropItem(player.getEyeLocation(), nadeItem);
 						nade.setVelocity(player.getLocation().getDirection().normalize().multiply(plugin.flashbangSpeed));
-						Flashbang.registerNade(nade, player.getName(), Origin.FLASHBANG);
+						Flashbang.registerNade(nade, playerName, Origin.FLASHBANG);
 						if (item.getAmount() <= 1)
 							player.setItemInHand(null);
 						else {
@@ -545,7 +556,8 @@ public class EventListener implements Listener {
 						PlayerInventory inv = player.getInventory();
 						if (inv.containsAtLeast(Ball.item, plugin.shotgunAmmo)) {
 							Utils.removeInventoryItems(inv, Ball.item, plugin.shotgunAmmo);
-							match.addShots(player, 15);
+							// INFORM MATCH
+							match.onShot(player);
 							Shotgun.shoot(player);
 						} else {
 							player.playSound(player.getEyeLocation(), Sound.FIRE_IGNITE, 1F, 2F);
@@ -559,7 +571,8 @@ public class EventListener implements Listener {
 						PlayerInventory inv = player.getInventory();
 						if (inv.containsAtLeast(Ball.item, plugin.pumpgunAmmo)) {
 							Utils.removeInventoryItems(inv, Ball.item, plugin.pumpgunAmmo);
-							match.addShots(player, plugin.pumpgunBullets);
+							// INFORM MATCH
+							match.onShot(player);
 							Pumpgun.shoot(player);
 						} else {
 							player.playSound(player.getEyeLocation(), Sound.FIRE_IGNITE, 1F, 2F);
@@ -571,7 +584,7 @@ public class EventListener implements Listener {
 					// ROCKET LAUNCHER
 					if (plugin.rocket && item.isSimilar(Rocket.item)) {
 						if (Rocket.getRocketCountMatch() < plugin.rocketMatchLimit) {
-							if (Rocket.getRocketCountPlayer(player.getName()) < plugin.rocketPlayerLimit) {
+							if (Rocket.getRocketCountPlayer(playerName) < plugin.rocketPlayerLimit) {
 								player.getWorld().playSound(player.getLocation(), Sound.SILVERFISH_IDLE, 1.5F, 1F);
 								Fireball rocket = (Fireball) player.getWorld().spawnEntity(player.getEyeLocation(), EntityType.FIREBALL);
 								rocket.setIsIncendiary(false);
@@ -603,7 +616,8 @@ public class EventListener implements Listener {
 							PlayerInventory inv = player.getInventory();
 							if ((!plugin.sniperOnlyUseIfZooming || Sniper.isZooming(player))
 								&& (match.setting_balls == -1 || inv.contains(Material.SNOW_BALL, 1))) {
-								match.addShots(player, 1);
+								// INFORM MATCH
+								match.onShot(player);
 								Sniper.shoot(player);
 								
 								if (match.setting_balls != -1) {

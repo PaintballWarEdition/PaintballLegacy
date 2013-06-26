@@ -2,6 +2,7 @@ package de.blablubbabc.paintball.extras;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.Map;
 
 
 import org.bukkit.Location;
@@ -20,7 +21,7 @@ public class Grenade {
 
 	public final static ItemStack item = ItemManager.setMeta(new ItemStack(Material.EGG));
 	
-	private static HashMap<String, ArrayList<Grenade>> nades = new HashMap<String, ArrayList<Grenade>>();
+	private static Map<String, ArrayList<Grenade>> nades = new HashMap<String, ArrayList<Grenade>>();
 	
 	public static void registerGrenade(Egg egg, String shooterName, Origin source) {
 		ArrayList<Grenade> pnades = nades.get(shooterName);

@@ -1,10 +1,12 @@
 package de.blablubbabc.paintball.utils;
 
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Random;
 
 import org.bukkit.Color;
+import org.bukkit.Material;
 import org.bukkit.block.BlockFace;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.Inventory;
@@ -15,6 +17,28 @@ import org.bukkit.util.Vector;
 
 public class Utils {
 	public static Random random = new Random();
+	private static HashSet<Byte> transparentBlocks = null;
+	
+	public static HashSet<Byte> getTransparentBlocks() {
+		if (transparentBlocks == null) {
+			transparentBlocks = new HashSet<Byte>();
+			transparentBlocks.add((byte) Material.AIR.getId());
+			transparentBlocks.add((byte) Material.WATER.getId());
+			transparentBlocks.add((byte) Material.STATIONARY_WATER.getId());
+			transparentBlocks.add((byte) Material.LAVA.getId());
+			transparentBlocks.add((byte) Material.STATIONARY_LAVA.getId());
+			transparentBlocks.add((byte) Material.FIRE.getId());
+			transparentBlocks.add((byte) Material.PORTAL.getId());
+			transparentBlocks.add((byte) Material.ENDER_PORTAL.getId());
+			transparentBlocks.add((byte) Material.PAINTING.getId());
+			
+			transparentBlocks.add((byte) Material.FENCE.getId());
+			transparentBlocks.add((byte) Material.NETHER_FENCE.getId());
+		}
+		return transparentBlocks;
+	}
+	
+	///////////////////////////////////////////////////////////////
 	
 	public static boolean isEmptyInventory(Player p) {
 		for (ItemStack i : p.getInventory()) {
