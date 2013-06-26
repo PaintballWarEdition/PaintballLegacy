@@ -69,19 +69,19 @@ import de.blablubbabc.paintball.utils.Metrics.Graph;
 public class Paintball extends JavaPlugin{
 	public static Paintball instance;
 	
-	public PlayerManager pm;
-	public CommandManager cm;
-	public MatchManager mm;
+	public PlayerManager playerManager;
+	public CommandManager commandManager;
+	public MatchManager matchManager;
 	public EventListener listener;
 	public TagAPIListener tagAPI;
 	public VoteListener voteListener;
-	public Newsfeeder nf;
-	public ArenaManager am;
-	public Translator t;
+	public Newsfeeder feeder;
+	public ArenaManager arenaManager;
+	public Translator translator;
 	public Musiker musik;
-	public Stats stats;
-	public Serverlister slist;
-	public InSignsFeature isf;
+	public Stats statsManager;
+	public Serverlister serverList;
+	public InSignsFeature insignsFeature;
 	public boolean active;
 	public boolean happyhour;
 	public boolean softreload;
@@ -759,65 +759,9 @@ public class Paintball extends JavaPlugin{
 		orbitalstrikePlayerLimit = getConfig().getInt("Paintball.Extras.Orbitalstrike.Player Limit", 1);
 		
 		
-
-		//SQLite with version: 110
-		sql = new BlaSQLite(new File(this.getDataFolder().toString()+"/"+"pbdata_110"+".db"));
-		//DB
-		loadDB();
-		//TRANSLATOR
-		t = new Translator(this, local);
-		if(!Translator.success) {
-			Log.severe("Couldn't find/load the default language file. Disables now..", true);
-			getServer().getPluginManager().disablePlugin(this);
-			return;
-		}
-		//MELODIES
-		musik = new Musiker(this, melodyWin, winNbs, melodyDefeat, defeatNbs, melodyDraw, drawNbs);
-		if(!musik.success) {
-			Log.severe("Couldn't find/load the default melodies. Disables now..", true);
-			getServer().getPluginManager().disablePlugin(this);
-			return;
-		}
-		//SERVERLISTER CONFIG:
-		slist = new Serverlister();
-		//WAKE TEAM-ENUMS
-		Lobby.values();
-		//PLAYERMANAGER
-		pm = new PlayerManager();
-		//Newsfeeder
-		nf = new Newsfeeder(this);
-		//MATCHMANAGER|LISTENER
-		mm = new MatchManager(this);
-		listener = new EventListener(this);
-		//ARENAMANAGER
-		am = new ArenaManager(this);
-		//STATS
-		stats = new Stats(this);
-		getServer().getPluginManager().registerEvents(listener, this);
-		getServer().getPluginManager().registerEvents(new TeleportFix(this), this);
-		//COMMANDS
-		cm = new CommandManager(this);
-		CommandExecutor ce = cm;
-		getCommand("pb").setExecutor(ce);
-
-		active = true;
-		happyhour = false;
-		softreload = false;
-		lobbyspawn = 0;
-		afkMatchCount = new HashMap<String, Integer>();
-
-		//autoLobby
-		if(autoLobby) {
-			for(Player player : getServer().getOnlinePlayers()) {
-				if(autoTeam) {
-					cm.joinTeam(player, Lobby.RANDOM);
-				} else {
-					cm.joinLobbyPre(player, null);
-				}
-			}
-		}
 		
-		// init extras and other static classes:
+		// INTI STATICS
+		
 		Airstrike.init();
 		Ball.init();
 		Flashbang.init();
@@ -833,14 +777,13 @@ public class Paintball extends JavaPlugin{
 		Shotgun.init();
 		Sniper.init();
 		Turret.init();
-		
+
 		Utils.init();
 		// Log is already init above
-		// Translator is already init above
+		// Translator will be init below
 		Sounds.init();
 		Origin.values();
-		RankManager.init();
-		
+
 		// init enums:
 		Instrus.values();
 		Lobby.values();
@@ -850,6 +793,63 @@ public class Paintball extends JavaPlugin{
 		TDMMatchStat.values();
 		PlayerStat.values();
 		
+
+		//SQLite with version: 110
+		sql = new BlaSQLite(new File(this.getDataFolder().toString() + "/" + "pbdata_110" + ".db"));
+		//DB
+		loadDB();
+		//TRANSLATOR
+		translator = new Translator(this, local);
+		if(!Translator.success) {
+			Log.severe("Couldn't find/load the default language file. Disables now..", true);
+			getServer().getPluginManager().disablePlugin(this);
+			return;
+		}
+		//MELODIES
+		musik = new Musiker(this, melodyWin, winNbs, melodyDefeat, defeatNbs, melodyDraw, drawNbs);
+		if(!musik.success) {
+			Log.severe("Couldn't find/load the default melodies. Disables now..", true);
+			getServer().getPluginManager().disablePlugin(this);
+			return;
+		}
+		// RANKMANAGER
+		
+		// SERVERLISTER CONFIG:
+		serverList = new Serverlister();
+		//PLAYERMANAGER
+		playerManager = new PlayerManager();
+		//Newsfeeder
+		feeder = new Newsfeeder(this);
+		//MATCHMANAGER|LISTENER
+		matchManager = new MatchManager(this);
+		listener = new EventListener(this);
+		//ARENAMANAGER
+		arenaManager = new ArenaManager(this);
+		//STATS
+		statsManager = new Stats(this);
+		getServer().getPluginManager().registerEvents(listener, this);
+		getServer().getPluginManager().registerEvents(new TeleportFix(this), this);
+		//COMMANDS
+		commandManager = new CommandManager(this);
+		CommandExecutor ce = commandManager;
+		getCommand("pb").setExecutor(ce);
+
+		active = true;
+		happyhour = false;
+		softreload = false;
+		lobbyspawn = 0;
+		afkMatchCount = new HashMap<String, Integer>();
+
+		//autoLobby
+		if(autoLobby) {
+			for(Player player : getServer().getOnlinePlayers()) {
+				if(autoTeam) {
+					commandManager.joinTeam(player, Lobby.RANDOM);
+				} else {
+					commandManager.joinLobbyPre(player, null);
+				}
+			}
+		}
 		
 		//start no gravity task
 		if (sniperNoGravity) NoGravity.run();
@@ -905,7 +905,7 @@ public class Paintball extends JavaPlugin{
 				@Override
 				public int getValue() {
 					try {
-						return pm.getPlayersEverPlayedCount();
+						return playerManager.getPlayersEverPlayedCount();
 					} catch (Exception e) {
 						// Failed to get the value :(
 						return 0;
@@ -922,7 +922,7 @@ public class Paintball extends JavaPlugin{
 		//InSigns sign changer:
 		Plugin insignsPlugin = getServer().getPluginManager().getPlugin("InSigns");
 		if((insignsPlugin != null) && insignsPlugin.isEnabled()) {
-			isf = new InSignsFeature(insignsPlugin, this);
+			insignsFeature = new InSignsFeature(insignsPlugin, this);
 			Log.info("Plugin 'InSigns' found. Using it now.");
 		} else {
 			Log.info("Plugin 'InSigns' not found. Additional sign features disabled.");
@@ -998,7 +998,7 @@ public class Paintball extends JavaPlugin{
 	}
 	
 	public void onDisable(){
-		if(mm != null) mm.forceReload();
+		if(matchManager != null) matchManager.forceReload();
 		sql.closeConnection();
 		getServer().getScheduler().cancelTasks(this);
 		instance = null;
@@ -1082,14 +1082,14 @@ public class Paintball extends JavaPlugin{
 		if (!currentlyLoading.contains(playerName)) {
 			// load player stats and continue after loading:
 			currentlyLoading.add(playerName);
-			pm.loadPlayerStatsAsync(playerName, new Runnable() {
+			playerManager.loadPlayerStatsAsync(playerName, new Runnable() {
 				
 				@Override
 				public void run() {
 					// join lobby:
 					Lobby.LOBBY.addMember(player);
-					nf.join(playerName);
-					pm.teleportStoreClearPlayer(player, getNextLobbySpawn());
+					feeder.join(playerName);
+					playerManager.teleportStoreClearPlayer(player, getNextLobbySpawn());
 					
 					// continue afterwards:
 					if (runAfterwards != null) runAfterwards.run();
@@ -1108,16 +1108,16 @@ public class Paintball extends JavaPlugin{
 	public synchronized boolean leaveLobby(Player player, boolean messages) {
 		if (Lobby.LOBBY.isMember(player)) {
 			if (Lobby.isPlaying(player) || Lobby.isSpectating(player)) {
-				mm.getMatch(player).left(player);
+				matchManager.getMatch(player).left(player);
 			}
 			//lobby remove:
 			Lobby.remove(player);
 			// restore and teleport back:
-			pm.clearRestoreTeleportPlayer(player);
+			playerManager.clearRestoreTeleportPlayer(player);
 			//messages:
 			if(messages) {
 				player.sendMessage(Translator.getString("YOU_LEFT_LOBBY"));
-				nf.leave(player.getName());
+				feeder.leave(player.getName());
 			}
 			return true;
 		} else return false;

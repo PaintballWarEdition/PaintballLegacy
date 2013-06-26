@@ -97,9 +97,9 @@ public class Match {
 		this.started = false;
 		this.random = new Random();
 
-		this.redspawns = plugin.am.getRedSpawns(arena);
-		this.bluespawns = plugin.am.getBlueSpawns(arena);
-		this.specspawns = plugin.am.getSpecSpawns(arena);
+		this.redspawns = plugin.arenaManager.getRedSpawns(arena);
+		this.bluespawns = plugin.arenaManager.getBlueSpawns(arena);
+		this.specspawns = plugin.arenaManager.getSpecSpawns(arena);
 
 		// random spawns
 		this.spawnBlue = Utils.random.nextInt(bluespawns.size());
@@ -148,7 +148,7 @@ public class Match {
 			respawnsLeft.put(p, setting_respawns);
 			// STATS
 			String playerName = p.getName();
-			playerMatchStats.put(playerName, new TDMMatchStats(plugin.pm.getPlayerStats(playerName)));
+			playerMatchStats.put(playerName, new TDMMatchStats(plugin.playerManager.getPlayerStats(playerName)));
 
 			PlayerDataStore.clearPlayer(p, true, true);
 			spawnPlayer(p);
@@ -208,8 +208,8 @@ public class Match {
 				}
 				vars.put("round_time", String.valueOf(setting_round_time));
 
-				plugin.nf.status(Translator.getString("MATCH_SETTINGS_INFO", vars));
-				plugin.nf.status(Translator.getString("MATCH_START"));
+				plugin.feeder.status(Translator.getString("MATCH_SETTINGS_INFO", vars));
+				plugin.feeder.status(Translator.getString("MATCH_START"));
 
 				makeAllVisible();
 				startRoundTimer();
@@ -259,7 +259,7 @@ public class Match {
 			
 			@Override
 			public void run() {
-				plugin.nf.roundTime(roundTimer.getTime());
+				plugin.feeder.roundTime(roundTimer.getTime());
 			}
 		}, new Runnable() {
 			
@@ -419,7 +419,7 @@ public class Match {
 
 	// INVENTORY
 	private void calculateSettings() {
-		Map<ArenaSetting, Integer> settings = plugin.am.getArenaSettings(arena);
+		Map<ArenaSetting, Integer> settings = plugin.arenaManager.getArenaSettings(arena);
 		// BALLS
 		setting_balls = plugin.balls + settings.get(ArenaSetting.BALLS);
 		if (setting_balls < -1)
@@ -838,7 +838,7 @@ public class Match {
 		vars.put("money", String.valueOf(plugin.cashPerKill));
 		killer.sendMessage(Translator.getString("YOU_KILLED", vars));
 		target.sendMessage(Translator.getString("YOU_WERE_KILLED", vars));
-		plugin.nf.feed(target, killer, this);
+		plugin.feeder.feed(target, killer, this);
 
 		// afk detection on frag
 		if (plugin.afkDetection) {
@@ -866,7 +866,7 @@ public class Match {
 				}, 1L);
 
 				Lobby.getTeam(target).removeMember(target);
-				plugin.nf.afkLeave(target, this);
+				plugin.feeder.afkLeave(target, this);
 				target.sendMessage(Translator.getString("YOU_LEFT_TEAM"));
 			} else
 				respawn(target);
@@ -903,7 +903,7 @@ public class Match {
 		
 		// FEED
 		target.sendMessage(Translator.getString("YOU_DIED"));
-		plugin.nf.death(target, this);
+		plugin.feeder.death(target, this);
 		// no survivors? -> endGame
 		// 0 lives -> out
 		livesLeft.put(target, 0);
@@ -936,7 +936,7 @@ public class Match {
 				}, 1L);
 
 				Lobby.getTeam(target).removeMember(target);
-				plugin.nf.afkLeave(target, this);
+				plugin.feeder.afkLeave(target, this);
 				target.sendMessage(Translator.getString("YOU_LEFT_TEAM"));
 			} else
 				respawn(target);
@@ -981,7 +981,7 @@ public class Match {
 
 			@Override
 			public void run() {
-				plugin.mm.gameEnd(this2, draw, playersLoc, spec, playerMatchStats);
+				plugin.matchManager.gameEnd(this2, draw, playersLoc, spec, playerMatchStats);
 			}
 		}, 1L);
 	}

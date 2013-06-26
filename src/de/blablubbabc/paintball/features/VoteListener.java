@@ -22,7 +22,7 @@ public class VoteListener implements Listener {
         Vote vote = event.getVote();
 	    String playerName = vote.getUsername();
 	    if (playerName != null && !playerName.isEmpty()) {
-	    	PlayerStats stats = Paintball.instance.pm.getPlayerStats(playerName);
+	    	PlayerStats stats = Paintball.instance.playerManager.getPlayerStats(playerName);
 	    	if (stats != null) {
 	    		stats.addStat(PlayerStat.MONEY, Paintball.instance.voteCash);
 	    		stats.saveAsync();

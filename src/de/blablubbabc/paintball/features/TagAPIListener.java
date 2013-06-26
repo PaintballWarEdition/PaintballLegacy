@@ -21,7 +21,7 @@ public class TagAPIListener implements Listener {
 	@EventHandler(priority = EventPriority.HIGHEST)
 	public void onTagRecieve(PlayerReceiveNameTagEvent event) {
 		Player player = event.getPlayer();
-		Match match = plugin.mm.getMatch(player);
+		Match match = plugin.matchManager.getMatch(player);
 		if (match != null && match.isSurvivor(player)) {
 			Player target = event.getNamedPlayer();
 			if(Lobby.isPlaying(player)) {
@@ -31,7 +31,7 @@ public class TagAPIListener implements Listener {
 					
 				} else if(plugin.tagsColor) {
 					// colored tags:
-					Match matchTar = plugin.mm.getMatch(target);
+					Match matchTar = plugin.matchManager.getMatch(target);
 					if(match == matchTar && match.isSurvivor(target)) {
 						//change colors according to team
 						//target is red, blue or spec ?
@@ -54,7 +54,7 @@ public class TagAPIListener implements Listener {
 			} else if(Lobby.isSpectating(player)) {
 				if(plugin.tagsColor) {
 					// colored tags for spectators, else normal tags/no changes:
-					Match matchTar = plugin.mm.getMatch(target);
+					Match matchTar = plugin.matchManager.getMatch(target);
 					if(match == matchTar && match.isSurvivor(target)) {
 						//change colors according to team
 						//target is red, blue or spec ?

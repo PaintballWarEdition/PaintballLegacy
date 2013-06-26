@@ -95,7 +95,7 @@ public class EventListener implements Listener {
 
 	public EventListener(Paintball pl) {
 		plugin = pl;
-		mm = plugin.mm;
+		mm = plugin.matchManager;
 		// chatMessages = new HashMap<Player, String>();
 	}
 
@@ -146,9 +146,9 @@ public class EventListener implements Listener {
 			if (!fromPb && toPb) {
 				if (!Lobby.LOBBY.isMember(player)) {
 					if (plugin.autoTeam) {
-						plugin.cm.joinTeam(player, Lobby.RANDOM);
+						plugin.commandManager.joinTeam(player, Lobby.RANDOM);
 					} else {
-						plugin.cm.joinLobbyPre(player, null);
+						plugin.commandManager.joinLobbyPre(player, null);
 					}
 				}
 			} else if (fromPb && !toPb) {
@@ -221,11 +221,11 @@ public class EventListener implements Listener {
 			if (pStat != null) {
 				Map<String, String> vars = new HashMap<String, String>();
 				vars.put("player", player);
-				PlayerStats stats = Paintball.instance.pm.getPlayerStats(player);
+				PlayerStats stats = Paintball.instance.playerManager.getPlayerStats(player);
 				// stats for this player even exist ?
 				if (stats != null) {
 					if (rank) {
-						vars.put("value", String.valueOf(plugin.stats.getRank(player, pStat)));
+						vars.put("value", String.valueOf(plugin.statsManager.getRank(player, pStat)));
 					} else {
 						if (pStat == PlayerStat.ACCURACY|| pStat == PlayerStat.KD) {
 							float statF = (float) stats.getStat(pStat) / 100;
@@ -420,7 +420,7 @@ public class EventListener implements Listener {
 							ball.setVelocity(player.getLocation().getDirection().normalize().multiply(plugin.speedmulti));
 							// STATS
 							// PLAYERSTATS
-							PlayerStats playerStats = plugin.pm.getPlayerStats(playerName);
+							PlayerStats playerStats = plugin.playerManager.getPlayerStats(playerName);
 							playerStats.addStat(PlayerStat.SHOTS, 1);
 							// INFORM MATCH
 							match.onShot(player);
@@ -773,7 +773,7 @@ public class EventListener implements Listener {
 				int damage = event.getDamage();
 				event.setDamage(0);
 				event.setCancelled(true);
-				Match match = plugin.mm.getMatch(target);
+				Match match = plugin.matchManager.getMatch(target);
 				if (match != null && team != Lobby.SPECTATE && match.isSurvivor(target) && match.started) {
 					if ((plugin.falldamage && event.getCause() == DamageCause.FALL) 
 							|| (plugin.otherDamage && event.getCause() != DamageCause.FALL 
@@ -829,7 +829,7 @@ public class EventListener implements Listener {
 			event.setCancelled(true);
 			// }
 			final Block block = event.getBlockPlaced();
-			Match m = plugin.mm.getMatch(player);
+			Match m = plugin.matchManager.getMatch(player);
 			if (m != null && m.started && m.isSurvivor(player)) {
 				ItemStack item = player.getItemInHand();
 				if (plugin.turret && block.getType() == Material.PUMPKIN && item.hasItemMeta() && item.getItemMeta().getDisplayName().equals(Translator.getString("WEAPON_TURRET"))) {
@@ -840,7 +840,7 @@ public class EventListener implements Listener {
 							nextTurretSpawn = spawnLoc;
 							Snowman snowman = (Snowman) block.getLocation().getWorld().spawnEntity(spawnLoc, EntityType.SNOWMAN);
 							nextTurretSpawn = null;
-							new Turret(player, snowman, plugin.mm.getMatch(player));
+							new Turret(player, snowman, plugin.matchManager.getMatch(player));
 							if (item.getAmount() <= 1)
 								player.setItemInHand(null);
 							else {
@@ -867,7 +867,7 @@ public class EventListener implements Listener {
 									block.setData((byte) 0);
 								}
 							}, 1L);
-							new Mine(player, block, event.getBlockReplacedState(), plugin.mm.getMatch(player));
+							new Mine(player, block, event.getBlockReplacedState(), plugin.matchManager.getMatch(player));
 							if (item.getAmount() <= 1)
 								player.setItemInHand(null);
 							else {
@@ -986,7 +986,7 @@ public class EventListener implements Listener {
 			if (Lobby.LOBBY.isMember(player)) {
 				ChatColor farbe = Lobby.LOBBY.color();
 				if (Lobby.isPlaying(player) || Lobby.isSpectating(player)) {
-					Match match = plugin.mm.getMatch(player);
+					Match match = plugin.matchManager.getMatch(player);
 					// Color:
 					if (match.isRed(player))
 						farbe = Lobby.RED.color();
@@ -1015,16 +1015,16 @@ public class EventListener implements Listener {
 	@EventHandler(priority = EventPriority.MONITOR)
 	public void onPlayerJoin(PlayerJoinEvent event) {
 		final Player player = (Player) event.getPlayer();
-		plugin.pm.addPlayerAsync(player.getName());
+		plugin.playerManager.addPlayerAsync(player.getName());
 
 		plugin.getServer().getScheduler().scheduleSyncDelayedTask(plugin, new Runnable() {
 
 			@Override
 			public void run() {
 				if (plugin.autoLobby && plugin.autoTeam)
-					plugin.cm.joinTeam(player, Lobby.RANDOM);
+					plugin.commandManager.joinTeam(player, Lobby.RANDOM);
 				else if (plugin.autoLobby)
-					plugin.cm.joinLobbyPre(player, null);
+					plugin.commandManager.joinLobbyPre(player, null);
 			}
 		}, 1L);
 

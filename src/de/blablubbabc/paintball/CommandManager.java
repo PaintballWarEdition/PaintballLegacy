@@ -28,7 +28,7 @@ public class CommandManager implements CommandExecutor{
 	public CommandManager(Paintball pl) {
 		plugin = pl;
 		blablubbabc = ChatColor.AQUA + "" + ChatColor.BOLD + "[ " + ChatColor.GOLD + "" + ChatColor.ITALIC + "" + ChatColor.BOLD + "Paintball by blablubbabc" + ChatColor.RESET + ChatColor.AQUA + "" + ChatColor.BOLD + " ]";
-		cmdArena = new CmdArena(plugin, plugin.am);
+		cmdArena = new CmdArena(plugin, plugin.arenaManager);
 		cmdAdmin = new CmdAdmin(plugin);
 		cmdShop = new CmdShop(plugin);
 	}
@@ -131,7 +131,7 @@ public class CommandManager implements CommandExecutor{
 								return true;
 							}*/
 							if (Lobby.isPlaying(player) || Lobby.isSpectating(player)) {
-								plugin.mm.getMatch(player).left(player);
+								plugin.matchManager.getMatch(player).left(player);
 								plugin.joinLobby(player);
 							}
 							Lobby.getTeam(player).removeMember(player);
@@ -173,16 +173,16 @@ public class CommandManager implements CommandExecutor{
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 					} else if (args[0].equalsIgnoreCase("rank")) {
-						if (args.length == 1) plugin.stats.sendRank(player, player.getName(), PlayerStat.POINTS);
-						else plugin.stats.sendRank(player, player.getName(), args[1]);
+						if (args.length == 1) plugin.statsManager.sendRank(player, player.getName(), PlayerStat.POINTS);
+						else plugin.statsManager.sendRank(player, player.getName(), args[1]);
 						return true;
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 					} else if (args[0].equalsIgnoreCase("stats")) {
-						plugin.stats.sendStats(player, player.getName());
+						plugin.statsManager.sendStats(player, player.getName());
 						return true;
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 					} else if (args[0].equalsIgnoreCase("cash")) {
-						plugin.stats.sendCash(player, player.getName());
+						plugin.statsManager.sendCash(player, player.getName());
 						return true;
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 					} else if (args[0].equalsIgnoreCase("shop")) {
@@ -194,8 +194,8 @@ public class CommandManager implements CommandExecutor{
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 				//CONSOLE AND PLAYER
 				if (args[0].equalsIgnoreCase("top")) {
-					if(args.length == 1) plugin.stats.sendTop(sender, PlayerStat.POINTS);
-					else plugin.stats.sendTop(sender, args[1]);
+					if(args.length == 1) plugin.statsManager.sendTop(sender, PlayerStat.POINTS);
+					else plugin.statsManager.sendTop(sender, args[1]);
 					return true;
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 				} else if (args[0].equalsIgnoreCase("list")) {
@@ -364,15 +364,15 @@ public class CommandManager implements CommandExecutor{
 						else if (spec) player.sendMessage(Translator.getString("YOU_JOINED_SPECTATORS", vars));
 					}
 					if (!spec) {
-						String ready = plugin.mm.ready();
+						String ready = plugin.matchManager.ready();
 						if (ready.equalsIgnoreCase(Translator.getString("READY"))) {
-							plugin.mm.countdown(plugin.countdown, plugin.countdownInit);
+							plugin.matchManager.countdown(plugin.countdown, plugin.countdownInit);
 						} else {
-							plugin.nf.status(player, ready);
+							plugin.feeder.status(player, ready);
 						}
 					}
 					//players:
-					plugin.nf.players(player);
+					plugin.feeder.players(player);
 				}
 			});
 		}

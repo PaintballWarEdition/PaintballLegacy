@@ -50,21 +50,21 @@ public class MatchManager{
 			}
 
 			//close match
-			plugin.am.setNotActive(match.getArena());
+			plugin.arenaManager.setNotActive(match.getArena());
 			match.endTimers();
 			match.updateTags();
 			matches.remove(match);	
 		}
 		//messages:
-		plugin.nf.status(Translator.getString("ALL_KICKED_FROM_MATCHES"));
+		plugin.feeder.status(Translator.getString("ALL_KICKED_FROM_MATCHES"));
 		//stop countdown:
 		if (countdown != null) {
 			countdown.end();
 			countdown = null;
 		}
 		// Kick all from Lobby:
-		plugin.nf.status(Translator.getString("ALL_KICKED_FROM_LOBBY"));
-		plugin.nf.status(Translator.getString("RELOADING_PAINTBALL"));
+		plugin.feeder.status(Translator.getString("ALL_KICKED_FROM_LOBBY"));
+		plugin.feeder.status(Translator.getString("RELOADING_PAINTBALL"));
 		List<Player> list = new ArrayList<Player>();
 		for (Player p : Lobby.LOBBY.getMembers()) {
 			list.add(p);
@@ -89,7 +89,7 @@ public class MatchManager{
 		}
 
 		int players = Lobby.RED.numberWaiting() + Lobby.BLUE.numberWaiting() + Lobby.RANDOM.numberWaiting();
-		String info = plugin.nf.getPlayersOverview();
+		String info = plugin.feeder.getPlayersOverview();
 
 		for (Player player : Lobby.RANDOM.getMembers()) {
 			Lobby.RANDOM.setPlaying(player);
@@ -104,15 +104,15 @@ public class MatchManager{
 			Lobby.SPECTATE.setPlaying(player);
 		}
 		//Arena:
-		String arena = plugin.am.getNextArena();
-		plugin.am.resetNext();
-		plugin.am.setActive(arena);
+		String arena = plugin.arenaManager.getNextArena();
+		plugin.arenaManager.resetNext();
+		plugin.arenaManager.setActive(arena);
 		Map<String, String> vars = new HashMap<String, String>();
 		vars.put("arena", arena);
-		plugin.nf.status(Translator.getString("MATCH_START_ARENA", vars));
+		plugin.feeder.status(Translator.getString("MATCH_START_ARENA", vars));
 		vars.put("players", String.valueOf(players));
 		vars.put("players_overview", info);
-		plugin.nf.status(Translator.getString("MATCH_START_PLAYERS_OVERVIEW", vars));
+		plugin.feeder.status(Translator.getString("MATCH_START_PLAYERS_OVERVIEW", vars));
 
 		Match match = new Match(plugin, Lobby.RED.getMembers(), Lobby.BLUE.getMembers(), Lobby.SPECTATE.getMembers(), Lobby.RANDOM.getMembers(), arena);
 		matches.add(match);
@@ -129,7 +129,7 @@ public class MatchManager{
 			// player ?
 			if (match.getAllPlayer().contains(player)) {
 				// STATS
-				PlayerStats stats = plugin.pm.getPlayerStats(playerName);
+				PlayerStats stats = plugin.playerManager.getPlayerStats(playerName);
 				stats.addStat(PlayerStat.POINTS, plugin.pointsPerRound);
 				stats.addStat(PlayerStat.MONEY, plugin.cashPerRound);
 
@@ -186,7 +186,7 @@ public class MatchManager{
 						//afk detection consequences after being afk:
 						plugin.afkRemove(afkP);
 						Lobby.getTeam(player).removeMember(player);
-						plugin.nf.afkLeave(player, match);
+						plugin.feeder.afkLeave(player, match);
 						player.sendMessage(Translator.getString("YOU_LEFT_TEAM"));
 					}
 				} else {
@@ -222,7 +222,7 @@ public class MatchManager{
 				
 				for (Player player : match.getAllPlayer()) {
 					String playerName = player.getName();
-					PlayerStats stats = plugin.pm.getPlayerStats(playerName);
+					PlayerStats stats = plugin.playerManager.getPlayerStats(playerName);
 					stats.save();
 				}
 				plugin.sql.commit();
@@ -232,25 +232,25 @@ public class MatchManager{
 				plugin.getServer().getScheduler().runTask(plugin, new Runnable() {
 					public void run() {
 						//close match
-						plugin.am.setNotActive(match.getArena());
+						plugin.arenaManager.setNotActive(match.getArena());
 						match.updateTags();
 						matches.remove(match);
 						//ready? countdown?
-						plugin.nf.status(Translator.getString("CHOOSE_TEAM"));
+						plugin.feeder.status(Translator.getString("CHOOSE_TEAM"));
 
 						//players:
-						plugin.nf.players();
+						plugin.feeder.players();
 
 						if (ready().equalsIgnoreCase(Translator.getString("READY"))) {
 							countdown(plugin.countdown, plugin.countdownInit);
 						} else {
-							plugin.nf.status(ready());
+							plugin.feeder.status(ready());
 						}
 						//TIME
 						long time2 = System.nanoTime();
 						Double delta = (time2 - time1)/10E6;
 						DecimalFormat dec = new DecimalFormat("#.###");
-						if(plugin.debug) plugin.nf.text("+Async Stats Saving: Took " + dec.format(delta) + " ms");
+						if(plugin.debug) plugin.feeder.text("+Async Stats Saving: Took " + dec.format(delta) + " ms");
 					}
 				});
 			}
@@ -264,7 +264,7 @@ public class MatchManager{
 		arenaStats.put(ArenaStat.GRENADES, grenadesAll);
 		arenaStats.put(ArenaStat.AIRSTRIKES, airstrikesAll);
 		
-		plugin.am.addStats(match.getArena(), arenaStats);
+		plugin.arenaManager.addStats(match.getArena(), arenaStats);
 
 		//GENERAL STATS
 		Map<GeneralStat, Integer> generalStats = new HashMap<GeneralStat, Integer>();
@@ -274,14 +274,14 @@ public class MatchManager{
 		generalStats.put(GeneralStat.GRENADES, grenadesAll);
 		generalStats.put(GeneralStat.AIRSTRIKES, airstrikesAll);
 		
-		plugin.stats.matchEndStats(generalStats, match.getAllPlayer().size());
+		plugin.statsManager.matchEndStats(generalStats, match.getAllPlayer().size());
 
 		//messages:
 		Map<String, String> vars = new HashMap<String, String>();
-		plugin.nf.text("-------------------------------------------------");
-		plugin.nf.status(Translator.getString("MATCH_IS_OVER"));
+		plugin.feeder.text("-------------------------------------------------");
+		plugin.feeder.status(Translator.getString("MATCH_IS_OVER"));
 		if (draw) {
-			plugin.nf.text(Translator.getString("MATCH_DRAW"));
+			plugin.feeder.text(Translator.getString("MATCH_DRAW"));
 		} else {
 			vars.put("winner_color", Lobby.getTeam(match.win).color().toString());
 			vars.put("winner", match.win);
@@ -289,31 +289,31 @@ public class MatchManager{
 			vars.put("looser_color", Lobby.getTeam(match.loose).color().toString());
 			vars.put("looser", match.loose);
 			vars.put("looser_size", String.valueOf(match.loosers.size()));
-			plugin.nf.text(Translator.getString("WINNER_TEAM", vars));
+			plugin.feeder.text(Translator.getString("WINNER_TEAM", vars));
 
 			vars.put("points", String.valueOf(plugin.pointsPerWin));
 			vars.put("money", String.valueOf(plugin.cashPerWin));
-			plugin.nf.text(Translator.getString("WINNER_BONUS", vars));
+			plugin.feeder.text(Translator.getString("WINNER_BONUS", vars));
 		}
 		
 		vars.put("points", String.valueOf(plugin.pointsPerRound));
 		vars.put("money", String.valueOf(plugin.cashPerRound));
-		plugin.nf.text(Translator.getString("ROUND_BONUS", vars));
+		plugin.feeder.text(Translator.getString("ROUND_BONUS", vars));
 
-		plugin.nf.text(Translator.getString("MATCH_STATS"));
+		plugin.feeder.text(Translator.getString("MATCH_STATS"));
 		vars.put("shots", String.valueOf(shotsAll));
 		vars.put("hits", String.valueOf(hitsAll));
 		vars.put("teamattacks", String.valueOf(teamattacksAll));
 		vars.put("kills", String.valueOf(killsAll));
-		plugin.nf.text(Translator.getString("MATCH_SHOTS", vars));
-		plugin.nf.text(Translator.getString("MATCH_HITS", vars));
-		plugin.nf.text(Translator.getString("MATCH_TEAMATTACKS", vars));
-		plugin.nf.text(Translator.getString("MATCH_KILLS", vars));
-		plugin.nf.text("-------------------------------------------------");
+		plugin.feeder.text(Translator.getString("MATCH_SHOTS", vars));
+		plugin.feeder.text(Translator.getString("MATCH_HITS", vars));
+		plugin.feeder.text(Translator.getString("MATCH_TEAMATTACKS", vars));
+		plugin.feeder.text(Translator.getString("MATCH_KILLS", vars));
+		plugin.feeder.text("-------------------------------------------------");
 		if (!draw) {
 			for (final Player p : match.winners) {
 				if (Lobby.getTeam(p) != null) {
-					plugin.nf.status(p, Translator.getString("YOU_WON"));
+					plugin.feeder.status(p, Translator.getString("YOU_WON"));
 					if (plugin.melody) {
 						plugin.getServer().getScheduler().scheduleSyncDelayedTask(plugin, new Runnable() {
 							
@@ -329,7 +329,7 @@ public class MatchManager{
 			}
 			for (final Player p :  match.loosers) {
 				if (Lobby.getTeam(p) != null) {
-					plugin.nf.status(p, Translator.getString("YOU_LOST"));
+					plugin.feeder.status(p, Translator.getString("YOU_LOST"));
 					if (plugin.melody) {
 						plugin.getServer().getScheduler().scheduleSyncDelayedTask(plugin, new Runnable() {
 							
@@ -345,7 +345,7 @@ public class MatchManager{
 		} else {
 			for (final Player p : match.getAllPlayer()) {
 				if (Lobby.getTeam(p) != null) {
-					plugin.nf.status(p, Translator.getString("YOU_DRAW"));
+					plugin.feeder.status(p, Translator.getString("YOU_DRAW"));
 					if (plugin.melody) {
 						plugin.getServer().getScheduler().scheduleSyncDelayedTask(plugin, new Runnable() {
 							
@@ -364,7 +364,7 @@ public class MatchManager{
 		long time2 = System.nanoTime();
 		Double delta = (time2 - time1)/10E6;
 		DecimalFormat dec = new DecimalFormat("#.###");
-		if (plugin.debug) plugin.nf.text("Main-Thread: Took " + dec.format(delta) + " ms");
+		if (plugin.debug) plugin.feeder.text("Main-Thread: Took " + dec.format(delta) + " ms");
 	}
 	
 	public boolean softCheck() {
@@ -397,7 +397,7 @@ public class MatchManager{
 		//1 player in each team waiting for game or 2 randoms (or mix) 
 		int players = Lobby.RED.numberWaiting() + Lobby.BLUE.numberWaiting() + Lobby.RANDOM.numberWaiting();
 		if (players >= plugin.minPlayers && ( (Lobby.BLUE.numberWaiting() >=1 && Lobby.RED.numberWaiting() >= 1) || (Lobby.RANDOM.numberWaiting() >= 2) || (Lobby.RANDOM.numberWaiting() >= 1 && Lobby.RED.numberWaiting() >= 1) || (Lobby.RANDOM.numberWaiting() >= 1 && Lobby.BLUE.numberWaiting() >= 1) )) {
-			if (!plugin.am.isReady()) return Translator.getString("NO_ARENA_READY");
+			if (!plugin.arenaManager.isReady()) return Translator.getString("NO_ARENA_READY");
 			//ready=>
 			return Translator.getString("READY");
 		} else return Translator.getString("NOT_ENOUGH_PLAYERS");
@@ -405,7 +405,7 @@ public class MatchManager{
 
 	public void countdown(int number, int initial) {
 		if (countdown == null && plugin.active) {
-			plugin.nf.status(Translator.getString("NEW_MATCH_STARTS_SOON"));
+			plugin.feeder.status(Translator.getString("NEW_MATCH_STARTS_SOON"));
 			countdown = new Timer(plugin, 20 * initial, 20L, number, new Runnable() {
 				
 				@Override
@@ -426,7 +426,7 @@ public class MatchManager{
 				
 				@Override
 				public void run() {
-					plugin.nf.counter(countdown.getTime());
+					plugin.feeder.counter(countdown.getTime());
 				}
 			}, new Runnable() {
 				
@@ -441,7 +441,7 @@ public class MatchManager{
 						//start match
 						gameStart();
 					} else {
-						plugin.nf.status(status);
+						plugin.feeder.status(status);
 					}
 				}
 			});

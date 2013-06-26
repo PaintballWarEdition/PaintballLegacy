@@ -65,12 +65,12 @@ public class CmdShop {
 				}
 				player.sendMessage("");
 				player.sendMessage(Translator.getString("SHOP_BUY"));
-				plugin.stats.sendCash(player, player.getName());
+				plugin.statsManager.sendCash(player, player.getName());
 				return true;
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 			} else if(args.length == 2) {
 				//Kaufen in der lobby während match aber tot:
-				Match match = plugin.mm.getMatch(player);
+				Match match = plugin.matchManager.getMatch(player);
 				if(match != null && match.isSurvivor(player)) {
 					Integer id = isNumber(args[1]);
 					if(id != null && id > 0 && id <= goods.length) {
@@ -87,7 +87,7 @@ public class CmdShop {
 						}
 						
 						String playerName = player.getName();
-						PlayerStats stats = plugin.pm.getPlayerStats(playerName);
+						PlayerStats stats = plugin.playerManager.getPlayerStats(playerName);
 						// stats even exist for this player ?
 						if (stats == null) {
 							Map<String, String> vars = new HashMap<String, String>();
@@ -112,7 +112,7 @@ public class CmdShop {
 							
 							Map<GeneralStat, Integer> gStats = new HashMap<GeneralStat, Integer>();
 							gStats.put(GeneralStat.MONEY_SPENT, price);
-							plugin.stats.addGeneralStats(gStats);
+							plugin.statsManager.addGeneralStats(gStats);
 						}
 						
 						//item

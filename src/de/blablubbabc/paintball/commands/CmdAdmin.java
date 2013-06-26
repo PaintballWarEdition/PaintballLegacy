@@ -96,7 +96,7 @@ public class CmdAdmin {
 			} else if(args[1].equalsIgnoreCase("set")) {
 				if(args.length == 5) {
 					String playerName = args[2];
-					PlayerStats stats = plugin.pm.getPlayerStats(playerName);
+					PlayerStats stats = plugin.playerManager.getPlayerStats(playerName);
 					// stats for this player even exist ?
 					if(stats != null) {
 						String key = args[3];
@@ -136,7 +136,7 @@ public class CmdAdmin {
 			} else if(args[1].equalsIgnoreCase("add")) {
 				if(args.length == 5) {
 					String playerName = args[2];
-					PlayerStats stats = plugin.pm.getPlayerStats(playerName);
+					PlayerStats stats = plugin.playerManager.getPlayerStats(playerName);
 					// stats for this player even exist ?
 					if(stats != null) {
 						String key = args[3];
@@ -187,11 +187,11 @@ public class CmdAdmin {
 					public void run() {
 						long time1 = System.currentTimeMillis();
 						// reset all playerdata:
-						plugin.pm.resetAllData();
+						plugin.playerManager.resetAllData();
 						long time2 = System.currentTimeMillis();
 						long delta = time2 - time1;
 						
-						int amount = plugin.pm.getPlayerCount();
+						int amount = plugin.playerManager.getPlayerCount();
 						
 						Map<String, String> vars = new HashMap<String, String>();
 						vars.put("time", String.valueOf(delta));
@@ -202,7 +202,7 @@ public class CmdAdmin {
 				return true;
 			} else if(args.length == 3) {
 				String playerName = args[2];
-				PlayerStats stats = plugin.pm.getPlayerStats(playerName);
+				PlayerStats stats = plugin.playerManager.getPlayerStats(playerName);
 				// stats for this player even exist ?
 				if(stats != null) {
 					// reset the players stats:
@@ -221,7 +221,7 @@ public class CmdAdmin {
 				return true;
 			} else if(args.length == 4) {
 				String playerName = args[2];
-				PlayerStats stats = plugin.pm.getPlayerStats(playerName);
+				PlayerStats stats = plugin.playerManager.getPlayerStats(playerName);
 				// stats for this player even exist ?
 				if(stats != null) {
 					String key = args[3];
@@ -252,7 +252,7 @@ public class CmdAdmin {
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 		} else if(args[1].equalsIgnoreCase("stats")) {
 			if(args.length == 3) {
-				plugin.stats.sendStats(sender, args[2]);
+				plugin.statsManager.sendStats(sender, args[2]);
 				return true;
 			}
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -260,9 +260,9 @@ public class CmdAdmin {
 			if (args.length >= 3) {
 				String playerName = args[2];
 				// stats for this player even exist ?
-				if(plugin.pm.exists(playerName)) {
-					if (args.length == 3) plugin.stats.sendRank(sender, playerName, PlayerStat.POINTS);
-					else if (args.length == 4) plugin.stats.sendRank(sender, playerName, args[3]);
+				if(plugin.playerManager.exists(playerName)) {
+					if (args.length == 3) plugin.statsManager.sendRank(sender, playerName, PlayerStat.POINTS);
+					else if (args.length == 4) plugin.statsManager.sendRank(sender, playerName, args[3]);
 					else return false;
 				} else {
 					Map<String, String> vars = new HashMap<String, String>();
@@ -275,21 +275,21 @@ public class CmdAdmin {
 		} else if(args[1].equalsIgnoreCase("next")) {
 			if(args.length == 3) {
 				String arena = args[2];
-				if(!plugin.am.existing(arena)) {
+				if(!plugin.arenaManager.existing(arena)) {
 					Map<String, String> vars = new HashMap<String, String>();
 					vars.put("arena", arena);
 					sender.sendMessage(Translator.getString("ARENA_NOT_FOUND", vars));
 					return true;
 				}
-				if(!plugin.am.isReady(arena)) {
+				if(!plugin.arenaManager.isReady(arena)) {
 					sender.sendMessage(Translator.getString("ARENA_NOT_READY"));
 					return true;
 				}
-				plugin.am.setNext(arena);
+				plugin.arenaManager.setNext(arena);
 				Map<String, String> vars = new HashMap<String, String>();
-				vars.put("plugin", plugin.nf.pluginName);
+				vars.put("plugin", plugin.feeder.pluginName);
 				vars.put("arena", arena);
-				plugin.nf.text(sender, Translator.getString("NEXT_ARENA_SET", vars));
+				plugin.feeder.text(sender, Translator.getString("NEXT_ARENA_SET", vars));
 				return true;
 			}
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -319,9 +319,9 @@ public class CmdAdmin {
 			plugin.active = false;
 			plugin.softreload = true;
 			//message:
-			plugin.nf.status(Translator.getString("SOFTRELOAD"));
+			plugin.feeder.status(Translator.getString("SOFTRELOAD"));
 			//check
-			if (plugin.mm.softCheck()) plugin.reload(sender);
+			if (plugin.matchManager.softCheck()) plugin.reload(sender);
 			else sender.sendMessage(Translator.getString("RELOAD_SOON"));
 			return true;
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -346,9 +346,9 @@ public class CmdAdmin {
 					setHappyhour(seconds);
 					//sender nicht in der lobby?
 					if(!(sender instanceof Player) || Lobby.getTeam((Player) sender) == null) {
-						sender.sendMessage(plugin.nf.happyhour(seconds));
+						sender.sendMessage(plugin.feeder.happyhour(seconds));
 					}
-					plugin.nf.textUntoggled(plugin.nf.happyhour(seconds));
+					plugin.feeder.textUntoggled(plugin.feeder.happyhour(seconds));
 					if(happyTaskId == -1) happyTask();
 				} catch(Exception e) {	
 					sender.sendMessage(Translator.getString("INVALID_NUMBER"));
@@ -400,18 +400,18 @@ public class CmdAdmin {
 					setHappyhour(0);
 					plugin.happyhour = false;
 					happyTaskId = -1;
-					plugin.nf.textUntoggled(Translator.getString("HAPPYHOUR_END"));
+					plugin.feeder.textUntoggled(Translator.getString("HAPPYHOUR_END"));
 					return;
 				}
 				if(( happy % 10 ) == 0)
 				{
-					plugin.nf.text(plugin.nf.happyhour(happy));
+					plugin.feeder.text(plugin.feeder.happyhour(happy));
 				}
 				
 				if( happy < 6 && happy > 0)
 				{
 					//if below 6 message here (regardless of divisibility)
-					plugin.nf.text(plugin.nf.happyhour(happy));
+					plugin.feeder.text(plugin.feeder.happyhour(happy));
 				}
 				//start again:
 				happyTask();

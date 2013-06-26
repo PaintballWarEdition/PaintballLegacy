@@ -8,16 +8,20 @@ import de.blablubbabc.paintball.statistics.player.PlayerStats;
 
 public class RankManager {
 	
-	private static List<Rank> ranks = new ArrayList<Rank>();
+	private List<Rank> ranks = new ArrayList<Rank>();
 	
-	public static void loadRanks() {
+	public RankManager() {
+		
+	}
+	
+	public void loadRanks() {
 		//TODO
 	}
 	
-	public static Rank getRank(String playerName) {
+	public Rank getRank(String playerName) {
 		Rank highest = null;
 		
-		PlayerStats stats = Paintball.instance.pm.getPlayerStats(playerName);
+		PlayerStats stats = Paintball.instance.playerManager.getPlayerStats(playerName);
 		// stats even exist for this player ?
 		if (stats == null) return null;
 		int points = stats.getStat(PlayerStat.POINTS);

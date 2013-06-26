@@ -113,13 +113,13 @@ public class Flashbang {
 			location.getWorld().createExplosion(location, -1F);
 			Player player = Paintball.instance.getServer().getPlayerExact(shooterName);
 			if (player != null) {
-				Match match = Paintball.instance.mm.getMatch(player);
+				Match match = Paintball.instance.matchManager.getMatch(player);
 				if (match != null) {
 					List<Entity> near = entity.getNearbyEntities(Paintball.instance.flashRange, Paintball.instance.flashRange, Paintball.instance.flashRange);
 					for (Entity e : near) {
 						if (e.getType() == EntityType.PLAYER) {
 							Player p = (Player) e;
-							Match m = Paintball.instance.mm.getMatch(p);
+							Match m = Paintball.instance.matchManager.getMatch(p);
 							if (match == m && match.enemys(player, p)) {
 								p.addPotionEffect(new PotionEffect(PotionEffectType.CONFUSION, 20 * Paintball.instance.flashDuration, 3), true);
 								p.addPotionEffect(new PotionEffect(PotionEffectType.BLINDNESS, 20 * Paintball.instance.flashDuration, 3), true);

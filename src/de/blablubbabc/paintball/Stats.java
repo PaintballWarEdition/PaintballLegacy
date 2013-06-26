@@ -121,7 +121,7 @@ public class Stats {
 			public void run() {
 				Map<String, String> vars = new HashMap<String, String>();
 				vars.put("player", name);
-				if (plugin.pm.exists(name)) {
+				if (plugin.playerManager.exists(name)) {
 					vars.put("rank", String.valueOf(getRank(name, stat)));
 					vars.put("stats", stat.getKey());
 					sender.sendMessage(Translator.getString("RANK_PLAYER", vars));
@@ -139,7 +139,7 @@ public class Stats {
 			public void run() {
 				Map<String, String> vars = new HashMap<String, String>();
 				vars.put("player", name);
-				PlayerStats stats = plugin.pm.getPlayerStats(name);
+				PlayerStats stats = plugin.playerManager.getPlayerStats(name);
 				if (stats != null) {
 					vars.put("money", String.valueOf(stats.getStat(PlayerStat.MONEY)));
 					sender.sendMessage(Translator.getString("CASH_PLAYER", vars));
@@ -172,7 +172,7 @@ public class Stats {
 			public void run() {
 				Map<String, String> vars = new HashMap<String, String>();
 				vars.put("player", name);
-				PlayerStats stats = plugin.pm.getPlayerStats(name);
+				PlayerStats stats = plugin.playerManager.getPlayerStats(name);
 				if (stats != null) {
 					//GET STATS
 					LinkedHashMap<PlayerStat, SimpleEntry<String, Integer>> topStats = plugin.sql.sqlPlayers.getTopStats();

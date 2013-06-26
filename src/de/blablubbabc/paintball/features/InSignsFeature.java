@@ -39,7 +39,7 @@ public class InSignsFeature {
 					if(!plugin.sql.isConnected()) {
 						return Translator.getString("NOT_CONNECTED");
 					} else {
-						PlayerStats stats = plugin.pm.getPlayerStats(playerName);
+						PlayerStats stats = plugin.playerManager.getPlayerStats(playerName);
 						if(stats != null) {
 							Integer statValue = stats.getStat(stat);
 							if(stat == PlayerStat.ACCURACY || stat == PlayerStat.KD) {
@@ -62,8 +62,8 @@ public class InSignsFeature {
 					String playerName = player.getName();
 					if (!plugin.sql.isConnected()) {
 						return Translator.getString("NOT_CONNECTED");
-					} else if (plugin.pm.exists(playerName)) {
-						return String.valueOf(plugin.stats.getRank(playerName, stat));
+					} else if (plugin.playerManager.exists(playerName)) {
+						return String.valueOf(plugin.statsManager.getRank(playerName, stat));
 					} else {
 						return Translator.getString("NOT_FOUND");
 					}
@@ -80,8 +80,8 @@ public class InSignsFeature {
 				String playerName = player.getName();
 				if (!plugin.sql.isConnected())
 					return Translator.getString("NOT_CONNECTED");
-				else if (plugin.pm.exists(playerName)) {
-					return String.valueOf(plugin.stats.getRank(playerName, PlayerStat.POINTS));
+				else if (plugin.playerManager.exists(playerName)) {
+					return String.valueOf(plugin.statsManager.getRank(playerName, PlayerStat.POINTS));
 				} else {
 					return Translator.getString("NOT_FOUND");
 				}
