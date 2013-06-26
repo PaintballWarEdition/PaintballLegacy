@@ -338,7 +338,7 @@ public class EventListener implements Listener {
 	public void onPlayerShoot(ProjectileLaunchEvent event) {
 		if (event.getEntity().getShooter() instanceof Player) {
 			Player player = (Player) event.getEntity().getShooter();
-			if (Lobby.LOBBY.isMember(player)) {
+			if (Lobby.LOBBY.isMember(player) && Lobby.isPlaying(player)) {
 				if (event.getEntity().getType() != EntityType.SPLASH_POTION) event.setCancelled(true);
 			}
 		}
