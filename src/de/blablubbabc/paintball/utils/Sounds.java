@@ -5,6 +5,10 @@ import org.bukkit.entity.Player;
 
 public class Sounds {
 	
+	public static void init() {
+		
+	}
+	
 	public static void playProtected(Player shooter, Player target) {
 		shooter.playSound(shooter.getLocation(), Sound.ANVIL_LAND, 70F, 2F);
 		target.playSound(shooter.getLocation(), Sound.ANVIL_LAND, 60F, 0F);

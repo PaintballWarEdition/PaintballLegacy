@@ -17,24 +17,54 @@ import org.bukkit.util.Vector;
 
 public class Utils {
 	public static Random random = new Random();
-	private static HashSet<Byte> transparentBlocks = null;
+	private static HashSet<Byte> transparentBlocks = new HashSet<Byte>();
+	
+	public static void init() {
+		transparentBlocks.add((byte) Material.AIR.getId());
+		transparentBlocks.add((byte) Material.WATER.getId());
+		transparentBlocks.add((byte) Material.STATIONARY_WATER.getId());
+		transparentBlocks.add((byte) Material.LAVA.getId());
+		transparentBlocks.add((byte) Material.STATIONARY_LAVA.getId());
+		transparentBlocks.add((byte) Material.FIRE.getId());
+		transparentBlocks.add((byte) Material.PORTAL.getId());
+		transparentBlocks.add((byte) Material.ENDER_PORTAL.getId());
+		transparentBlocks.add((byte) Material.PAINTING.getId());
+		
+		transparentBlocks.add((byte) Material.FENCE.getId());
+		transparentBlocks.add((byte) Material.NETHER_FENCE.getId());
+		
+		// alle Richtungen
+		upVectors.add(new Vector(1, 0, 0));
+		upVectors.add(new Vector(0, 1, 0));
+		upVectors.add(new Vector(0, 0, 1));
+		upVectors.add(new Vector(1, 1, 0));
+		upVectors.add(new Vector(1, 0, 1));
+		upVectors.add(new Vector(0, 1, 1));
+		upVectors.add(new Vector(0, 0, 0));
+		upVectors.add(new Vector(1, 1, 1));
+		upVectors.add(new Vector(-1, 0, 0));
+		upVectors.add(new Vector(0, 0, -1));
+		upVectors.add(new Vector(-1, 0, -1));
+		upVectors.add(new Vector(1, 0, -1));
+		upVectors.add(new Vector(0, 1, -1));
+		upVectors.add(new Vector(-1, 1, 0));
+		upVectors.add(new Vector(-1, 0, 1));
+		upVectors.add(new Vector(1, 1, -1));
+		upVectors.add(new Vector(-1, 1, 1));
+		upVectors.add(new Vector(-1, 1, -1));
+
+		downVectors.add(new Vector(-1, -1, 1));
+		downVectors.add(new Vector(-1, -1, -1));
+		downVectors.add(new Vector(1, -1, -1));
+		downVectors.add(new Vector(1, -1, 1));
+		downVectors.add(new Vector(0, -1, 1));
+		downVectors.add(new Vector(0, -1, -1));
+		downVectors.add(new Vector(1, -1, 0));
+		downVectors.add(new Vector(-1, -1, 0));
+		downVectors.add(new Vector(0, -1, 0));
+	}
 	
 	public static HashSet<Byte> getTransparentBlocks() {
-		if (transparentBlocks == null) {
-			transparentBlocks = new HashSet<Byte>();
-			transparentBlocks.add((byte) Material.AIR.getId());
-			transparentBlocks.add((byte) Material.WATER.getId());
-			transparentBlocks.add((byte) Material.STATIONARY_WATER.getId());
-			transparentBlocks.add((byte) Material.LAVA.getId());
-			transparentBlocks.add((byte) Material.STATIONARY_LAVA.getId());
-			transparentBlocks.add((byte) Material.FIRE.getId());
-			transparentBlocks.add((byte) Material.PORTAL.getId());
-			transparentBlocks.add((byte) Material.ENDER_PORTAL.getId());
-			transparentBlocks.add((byte) Material.PAINTING.getId());
-			
-			transparentBlocks.add((byte) Material.FENCE.getId());
-			transparentBlocks.add((byte) Material.NETHER_FENCE.getId());
-		}
 		return transparentBlocks;
 	}
 	
@@ -104,38 +134,6 @@ public class Utils {
 
 	private static ArrayList<Vector> upVectors = new ArrayList<Vector>();
 	private static ArrayList<Vector> downVectors = new ArrayList<Vector>();
-
-	static {
-		// alle Richtungen
-		upVectors.add(new Vector(1, 0, 0));
-		upVectors.add(new Vector(0, 1, 0));
-		upVectors.add(new Vector(0, 0, 1));
-		upVectors.add(new Vector(1, 1, 0));
-		upVectors.add(new Vector(1, 0, 1));
-		upVectors.add(new Vector(0, 1, 1));
-		upVectors.add(new Vector(0, 0, 0));
-		upVectors.add(new Vector(1, 1, 1));
-		upVectors.add(new Vector(-1, 0, 0));
-		upVectors.add(new Vector(0, 0, -1));
-		upVectors.add(new Vector(-1, 0, -1));
-		upVectors.add(new Vector(1, 0, -1));
-		upVectors.add(new Vector(0, 1, -1));
-		upVectors.add(new Vector(-1, 1, 0));
-		upVectors.add(new Vector(-1, 0, 1));
-		upVectors.add(new Vector(1, 1, -1));
-		upVectors.add(new Vector(-1, 1, 1));
-		upVectors.add(new Vector(-1, 1, -1));
-		
-		downVectors.add(new Vector(-1, -1, 1));
-		downVectors.add(new Vector(-1, -1, -1));
-		downVectors.add(new Vector(1, -1, -1));
-		downVectors.add(new Vector(1, -1, 1));
-		downVectors.add(new Vector(0, -1, 1));
-		downVectors.add(new Vector(0, -1, -1));
-		downVectors.add(new Vector(1, -1, 0));
-		downVectors.add(new Vector(-1, -1, 0));
-		downVectors.add(new Vector(0, -1, 0));
-	}
 
 	public static ArrayList<Vector> getUpVectors() {
 		return upVectors;

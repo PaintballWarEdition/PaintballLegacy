@@ -1,6 +1,7 @@
 package de.blablubbabc.paintball;
 
 import java.util.HashMap;
+import java.util.Map;
 
 import org.bukkit.ChatColor;
 import org.bukkit.GameMode;
@@ -99,21 +100,25 @@ public class CommandManager implements CommandExecutor{
 							player.sendMessage(Translator.getString("ALREADY_IN_LOBBY"));
 							return true;
 						} else {
-							joinLobbyPre(player);
+							joinLobbyPre(player, null);
 							return true;
 						}
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////			
 					} else if (args[0].equalsIgnoreCase("blue")) {
-						return joinTeam(player, Lobby.BLUE);
+						joinTeam(player, Lobby.BLUE);
+						return true;
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 					} else if (args[0].equalsIgnoreCase("red")) {
-						return joinTeam(player, Lobby.RED);
+						joinTeam(player, Lobby.RED);
+						return true;
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 					} else if (args[0].equalsIgnoreCase("random") || args[0].equalsIgnoreCase("join")) {
-						return joinTeam(player, Lobby.RANDOM);
+						joinTeam(player, Lobby.RANDOM);
+						return true;
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 					} else if (args[0].equalsIgnoreCase("spec")) {
-						return joinTeam(player, Lobby.SPECTATE);
+						joinTeam(player, Lobby.SPECTATE);
+						return true;
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 					} else if (args[0].equalsIgnoreCase("leave") || args[0].equalsIgnoreCase("exit") || args[0].equalsIgnoreCase("quit")) {
 						if (args.length == 2 && args[1].equalsIgnoreCase("team")) {
@@ -308,113 +313,115 @@ public class CommandManager implements CommandExecutor{
 		sender.sendMessage(Translator.getString("COMMAND_ADMIN_GIFTS"));
 	}
 
-	public boolean joinTeam(Player player, Lobby team) {
-		boolean rb = false;
-		boolean spec = false;
-		if(team == Lobby.RED || team == Lobby.BLUE) rb = true;
-		else if(team == Lobby.SPECTATE) spec = true;
-
+	public void joinTeam(final Player player, final Lobby team) {
 		if(!Lobby.LOBBY.isMember(player)) {
-			if(!joinLobbyPre(player)) {
-				return true;
-			}
-		}
-		if(Lobby.isPlaying(player) || Lobby.isSpectating(player)) {
-			player.sendMessage(Translator.getString("CANNOT_CHANGE_TEAM_PLAYING"));
-			return true;
-		}
-		//Max Players Check:
-		if(!spec) {
-			if(!Lobby.inTeam(player) || Lobby.SPECTATE.isMember(player)) {
-				int players = Lobby.RED.number() + Lobby.BLUE.number() + Lobby.RANDOM.number();
-				if(players >= plugin.maxPlayers) {
-					player.sendMessage(Translator.getString("CANNOT_JOIN_TEAM_FULL"));
-					return true;
+			joinLobbyPre(player, new Runnable() {
+				
+				@Override
+				public void run() {	
+					if(Lobby.isPlaying(player) || Lobby.isSpectating(player)) {
+						player.sendMessage(Translator.getString("CANNOT_CHANGE_TEAM_PLAYING"));
+						return;
+					}
+					
+					boolean rb = false;
+					boolean spec = false;
+					if (team == Lobby.RED || team == Lobby.BLUE) rb = true;
+					else if (team == Lobby.SPECTATE) spec = true;
+					
+					//Max Players Check:
+					if (!spec) {
+						if (!Lobby.inTeam(player) || Lobby.SPECTATE.isMember(player)) {
+							int players = Lobby.RED.number() + Lobby.BLUE.number() + Lobby.RANDOM.number();
+							if (players >= plugin.maxPlayers) {
+								player.sendMessage(Translator.getString("CANNOT_JOIN_TEAM_FULL"));
+								return;
+							}
+						}
+						if (rb && plugin.onlyRandom) {
+							player.sendMessage(Translator.getString("ONLY_RANDOM"));
+							if (!plugin.autoRandom)
+								return;
+						}
+					}
+					if (Lobby.inTeam(player) || Lobby.SPECTATE.isMember(player)) {
+						Lobby.getTeam(player).removeMember(player);
+						player.sendMessage(Translator.getString("YOU_LEFT_CURRENT_TEAM"));
+					}
+					//only random + auto random
+					if (rb && plugin.onlyRandom && plugin.autoRandom) {
+						Lobby.RANDOM.addMember(player);
+						HashMap<String, String> vars = new HashMap<String, String>();
+						vars.put("color_random", Lobby.RANDOM.color().toString());
+						player.sendMessage(Translator.getString("AUTO_JOIN_RANDOM", vars));
+					} else {
+						team.addMember(player);
+						Map<String, String> vars = new HashMap<String, String>();
+						vars.put("color_team", team.color().toString());
+						vars.put("team", team.getName());
+						if(rb) player.sendMessage(Translator.getString("YOU_JOINED_TEAM", vars));
+						else if (team.equals(Lobby.RANDOM)) player.sendMessage(Translator.getString("YOU_JOINED_RANDOM", vars));
+						else if (spec) player.sendMessage(Translator.getString("YOU_JOINED_SPECTATORS", vars));
+					}
+					if (!spec) {
+						String ready = plugin.mm.ready();
+						if (ready.equalsIgnoreCase(Translator.getString("READY"))) {
+							plugin.mm.countdown(plugin.countdown, plugin.countdownInit);
+						} else {
+							plugin.nf.status(player, ready);
+						}
+					}
+					//players:
+					plugin.nf.players(player);
 				}
-			}
-			if(rb && plugin.onlyRandom) {
-				player.sendMessage(Translator.getString("ONLY_RANDOM"));
-				if (!plugin.autoRandom)
-					return true;
-			}
+			});
 		}
-		if(Lobby.inTeam(player) || Lobby.SPECTATE.isMember(player)) {
-			Lobby.getTeam(player).removeMember(player);
-			player.sendMessage(Translator.getString("YOU_LEFT_CURRENT_TEAM"));
-		}
-		//only random + auto random
-		if(rb && plugin.onlyRandom && plugin.autoRandom) {
-			Lobby.RANDOM.addMember(player);
-			HashMap<String, String> vars = new HashMap<String, String>();
-			vars.put("color_random", Lobby.RANDOM.color().toString());
-			player.sendMessage(Translator.getString("AUTO_JOIN_RANDOM", vars));
-		} else {
-			team.addMember(player);
-			HashMap<String, String> vars = new HashMap<String, String>();
-			vars.put("color_team", team.color().toString());
-			vars.put("team", team.getName());
-			if(rb) player.sendMessage(Translator.getString("YOU_JOINED_TEAM", vars));
-			else if(team.equals(Lobby.RANDOM)) player.sendMessage(Translator.getString("YOU_JOINED_RANDOM", vars));
-			else if(spec) player.sendMessage(Translator.getString("YOU_JOINED_SPECTATORS", vars));
-		}
-		if(!spec) {
-			String ready = plugin.mm.ready();
-			if (ready.equalsIgnoreCase(Translator.getString("READY"))) {
-				plugin.mm.countdown(plugin.countdown, plugin.countdownInit);
-			} else {
-				plugin.nf.status(player, ready);
-			}
-		}
-		//players:
-		plugin.nf.players(player);
-		return true;
+		
 	}
 
-	public boolean joinLobbyPre(Player player) {
+	public void joinLobbyPre(Player player, Runnable runOnSuccess) {
 		//Lobby vorhanden?
 		if(plugin.getLobbyspawnsCount() == 0) {
 			player.sendMessage(Translator.getString("NO_LOBBY_FOUND"));
-			return false;
+			return;
 		}
 		//inventory
 		if(!Utils.isEmptyInventory(player) && plugin.checkInventory ) {
 			player.sendMessage(Translator.getString("NEED_CLEAR_INVENTORY"));
-			return false;
+			return;
 		}
 		//gamemode an?
 		if(!player.getGameMode().equals(GameMode.SURVIVAL) && plugin.checkGamemode ) {
 			player.sendMessage(Translator.getString("NEED_RIGHT_GAMEMODE"));
-			return false;
+			return;
 		}
 		//flymode an? (built-in fly mode)
 		if( (player.getAllowFlight() || player.isFlying()) && plugin.checkFlymode ) {
 			player.sendMessage(Translator.getString("NEED_STOP_FLYING"));
-			return false;
+			return;
 		}
 		//brennt? fällt? taucht?
 		if( (player.getFireTicks() > 0 || player.getFallDistance() > 0 || player.getRemainingAir() < player.getMaximumAir()) && plugin.checkBurning ) {
 			player.sendMessage(Translator.getString("NEED_STOP_FALLING_BURNING_DROWNING"));
-			return false;
+			return;
 		}
 		//wenig leben
 		if(player.getHealth() < player.getMaxHealth()  && plugin.checkHealth) {
 			player.sendMessage(Translator.getString("NEED_FULL_HEALTH"));
-			return false;
+			return;
 		}
 		//hungert
 		if(player.getFoodLevel() < 20 && plugin.checkFood) {
 			player.sendMessage(Translator.getString("NEED_FULL_FOOD"));
-			return false;
+			return;
 		}
 		//hat effecte auf sich
 		if(player.getActivePotionEffects().size() > 0  && plugin.checkEffects) {
 			player.sendMessage(Translator.getString("NEED_NO_EFFECTS"));
-			return false;
+			return;
 		}
 
-		plugin.joinLobbyFresh(player);
-
-		return true;
+		plugin.joinLobbyFresh(player, runOnSuccess);
 	}
 
 }

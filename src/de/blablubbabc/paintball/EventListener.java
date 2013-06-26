@@ -145,9 +145,11 @@ public class EventListener implements Listener {
 			boolean toPb = plugin.worldModeWorlds.contains(event.getPlayer().getWorld().getName());
 			if (!fromPb && toPb) {
 				if (!Lobby.LOBBY.isMember(player)) {
-					if (plugin.autoTeam)
+					if (plugin.autoTeam) {
 						plugin.cm.joinTeam(player, Lobby.RANDOM);
-					else plugin.cm.joinLobbyPre(player);
+					} else {
+						plugin.cm.joinLobbyPre(player, null);
+					}
 				}
 			} else if (fromPb && !toPb) {
 				plugin.leaveLobby(player, true);
@@ -861,7 +863,6 @@ public class EventListener implements Listener {
 								@Override
 								public void run() {
 									
-									// TODO save old block
 									block.setType(Material.FLOWER_POT);
 									block.setData((byte) 0);
 								}
@@ -1023,13 +1024,14 @@ public class EventListener implements Listener {
 				if (plugin.autoLobby && plugin.autoTeam)
 					plugin.cm.joinTeam(player, Lobby.RANDOM);
 				else if (plugin.autoLobby)
-					plugin.cm.joinLobbyPre(player);
+					plugin.cm.joinLobbyPre(player, null);
 			}
 		}, 1L);
 
 		// notify admins on update:
 		if (plugin.needsUpdate && player.hasPermission("paintball.admin")) {
-			player.sendMessage(ChatColor.DARK_PURPLE + "There is a new version of Paintball available! Check out the bukkit dev page: " + ChatColor.WHITE + "http://dev.bukkit.org/bukkit-mods/paintball_pure_war/");
+			player.sendMessage(ChatColor.DARK_PURPLE + "There is a new version of Paintball available! Check out the bukkit dev page: ");
+			player.sendMessage(ChatColor.AQUA + "http://dev.bukkit.org/bukkit-mods/paintball_pure_war/");
 		}
 		
 	}

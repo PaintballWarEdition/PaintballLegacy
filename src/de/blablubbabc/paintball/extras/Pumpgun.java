@@ -17,6 +17,10 @@ public class Pumpgun {
 	
 	public final static ItemStack item = ItemManager.setMeta(new ItemStack(Material.STONE_AXE));
 	
+	public static void init() {
+		
+	}
+	
 	public static void shoot(Player player) {
 		Location loc = player.getEyeLocation();
 		

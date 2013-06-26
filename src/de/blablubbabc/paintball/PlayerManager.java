@@ -22,8 +22,20 @@ public class PlayerManager {
 
 	// PLAYERSTATS
 	
-	public void loadPlayerStats(String playerName) {
-		playerStats.put(playerName, new PlayerStats(playerName));
+	public void loadPlayerStatsAsync(final String playerName, final Runnable runAfterwards) {
+		if (playerStats.get(playerName) == null) {
+			Paintball.instance.getServer().getScheduler().runTaskAsynchronously(Paintball.instance, new Runnable() {
+
+				@Override
+				public void run() {
+					playerStats.put(playerName, new PlayerStats(playerName));
+					if (runAfterwards != null) {
+						// run afterwards-task sync:
+						Paintball.instance.getServer().getScheduler().runTask(Paintball.instance, runAfterwards);
+					}
+				}
+			});
+		}
 	}
 	
 	public PlayerStats getPlayerStats(String playerName) {

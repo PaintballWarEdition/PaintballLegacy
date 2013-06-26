@@ -21,23 +21,38 @@ import org.bukkit.plugin.java.JavaPlugin;
 import de.blablubbabc.BlaDB.BlaSQLite;
 import de.blablubbabc.paintball.extras.Airstrike;
 import de.blablubbabc.paintball.extras.Ball;
+import de.blablubbabc.paintball.extras.Flashbang;
 import de.blablubbabc.paintball.extras.Gift;
 import de.blablubbabc.paintball.extras.Gifts;
+import de.blablubbabc.paintball.extras.Grenade;
+import de.blablubbabc.paintball.extras.GrenadeM2;
+import de.blablubbabc.paintball.extras.ItemManager;
+import de.blablubbabc.paintball.extras.Mine;
 import de.blablubbabc.paintball.extras.NoGravity;
 import de.blablubbabc.paintball.extras.Orbitalstrike;
+import de.blablubbabc.paintball.extras.Pumpgun;
 import de.blablubbabc.paintball.extras.Rocket;
 import de.blablubbabc.paintball.extras.Shotgun;
+import de.blablubbabc.paintball.extras.Sniper;
 import de.blablubbabc.paintball.extras.Turret;
 import de.blablubbabc.paintball.features.InSignsFeature;
 import de.blablubbabc.paintball.features.TagAPIListener;
 import de.blablubbabc.paintball.features.VoteListener;
+import de.blablubbabc.paintball.melodies.Instrus;
 import de.blablubbabc.paintball.melodies.Musiker;
+import de.blablubbabc.paintball.statistics.arena.ArenaSetting;
+import de.blablubbabc.paintball.statistics.arena.ArenaStat;
+import de.blablubbabc.paintball.statistics.general.GeneralStat;
+import de.blablubbabc.paintball.statistics.player.PlayerStat;
+import de.blablubbabc.paintball.statistics.player.match.tdm.TDMMatchStat;
 import de.blablubbabc.paintball.utils.Log;
 import de.blablubbabc.paintball.utils.Metrics;
 import de.blablubbabc.paintball.utils.Poster;
 import de.blablubbabc.paintball.utils.Serverlister;
+import de.blablubbabc.paintball.utils.Sounds;
 import de.blablubbabc.paintball.utils.TeleportFix;
 import de.blablubbabc.paintball.utils.Translator;
+import de.blablubbabc.paintball.utils.Utils;
 import de.blablubbabc.paintball.utils.Metrics.Graph;
 
 /**
@@ -794,16 +809,47 @@ public class Paintball extends JavaPlugin{
 		//autoLobby
 		if(autoLobby) {
 			for(Player player : getServer().getOnlinePlayers()) {
-				if(autoTeam) cm.joinTeam(player, Lobby.RANDOM);
-				else cm.joinLobbyPre(player);
+				if(autoTeam) {
+					cm.joinTeam(player, Lobby.RANDOM);
+				} else {
+					cm.joinLobbyPre(player, null);
+				}
 			}
 		}
 		
-		//extra inits
-		Gifts.init();
-		Shotgun.init();
+		// init extras and other static classes:
 		Airstrike.init();
+		Ball.init();
+		Flashbang.init();
+		Gifts.init();
+		Grenade.init();
+		GrenadeM2.init();
+		ItemManager.init();
+		Mine.init();
+		NoGravity.init();
 		Orbitalstrike.init();
+		Pumpgun.init();
+		Rocket.init();
+		Shotgun.init();
+		Sniper.init();
+		Turret.init();
+		
+		Utils.init();
+		// Log is already init above
+		// Translator is already init above
+		Sounds.init();
+		Origin.values();
+		RankManager.init();
+		
+		// init enums:
+		Instrus.values();
+		Lobby.values();
+		ArenaStat.values();
+		ArenaSetting.values();
+		GeneralStat.values();
+		TDMMatchStat.values();
+		PlayerStat.values();
+		
 		
 		//start no gravity task
 		if (sniperNoGravity) NoGravity.run();
@@ -1027,10 +1073,29 @@ public class Paintball extends JavaPlugin{
 		enterLobby(player);
 	}
 	
-	public void joinLobbyFresh(Player player) {
-		Lobby.LOBBY.addMember(player);
-		nf.join(player.getName());
-		pm.teleportStoreClearPlayer(player, getNextLobbySpawn());
+	private List<String> currentlyLoading = new ArrayList<String>();
+	
+	public void joinLobbyFresh(final Player player, final Runnable runAfterwards) {
+		final String playerName = player.getName();
+		
+		// is player already in the process of joining ?
+		if (!currentlyLoading.contains(playerName)) {
+			// load player stats and continue after loading:
+			currentlyLoading.add(playerName);
+			pm.loadPlayerStatsAsync(playerName, new Runnable() {
+				
+				@Override
+				public void run() {
+					// join lobby:
+					Lobby.LOBBY.addMember(player);
+					nf.join(playerName);
+					pm.teleportStoreClearPlayer(player, getNextLobbySpawn());
+					
+					// continue afterwards:
+					if (runAfterwards != null) runAfterwards.run();
+				}
+			});
+		}
 	}
 	
 	private synchronized void enterLobby(Player player) {
@@ -1042,8 +1107,9 @@ public class Paintball extends JavaPlugin{
 	
 	public synchronized boolean leaveLobby(Player player, boolean messages) {
 		if (Lobby.LOBBY.isMember(player)) {
-			if (Lobby.isPlaying(player) || Lobby.isSpectating(player))
+			if (Lobby.isPlaying(player) || Lobby.isSpectating(player)) {
 				mm.getMatch(player).left(player);
+			}
 			//lobby remove:
 			Lobby.remove(player);
 			// restore and teleport back:

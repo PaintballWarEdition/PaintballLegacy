@@ -24,6 +24,10 @@ public class Rocket {
 	private static int rocketCounter = 0;
 	private static HashMap<String, ArrayList<Rocket>> rockets = new HashMap<String, ArrayList<Rocket>>();
 
+	public static void init() {
+		
+	}
+	
 	private static void registerRocket(Rocket rocket, String shooterName) {
 		ArrayList<Rocket> prockets = rockets.get(shooterName);
 		if (prockets == null) {

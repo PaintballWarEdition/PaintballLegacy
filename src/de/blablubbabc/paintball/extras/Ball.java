@@ -19,6 +19,10 @@ public class Ball {
 	
 	public static Map<String, ArrayList<Ball>> balls = new HashMap<String, ArrayList<Ball>>();
 	
+	public static void init() {
+		
+	}
+	
 	public static Ball registerBall(Snowball entity, String shooterName, Origin source) {
 		ArrayList<Ball> pballs = balls.get(shooterName);
 		if (pballs == null) {

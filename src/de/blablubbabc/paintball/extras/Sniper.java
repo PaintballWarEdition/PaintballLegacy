@@ -21,6 +21,10 @@ public class Sniper {
 	
 	private static ArrayList<Player> zooming = new ArrayList<Player>();
 	
+	public static void init() {
+		
+	}
+	
 	private static void setZoom(Player player) {
 		player.setWalkSpeed(-0.15F);
 		if(Paintball.instance.sniperRemoveSpeed) player.removePotionEffect(PotionEffectType.SPEED);

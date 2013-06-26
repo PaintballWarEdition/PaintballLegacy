@@ -23,6 +23,10 @@ public class Grenade {
 	
 	private static Map<String, ArrayList<Grenade>> nades = new HashMap<String, ArrayList<Grenade>>();
 	
+	public static void init() {
+		
+	}
+	
 	public static void registerGrenade(Egg egg, String shooterName, Origin source) {
 		ArrayList<Grenade> pnades = nades.get(shooterName);
 		if (pnades == null) {

@@ -23,6 +23,10 @@ public class Flashbang {
 	public final static ItemStack item = ItemManager.setMeta(new ItemStack(Material.GHAST_TEAR));
 	private static int next = 0;
 	
+	public static void init() {
+		
+	}
+	
 	public static int getNext() {
 		return ++next;
 	}

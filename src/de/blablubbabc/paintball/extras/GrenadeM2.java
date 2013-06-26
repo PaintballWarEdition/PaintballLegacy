@@ -21,10 +21,13 @@ public class GrenadeM2 {
 	public final static ItemStack item = ItemManager.setMeta(new ItemStack(Material.SLIME_BALL));
 	private static int next = 0;
 	
+	public static void init() {
+		
+	}
+	
 	public static int getNext() {
 		return ++next;
 	}
-	
 	
 	private static Map<String, ArrayList<GrenadeM2>> nades = new HashMap<String, ArrayList<GrenadeM2>>();
 	

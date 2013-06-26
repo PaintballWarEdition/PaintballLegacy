@@ -29,6 +29,10 @@ public class Mine {
 	private static int mineCounter = 0;
 	private static Map<String, ArrayList<Mine>> mines = new HashMap<String, ArrayList<Mine>>();
 	
+	public static void init() {
+		
+	}
+	
 	private static void addMine(String shooterName, Mine mine) {
 		ArrayList<Mine> pmines = mines.get(shooterName);
 		if (pmines == null) {

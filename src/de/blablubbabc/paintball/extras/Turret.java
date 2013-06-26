@@ -30,6 +30,10 @@ public class Turret {
 	private static int turretCounter = 0;
 	private static Map<String, ArrayList<Turret>> turrets = new HashMap<String, ArrayList<Turret>>();
 	
+	public static void init() {
+		
+	}
+	
 	private static void addTurret(String shooterName, Turret turret) {
 		ArrayList<Turret> pturrets = turrets.get(shooterName);
 		if (pturrets == null) {

@@ -9,6 +9,10 @@ import de.blablubbabc.paintball.utils.Translator;
 
 public class ItemManager {
 	
+	public static void init() {
+		
+	}
+	
 	public static ItemStack setMeta(ItemStack item) {
 		ItemMeta meta = item.getItemMeta();
 		Material type = item.getType();

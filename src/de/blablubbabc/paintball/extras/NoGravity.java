@@ -17,6 +17,10 @@ public class NoGravity {
 	private static Map<Projectile, Vector> entitiesVec = new HashMap<Projectile, Vector>();
 	private static Map<Projectile, Integer> entitiesDur = new HashMap<Projectile, Integer>();
 
+	public static void init() {
+		
+	}
+	
 	public static void addEntity(Projectile s, Vector v, int duration) {
 		entitiesVec.put(s, v);
 		entitiesDur.put(s, duration);
