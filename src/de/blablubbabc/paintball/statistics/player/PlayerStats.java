@@ -85,7 +85,6 @@ public class PlayerStats {
 		stats = Paintball.instance.sql.sqlPlayers.getPlayerStats(playerName);
 		//stats = Paintball.instance.pm.getStats(playerName);
 		calculateQuotes();
-		dirty = false;
 	}
 	
 }

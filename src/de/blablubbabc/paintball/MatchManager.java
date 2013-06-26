@@ -131,6 +131,7 @@ public class MatchManager{
 				stats.addStat(PlayerStat.POINTS, plugin.pointsPerRound);
 				stats.addStat(PlayerStat.MONEY, plugin.cashPerRound);
 
+				stats.addStat(PlayerStat.ROUNDS, 1);
 				if (draw) {
 					stats.addStat(PlayerStat.DRAWS, 1);
 				} else {

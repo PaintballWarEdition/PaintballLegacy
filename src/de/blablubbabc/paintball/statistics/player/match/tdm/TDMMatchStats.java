@@ -49,8 +49,9 @@ public class TDMMatchStats {
 	}
 	
 	public void calculateQuotes() {
-		setStat(TDMMatchStat.ACCURACY, Utils.calculateQuote(getStat(TDMMatchStat.HITS), getStat(TDMMatchStat.SHOTS)), false);
-		setStat(TDMMatchStat.KD, Utils.calculateQuote(getStat(TDMMatchStat.KILLS), getStat(TDMMatchStat.DEATHS)), false);
+		stats.put(TDMMatchStat.ACCURACY, Utils.calculateQuote(getStat(TDMMatchStat.HITS), getStat(TDMMatchStat.SHOTS)));
+		stats.put(TDMMatchStat.KD, Utils.calculateQuote(getStat(TDMMatchStat.KILLS), getStat(TDMMatchStat.DEATHS)));
+		
 		if (playerStats != null) playerStats.calculateQuotes();
 	}
 }

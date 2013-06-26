@@ -936,7 +936,6 @@ public class Paintball extends JavaPlugin{
 		Shotgun.init();
 		Sniper.init();
 		Turret.init();
-
 		Utils.init();
 		// Log is already init above
 		// Translator will be init below
