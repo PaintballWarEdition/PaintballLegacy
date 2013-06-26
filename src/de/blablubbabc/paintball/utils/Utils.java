@@ -5,6 +5,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Random;
 
+import org.bukkit.ChatColor;
 import org.bukkit.Color;
 import org.bukkit.Material;
 import org.bukkit.block.BlockFace;
@@ -18,7 +19,7 @@ import org.bukkit.util.Vector;
 public class Utils {
 	public static Random random = new Random();
 	private static HashSet<Byte> transparentBlocks = new HashSet<Byte>();
-	
+
 	public static void init() {
 		transparentBlocks.add((byte) Material.AIR.getId());
 		transparentBlocks.add((byte) Material.WATER.getId());
@@ -29,10 +30,10 @@ public class Utils {
 		transparentBlocks.add((byte) Material.PORTAL.getId());
 		transparentBlocks.add((byte) Material.ENDER_PORTAL.getId());
 		transparentBlocks.add((byte) Material.PAINTING.getId());
-		
+
 		transparentBlocks.add((byte) Material.FENCE.getId());
 		transparentBlocks.add((byte) Material.NETHER_FENCE.getId());
-		
+
 		// alle Richtungen
 		upVectors.add(new Vector(1, 0, 0));
 		upVectors.add(new Vector(0, 1, 0));
@@ -63,13 +64,27 @@ public class Utils {
 		downVectors.add(new Vector(-1, -1, 0));
 		downVectors.add(new Vector(0, -1, 0));
 	}
-	
+
 	public static HashSet<Byte> getTransparentBlocks() {
 		return transparentBlocks;
 	}
-	
-	///////////////////////////////////////////////////////////////
-	
+
+	public static String translateColorCodesToAlternative(char altColorChar, String textToTranslate) {
+		char[] b = textToTranslate.toCharArray();
+		for (int i = 0; i < b.length - 1; i++) {
+			if (b[i] == ChatColor.COLOR_CHAR) {
+				ChatColor color = ChatColor.getByChar(b[i + 1]);
+				if (color != null) {
+					b[i] = altColorChar;
+					b[i + 1] = color.getChar();
+				}
+			}
+		}
+		return new String(b);
+	}
+
+	// /////////////////////////////////////////////////////////////
+
 	public static boolean isEmptyInventory(Player p) {
 		for (ItemStack i : p.getInventory()) {
 			if (i == null)
@@ -92,9 +107,10 @@ public class Utils {
 		p.getInventory().setArmorContents(null);
 	}
 
-	/*public static void removeInventoryItems(Inventory inv, ItemStack item) {
-		removeInventoryItems(inv, item, item.getAmount());
-	}*/
+	/*
+	 * public static void removeInventoryItems(Inventory inv, ItemStack item) {
+	 * removeInventoryItems(inv, item, item.getAmount()); }
+	 */
 
 	public static void removeInventoryItems(Inventory inv, ItemStack item, int amount) {
 		for (ItemStack is : inv.getContents()) {
@@ -112,7 +128,7 @@ public class Utils {
 			}
 		}
 	}
-	
+
 	public static ItemStack setLeatherArmorColor(ItemStack item, Color color) {
 		try {
 			LeatherArmorMeta meta = (LeatherArmorMeta) item.getItemMeta();
@@ -123,11 +139,13 @@ public class Utils {
 		}
 		return item;
 	}
-	
+
 	public static ItemStack setItemMeta(ItemStack item, String name, List<String> description) {
 		ItemMeta meta = item.getItemMeta();
-		if (name != null) meta.setDisplayName(name);
-		if (description != null) meta.setLore(description);
+		if (name != null)
+			meta.setDisplayName(name);
+		if (description != null)
+			meta.setLore(description);
 		item.setItemMeta(meta);
 		return item;
 	}
@@ -138,7 +156,7 @@ public class Utils {
 	public static ArrayList<Vector> getUpVectors() {
 		return upVectors;
 	}
-	
+
 	public static ArrayList<Vector> getDownVectors() {
 		return downVectors;
 	}
@@ -149,12 +167,13 @@ public class Utils {
 		vectors.addAll(downVectors);
 		return vectors;
 	}
-	//////////////////////////////
-	
+
+	// ////////////////////////////
+
 	public static int calculateQuote(int top, int bottom) {
-		return (int)(top*100) / (bottom > 0 ? bottom:1);
+		return (int) (top * 100) / (bottom > 0 ? bottom : 1);
 	}
-	
+
 	// ///////////////////////////
 	public static final BlockFace[] axis = { BlockFace.NORTH, BlockFace.EAST, BlockFace.SOUTH, BlockFace.WEST };
 	public static final BlockFace[] radial = { BlockFace.NORTH, BlockFace.NORTH_EAST, BlockFace.EAST, BlockFace.SOUTH_EAST, BlockFace.SOUTH,

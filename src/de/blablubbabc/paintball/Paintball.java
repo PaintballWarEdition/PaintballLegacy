@@ -80,6 +80,7 @@ public class Paintball extends JavaPlugin{
 	public Translator translator;
 	public Musiker musik;
 	public Stats statsManager;
+	public RankManager rankManager;
 	public Serverlister serverList;
 	public InSignsFeature insignsFeature;
 	public boolean active;
@@ -795,7 +796,7 @@ public class Paintball extends JavaPlugin{
 		
 
 		//SQLite with version: 110
-		sql = new BlaSQLite(new File(this.getDataFolder().toString() + "/" + "pbdata_110" + ".db"));
+		sql = new BlaSQLite(new File(this.getDataFolder().getPath() + File.separator + "pbdata_110" + ".db"));
 		//DB
 		loadDB();
 		//TRANSLATOR
@@ -813,7 +814,7 @@ public class Paintball extends JavaPlugin{
 			return;
 		}
 		// RANKMANAGER
-		
+		rankManager = new RankManager(new File(this.getDataFolder().getPath() + File.separator + "ranks.yml"));
 		// SERVERLISTER CONFIG:
 		serverList = new Serverlister();
 		//PLAYERMANAGER
@@ -1006,7 +1007,7 @@ public class Paintball extends JavaPlugin{
 	}
 
 	public void reload(CommandSender sender) {
-		reloadConfig();
+		//reloadConfig();
 		getServer().getPluginManager().disablePlugin(this);
 		getServer().getPluginManager().enablePlugin(this);
 		if (sender != null) sender.sendMessage(Translator.getString("REALOAD_FINISHED"));
@@ -1090,6 +1091,7 @@ public class Paintball extends JavaPlugin{
 					Lobby.LOBBY.addMember(player);
 					feeder.join(playerName);
 					playerManager.teleportStoreClearPlayer(player, getNextLobbySpawn());
+					currentlyLoading.remove(playerName);
 					
 					// continue afterwards:
 					if (runAfterwards != null) runAfterwards.run();

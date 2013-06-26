@@ -1,23 +1,22 @@
 package de.blablubbabc.paintball;
 
-import org.bukkit.ChatColor;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.PlayerInventory;
 
-public class Rank {
+public class Rank implements Comparable<Rank> {
+	private final String name;
 	private final int neededPoints;
 	private final String prefix;
-	private final ChatColor messageColor;
 	private final ItemStack helmet;
 	private final ItemStack chestplate;
 	private final ItemStack leggings;
 	private final ItemStack boots;
 	
-	public Rank(int neededPoints, String prefix, ChatColor messageColor, ItemStack helmet, ItemStack chestplate, ItemStack leggings, ItemStack boots) {
+	public Rank(String name, int neededPoints, String prefix, ItemStack helmet, ItemStack chestplate, ItemStack leggings, ItemStack boots) {
+		this.name = name;
 		this.neededPoints = neededPoints;
 		this.prefix = prefix;
-		this.messageColor = messageColor;
 		this.helmet = helmet;
 		this.chestplate = chestplate;
 		this.leggings = leggings;
@@ -28,24 +27,49 @@ public class Rank {
 	public void assignArmorToPlayer(Player player) {
 		if (player != null) {
 			PlayerInventory inv = player.getInventory();
-			if (helmet != null) inv.setHelmet(helmet);
-			if (chestplate != null) inv.setHelmet(chestplate);
-			if (leggings != null) inv.setHelmet(leggings);
-			if (boots != null) inv.setHelmet(boots);
+			if (helmet != null) inv.setHelmet(helmet.clone());
+			if (chestplate != null) inv.setHelmet(chestplate.clone());
+			if (leggings != null) inv.setHelmet(leggings.clone());
+			if (boots != null) inv.setHelmet(boots.clone());
 			player.updateInventory();
 		}
+	}
+	
+	public ItemStack getHelmet() {
+		return helmet;
+	}
+	
+	public ItemStack getChestplate() {
+		return chestplate;
+	}
+	
+	public ItemStack getLeggings() {
+		return leggings;
+	}
+	
+	public ItemStack getBoots() {
+		return boots;
+	}
+	
+	public String getName() {
+		return name;
 	}
 
 	public String getPrefix() {
 		return prefix;
 	}
 
-	public ChatColor getMessageColor() {
-		return messageColor;
-	}
-
 	public int getNeededPoints() {
 		return neededPoints;
+	}
+
+	@Override
+	public int compareTo(Rank other) {
+		if (other == null) {
+			throw new NullPointerException();
+		}
+		return this.getNeededPoints() - other.getNeededPoints();
+		
 	}
 	
 }
