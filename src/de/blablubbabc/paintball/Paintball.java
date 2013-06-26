@@ -759,41 +759,6 @@ public class Paintball extends JavaPlugin{
 		orbitalstrikeMatchLimit = getConfig().getInt("Paintball.Extras.Orbitalstrike.Match Limit", 3);
 		orbitalstrikePlayerLimit = getConfig().getInt("Paintball.Extras.Orbitalstrike.Player Limit", 1);
 		
-		
-		
-		// INTI STATICS
-		
-		Airstrike.init();
-		Ball.init();
-		Flashbang.init();
-		Gifts.init();
-		Grenade.init();
-		GrenadeM2.init();
-		ItemManager.init();
-		Mine.init();
-		NoGravity.init();
-		Orbitalstrike.init();
-		Pumpgun.init();
-		Rocket.init();
-		Shotgun.init();
-		Sniper.init();
-		Turret.init();
-
-		Utils.init();
-		// Log is already init above
-		// Translator will be init below
-		Sounds.init();
-		Origin.values();
-
-		// init enums:
-		Instrus.values();
-		Lobby.values();
-		ArenaStat.values();
-		ArenaSetting.values();
-		GeneralStat.values();
-		TDMMatchStat.values();
-		PlayerStat.values();
-		
 
 		//SQLite with version: 110
 		sql = new BlaSQLite(new File(this.getDataFolder().getPath() + File.separator + "pbdata_110" + ".db"));
@@ -954,7 +919,41 @@ public class Paintball extends JavaPlugin{
 		//calculating turret angles:
 		Turret.calculateTable(turretAngleMin, turretAngleMax, turretTicks, turretXSize, turretYSize, this);
 
-		Log.info("By blablubbabc enabled.");
+		// INIT STATICS
+		Airstrike.init();
+		Ball.init();
+		Flashbang.init();
+		Gifts.init();
+		Grenade.init();
+		GrenadeM2.init();
+		ItemManager.init();
+		Mine.init();
+		NoGravity.init();
+		Orbitalstrike.init();
+		Pumpgun.init();
+		Rocket.init();
+		Shotgun.init();
+		Sniper.init();
+		Turret.init();
+
+		Utils.init();
+		// Log is already init above
+		// Translator will be init below
+		Sounds.init();
+		Origin.values();
+
+		// init enums:
+		Instrus.values();
+		Lobby.values();
+		ArenaStat.values();
+		ArenaSetting.values();
+		GeneralStat.values();
+		TDMMatchStat.values();
+		PlayerStat.values();
+		
+		///// END INIT /////
+		
+		
 		
 		final Paintball plugin = this;
 		getServer().getScheduler().scheduleSyncDelayedTask(this, new Runnable() {
@@ -985,6 +984,8 @@ public class Paintball extends JavaPlugin{
 				}
 			}, 100L, 60L);
 		}
+		
+		Log.info("By blablubbabc enabled.");
 
 	}
 

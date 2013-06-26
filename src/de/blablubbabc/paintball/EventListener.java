@@ -85,7 +85,6 @@ import de.blablubbabc.paintball.utils.Utils;
 
 public class EventListener implements Listener {
 	private Paintball plugin;
-	private MatchManager mm;
 	
 	private long lastSignUpdate = 0;
 	// used to override creature-spawn-cancelling of other plugins for turrets
@@ -95,7 +94,6 @@ public class EventListener implements Listener {
 
 	public EventListener(Paintball pl) {
 		plugin = pl;
-		mm = plugin.matchManager;
 		// chatMessages = new HashMap<Player, String>();
 	}
 
@@ -252,12 +250,12 @@ public class EventListener implements Listener {
 			Projectile shot = (Projectile) event.getDamager();
 			if (shot.getShooter() instanceof Player) {
 				Player shooter = (Player) shot.getShooter();
-				Match matchA = mm.getMatch(shooter);
+				Match matchA = plugin.matchManager.getMatch(shooter);
 				if (matchA != null) {
 					if (event.getEntity() instanceof Player) {
 						Player target = (Player) event.getEntity();
 						if (shooter != target) {
-							Match matchB = mm.getMatch(target);
+							Match matchB = plugin.matchManager.getMatch(target);
 							if (matchB != null ) {
 								if (matchA == matchB) {
 									if (!matchA.isSpec(shooter) && !matchA.isSpec(target) && matchA.isSurvivor(shooter) && matchA.isSurvivor(target)
@@ -283,12 +281,12 @@ public class EventListener implements Listener {
 		} else if (plugin.allowMelee && event.getCause() == DamageCause.ENTITY_ATTACK) {
 			if (event.getDamager() instanceof Player) {
 				Player attacker = (Player) event.getDamager();
-				Match matchA = mm.getMatch(attacker);
+				Match matchA = plugin.matchManager.getMatch(attacker);
 				if (matchA != null) {
 					if (event.getEntity() instanceof Player) {
 						Player target = (Player) event.getEntity();
 						if (attacker != target) {
-							Match matchT = mm.getMatch(target);
+							Match matchT = plugin.matchManager.getMatch(target);
 							if (matchT != null) {
 								if (matchA == matchT) {
 									if (matchA.enemys(attacker, target) && matchA.isSurvivor(attacker) && matchA.isSurvivor(target) && matchA.started) {
@@ -338,7 +336,7 @@ public class EventListener implements Listener {
 	public void onPlayerShoot(ProjectileLaunchEvent event) {
 		if (event.getEntity().getShooter() instanceof Player) {
 			Player player = (Player) event.getEntity().getShooter();
-			if (Lobby.LOBBY.isMember(player) && Lobby.isPlaying(player)) {
+			if (Lobby.isPlaying(player)) {
 				if (event.getEntity().getType() != EntityType.SPLASH_POTION) event.setCancelled(true);
 			}
 		}
@@ -392,7 +390,7 @@ public class EventListener implements Listener {
 			return;
 		
 		if (Lobby.LOBBY.isMember(player)) {
-			Match match = mm.getMatch(player);
+			Match match = plugin.matchManager.getMatch(player);
 			if (match != null && Lobby.isPlaying(player) && match.isSurvivor(player)) {
 				if (item.getType() != Material.POTION) event.setUseItemInHand(Result.DENY);
 				if (!match.started || match.isJustRespawned(player.getName())) return;
@@ -716,7 +714,7 @@ public class EventListener implements Listener {
 				Ball ball = Ball.getBall(shot.getEntityId(), shooterName, true);
 				// is ball
 				if (ball != null) {
-					Match match = mm.getMatch(shooter);
+					Match match = plugin.matchManager.getMatch(shooter);
 					if (match != null) {
 						Location loc = shot.getLocation();
 						// mine
@@ -750,7 +748,7 @@ public class EventListener implements Listener {
 			} else if (plugin.grenade && shot instanceof Egg) {
 				Grenade nade = Grenade.getGrenade(shot.getEntityId(), shooter.getName(), true);
 				if (nade != null) {
-					Match match = mm.getMatch(shooter);
+					Match match = plugin.matchManager.getMatch(shooter);
 					if (match != null) {
 						nade.explode(shot.getLocation(), shooter);	
 					}

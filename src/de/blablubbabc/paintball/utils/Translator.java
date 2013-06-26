@@ -170,7 +170,7 @@ public class Translator {
 		}
 	}
 
-	public static Map<String, String> getTranslations() {
+	public static Map<String, String> getTranslation() {
 		if (!success) return null;
 		if (use_def)
 			return def_language;
