@@ -920,13 +920,14 @@ public class Paintball extends JavaPlugin{
 		Turret.calculateTable(turretAngleMin, turretAngleMax, turretTicks, turretXSize, turretYSize, this);
 
 		// INIT STATICS
+		ItemManager.init();
+		
 		Airstrike.init();
 		Ball.init();
 		Flashbang.init();
 		Gifts.init();
 		Grenade.init();
 		GrenadeM2.init();
-		ItemManager.init();
 		Mine.init();
 		NoGravity.init();
 		Orbitalstrike.init();
