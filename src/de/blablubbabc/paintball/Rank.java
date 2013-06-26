@@ -28,9 +28,9 @@ public class Rank implements Comparable<Rank> {
 		if (player != null) {
 			PlayerInventory inv = player.getInventory();
 			if (helmet != null) inv.setHelmet(helmet.clone());
-			if (chestplate != null) inv.setHelmet(chestplate.clone());
-			if (leggings != null) inv.setHelmet(leggings.clone());
-			if (boots != null) inv.setHelmet(boots.clone());
+			if (chestplate != null) inv.setChestplate(chestplate.clone());
+			if (leggings != null) inv.setLeggings(leggings.clone());
+			if (boots != null) inv.setBoots(boots.clone());
 			player.updateInventory();
 		}
 	}

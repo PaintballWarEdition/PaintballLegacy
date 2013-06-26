@@ -1113,6 +1113,7 @@ public class Paintball extends JavaPlugin{
 	}
 	
 	public synchronized boolean leaveLobby(Player player, boolean messages) {
+		String playerName = player.getName();
 		if (Lobby.LOBBY.isMember(player)) {
 			if (Lobby.isPlaying(player) || Lobby.isSpectating(player)) {
 				matchManager.getMatch(player).left(player);
@@ -1121,10 +1122,12 @@ public class Paintball extends JavaPlugin{
 			Lobby.remove(player);
 			// restore and teleport back:
 			playerManager.clearRestoreTeleportPlayer(player);
+			// if player not in lobby and not in match -> stats no longer needed:
+			if (!Lobby.LOBBY.isMember(player) && matchManager.getMatch(player) == null) playerManager.unloadPlayerStats(playerName);
 			//messages:
 			if(messages) {
 				player.sendMessage(Translator.getString("YOU_LEFT_LOBBY"));
-				feeder.leave(player.getName());
+				feeder.leave(playerName);
 			}
 			return true;
 		} else return false;

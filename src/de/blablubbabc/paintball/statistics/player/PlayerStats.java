@@ -22,7 +22,7 @@ public class PlayerStats {
 			setStat(stat, 0);
 		}
 		calculateQuotes();
-		// calculate already marks this stats as "dirty"
+		dirty = true;
 	}
 	
 	public void addStat(PlayerStat stat, int value) {
@@ -55,8 +55,9 @@ public class PlayerStats {
 	}
 	
 	public void calculateQuotes() {
-		setStat(PlayerStat.ACCURACY, Utils.calculateQuote(getStat(PlayerStat.HITS), getStat(PlayerStat.SHOTS)));
-		setStat(PlayerStat.KD, Utils.calculateQuote(getStat(PlayerStat.KILLS), getStat(PlayerStat.DEATHS)));
+		// set stats, without changing dirty state:
+		stats.put(PlayerStat.ACCURACY, Utils.calculateQuote(getStat(PlayerStat.HITS), getStat(PlayerStat.SHOTS)));
+		stats.put(PlayerStat.KD, Utils.calculateQuote(getStat(PlayerStat.KILLS), getStat(PlayerStat.DEATHS)));
 	}
 	
 	public void save() {

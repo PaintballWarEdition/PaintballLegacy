@@ -44,6 +44,7 @@ public class Match {
 	private List<Player> redT = new ArrayList<Player>();
 	private List<Player> blueT = new ArrayList<Player>();
 	private List<Player> bothTeams = new ArrayList<Player>();
+	private List<Player> spec = new ArrayList<Player>();
 	private List<Player> allPlayers = new ArrayList<Player>();
 	private Map<Player, Integer> protection = new HashMap<Player, Integer>();
 	private Set<String> justRespawned = new HashSet<String>();
@@ -62,7 +63,6 @@ public class Match {
 	private Map<String, Location> playersLoc = new HashMap<String, Location>();;
 	private boolean matchOver = false;
 
-	private List<Player> spec = new ArrayList<Player>();
 	private String arena;
 
 	private Timer startTimer;
@@ -601,13 +601,7 @@ public class Match {
 	}
 
 	public boolean inMatch(Player player) {
-		if (redT.contains(player))
-			return true;
-		if (blueT.contains(player))
-			return true;
-		if (spec.contains(player))
-			return true;
-		return false;
+		return allPlayers.contains(player);
 	}
 
 	public boolean enemys(Player player1, Player player2) {

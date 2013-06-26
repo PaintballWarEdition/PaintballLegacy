@@ -23,7 +23,7 @@ public class MatchManager{
 
 	private Paintball plugin;
 
-	private ArrayList<Match> matches;
+	private List<Match> matches;
 	private Timer countdown;
 
 	public MatchManager(Paintball pl) {
@@ -33,10 +33,8 @@ public class MatchManager{
 
 	public synchronized void forceReload() {
 		//closing all matches and kicking all players from lobby:
-		List<Match> mlist = new ArrayList<Match>();
-		for (Match m : matches) {
-			mlist.add(m);
-		}
+		List<Match> mlist = new ArrayList<Match>(matches);
+		
 		for (Match match : mlist) {
 			//colors
 			match.undoAllColors();
@@ -224,6 +222,8 @@ public class MatchManager{
 					String playerName = player.getName();
 					PlayerStats stats = plugin.playerManager.getPlayerStats(playerName);
 					stats.save();
+					// if player not in lobby and not in match -> stats no longer needed:
+					if (!Lobby.LOBBY.isMember(player) && getMatch(player) == null) plugin.playerManager.unloadPlayerStats(playerName);
 				}
 				plugin.sql.commit();
 				plugin.sql.setAutoCommit(auto);

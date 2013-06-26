@@ -35,6 +35,16 @@ public class PlayerManager {
 					}
 				}
 			});
+		} else {
+			// run afterwards-task sync:
+			runAfterwards.run();
+		}
+	}
+	
+	public void unloadPlayerStats(String playerName) {
+		PlayerStats stats = playerStats.remove(playerName);
+		if (stats != null) {
+			stats.saveAsync();
 		}
 	}
 	
