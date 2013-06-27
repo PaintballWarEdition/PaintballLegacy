@@ -66,6 +66,7 @@ import org.bukkit.util.BlockIterator;
 
 import de.blablubbabc.paintball.extras.Airstrike;
 import de.blablubbabc.paintball.extras.Ball;
+import de.blablubbabc.paintball.extras.Concussion;
 import de.blablubbabc.paintball.extras.Flashbang;
 import de.blablubbabc.paintball.extras.Gifts;
 import de.blablubbabc.paintball.extras.Grenade;
@@ -541,6 +542,26 @@ public class EventListener implements Listener {
 						Item nade = player.getWorld().dropItem(player.getEyeLocation(), nadeItem);
 						nade.setVelocity(player.getLocation().getDirection().normalize().multiply(plugin.flashbangSpeed));
 						Flashbang.registerNade(nade, playerName, Origin.FLASHBANG);
+						if (item.getAmount() <= 1)
+							player.setItemInHand(null);
+						else {
+							item.setAmount(item.getAmount() - 1);
+							player.setItemInHand(item);
+						}
+					}
+					break;
+					
+				case SPIDER_EYE:
+					// CONCUSSION
+					if (plugin.concussion && item.isSimilar(Concussion.item)) {
+						player.getWorld().playSound(player.getLocation(), Sound.IRONGOLEM_THROW, 1.5F, 1F);
+						ItemStack nadeItem = Concussion.item.clone();
+						ItemMeta meta = nadeItem.getItemMeta();
+						meta.setDisplayName("Concussion " + Flashbang.getNext());
+						nadeItem.setItemMeta(meta);
+						Item nade = player.getWorld().dropItem(player.getEyeLocation(), nadeItem);
+						nade.setVelocity(player.getLocation().getDirection().normalize().multiply(plugin.concussionSpeed));
+						Concussion.registerNade(nade, playerName, Origin.CONCUSSION);
 						if (item.getAmount() <= 1)
 							player.setItemInHand(null);
 						else {

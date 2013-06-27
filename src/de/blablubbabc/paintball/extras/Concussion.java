@@ -18,9 +18,9 @@ import de.blablubbabc.paintball.Match;
 import de.blablubbabc.paintball.Origin;
 import de.blablubbabc.paintball.Paintball;
 
-public class Flashbang {
+public class Concussion {
 
-	public final static ItemStack item = ItemManager.setMeta(new ItemStack(Material.GHAST_TEAR));
+	public final static ItemStack item = ItemManager.setMeta(new ItemStack(Material.SPIDER_EYE));
 	private static int next = 0;
 	
 	public static void init() {
@@ -31,29 +31,29 @@ public class Flashbang {
 		return ++next;
 	}
 	
-	private static Map<String, ArrayList<Flashbang>> nades = new HashMap<String, ArrayList<Flashbang>>();
+	private static Map<String, ArrayList<Concussion>> nades = new HashMap<String, ArrayList<Concussion>>();
 	
 	public static void registerNade(Item nade, String shooterName, Origin source) {
-		ArrayList<Flashbang> pnades = nades.get(shooterName);
+		ArrayList<Concussion> pnades = nades.get(shooterName);
 		if (pnades == null) {
-			pnades = new ArrayList<Flashbang>();
+			pnades = new ArrayList<Concussion>();
 			nades.put(shooterName, pnades);
 		}
-		pnades.add(new Flashbang(shooterName, nade, source));
+		pnades.add(new Concussion(shooterName, nade, source));
 	}
 
 	public static boolean isNade(int id) {
-		for (ArrayList<Flashbang> pnades : nades.values()) {
+		for (ArrayList<Concussion> pnades : nades.values()) {
 			if (getNadeFromList(pnades, id) != null) return true; 
 		}
 		return false;
 	}
 	
-	public static Flashbang getNade(int id, String shooterName, boolean remove) {
-		ArrayList<Flashbang> pnades = nades.get(shooterName);
+	public static Concussion getNade(int id, String shooterName, boolean remove) {
+		ArrayList<Concussion> pnades = nades.get(shooterName);
 		if (pnades == null)
 			return null;
-		Flashbang nade = getNadeFromList(pnades, id);
+		Concussion nade = getNadeFromList(pnades, id);
 		if (remove && nade != null) {
 			if (pnades.remove(nade)) {
 				if (pnades.size() == 0) nades.remove(shooterName);
@@ -62,8 +62,8 @@ public class Flashbang {
 		return nade;
 	}
 	
-	private static Flashbang getNadeFromList(ArrayList<Flashbang> pnades, int id) {
-		for (Flashbang nade : pnades) {
+	private static Concussion getNadeFromList(ArrayList<Concussion> pnades, int id) {
+		for (Concussion nade : pnades) {
 			if (nade.getId() == id)
 				return nade;
 		}
@@ -72,8 +72,8 @@ public class Flashbang {
 	
 	public static void clear() {
 		for (String playerName : nades.keySet()) {
-			ArrayList<Flashbang> pnades = new ArrayList<Flashbang>(nades.get(playerName));
-			for (Flashbang g : pnades) {
+			ArrayList<Concussion> pnades = new ArrayList<Concussion>(nades.get(playerName));
+			for (Concussion g : pnades) {
 				g.remove();
 			}
 		}
@@ -85,7 +85,7 @@ public class Flashbang {
 	private final String shooterName;
 	private final Origin source;
 
-	public Flashbang(String shooterName, Item entity, Origin source) {
+	public Concussion(String shooterName, Item entity, Origin source) {
 		this.entity = entity;
 		this.shooterName = shooterName;
 		this.source = source;
@@ -96,7 +96,7 @@ public class Flashbang {
 			public void run() {
 				explode();
 			}
-		}, 20L * Paintball.instance.flashbangTimeUntilExplosion);
+		}, 20L * Paintball.instance.concussionTimeUntilExplosion);
 	}
 
 	int getId() {
@@ -142,15 +142,15 @@ public class Flashbang {
 			if (player != null) {
 				Match match = Paintball.instance.matchManager.getMatch(player);
 				if (match != null) {
-					List<Entity> near = entity.getNearbyEntities(Paintball.instance.flashRange, Paintball.instance.flashRange, Paintball.instance.flashRange);
+					List<Entity> near = entity.getNearbyEntities(Paintball.instance.concussionRange, Paintball.instance.concussionRange, Paintball.instance.concussionRange);
 					for (Entity e : near) {
 						if (e.getType() == EntityType.PLAYER) {
 							Player p = (Player) e;
 							Match m = Paintball.instance.matchManager.getMatch(p);
 							if (match == m && match.enemys(player, p)) {
-								p.addPotionEffect(new PotionEffect(PotionEffectType.SLOW, 20 * Paintball.instance.flashSlownessDuration, 3), true);
-								p.addPotionEffect(new PotionEffect(PotionEffectType.CONFUSION, 20 * Paintball.instance.flashConfusionDuration, 3), true);
-								p.addPotionEffect(new PotionEffect(PotionEffectType.BLINDNESS, 20 * Paintball.instance.flashBlindnessDuration, 3), true);
+								p.addPotionEffect(new PotionEffect(PotionEffectType.SLOW, 20 * Paintball.instance.concussionSlownessDuration, 3), true);
+								p.addPotionEffect(new PotionEffect(PotionEffectType.CONFUSION, 20 * Paintball.instance.concussionConfusionDuration, 3), true);
+								p.addPotionEffect(new PotionEffect(PotionEffectType.BLINDNESS, 20 * Paintball.instance.concussionBlindnessDuration, 3), true);
 							}
 							
 						}
