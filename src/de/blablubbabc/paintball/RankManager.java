@@ -107,12 +107,12 @@ public class RankManager {
 		ranks.add(new Rank("First Sergeant", 500, ChatColor.GOLD + "[" + ChatColor.LIGHT_PURPLE + "First Sergeant" + ChatColor.GOLD + "]", null, Utils.setLeatherArmorColor(new ItemStack(Material.LEATHER_CHESTPLATE), Color.ORANGE), null, null));
 		ranks.add(new Rank("Sergeant Major", 750, ChatColor.GOLD + "[" + ChatColor.DARK_PURPLE + "Sergeant Major" + ChatColor.GOLD + "]", null, Utils.setLeatherArmorColor(new ItemStack(Material.LEATHER_CHESTPLATE), Color.PURPLE), null, null));
 		ranks.add(new Rank("Lieutenant", 1000, ChatColor.GOLD + "[" + ChatColor.GREEN + "Lieutenant" + ChatColor.GOLD + "]", null, Utils.setLeatherArmorColor(new ItemStack(Material.LEATHER_CHESTPLATE), Color.GREEN), null, null));
-		ranks.add(new Rank("Captain", 10000, ChatColor.GOLD + "[" + ChatColor.DARK_GREEN + "Captain" + ChatColor.GOLD + "]", null, Utils.setLeatherArmorColor(new ItemStack(Material.LEATHER_CHESTPLATE), Color.TEAL), null, null));
-		ranks.add(new Rank("Major", 15000, ChatColor.GOLD + "[" + ChatColor.DARK_AQUA + "Major" + ChatColor.GOLD + "]", null, Utils.setLeatherArmorColor(new ItemStack(Material.LEATHER_CHESTPLATE), Color.BLACK), null, null));
-		ranks.add(new Rank("Colonel", 35000, ChatColor.GOLD + "[" + ChatColor.BLACK + "Colonel" + ChatColor.GOLD + "]", null, new ItemStack(Material.IRON_CHESTPLATE), null, null));
-		ranks.add(new Rank("General", 50000, ChatColor.GOLD + "[" + ChatColor.RED + "General" + ChatColor.GOLD + "]", null, new ItemStack(Material.GOLD_CHESTPLATE), null, null));
-		ranks.add(new Rank("Commander", 75000, ChatColor.GOLD + "[" + ChatColor.DARK_RED + "Commander" + ChatColor.GOLD + "]", null, new ItemStack(Material.DIAMOND_CHESTPLATE), null, null));
-		ranks.add(new Rank("Master Chief", 100000, ChatColor.GOLD + "[" + ChatColor.DARK_RED + "Master Chief" + ChatColor.GOLD + "]", null, 
+		ranks.add(new Rank("Captain", 5000, ChatColor.GOLD + "[" + ChatColor.DARK_GREEN + "Captain" + ChatColor.GOLD + "]", null, Utils.setLeatherArmorColor(new ItemStack(Material.LEATHER_CHESTPLATE), Color.TEAL), null, null));
+		ranks.add(new Rank("Major", 10000, ChatColor.GOLD + "[" + ChatColor.DARK_AQUA + "Major" + ChatColor.GOLD + "]", null, Utils.setLeatherArmorColor(new ItemStack(Material.LEATHER_CHESTPLATE), Color.BLACK), null, null));
+		ranks.add(new Rank("Colonel", 15000, ChatColor.GOLD + "[" + ChatColor.BLACK + "Colonel" + ChatColor.GOLD + "]", null, new ItemStack(Material.IRON_CHESTPLATE), null, null));
+		ranks.add(new Rank("General", 25000, ChatColor.GOLD + "[" + ChatColor.RED + "General" + ChatColor.GOLD + "]", null, new ItemStack(Material.GOLD_CHESTPLATE), null, null));
+		ranks.add(new Rank("Commander", 35000, ChatColor.GOLD + "[" + ChatColor.DARK_RED + "Commander" + ChatColor.GOLD + "]", null, new ItemStack(Material.DIAMOND_CHESTPLATE), null, null));
+		ranks.add(new Rank("Master Chief", 50000, ChatColor.GOLD + "[" + ChatColor.DARK_RED + "Master Chief" + ChatColor.GOLD + "]", null, 
 				Utils.setLeatherArmorColor(new ItemStack(Material.LEATHER_CHESTPLATE), DyeColor.GREEN.getColor()), 
 				Utils.setLeatherArmorColor(new ItemStack(Material.LEATHER_LEGGINGS), DyeColor.LIME.getColor()), 
 				Utils.setLeatherArmorColor(new ItemStack(Material.LEATHER_BOOTS), DyeColor.GREEN.getColor())));

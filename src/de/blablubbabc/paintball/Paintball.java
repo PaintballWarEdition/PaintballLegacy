@@ -279,21 +279,22 @@ public class Paintball extends JavaPlugin{
 		//CONFIG
 		ArrayList<String> goodsDef = new ArrayList<String>();
 		
-		goodsDef.add("10-Balls-" + Material.SNOW_BALL.getId() + "-0-10");
-		goodsDef.add("50-Balls-" + Material.SNOW_BALL.getId() + "-0-50");
-		goodsDef.add("100-Balls-" + Material.SNOW_BALL.getId() + "-0-100");
-		goodsDef.add("1-Grenade-" + Material.EGG.getId() + "-0-20");
-		goodsDef.add("1-Grenade Mark 2-" + Material.SLIME_BALL.getId() + "-0-15");
-		goodsDef.add("1-Flashbang-" + Material.GHAST_TEAR.getId() + "-0-15");
-		goodsDef.add("1-Mine-" + Material.FLOWER_POT_ITEM.getId() + "-0-10");
-		goodsDef.add("1-Rocket Launcher-" + Material.DIODE.getId() + "-0-20");
-		goodsDef.add("1-Airstrike-" + Material.STICK.getId() + "-0-80");
-		goodsDef.add("1-Turret-" + Material.PUMPKIN.getId() + "-0-180");
-		goodsDef.add("1-Speed-" + Material.POTION.getId() + "-16482-20");
-		goodsDef.add("1-Shotgun-" + Material.SPECKLED_MELON.getId() + "-0-20");
-		goodsDef.add("1-Pumpgun-" + Material.STONE_AXE.getId() + "-0-20");
-		goodsDef.add("1-Sniper-" + Material.CARROT_STICK.getId() + "-0-80");
-		goodsDef.add("1-Orbitalstrike-" + Material.BLAZE_ROD.getId() + "-0-80");
+		//<amount>-<name>-<id>-<subid>-<price>-<rank>
+		goodsDef.add("10-Balls-" + Material.SNOW_BALL.getId() + "-0-10-0");
+		goodsDef.add("50-Balls-" + Material.SNOW_BALL.getId() + "-0-50-0");
+		goodsDef.add("100-Balls-" + Material.SNOW_BALL.getId() + "-0-100-0");
+		goodsDef.add("1-Grenade Mark 2-" + Material.SLIME_BALL.getId() + "-0-15-1");
+		goodsDef.add("1-Grenade-" + Material.EGG.getId() + "-0-20-2");
+		goodsDef.add("1-Flashbang-" + Material.GHAST_TEAR.getId() + "-0-15-2");
+		goodsDef.add("1-Rocket Launcher-" + Material.DIODE.getId() + "-0-20-3");
+		goodsDef.add("1-Mine-" + Material.FLOWER_POT_ITEM.getId() + "-0-10-4");
+		goodsDef.add("1-Speed-" + Material.POTION.getId() + "-16482-20-4");
+		goodsDef.add("1-Pumpgun-" + Material.STONE_AXE.getId() + "-0-20-5");
+		goodsDef.add("1-Shotgun-" + Material.SPECKLED_MELON.getId() + "-0-20-5");
+		goodsDef.add("1-Airstrike-" + Material.STICK.getId() + "-0-80-6");
+		goodsDef.add("1-Orbitalstrike-" + Material.BLAZE_ROD.getId() + "-0-80-7");
+		goodsDef.add("1-Turret-" + Material.PUMPKIN.getId() + "-0-180-8");
+		goodsDef.add("1-Sniper-" + Material.CARROT_STICK.getId() + "-0-80-9");
 		
 		ArrayList<Gift> giftsDef = new ArrayList<Gift>();
 		giftsDef.add(new Gift(Material.SNOW_BALL.getId(), (short)0, 50, 20.0, "Hope you have luck with these balls!"));

@@ -85,17 +85,28 @@ public class Stats {
 				Map<String, String> vars = new HashMap<String, String>();
 				vars.put("stats", stat.getKey());
 				LinkedHashMap<String, Integer> topStats = plugin.sql.sqlPlayers.getTop10Stats(stat);
-				String[] players = (String[]) topStats.keySet().toArray();
-				Integer[] values = (Integer[]) topStats.values().toArray();
+				
+				String[] players = new String[topStats.size()];
+				int j = 0;
+				for (String name : topStats.keySet()) {
+					players[j++] = name;
+				}
+				
+				Integer[] values = new Integer[topStats.size()];
+				j = 0;
+				for (Integer value : topStats.values()) {
+					values[j++] = value;
+				}
+				
 				sender.sendMessage(Translator.getString("TOP_TEN", vars));
 				for (int i = 1; i <= 10; i++) {
 					if (i <= players.length) {
 						vars.put("rank", String.valueOf(i));
-						vars.put("player", players[i-1]);
+						vars.put("player", players[i - 1]);
 						if (stat == PlayerStat.KD || stat == PlayerStat.ACCURACY) {
-							float valueF = (float) values[i-1] / 100;
+							float valueF = (float) values[i - 1] / 100;
 							vars.put("value", decimalFormat.format(valueF));
-						} else vars.put("value", String.valueOf(values[i-1]));
+						} else vars.put("value", String.valueOf(values[i - 1]));
 						sender.sendMessage(Translator.getString("TOP_TEN_ENTRY", vars));
 					} else break;
 				}
