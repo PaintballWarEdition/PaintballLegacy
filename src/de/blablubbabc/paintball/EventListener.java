@@ -926,7 +926,7 @@ public class EventListener implements Listener {
 	@EventHandler(priority = EventPriority.NORMAL)
 	public void onPlayerItemsI(PlayerPickupItemEvent event) {
 		int id = event.getItem().getEntityId();
-		if (Flashbang.isNade(id) || GrenadeM2.isNade(id)) {
+		if (Flashbang.isNade(id) || GrenadeM2.isNade(id) ||  Concussion.isNade(id)) {
 			event.setCancelled(true);
 			return;
 		}

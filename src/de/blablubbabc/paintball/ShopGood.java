@@ -20,19 +20,24 @@ public class ShopGood {
 	private Integer id = 0;
 	private Short subid = 0;
 	private Integer price = 0;
+	private int neededRank = 0;
 	private String slot = "empty";
 	private boolean empty = false;
 
 	public ShopGood(String slot) {
 		String[] split = slot.split("-");
-		if(split.length != 5) {
-			this.empty = true;
-		} else {
+		if (split.length == 5 || split.length == 6) {
 			this.name = split[1];
 			this.amount = isInteger(split[0]);
 			this.id = isInteger(split[2]);
 			this.subid = isShort(isInteger(split[3]).intValue());
 			this.price = isInteger(split[4]);
+			
+			if (split.length == 6) {
+				Integer neededRankInt = isInteger(split[5]);
+				this.neededRank = neededRankInt != null ? neededRankInt : 0;
+			}
+			
 			
 			if(this.amount == null || this.id == null || this.subid == null || this.price == null || this.name == null) {
 				this.empty = true;
@@ -48,6 +53,8 @@ public class ShopGood {
 				vars.put("price", split[4]);
 				this.slot = Translator.getString("SHOP_GOOD", vars);
 			}
+		} else {
+			this.empty = true;
 		}
 		if(this.empty) this.slot = Translator.getString("SHOP_EMPTY");
 	}
@@ -92,6 +99,10 @@ public class ShopGood {
 	
 	public Integer getId() {
 		return this.id;
+	}
+
+	public int getNeededRank() {
+		return neededRank;
 	}
 	
 }
