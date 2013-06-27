@@ -433,10 +433,11 @@ public class MatchManager{
 				
 				@Override
 				public void run() {
-					countdown = null;
 					for (Player player : Lobby.LOBBY.getMembers()) {
+						player.setLevel(countdown.getTime());
 						player.playSound(player.getLocation(), Sound.ORB_PICKUP, 100L, 2L);	
 					}
+					countdown = null;
 					String status = ready();
 					if(status.equalsIgnoreCase(Translator.getString("READY"))) {
 						//start match
