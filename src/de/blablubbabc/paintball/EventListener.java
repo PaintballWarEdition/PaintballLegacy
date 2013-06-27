@@ -389,13 +389,15 @@ public class EventListener implements Listener {
 		ItemStack item = player.getItemInHand();
 		if (item == null)
 			return;
+		Action action = event.getAction();
+		if (action == Action.PHYSICAL) return;
+	
 		
 		if (Lobby.LOBBY.isMember(player)) {
 			Match match = plugin.matchManager.getMatch(player);
 			if (match != null && Lobby.isPlaying(player) && match.isSurvivor(player)) {
 				if (item.getType() != Material.POTION) event.setUseItemInHand(Result.DENY);
 				if (!match.started || match.isJustRespawned(player.getName())) return;
-				Action action = event.getAction();
 				String playerName = player.getName();
 				
 				switch (item.getType()) {

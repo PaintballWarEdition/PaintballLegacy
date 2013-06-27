@@ -1050,7 +1050,7 @@ public class Paintball extends JavaPlugin{
 	}
 
 	public void reload(CommandSender sender) {
-		//reloadConfig();
+		reloadConfig();
 		getServer().getPluginManager().disablePlugin(this);
 		getServer().getPluginManager().enablePlugin(this);
 		if (sender != null) sender.sendMessage(Translator.getString("REALOAD_FINISHED"));
