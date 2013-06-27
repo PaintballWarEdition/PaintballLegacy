@@ -110,7 +110,34 @@ public class Flashbang {
 	public void explode() {
 		if (!entity.isDead() && entity.isValid()) {
 			Location location = entity.getLocation();
+			// EFFECTS
+			// small explosion
 			location.getWorld().createExplosion(location, -1F);
+			/*
+			// TODO
+			// firework particles:
+			// effects:
+			FireworkEffect effectWhite = FireworkEffect.builder().withColor(Color.WHITE).withFlicker().with(Type.BURST).build();
+			FireworkEffect effectSilver = FireworkEffect.builder().withColor(Color.SILVER).withFlicker().with(Type.BALL).build();
+			
+			for (int i = 0; i < 5; i++) {
+				int x = Utils.random.nextInt(5) - 2;
+				int y = Utils.random.nextInt(5) - 2;
+				int z = Utils.random.nextInt(5) - 2;
+				
+				Block block = location.add(1, 1, 1).getBlock();
+				if (block.getType() == Material.AIR) {
+					Firework firework = location.getWorld().spawn(location, Firework.class);
+					FireworkMeta meta = (FireworkMeta) firework.getFireworkMeta();
+					
+					meta.addEffects(effectWhite, effectSilver);
+					meta.setPower(1);
+					firework.setFireworkMeta(meta);	
+				}
+			}*/
+			
+			
+			// blindness to near enemies:
 			Player player = Paintball.instance.getServer().getPlayerExact(shooterName);
 			if (player != null) {
 				Match match = Paintball.instance.matchManager.getMatch(player);

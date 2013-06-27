@@ -11,6 +11,7 @@ import java.util.Map;
 import java.util.regex.Pattern;
 
 import org.bukkit.Location;
+import org.bukkit.Material;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.configuration.ConfigurationSection;
@@ -278,31 +279,37 @@ public class Paintball extends JavaPlugin{
 		//CONFIG
 		ArrayList<String> goodsDef = new ArrayList<String>();
 		
-		goodsDef.add("10-Balls-332-0-10");
-		goodsDef.add("50-Balls-332-0-50");
-		goodsDef.add("100-Balls-332-0-100");
-		goodsDef.add("1-Grenade-344-0-20");
-		goodsDef.add("1-Grenade Mark 2-341-0-20");
-		goodsDef.add("1-Flashbang-370-0-20");
-		goodsDef.add("1-Mine-390-0-10");
-		goodsDef.add("1-Rocket Launcher-356-0-20");
-		goodsDef.add("1-Airstrike-280-0-60");
-		goodsDef.add("1-Turret-86-0-180");
-		goodsDef.add("1-Speed-373-16482-20");
-		goodsDef.add("1-Shotgun-382-0-20");
-		goodsDef.add("1-Pumpgun-275-0-20");
-		goodsDef.add("1-Sniper-398-0-80");
-		goodsDef.add("1-Orbitalstrike-369-0-80");
+		goodsDef.add("10-Balls-" + Material.SNOW_BALL.getId() + "-0-10");
+		goodsDef.add("50-Balls-" + Material.SNOW_BALL.getId() + "-0-50");
+		goodsDef.add("100-Balls-" + Material.SNOW_BALL.getId() + "-0-100");
+		goodsDef.add("1-Grenade-" + Material.EGG.getId() + "-0-20");
+		goodsDef.add("1-Grenade Mark 2-" + Material.SLIME_BALL.getId() + "-0-15");
+		goodsDef.add("1-Flashbang-" + Material.GHAST_TEAR.getId() + "-0-15");
+		goodsDef.add("1-Mine-" + Material.FLOWER_POT_ITEM.getId() + "-0-10");
+		goodsDef.add("1-Rocket Launcher-" + Material.DIODE.getId() + "-0-20");
+		goodsDef.add("1-Airstrike-" + Material.STICK.getId() + "-0-80");
+		goodsDef.add("1-Turret-" + Material.PUMPKIN.getId() + "-0-180");
+		goodsDef.add("1-Speed-" + Material.POTION.getId() + "-16482-20");
+		goodsDef.add("1-Shotgun-" + Material.SPECKLED_MELON.getId() + "-0-20");
+		goodsDef.add("1-Pumpgun-" + Material.STONE_AXE.getId() + "-0-20");
+		goodsDef.add("1-Sniper-" + Material.CARROT_STICK.getId() + "-0-80");
+		goodsDef.add("1-Orbitalstrike-" + Material.BLAZE_ROD.getId() + "-0-80");
 		
 		ArrayList<Gift> giftsDef = new ArrayList<Gift>();
-		giftsDef.add(new Gift(332, (short)0, 50, 30.0, "Hope you have luck with these balls!"));
-		giftsDef.add(new Gift(344, (short)0, 2, 15.0, "May these grenades be with you!"));
-		giftsDef.add(new Gift(390, (short)0, 2, 15.0, "I knew you ever wanted to be a sneaky killer!"));
-		giftsDef.add(new Gift(356, (short)0, 2, 15.0, "Heat them with these rocket launchers!"));
-		giftsDef.add(new Gift(280, (short)0, 1, 15.0, "I knew you ever wanted to order a airstrike at least once!"));
-		giftsDef.add(new Gift(54, (short)0, 2, 5.0, "I got some more gifts for you!"));
-		giftsDef.add(new Gift(86, (short)0, 1, 3.0, "They survived the apocalypse? But the will not survive this!"));
-		giftsDef.add(new Gift(0, (short)0, 0, 2.0, "You had no luck this time :("));
+		giftsDef.add(new Gift(Material.SNOW_BALL.getId(), (short)0, 50, 20.0, "Hope you have luck with these balls!"));
+		giftsDef.add(new Gift(Material.EGG.getId(), (short)0, 2, 10.0, "May these grenades be with you!"));
+		giftsDef.add(new Gift(Material.SLIME_BALL.getId(), (short)0, 2, 10.0, "Some explosives for you!"));
+		giftsDef.add(new Gift(Material.GHAST_TEAR.getId(), (short)0, 2, 10.0, "Blind them with these!"));
+		giftsDef.add(new Gift(Material.FLOWER_POT_ITEM.getId(), (short)0, 2, 10.0, "I knew you ever wanted to be a sneaky killer!"));
+		giftsDef.add(new Gift(Material.DIODE.getId(), (short)0, 2, 10.0, "Give them hell with these rocket launchers!"));
+		giftsDef.add(new Gift(Material.STICK.getId(), (short)0, 1, 5.0, "I knew you ever wanted to order a airstrike at least once!"));
+		giftsDef.add(new Gift(Material.BLAZE_ROD.getId(), (short)0, 1, 5.0, "Support from orbit waits for your order!"));
+		giftsDef.add(new Gift(Material.STONE_AXE.getId(), (short)0, 1, 5.0, "Take this weapon!"));
+		giftsDef.add(new Gift(Material.CHEST.getId(), (short)0, 2, 5.0, "I got some more gifts for you!"));
+		giftsDef.add(new Gift(Material.PUMPKIN.getId(), (short)0, 1, 3.0, "This comerade will fight for you!"));
+		giftsDef.add(new Gift(Material.SPECKLED_MELON.getId(), (short)0, 1, 3.0, "This weapon comes fresh from production!"));
+		giftsDef.add(new Gift(Material.CARROT_STICK.getId(), (short)0, 1, 2.0, "No one can hide from your view!"));
+		giftsDef.add(new Gift(Material.AIR.getId(), (short)0, 0, 2.0, "You had no luck this time :("));
 		
 		allowedCommands = new ArrayList<String>();
 		allowedCommands.add("/list");
