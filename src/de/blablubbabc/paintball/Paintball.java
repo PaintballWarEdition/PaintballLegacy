@@ -310,9 +310,10 @@ public class Paintball extends JavaPlugin{
 		
 		ArrayList<Gift> giftsDef = new ArrayList<Gift>();
 		giftsDef.add(new Gift(Material.SNOW_BALL.getId(), (short)0, 50, 20.0, "Hope you have luck with these balls!"));
-		giftsDef.add(new Gift(Material.EGG.getId(), (short)0, 2, 10.0, "May these grenades be with you!"));
-		giftsDef.add(new Gift(Material.SLIME_BALL.getId(), (short)0, 2, 10.0, "Some explosives for you!"));
 		giftsDef.add(new Gift(Material.GHAST_TEAR.getId(), (short)0, 2, 10.0, "Blind them with these!"));
+		giftsDef.add(new Gift(Material.SPIDER_EYE.getId(), (short)0, 2, 10.0, "Confuse them with these!"));
+		giftsDef.add(new Gift(Material.EGG.getId(), (short)0, 2, 5.0, "May these grenades be with you!"));
+		giftsDef.add(new Gift(Material.SLIME_BALL.getId(), (short)0, 2, 5.0, "Some explosives for you!"));
 		giftsDef.add(new Gift(Material.FLOWER_POT_ITEM.getId(), (short)0, 2, 10.0, "I knew you ever wanted to be a sneaky killer!"));
 		giftsDef.add(new Gift(Material.DIODE.getId(), (short)0, 2, 10.0, "Give them hell with these rocket launchers!"));
 		giftsDef.add(new Gift(Material.STICK.getId(), (short)0, 1, 5.0, "I knew you ever wanted to order a airstrike at least once!"));
@@ -448,17 +449,17 @@ public class Paintball extends JavaPlugin{
 		if(getConfig().get("Paintball.Extras.Flashbang.enabled") == null)getConfig().set("Paintball.Extras.Flashbang.enabled", true);
 		if(getConfig().get("Paintball.Extras.Flashbang.Speed multi") == null)getConfig().set("Paintball.Extras.Flashbang.Speed multi", 1.5);
 		if(getConfig().get("Paintball.Extras.Flashbang.Flash Range") == null)getConfig().set("Paintball.Extras.Flashbang.Flash Range", 5.5);
-		if(getConfig().get("Paintball.Extras.Flashbang.Blindness Duration in Seconds") == null)getConfig().set("Paintball.Extras.Flashbang.Blindness Duration in Seconds", 6);
-		if(getConfig().get("Paintball.Extras.Flashbang.Confusion Duration in Seconds") == null)getConfig().set("Paintball.Extras.Flashbang.Confusion Duration in Seconds", 7);
-		if(getConfig().get("Paintball.Extras.Flashbang.Slowness Duration in Seconds") == null)getConfig().set("Paintball.Extras.Flashbang.Slowness Duration in Seconds", 1);
+		if(getConfig().get("Paintball.Extras.Flashbang.Blindness Duration in Seconds") == null)getConfig().set("Paintball.Extras.Flashbang.Blindness Duration in Seconds", 7);
+		if(getConfig().get("Paintball.Extras.Flashbang.Confusion Duration in Seconds") == null)getConfig().set("Paintball.Extras.Flashbang.Confusion Duration in Seconds", 8);
+		if(getConfig().get("Paintball.Extras.Flashbang.Slowness Duration in Seconds") == null)getConfig().set("Paintball.Extras.Flashbang.Slowness Duration in Seconds", 2);
 		if(getConfig().get("Paintball.Extras.Flashbang.Seconds Until Explosion") == null)getConfig().set("Paintball.Extras.Flashbang.Seconds Until Explosion", 2);
 		
 		if(getConfig().get("Paintball.Extras.Concussion Nade.enabled") == null)getConfig().set("Paintball.Extras.Concussion Nade.enabled", true);
 		if(getConfig().get("Paintball.Extras.Concussion Nade.Speed multi") == null)getConfig().set("Paintball.Extras.Concussion Nade.Speed multi", 1.5);
 		if(getConfig().get("Paintball.Extras.Concussion Nade.Concussion Range") == null)getConfig().set("Paintball.Extras.Concussion Nade.Concussion Range", 7.0);
-		if(getConfig().get("Paintball.Extras.Concussion Nade.Blindness Duration in Seconds") == null)getConfig().set("Paintball.Extras.Concussion Nade.Blindness Duration in Seconds", 1);
-		if(getConfig().get("Paintball.Extras.Concussion Nade.Confusion Duration in Seconds") == null)getConfig().set("Paintball.Extras.Concussion Nade.Confusion Duration in Seconds", 10);
-		if(getConfig().get("Paintball.Extras.Concussion Nade.Slowness Duration in Seconds") == null)getConfig().set("Paintball.Extras.Concussion Nade.Slowness Duration in Seconds", 8);
+		if(getConfig().get("Paintball.Extras.Concussion Nade.Blindness Duration in Seconds") == null)getConfig().set("Paintball.Extras.Concussion Nade.Blindness Duration in Seconds", 2);
+		if(getConfig().get("Paintball.Extras.Concussion Nade.Confusion Duration in Seconds") == null)getConfig().set("Paintball.Extras.Concussion Nade.Confusion Duration in Seconds", 12);
+		if(getConfig().get("Paintball.Extras.Concussion Nade.Slowness Duration in Seconds") == null)getConfig().set("Paintball.Extras.Concussion Nade.Slowness Duration in Seconds", 10);
 		if(getConfig().get("Paintball.Extras.Concussion Nade.Seconds Until Explosion") == null)getConfig().set("Paintball.Extras.Concussion Nade.Seconds Until Explosion", 2);
 		
 		if(getConfig().get("Paintball.Extras.Airstrike.enabled") == null)getConfig().set("Paintball.Extras.Airstrike.enabled", true);
@@ -699,17 +700,17 @@ public class Paintball extends JavaPlugin{
 		flashbang = getConfig().getBoolean("Paintball.Extras.Flashbang.enabled", true);
 		flashbangSpeed = getConfig().getDouble("Paintball.Extras.Flashbang.Speed multi", 1.5);
 		flashRange = getConfig().getDouble("Paintball.Extras.Flashbang.Flash Range", 5.5);
-		flashBlindnessDuration = getConfig().getInt("Paintball.Extras.Flashbang.Blindness Duration in Seconds", 6);
-		flashConfusionDuration = getConfig().getInt("Paintball.Extras.Flashbang.Confusion Duration in Seconds", 7);
-		flashSlownessDuration = getConfig().getInt("Paintball.Extras.Flashbang.Slowness Duration in Seconds", 1);
+		flashBlindnessDuration = getConfig().getInt("Paintball.Extras.Flashbang.Blindness Duration in Seconds", 7);
+		flashConfusionDuration = getConfig().getInt("Paintball.Extras.Flashbang.Confusion Duration in Seconds", 8);
+		flashSlownessDuration = getConfig().getInt("Paintball.Extras.Flashbang.Slowness Duration in Seconds", 2);
 		flashbangTimeUntilExplosion = getConfig().getInt("Paintball.Extras.Flashbang.Seconds Until Explosion", 2);
 		
 		concussion = getConfig().getBoolean("Paintball.Extras.Concussion Nade.enabled", true);
 		concussionSpeed = getConfig().getDouble("Paintball.Extras.Concussion Nade.Speed multi", 1.5);
 		concussionRange = getConfig().getDouble("Paintball.Extras.Concussion Nade.Flash Range", 7.0);
-		concussionBlindnessDuration = getConfig().getInt("Paintball.Extras.Concussion Nade.Blindness Duration in Seconds", 1);
-		concussionConfusionDuration = getConfig().getInt("Paintball.Extras.Concussion Nade.Confusion Duration in Seconds", 10);
-		concussionSlownessDuration = getConfig().getInt("Paintball.Extras.Concussion Nade.Slowness Duration in Seconds", 8);
+		concussionBlindnessDuration = getConfig().getInt("Paintball.Extras.Concussion Nade.Blindness Duration in Seconds", 2);
+		concussionConfusionDuration = getConfig().getInt("Paintball.Extras.Concussion Nade.Confusion Duration in Seconds", 12);
+		concussionSlownessDuration = getConfig().getInt("Paintball.Extras.Concussion Nade.Slowness Duration in Seconds", 10);
 		concussionTimeUntilExplosion = getConfig().getInt("Paintball.Extras.Concussion Nade.Seconds Until Explosion", 2);
 
 		airstrike = getConfig().getBoolean("Paintball.Extras.Airstrike.enabled", true);
