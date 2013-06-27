@@ -265,6 +265,12 @@ public class Match {
 			
 			@Override
 			public void run() {
+				// level bar
+				if (plugin.useXPBar) {
+					for (Player player : Lobby.LOBBY.getMembers()) {
+						player.setLevel(roundTimer.getTime());
+					}
+				}
 				roundTimer = null;
 				// END:
 				if (matchOver)

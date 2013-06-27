@@ -433,11 +433,16 @@ public class MatchManager{
 				
 				@Override
 				public void run() {
-					for (Player player : Lobby.LOBBY.getMembers()) {
-						player.setLevel(countdown.getTime());
-						player.playSound(player.getLocation(), Sound.ORB_PICKUP, 100L, 2L);	
+					if (plugin.useXPBar) {
+						for (Player player : Lobby.LOBBY.getMembers()) {
+							player.setLevel(countdown.getTime());	
+						}
 					}
 					countdown = null;
+					
+					for (Player player : Lobby.LOBBY.getMembers()) {
+						player.playSound(player.getLocation(), Sound.ORB_PICKUP, 100L, 2L);	
+					}
 					String status = ready();
 					if(status.equalsIgnoreCase(Translator.getString("READY"))) {
 						//start match
