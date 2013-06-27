@@ -768,19 +768,27 @@ public class EventListener implements Listener {
 			Player target = (Player) event.getEntity();
 			Lobby team = Lobby.getTeam(target);
 			if (team != null) {
+				DamageCause cause = event.getCause();
+				int fireTicks = 0;
+				if (cause == DamageCause.FIRE_TICK) {
+					fireTicks = target.getFireTicks();
+					target.setFireTicks(0);
+				}
 				int damage = event.getDamage();
 				event.setDamage(0);
 				event.setCancelled(true);
 				Match match = plugin.matchManager.getMatch(target);
 				if (match != null && team != Lobby.SPECTATE && match.isSurvivor(target) && match.started) {
-					if ((plugin.falldamage && event.getCause() == DamageCause.FALL) 
-							|| (plugin.otherDamage && event.getCause() != DamageCause.FALL 
-							&& event.getCause() != DamageCause.ENTITY_ATTACK && event.getCause() != DamageCause.PROJECTILE)) {
+					if ((plugin.falldamage && cause == DamageCause.FALL) || (plugin.otherDamage && cause != DamageCause.FALL && cause != DamageCause.ENTITY_ATTACK && cause != DamageCause.PROJECTILE)) {
 						if (target.getHealth() <= damage) {
 							match.death(target);
 						} else {
 							event.setDamage(damage);
 							event.setCancelled(false);
+							// fire ticks:
+							if (cause == DamageCause.FIRE_TICK && plugin.otherDamage) {
+								target.setFireTicks(fireTicks);
+							}
 							
 							//heal armor
 							PlayerInventory inventory = target.getInventory();
