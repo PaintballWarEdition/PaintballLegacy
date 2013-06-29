@@ -236,8 +236,8 @@ public class Turret {
 										.toDegrees(Math.acos(y)));
 								entity.teleport(changed);
 
-								entity.getWorld().playSound(entity.getEyeLocation(), Sound.IRONGOLEM_THROW, 1.5F, 1F);
-								entity.getWorld().playSound(entity.getEyeLocation(), Sound.CHICKEN_EGG_POP, 1.5F, 1F);
+								entity.getWorld().playSound(entity.getEyeLocation(), Sound.IRONGOLEM_THROW, 2.0F, 1F);
+								entity.getWorld().playSound(entity.getEyeLocation(), Sound.CHICKEN_EGG_POP, 2.0F, 1F);
 								Snowball s = entity
 										.getLocation()
 										.getWorld()
@@ -281,7 +281,7 @@ public class Turret {
 		// some effect here:
 		if(effect && Paintball.instance.effects) {
 			Location loc = entity.getLocation().add(0, 1, 0);
-			entity.getWorld().playSound(loc, Sound.IRONGOLEM_DEATH, 100L, 2L);
+			entity.getWorld().playSound(loc, Sound.IRONGOLEM_DEATH, 3L, 2L);
 			entity.getWorld().playEffect(loc, Effect.SMOKE, 1);
 			entity.getWorld().playEffect(loc, Effect.SMOKE, 2);
 			entity.getWorld().playEffect(loc, Effect.SMOKE, 3);
@@ -301,7 +301,7 @@ public class Turret {
 		if(this.lives <= 0) {
 			this.die(true);
 		} else {
-			entity.getWorld().playSound(entity.getEyeLocation(), Sound.IRONGOLEM_HIT, 100L, 2L);
+			entity.getWorld().playSound(entity.getEyeLocation(), Sound.IRONGOLEM_HIT, 3L, 2L);
 		}
 	}
 

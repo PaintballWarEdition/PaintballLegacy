@@ -817,8 +817,8 @@ public class Match {
 		// KILLER:
 		TDMMatchStats killerStats = playerMatchStats.get(killerName);
 		killerStats.addStat(TDMMatchStat.KILLS, 1);
-		killerStats.addStat(TDMMatchStat.POINTS, plugin.pointsPerHit);
-		killerStats.addStat(TDMMatchStat.MONEY, plugin.cashPerHit);
+		killerStats.addStat(TDMMatchStat.POINTS, plugin.pointsPerKill);
+		killerStats.addStat(TDMMatchStat.MONEY, plugin.cashPerKill);
 		killerStats.calculateQuotes();
 		// TARGET:
 		TDMMatchStats targetStats = playerMatchStats.get(targetName);
