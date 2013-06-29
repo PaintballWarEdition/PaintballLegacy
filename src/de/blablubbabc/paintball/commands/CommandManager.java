@@ -18,9 +18,9 @@ import de.blablubbabc.paintball.utils.Utils;
 
 public class CommandManager implements CommandExecutor{
 	private Paintball plugin;
-	private CmdArena cmdArena;
-	private CmdAdmin cmdAdmin;
-	private CmdShop cmdShop;
+	public CmdArena cmdArena;
+	public CmdAdmin cmdAdmin;
+	public CmdShop cmdShop;
 	private String blablubbabc;
 
 
@@ -186,7 +186,7 @@ public class CommandManager implements CommandExecutor{
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 					} else if (args[0].equalsIgnoreCase("shop")) {
 						//executor
-						return cmdShop.command(sender, args);
+						return cmdShop.command(sender, args, false);
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 					}
 				}
@@ -217,7 +217,7 @@ public class CommandManager implements CommandExecutor{
 		}
 		return false;
 	}
-
+	
 	public boolean hasGeneralPerm(CommandSender sender) {
 		return plugin.noPerms || sender.hasPermission("paintball.general") || sender.isOp() || sender.hasPermission("paintball.admin");
 	}

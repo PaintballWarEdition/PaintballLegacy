@@ -145,6 +145,7 @@ public class Paintball extends JavaPlugin{
 	
 	public boolean commandSignEnabled;
 	public String commandSignIdentifier;
+	public boolean commandSignIgnoreShopDisabled;
 	
 	public boolean vote;
 	public int voteCash;
@@ -384,6 +385,7 @@ public class Paintball extends JavaPlugin{
 		// command signs:
 		if(getConfig().get("Paintball.Command Signs.enabled") == null)getConfig().set("Paintball.Command Signs.enabled", true);
 		if(getConfig().get("Paintball.Command Signs.Command Sign Identifier") == null)getConfig().set("Paintball.Command Signs.Command Sign Identifier", "[Paintball]");
+		if(getConfig().get("Paintball.Command Signs.Ignore Shop Disabled") == null)getConfig().set("Paintball.Command Signs.Ignore Shop Disabled", true);
 		// commands black-/whitelist:
 		if(getConfig().get("Paintball.Allowed Commands") == null)getConfig().set("Paintball.Allowed Commands", allowedCommands);
 		if(getConfig().get("Paintball.Blacklist.Enabled") == null)getConfig().set("Paintball.Blacklist.Enabled", false);
@@ -565,6 +567,7 @@ public class Paintball extends JavaPlugin{
 		
 		commandSignEnabled = getConfig().getBoolean("Paintball.Command Signs.enabled", true);
 		commandSignIdentifier = getConfig().getString("Paintball.Command Signs.Command Sign Identifier", "[Paintball]");
+		commandSignIgnoreShopDisabled = getConfig().getBoolean("Paintball.Command Signs.Ignore Shop Disabled", true);
 		
 		teleportFix = getConfig().getBoolean("Paintball.Teleport Fix", true);
 		useXPBar = getConfig().getBoolean("Paintball.Use XP Bar", true);

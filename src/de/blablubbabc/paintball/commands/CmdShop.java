@@ -34,7 +34,7 @@ public class CmdShop {
 	}
 	
 	@SuppressWarnings("deprecation")
-	public boolean command(CommandSender sender, String[] args) {
+	public boolean command(CommandSender sender, String[] args, boolean ignoreShopDisabled) {
 		if (sender instanceof Player) {
 			//PERMISSION CHECK
 			if (!plugin.noPerms) {
@@ -45,7 +45,7 @@ public class CmdShop {
 			}
 			
 			Player player = (Player) sender;
-			if (!plugin.shop) {
+			if (!plugin.shop && !ignoreShopDisabled) {
 				player.sendMessage(Translator.getString("SHOP_INACTIVE"));
 				return true;
 			}

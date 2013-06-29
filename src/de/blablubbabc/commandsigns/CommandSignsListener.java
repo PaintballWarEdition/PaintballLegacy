@@ -35,9 +35,22 @@ public class CommandSignsListener implements Listener {
 						String command = sign.getLine(i);
 						if (!command.isEmpty()) {
 							if (command.startsWith("/")) command = command.substring(1);
-							Player player = event.getPlayer();
-							player.performCommand(command);
 							event.setCancelled(true);
+							Player player = event.getPlayer();
+							
+							// pb shop sign and normal shop disabled:
+							if (command.startsWith("pb shop") && !plugin.shop && plugin.commandSignIgnoreShopDisabled) {
+								String[] argsCmd = command.split(" ");
+								String[] args = new String[argsCmd.length - 1];
+								for (int j = 1; i < argsCmd.length; i++) {
+									args[j - 1] = argsCmd[j];
+								}
+								// run shop command and ignore shop inactive:
+								plugin.commandManager.cmdShop.command(player, args, true);
+							} else {
+								// perform command like normal:
+								player.performCommand(command);
+							}
 							break;
 						}
 					}
