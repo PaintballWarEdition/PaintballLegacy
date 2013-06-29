@@ -20,6 +20,8 @@ import org.bukkit.plugin.Plugin;
 import org.bukkit.plugin.java.JavaPlugin;
 
 import de.blablubbabc.BlaDB.BlaSQLite;
+import de.blablubbabc.commandsigns.CommandSignsListener;
+import de.blablubbabc.paintball.commands.CommandManager;
 import de.blablubbabc.paintball.extras.Airstrike;
 import de.blablubbabc.paintball.extras.Ball;
 import de.blablubbabc.paintball.extras.Concussion;
@@ -75,6 +77,7 @@ public class Paintball extends JavaPlugin{
 	public CommandManager commandManager;
 	public MatchManager matchManager;
 	public EventListener listener;
+	public CommandSignsListener commandSignListener;
 	public TagAPIListener tagAPI;
 	public VoteListener voteListener;
 	public Newsfeeder feeder;
@@ -139,6 +142,9 @@ public class Paintball extends JavaPlugin{
 	public boolean autoSpecLobby;
 	public boolean effects;
 	public boolean debug;
+	
+	public boolean commandSignEnabled;
+	public String commandSignIdentifier;
 	
 	public boolean vote;
 	public int voteCash;
@@ -353,6 +359,7 @@ public class Paintball extends JavaPlugin{
 		if(getConfig().get("Paintball.VoteListener.Cash") == null)getConfig().set("Paintball.VoteListener.Cash", 100);
 		if(getConfig().get("Paintball.Auto Lobby") == null)getConfig().set("Paintball.Auto Lobby", false);
 		if(getConfig().get("Paintball.Auto Team") == null)getConfig().set("Paintball.Auto Team", false);
+		// points and cash:
 		if(getConfig().get("Paintball.Points per Kill") == null)getConfig().set("Paintball.Points per Kill", 2);
 		if(getConfig().get("Paintball.Points per Hit") == null)getConfig().set("Paintball.Points per Hit", 1);
 		if(getConfig().get("Paintball.Points per Team-Attack") == null)getConfig().set("Paintball.Points per Team-Attack", -1);
@@ -362,6 +369,7 @@ public class Paintball extends JavaPlugin{
 		if(getConfig().get("Paintball.Cash per Hit") == null)getConfig().set("Paintball.Cash per Hit", 0);
 		if(getConfig().get("Paintball.Cash per Win") == null)getConfig().set("Paintball.Cash per Win", 10);
 		if(getConfig().get("Paintball.Cash per Round") == null)getConfig().set("Paintball.Cash per Round", 0);
+		
 		if(getConfig().get("Paintball.Ball speed multi") == null)getConfig().set("Paintball.Ball speed multi", 2.5);
 		if(getConfig().get("Paintball.Colored listnames") == null)getConfig().set("Paintball.Colored listnames", true);
 		if(getConfig().get("Paintball.Colored chatnames") == null)getConfig().set("Paintball.Colored chatnames", true);
@@ -373,6 +381,10 @@ public class Paintball extends JavaPlugin{
 		if(getConfig().get("Paintball.Effects") == null)getConfig().set("Paintball.Effects", true);
 		if(getConfig().get("Paintball.Teleport Fix") == null)getConfig().set("Paintball.Teleport Fix", true);
 		if(getConfig().get("Paintball.Use XP Bar") == null)getConfig().set("Paintball.Use XP Bar", true);
+		// command signs:
+		if(getConfig().get("Paintball.Command Signs.enabled") == null)getConfig().set("Paintball.Command Signs.enabled", true);
+		if(getConfig().get("Paintball.Command Signs.Command Sign Identifier") == null)getConfig().set("Paintball.Command Signs.Command Sign Identifier", "[Paintball]");
+		// commands black-/whitelist:
 		if(getConfig().get("Paintball.Allowed Commands") == null)getConfig().set("Paintball.Allowed Commands", allowedCommands);
 		if(getConfig().get("Paintball.Blacklist.Enabled") == null)getConfig().set("Paintball.Blacklist.Enabled", false);
 		if(getConfig().get("Paintball.Blacklist.Admin Override") == null)getConfig().set("Paintball.Blacklist.Admin Override", true);
@@ -550,6 +562,9 @@ public class Paintball extends JavaPlugin{
 		
 		vote = getConfig().getBoolean("Paintball.VoteListener.enabled", true);
 		voteCash = getConfig().getInt("Paintball.VoteListener.Cash", 100);
+		
+		commandSignEnabled = getConfig().getBoolean("Paintball.Command Signs.enabled", true);
+		commandSignIdentifier = getConfig().getString("Paintball.Command Signs.Command Sign Identifier", "[Paintball]");
 		
 		teleportFix = getConfig().getBoolean("Paintball.Teleport Fix", true);
 		useXPBar = getConfig().getBoolean("Paintball.Use XP Bar", true);
@@ -823,6 +838,8 @@ public class Paintball extends JavaPlugin{
 		rankManager = new RankManager(new File(this.getDataFolder().getPath() + File.separator + "ranks.yml"));
 		// SERVERLISTER CONFIG:
 		serverList = new Serverlister();
+		// COMMAND SIGNS LISTENER
+		commandSignListener = new CommandSignsListener(this);
 		//PLAYERMANAGER
 		playerManager = new PlayerManager();
 		//Newsfeeder

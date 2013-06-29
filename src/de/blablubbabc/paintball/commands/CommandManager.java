@@ -1,4 +1,4 @@
-package de.blablubbabc.paintball;
+package de.blablubbabc.paintball.commands;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -10,9 +10,8 @@ import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
-import de.blablubbabc.paintball.commands.CmdAdmin;
-import de.blablubbabc.paintball.commands.CmdArena;
-import de.blablubbabc.paintball.commands.CmdShop;
+import de.blablubbabc.paintball.Lobby;
+import de.blablubbabc.paintball.Paintball;
 import de.blablubbabc.paintball.statistics.player.PlayerStat;
 import de.blablubbabc.paintball.utils.Translator;
 import de.blablubbabc.paintball.utils.Utils;
