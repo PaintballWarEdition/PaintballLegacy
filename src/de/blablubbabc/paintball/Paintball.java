@@ -116,7 +116,10 @@ public class Paintball extends JavaPlugin{
 	public int balls;
 	public double speedmulti;
 	public boolean listnames;
-	public boolean chatnames;
+	public boolean chatMessageColor;
+	public boolean chatNameColorViaTempDisplayNameChanging;
+	public boolean chatNameColorViaPlayerNameReplacing;
+	
 	public boolean shop;
 	public List<String> shopGoods;
 	public List<String> allowedCommands;
@@ -373,6 +376,11 @@ public class Paintball extends JavaPlugin{
 		
 		if(getConfig().get("Paintball.Ball speed multi") == null)getConfig().set("Paintball.Ball speed multi", 2.5);
 		if(getConfig().get("Paintball.Colored listnames") == null)getConfig().set("Paintball.Colored listnames", true);
+		// chat colors
+		if(getConfig().get("Paintball.Chat.Colored Message") == null)getConfig().set("Paintball.Chat.Colored Message", true);
+		if(getConfig().get("Paintball.Chat.Colored Name By Displayname Replacing") == null)getConfig().set("Paintball.Chat.Colored Name By Displayname Replacing", false);
+		if(getConfig().get("Paintball.Chat.Colored Name By Temporary Displayname Changing") == null)getConfig().set("Paintball.Chat.Colored Name By Temporary Displayname Changing", false);
+		
 		if(getConfig().get("Paintball.Colored chatnames") == null)getConfig().set("Paintball.Colored chatnames", true);
 		if(getConfig().get("Paintball.Only Random") == null)getConfig().set("Paintball.Only Random", false);
 		if(getConfig().get("Paintball.Auto Random") == null)getConfig().set("Paintball.Auto Random", true);
@@ -628,7 +636,11 @@ public class Paintball extends JavaPlugin{
 
 		speedmulti = getConfig().getDouble("Paintball.Ball speed multi", 1.5);
 		listnames = getConfig().getBoolean("Paintball.Colored listnames", true);
-		chatnames = getConfig().getBoolean("Paintball.Colored chatnames", true);
+		// chat colors
+		chatMessageColor = getConfig().getBoolean("Paintball.Chat.Colored Message", true);
+		chatNameColorViaPlayerNameReplacing = getConfig().getBoolean("Paintball.Chat.Colored Name By Displayname Replacing", false);
+		chatNameColorViaTempDisplayNameChanging = getConfig().getBoolean("Paintball.Chat.Colored Name By Temporary Displayname Changing", false);
+		
 		onlyRandom = getConfig().getBoolean("Paintball.Only Random", false);
 		autoRandom = getConfig().getBoolean("Paintball.Auto Random", true);
 		worldMode = getConfig().getBoolean("Paintball.World Mode.enabled", false);

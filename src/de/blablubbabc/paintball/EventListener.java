@@ -1009,22 +1009,71 @@ public class EventListener implements Listener {
 	 */
 
 	@EventHandler(priority = EventPriority.LOWEST)
-	public void onPlayerChat(AsyncPlayerChatEvent event) {
-		if (plugin.chatnames) {
-			Player player = event.getPlayer();
+	public void onPlayerChatEarly(AsyncPlayerChatEvent event) {
+		if (plugin.chatMessageColor || plugin.chatNameColorViaTempDisplayNameChanging) {
+			final Player player = event.getPlayer();
 			if (Lobby.LOBBY.isMember(player)) {
-				ChatColor farbe = Lobby.LOBBY.color();
+				ChatColor color = Lobby.LOBBY.color();
 				if (Lobby.isPlaying(player) || Lobby.isSpectating(player)) {
 					Match match = plugin.matchManager.getMatch(player);
-					// Color:
+					// colorize message:
 					if (match.isRed(player))
-						farbe = Lobby.RED.color();
+						color = Lobby.RED.color();
 					else if (match.isBlue(player))
-						farbe = Lobby.BLUE.color();
+						color = Lobby.BLUE.color();
 					else if (match.isSpec(player))
-						farbe = Lobby.SPECTATE.color();
+						color = Lobby.SPECTATE.color();
 				}
-				event.setMessage(farbe + event.getMessage());
+				if (plugin.chatMessageColor) event.setMessage(color + event.getMessage());
+				if (plugin.chatNameColorViaTempDisplayNameChanging) {
+					final String oldDisplayName = player.getDisplayName();
+					player.setDisplayName(color + oldDisplayName);
+					plugin.getServer().getScheduler().runTask(plugin, new Runnable() {
+						
+						@Override
+						public void run() {
+							player.setDisplayName(oldDisplayName);
+						}
+					});
+				}
+			}
+		}
+	}
+	
+	@EventHandler(priority = EventPriority.HIGHEST)
+	public void onPlayerChatLate(AsyncPlayerChatEvent event) {
+		if (plugin.chatNameColorViaPlayerNameReplacing || (plugin.ranks && plugin.ranksChatPrefix)) {
+			Player player = event.getPlayer();
+			String playerName = player.getName();
+			if (Lobby.LOBBY.isMember(player)) {
+				// rank prefix:
+				if (plugin.ranks && plugin.ranksChatPrefix ) {
+					Rank rank = plugin.rankManager.getRank(playerName);
+					String prefix = rank.getPrefix();
+					if (prefix != null && !prefix.isEmpty()) {
+						event.setFormat(prefix + event.getFormat());
+					}
+				}
+				//chat name color:
+				if (plugin.chatNameColorViaPlayerNameReplacing) {
+					if (Lobby.isPlaying(player) || Lobby.isSpectating(player)) {
+						ChatColor color = Lobby.LOBBY.color();
+						Match match = plugin.matchManager.getMatch(player);
+						// colorize message:
+						if (match.isRed(player))
+							color = Lobby.RED.color();
+						else if (match.isBlue(player))
+							color = Lobby.BLUE.color();
+						else if (match.isSpec(player))
+							color = Lobby.SPECTATE.color();
+						
+						// change name color via format:
+						String format = event.getFormat();
+						String displayName = ChatColor.stripColor(player.getDisplayName());
+						format = format.replaceFirst(displayName, color + displayName);
+						event.setFormat(format);
+					}
+				}
 			}
 		}
 	}
