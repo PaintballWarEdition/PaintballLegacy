@@ -1007,10 +1007,10 @@ public class EventListener implements Listener {
 	 * m[1].equalsIgnoreCase("?")) { plugin.cm.pbhelp(player); } else if
 	 * (m[1].equalsIgnoreCase("info")) { plugin.cm.pbinfo(player); } } }
 	 */
-
+	
 	@EventHandler(priority = EventPriority.LOWEST)
 	public void onPlayerChatEarly(AsyncPlayerChatEvent event) {
-		if (plugin.chatMessageColor || plugin.chatNameColorViaTempDisplayNameChanging) {
+		if (plugin.chatMessageColor) {
 			final Player player = event.getPlayer();
 			if (Lobby.LOBBY.isMember(player)) {
 				ChatColor color = Lobby.LOBBY.color();
@@ -1025,29 +1025,18 @@ public class EventListener implements Listener {
 						color = Lobby.SPECTATE.color();
 				}
 				if (plugin.chatMessageColor) event.setMessage(color + event.getMessage());
-				if (plugin.chatNameColorViaTempDisplayNameChanging) {
-					final String oldDisplayName = player.getDisplayName();
-					player.setDisplayName(color + oldDisplayName);
-					plugin.getServer().getScheduler().runTask(plugin, new Runnable() {
-						
-						@Override
-						public void run() {
-							player.setDisplayName(oldDisplayName);
-						}
-					});
-				}
 			}
 		}
 	}
 	
 	@EventHandler(priority = EventPriority.HIGHEST)
 	public void onPlayerChatLate(AsyncPlayerChatEvent event) {
-		if (plugin.chatNameColorViaPlayerNameReplacing || (plugin.ranks && plugin.ranksChatPrefix)) {
+		if (plugin.chatNameColor || plugin.ranksChatPrefix) {
 			Player player = event.getPlayer();
 			String playerName = player.getName();
 			if (Lobby.LOBBY.isMember(player)) {
 				// rank prefix:
-				if (plugin.ranks && plugin.ranksChatPrefix ) {
+				if (plugin.ranksChatPrefix ) {
 					Rank rank = plugin.rankManager.getRank(playerName);
 					String prefix = rank.getPrefix();
 					if (prefix != null && !prefix.isEmpty()) {
@@ -1055,7 +1044,7 @@ public class EventListener implements Listener {
 					}
 				}
 				//chat name color:
-				if (plugin.chatNameColorViaPlayerNameReplacing) {
+				if (plugin.chatNameColor) {
 					if (Lobby.isPlaying(player) || Lobby.isSpectating(player)) {
 						ChatColor color = Lobby.LOBBY.color();
 						Match match = plugin.matchManager.getMatch(player);

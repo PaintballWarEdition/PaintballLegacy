@@ -117,8 +117,10 @@ public class Paintball extends JavaPlugin{
 	public double speedmulti;
 	public boolean listnames;
 	public boolean chatMessageColor;
-	public boolean chatNameColorViaTempDisplayNameChanging;
-	public boolean chatNameColorViaPlayerNameReplacing;
+	public boolean chatNameColor;
+	
+	public boolean ranksLobbyArmor;
+	public boolean ranksChatPrefix;
 	
 	public boolean shop;
 	public List<String> shopGoods;
@@ -378,10 +380,12 @@ public class Paintball extends JavaPlugin{
 		if(getConfig().get("Paintball.Colored listnames") == null)getConfig().set("Paintball.Colored listnames", true);
 		// chat colors
 		if(getConfig().get("Paintball.Chat.Colored Message") == null)getConfig().set("Paintball.Chat.Colored Message", true);
-		if(getConfig().get("Paintball.Chat.Colored Name By Displayname Replacing") == null)getConfig().set("Paintball.Chat.Colored Name By Displayname Replacing", false);
-		if(getConfig().get("Paintball.Chat.Colored Name By Temporary Displayname Changing") == null)getConfig().set("Paintball.Chat.Colored Name By Temporary Displayname Changing", false);
+		if(getConfig().get("Paintball.Chat.Colored Name") == null)getConfig().set("Paintball.Chat.Colored Name", false);
 		
-		if(getConfig().get("Paintball.Colored chatnames") == null)getConfig().set("Paintball.Colored chatnames", true);
+		// ranks
+		if(getConfig().get("Paintball.Ranks.Chat Prefix") == null)getConfig().set("Paintball.Ranks.Chat Prefix", true);
+		if(getConfig().get("Paintball.Ranks.Lobby Armor") == null)getConfig().set("Paintball.Ranks.Lobby Armor", true);
+		
 		if(getConfig().get("Paintball.Only Random") == null)getConfig().set("Paintball.Only Random", false);
 		if(getConfig().get("Paintball.Auto Random") == null)getConfig().set("Paintball.Auto Random", true);
 		if(getConfig().get("Paintball.World Mode.enabled") == null)getConfig().set("Paintball.World Mode.enabled", false);
@@ -638,8 +642,11 @@ public class Paintball extends JavaPlugin{
 		listnames = getConfig().getBoolean("Paintball.Colored listnames", true);
 		// chat colors
 		chatMessageColor = getConfig().getBoolean("Paintball.Chat.Colored Message", true);
-		chatNameColorViaPlayerNameReplacing = getConfig().getBoolean("Paintball.Chat.Colored Name By Displayname Replacing", false);
-		chatNameColorViaTempDisplayNameChanging = getConfig().getBoolean("Paintball.Chat.Colored Name By Temporary Displayname Changing", false);
+		chatNameColor = getConfig().getBoolean("Paintball.Chat.Colored Name By Displayname Replacing", false);
+		
+		// ranks
+		ranksChatPrefix = getConfig().getBoolean("Paintball.Ranks.Chat Prefix", true);
+		ranksLobbyArmor = getConfig().getBoolean("Paintball.Ranks.Lobby Armor", true);
 		
 		onlyRandom = getConfig().getBoolean("Paintball.Only Random", false);
 		autoRandom = getConfig().getBoolean("Paintball.Auto Random", true);
@@ -1168,7 +1175,7 @@ public class Paintball extends JavaPlugin{
 					playerManager.teleportStoreClearPlayer(player, getNextLobbySpawn());
 					currentlyLoading.remove(playerName);
 					// ASSIGN RANK
-					rankManager.getRank(playerName).assignArmorToPlayer(player);
+					if (ranksLobbyArmor) rankManager.getRank(playerName).assignArmorToPlayer(player);
 					
 					// continue afterwards:
 					if (runAfterwards != null) runAfterwards.run();
@@ -1184,7 +1191,7 @@ public class Paintball extends JavaPlugin{
 		//Lobbyteleport
 		player.teleport(getNextLobbySpawn());
 		// ASSIGN RANK
-		rankManager.getRank(playerName).assignArmorToPlayer(player);
+		if (ranksLobbyArmor) rankManager.getRank(playerName).assignArmorToPlayer(player);
 	}
 	
 	public synchronized boolean leaveLobby(Player player, boolean messages) {
