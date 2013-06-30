@@ -6,13 +6,14 @@ import java.util.List;
 import java.util.Map;
 
 import org.bukkit.Bukkit;
-import org.bukkit.ChatColor;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
 
 import de.blablubbabc.paintball.Paintball;
+import de.blablubbabc.paintball.utils.KeyValuePair;
+import de.blablubbabc.paintball.utils.Translator;
 import de.blablubbabc.paintball.utils.Utils;
 
 public class ShopMenu {
@@ -39,9 +40,8 @@ public class ShopMenu {
 		this.plugin = plugin;
 		this.goods = goods;
 		
-		//TODO translation support
-		Utils.setItemMeta(nextIcon, ChatColor.RED + "Next Page ->", null);
-		Utils.setItemMeta(prevIcon, ChatColor.RED + "<- Previous Page", null);
+		Utils.setItemMeta(nextIcon, Translator.getString("SHOP_NEXT_PAGE"), null);
+		Utils.setItemMeta(prevIcon, Translator.getString("SHOP_PREVIOUS_PAGE"), null);
 		
 		// calculate needed rows:
 		int neededRows = (int) Math.ceil((int) (goods.length / 9));
@@ -66,7 +66,7 @@ public class ShopMenu {
 		// one inventory page enough ? -> no page buttons needed
 		if (left <= inventorySlots) {
 			singlePage = true;
-			inventories[0] = Bukkit.createInventory(null, inventorySlots, ChatColor.GREEN + "Paintball" + ChatColor.WHITE + " - " + ChatColor.GREEN + "Shop");
+			inventories[0] = Bukkit.createInventory(null, inventorySlots, Translator.getString("SHOP_NAME"));
 			int size = Math.min(left, contentSlots);
 			left -= size;
 			for (int j = 0; j < size; j++) {
@@ -75,7 +75,7 @@ public class ShopMenu {
 		} else {
 			singlePage = false;
 			for (int i = 0; i < num; i++) {
-				inventories[i] = Bukkit.createInventory(null, inventorySlots, ChatColor.GREEN + "Paintball" + ChatColor.WHITE + " - " + ChatColor.GREEN + "Shop");
+				inventories[i] = Bukkit.createInventory(null, inventorySlots, Translator.getString("SHOP_NAME"));
 				int size = Math.min(left, contentSlots);
 				left -= size;
 				for (int j = 0; j < size; j++) {
@@ -85,7 +85,7 @@ public class ShopMenu {
 				// only needed if num of inventories > 1
 				ItemStack page = pageIcon.clone();
 				page.setAmount(i + 1);
-				Utils.setItemMeta(page, "Page " + (i + 1), null);
+				Utils.setItemMeta(page, Translator.getString("SHOP_PAGE", new KeyValuePair("page", String.valueOf(i + 1))), null);
 				inventories[i].setItem(previousSlot, prevIcon);
 				inventories[i].setItem(pageSlot, page);
 				inventories[i].setItem(nextSlot, nextIcon);

@@ -39,6 +39,9 @@ public class ShopManager {
 		
 		// init shops:
 		shops.add(new ShopMenu(plugin, goods));
+		
+		// register shop listener:
+		plugin.getServer().getPluginManager().registerEvents(new ShopListener(plugin), plugin);
 	}
 	
 	public ShopGood[] getGoods() {

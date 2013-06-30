@@ -14,13 +14,16 @@ import org.bukkit.event.inventory.InventoryType.SlotType;
 import org.bukkit.event.player.PlayerInteractEvent;
 
 import de.blablubbabc.paintball.Paintball;
+import de.blablubbabc.paintball.utils.Translator;
 
 public class ShopListener implements Listener {
 	
 	private Paintball plugin;
+	private String shopSign;
 	
 	public ShopListener(Paintball plugin) {
 		this.plugin = plugin;
+		shopSign = Translator.getString("SHOP_SIGN");
 	}
 	
 	@SuppressWarnings("deprecation")
@@ -58,8 +61,7 @@ public class ShopListener implements Listener {
 			if (state instanceof Sign) {
 				Sign sign = (Sign) state;
 				String line1 = ChatColor.stripColor(sign.getLine(0));
-				// TODO config node?
-				if (line1.equalsIgnoreCase("[PB SHOP]")) {
+				if (line1.equalsIgnoreCase(shopSign)) {
 					plugin.shopManager.getShopMenu().open(event.getPlayer());
 				}
 			}

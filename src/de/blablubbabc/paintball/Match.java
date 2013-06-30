@@ -341,6 +341,10 @@ public class Match {
 				Utils.setLeatherArmorColor(new ItemStack(Material.LEATHER_BOOTS, 1),
 						Lobby.getTeam(getTeamName(player)).colorA()));
 		
+		// SHOP ITEM
+		if (plugin.shop) player.getInventory().setItem(7, plugin.shopManager.item.clone());
+		
+		// TEAM WOOL
 		if (red) {
 			player.getInventory().setItem(8, ItemManager.setMeta(new ItemStack(Material.WOOL, 1, (short)0, DyeColor.RED.getWoolData())));
 		} else {
