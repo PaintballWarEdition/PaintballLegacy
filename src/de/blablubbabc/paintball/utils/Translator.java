@@ -184,7 +184,7 @@ public class Translator {
 		Map<String, String> language = new HashMap<String, String>();
 		Scanner scanner = null;
 		try {
-			scanner = new Scanner(file);
+			scanner = new Scanner(file, "utf-8");
 			// TEST
 			int line_skipped = 0;
 			int line = 0;
