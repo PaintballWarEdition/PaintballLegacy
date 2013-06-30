@@ -130,12 +130,13 @@ public class Utils {
 	}
 
 	public static ItemStack setLeatherArmorColor(ItemStack item, Color color) {
-		try {
-			LeatherArmorMeta meta = (LeatherArmorMeta) item.getItemMeta();
-			meta.setColor(color);
-			item.setItemMeta(meta);
-		} catch (ClassCastException e) {
-			e.printStackTrace();
+		if (item != null && color != null && item.hasItemMeta()) {
+			ItemMeta itemMeta = item.getItemMeta();
+			if (itemMeta instanceof LeatherArmorMeta) {
+				LeatherArmorMeta meta = (LeatherArmorMeta) item.getItemMeta();
+				meta.setColor(color);
+				item.setItemMeta(meta);
+			}
 		}
 		return item;
 	}

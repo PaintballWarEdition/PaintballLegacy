@@ -14,6 +14,7 @@ import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.inventory.ItemStack;
+import org.bukkit.inventory.meta.LeatherArmorMeta;
 
 import de.blablubbabc.paintball.statistics.player.PlayerStat;
 import de.blablubbabc.paintball.statistics.player.PlayerStats;
@@ -55,10 +56,10 @@ public class RankManager {
 				if (prefix != null) ChatColor.translateAlternateColorCodes('&', prefix);
 				
 				// ARMOR
-				ItemStack helmet = rankSection.getItemStack("Helmet");
-				ItemStack chestplate = rankSection.getItemStack("Chestplate");
-				ItemStack leggings = rankSection.getItemStack("Leggings");
-				ItemStack boots = rankSection.getItemStack("Boots");
+				ItemStack helmet = itemFromConfig(rankSection.getConfigurationSection("Helmet"));
+				ItemStack chestplate = itemFromConfig(rankSection.getConfigurationSection("Chestplate"));
+				ItemStack leggings = itemFromConfig(rankSection.getConfigurationSection("Leggings"));
+				ItemStack boots = itemFromConfig(rankSection.getConfigurationSection("Boots"));
 				
 				// ADD RANK:
 				Rank rank = new Rank(name, neededPoints, prefix, helmet, chestplate, leggings, boots);
@@ -83,10 +84,11 @@ public class RankManager {
 			String node = "Ranks." + rank.getName();
 			config.set(node + ".Needed Points", rank.getNeededPoints());
 			config.set(node + ".Prefix", rank.getPrefix());
-			config.set(node + ".Helmet", rank.getHelmet());
-			config.set(node + ".Chestplate", rank.getChestplate());
-			config.set(node + ".Leggings", rank.getLeggings());
-			config.set(node + ".Boots", rank.getBoots());
+			
+			itemToConfig(config.createSection(node + ".Helmet"), rank.getHelmet());
+			itemToConfig(config.createSection(node + ".Chestplate"), rank.getChestplate());
+			itemToConfig(config.createSection(node + ".Leggings"), rank.getLeggings());
+			itemToConfig(config.createSection(node + ".Boots"), rank.getBoots());
 		}
 		
 		
@@ -97,6 +99,46 @@ public class RankManager {
 			Log.severe("Unable to write to the rank configuration file at \"" + file.getPath() + "\"", true);
 		}
 		
+		
+	}
+	
+	private ItemStack itemFromConfig(ConfigurationSection section) {
+		if (section == null) return null;
+		
+		String type = section.getString("Type");
+		if (type == null) return null;
+		Material material = Material.matchMaterial(type);
+		if (material == null) return null;
+		ItemStack item = new ItemStack(material);
+		
+		ConfigurationSection colorSection = section.getConfigurationSection("Color");
+		if (colorSection != null) {
+			int red = Math.max(0, Math.min(255, colorSection.getInt("Red", 0)));
+			int green = Math.max(0, Math.min(255, colorSection.getInt("Green", 0)));
+			int blue = Math.max(0, Math.min(255, colorSection.getInt("Blue", 0)));
+			Color color = Color.fromRGB(red, green, blue);
+			
+			Utils.setLeatherArmorColor(item, color);
+		}
+		
+		return item;
+	}
+	
+	private ConfigurationSection itemToConfig(ConfigurationSection section, ItemStack item) {
+		if (section == null || item == null) return null;
+		
+		Material type = item.getType();
+		section.set("Type", type.name());
+		if (type == Material.LEATHER_CHESTPLATE || type == Material.LEATHER_LEGGINGS || type == Material.LEATHER_BOOTS || type == Material.LEATHER_HELMET) {
+			ConfigurationSection colorSection = section.createSection("Color");
+			LeatherArmorMeta meta = (LeatherArmorMeta) item.getItemMeta();
+			Color color = meta.getColor();
+			colorSection.set("Red", color.getRed());
+			colorSection.set("Green", color.getGreen());
+			colorSection.set("Blue", color.getBlue());
+		}
+		
+		return section;
 		
 	}
 	
