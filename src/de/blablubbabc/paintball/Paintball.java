@@ -859,6 +859,40 @@ public class Paintball extends JavaPlugin{
 			getServer().getPluginManager().disablePlugin(this);
 			return;
 		}
+		
+		// INIT STATICS
+		ItemManager.init();
+
+		Airstrike.init();
+		Ball.init();
+		Flashbang.init();
+		Concussion.init();
+		Gifts.init();
+		Grenade.init();
+		GrenadeM2.init();
+		Mine.init();
+		NoGravity.init();
+		Orbitalstrike.init();
+		Pumpgun.init();
+		Rocket.init();
+		Shotgun.init();
+		Sniper.init();
+		Turret.init();
+		Utils.init();
+		// Log is already init above
+		// Translator will be init below
+		Sounds.init();
+		Origin.values();
+
+		// init enums:
+		Instrus.values();
+		Lobby.values();
+		ArenaStat.values();
+		ArenaSetting.values();
+		GeneralStat.values();
+		TDMMatchStat.values();
+		PlayerStat.values();
+		
 		// RANKMANAGER
 		rankManager = new RankManager(new File(this.getDataFolder().getPath() + File.separator + "ranks.yml"));
 		// SERVERLISTER CONFIG:
@@ -1003,42 +1037,6 @@ public class Paintball extends JavaPlugin{
 		
 		//calculating turret angles:
 		Turret.calculateTable(turretAngleMin, turretAngleMax, turretTicks, turretXSize, turretYSize, this);
-
-		// INIT STATICS
-		ItemManager.init();
-		
-		Airstrike.init();
-		Ball.init();
-		Flashbang.init();
-		Concussion.init();
-		Gifts.init();
-		Grenade.init();
-		GrenadeM2.init();
-		Mine.init();
-		NoGravity.init();
-		Orbitalstrike.init();
-		Pumpgun.init();
-		Rocket.init();
-		Shotgun.init();
-		Sniper.init();
-		Turret.init();
-		Utils.init();
-		// Log is already init above
-		// Translator will be init below
-		Sounds.init();
-		Origin.values();
-
-		// init enums:
-		Instrus.values();
-		Lobby.values();
-		ArenaStat.values();
-		ArenaSetting.values();
-		GeneralStat.values();
-		TDMMatchStat.values();
-		PlayerStat.values();
-		
-		///// END INIT /////
-		
 		
 		
 		final Paintball plugin = this;

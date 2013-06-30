@@ -132,7 +132,7 @@ public class Translator {
 
 	// GETTER:
 	public static String getString(String key) {
-		return getString(key, (KeyValuePair) null);
+		return getString(key, (KeyValuePair[]) null);
 	}
 
 	public static String getString(String key, Map<String, String> vars) {
@@ -160,10 +160,12 @@ public class Translator {
 		if (value == null) {
 			return "ERROR:translation_is_missing!";
 		} else {
-			if (values != null) {
+			if (values != null && values.length > 0) {
 				// key-value-pair replacements
 				for (KeyValuePair v : values) {
-					value = value.replace("{" + v.getKey() + "}", v.getValue());
+					if (v != null) {
+						value = value.replace("{" + v.getKey() + "}", v.getValue());
+					}
 				}
 			}
 			// colors
