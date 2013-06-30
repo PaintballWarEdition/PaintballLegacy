@@ -44,6 +44,7 @@ import de.blablubbabc.paintball.features.TagAPIListener;
 import de.blablubbabc.paintball.features.VoteListener;
 import de.blablubbabc.paintball.melodies.Instrus;
 import de.blablubbabc.paintball.melodies.Musiker;
+import de.blablubbabc.paintball.shop.ShopManager;
 import de.blablubbabc.paintball.statistics.arena.ArenaSetting;
 import de.blablubbabc.paintball.statistics.arena.ArenaStat;
 import de.blablubbabc.paintball.statistics.general.GeneralStat;
@@ -78,6 +79,7 @@ public class Paintball extends JavaPlugin{
 	public MatchManager matchManager;
 	public EventListener listener;
 	public CommandSignsListener commandSignListener;
+	public ShopManager shopManager;
 	public TagAPIListener tagAPI;
 	public VoteListener voteListener;
 	public Newsfeeder feeder;
@@ -861,6 +863,8 @@ public class Paintball extends JavaPlugin{
 		rankManager = new RankManager(new File(this.getDataFolder().getPath() + File.separator + "ranks.yml"));
 		// SERVERLISTER CONFIG:
 		serverList = new Serverlister();
+		// SHOP MANAGER
+		shopManager = new ShopManager(this);
 		// COMMAND SIGNS LISTENER
 		commandSignListener = new CommandSignsListener(this);
 		//PLAYERMANAGER

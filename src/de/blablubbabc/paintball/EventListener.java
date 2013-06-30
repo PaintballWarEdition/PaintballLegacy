@@ -409,8 +409,8 @@ public class EventListener implements Listener {
 							// SOUND EFFECT
 							Location eyeLoc = player.getEyeLocation();
 							World world = player.getWorld();
-							world.playSound(eyeLoc, Sound.WOOD_CLICK, 1.5F, 0F);
-							world.playSound(eyeLoc, Sound.CHICKEN_EGG_POP, 1.5F, 2F);
+							world.playSound(eyeLoc, Sound.WOOD_CLICK, 2.0F, 0F);
+							world.playSound(eyeLoc, Sound.CHICKEN_EGG_POP, 2.0F, 2F);
 							
 							// SHOOT SNOWBALL
 							Snowball ball = (Snowball) world.spawnEntity(eyeLoc, EntityType.SNOWBALL);
@@ -494,7 +494,7 @@ public class EventListener implements Listener {
 						PlayerInventory inv = player.getInventory();
 						if (match.setting_grenades == -1 || inv.containsAtLeast(Grenade.item,  1)) {
 							player.sendMessage(Translator.getString("GRENADE_THROW"));
-							player.getWorld().playSound(player.getLocation(), Sound.SILVERFISH_IDLE, 1.5F, 1F);
+							player.getWorld().playSound(player.getLocation(), Sound.SILVERFISH_IDLE, 2.0F, 1F);
 							Egg egg = (Egg) player.getWorld().spawnEntity(player.getEyeLocation(), EntityType.EGG);
 							egg.setShooter(player);
 							// boosting:
@@ -515,7 +515,7 @@ public class EventListener implements Listener {
 				case SLIME_BALL:
 					// GRENADE 2
 					if (plugin.grenade2 && item.isSimilar(GrenadeM2.item)) {
-						player.getWorld().playSound(player.getLocation(), Sound.IRONGOLEM_THROW, 1.5F, 1F);
+						player.getWorld().playSound(player.getLocation(), Sound.IRONGOLEM_THROW, 2.0F, 1F);
 						player.sendMessage(Translator.getString("GRENADE_THROW"));
 						ItemStack nadeItem = GrenadeM2.item.clone();
 						ItemMeta meta = nadeItem.getItemMeta();
@@ -536,7 +536,7 @@ public class EventListener implements Listener {
 				case GHAST_TEAR:
 					// FLASHBANG
 					if (plugin.flashbang && item.isSimilar(Flashbang.item)) {
-						player.getWorld().playSound(player.getLocation(), Sound.IRONGOLEM_THROW, 1.5F, 1F);
+						player.getWorld().playSound(player.getLocation(), Sound.IRONGOLEM_THROW, 2.0F, 1F);
 						ItemStack nadeItem = Flashbang.item.clone();
 						ItemMeta meta = nadeItem.getItemMeta();
 						meta.setDisplayName("Flashbang " + Flashbang.getNext());
@@ -556,7 +556,7 @@ public class EventListener implements Listener {
 				case SPIDER_EYE:
 					// CONCUSSION
 					if (plugin.concussion && item.isSimilar(Concussion.item)) {
-						player.getWorld().playSound(player.getLocation(), Sound.IRONGOLEM_THROW, 1.5F, 1F);
+						player.getWorld().playSound(player.getLocation(), Sound.IRONGOLEM_THROW, 2.0F, 1F);
 						ItemStack nadeItem = Concussion.item.clone();
 						ItemMeta meta = nadeItem.getItemMeta();
 						meta.setDisplayName("Concussion " + Flashbang.getNext());
@@ -608,7 +608,7 @@ public class EventListener implements Listener {
 					if (plugin.rocket && item.isSimilar(Rocket.item)) {
 						if (Rocket.getRocketCountMatch() < plugin.rocketMatchLimit) {
 							if (Rocket.getRocketCountPlayer(playerName) < plugin.rocketPlayerLimit) {
-								player.getWorld().playSound(player.getLocation(), Sound.SILVERFISH_IDLE, 1.5F, 1F);
+								player.getWorld().playSound(player.getLocation(), Sound.SILVERFISH_IDLE, 2.0F, 1F);
 								Fireball rocket = (Fireball) player.getWorld().spawnEntity(player.getEyeLocation(), EntityType.FIREBALL);
 								rocket.setIsIncendiary(false);
 								rocket.setYield(0F);
@@ -664,6 +664,15 @@ public class EventListener implements Listener {
 								Gifts.unwrapGift(player);
 							}
 						}, 1L);
+					}
+					break;
+					
+				case BOOK_AND_QUILL:
+					// SHOP
+					if (plugin.shop && item.isSimilar(plugin.shopManager.item)) {
+						// no book opening
+						event.setCancelled(true);
+						plugin.shopManager.getShopMenu().open(player);
 					}
 					break;
 

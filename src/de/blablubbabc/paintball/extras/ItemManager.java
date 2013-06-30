@@ -73,6 +73,10 @@ public class ItemManager {
 			meta.setDisplayName(Translator.getString("WEAPON_PUMPGUN"));
 			break;
 			
+		case BOOK_AND_QUILL:
+			meta.setDisplayName(Translator.getString("SHOP_ITEM"));
+			break;
+			
 		case WOOL:
 			byte data = item.getData().getData();
 			if (data == DyeColor.RED.getWoolData()) {

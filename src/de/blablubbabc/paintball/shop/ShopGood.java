@@ -1,11 +1,18 @@
-package de.blablubbabc.paintball;
+package de.blablubbabc.paintball.shop;
 
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
+import org.bukkit.ChatColor;
+import org.bukkit.Material;
 import org.bukkit.inventory.ItemStack;
+import org.bukkit.inventory.meta.ItemMeta;
 
+import de.blablubbabc.paintball.extras.ItemManager;
 import de.blablubbabc.paintball.utils.Translator;
+import de.blablubbabc.paintball.utils.Utils;
 
 
 public class ShopGood {
@@ -17,22 +24,21 @@ public class ShopGood {
 		goodsDef.add("1-Turret-86-0-200");
 	 */
 	private String name = "empty";
-	private int amount = 0;
 	private ItemStack itemstack = null;
-	private int id = 0;
-	private short subid = 0;
 	private int price = 0;
 	private int neededRank = 0;
 	private String slot = "empty";
 	private boolean empty = false;
+	
+	private ItemStack icon;
 
 	public ShopGood(String slot) {
 		String[] split = slot.split("-");
 		if (split.length == 5 || split.length == 6) {
 			this.name = split[1];
-			this.amount = isInteger(split[0]);
-			this.id = isInteger(split[2]);
-			this.subid = isShort(isInteger(split[3]));
+			int amount = isInteger(split[0]);
+			int id = isInteger(split[2]);
+			short subid = isShort(isInteger(split[3]));
 			this.price = isInteger(split[4]);
 			
 			if (split.length == 6) {
@@ -43,7 +49,7 @@ public class ShopGood {
 			if(amount <= 0 || id < 0 || subid < 0 || price < 0 || this.name == null || this.name.isEmpty()) {
 				this.empty = true;
 			} else {
-				this.itemstack = new ItemStack(id, amount, subid);
+				this.itemstack = ItemManager.setMeta(new ItemStack(id, amount, subid));
 				
 				Map<String, String> vars = new HashMap<String, String>();
 				vars.put("amount", split[0]);
@@ -54,7 +60,35 @@ public class ShopGood {
 		} else {
 			this.empty = true;
 		}
-		if(this.empty) this.slot = Translator.getString("SHOP_EMPTY");
+		
+		// ICON:
+		// TOD translation support
+		if(this.empty) {
+			this.slot = Translator.getString("SHOP_EMPTY");
+			this.icon = new ItemStack(Material.SIGN_POST);
+			List<String> desc = new ArrayList<String>();
+			desc.add(ChatColor.RED + this.slot);
+			
+			this.icon = Utils.setItemMeta(this.icon, name, desc);
+			
+		} else {
+			this.icon = itemstack.clone();
+			
+			List<String> desc = new ArrayList<String>();
+			desc.add(ChatColor.RED + "__Price: " + ChatColor.GREEN + price + "$");
+			desc.add(ChatColor.RED + "__Item:");
+			
+			ItemMeta meta = itemstack.getItemMeta();
+			if (meta.hasDisplayName()) {
+				desc.add(ChatColor.GREEN + "- " + ChatColor.WHITE + itemstack.getAmount() + "x " + ChatColor.AQUA + meta.getDisplayName());
+			} else {
+				desc.add(ChatColor.GREEN + "- " + ChatColor.WHITE + itemstack.getAmount() + "x " 
+						+ ChatColor.AQUA + itemstack.getType().toString() + " (" + itemstack.getTypeId() + ":" + itemstack.getDurability() + ")");
+			}
+			
+			this.icon = Utils.setItemMeta(this.icon, name, desc);
+		}
+		
 	}
 	
 	private int isInteger(String s) {
@@ -91,17 +125,14 @@ public class ShopGood {
 	public int getPrice() {
 		return this.price;
 	}
-	
-	public Integer getAmount() {
-		return this.amount;
-	}
-	
-	public int getId() {
-		return this.id;
-	}
 
 	public int getNeededRank() {
 		return neededRank;
 	}
+	
+	public ItemStack getIcon() {
+		return icon;
+	}
+	
 	
 }
