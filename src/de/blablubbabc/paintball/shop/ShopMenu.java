@@ -67,7 +67,7 @@ public class ShopMenu {
 		if (left <= inventorySlots) {
 			singlePage = true;
 			inventories[0] = Bukkit.createInventory(null, inventorySlots, Translator.getString("SHOP_NAME"));
-			int size = Math.min(left, contentSlots);
+			int size = left;
 			left -= size;
 			for (int j = 0; j < size; j++) {
 				inventories[0].setItem(j, goods[j].getIcon());
