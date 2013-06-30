@@ -1,6 +1,8 @@
 package de.blablubbabc.paintball;
 
 import java.util.HashMap;
+import java.util.Map;
+
 import org.bukkit.inventory.ItemStack;
 
 import de.blablubbabc.paintball.utils.Translator;
@@ -15,11 +17,11 @@ public class ShopGood {
 		goodsDef.add("1-Turret-86-0-200");
 	 */
 	private String name = "empty";
-	private Integer amount = 0;
+	private int amount = 0;
 	private ItemStack itemstack = null;
-	private Integer id = 0;
-	private Short subid = 0;
-	private Integer price = 0;
+	private int id = 0;
+	private short subid = 0;
+	private int price = 0;
 	private int neededRank = 0;
 	private String slot = "empty";
 	private boolean empty = false;
@@ -30,24 +32,20 @@ public class ShopGood {
 			this.name = split[1];
 			this.amount = isInteger(split[0]);
 			this.id = isInteger(split[2]);
-			this.subid = isShort(isInteger(split[3]).intValue());
+			this.subid = isShort(isInteger(split[3]));
 			this.price = isInteger(split[4]);
 			
 			if (split.length == 6) {
-				Integer neededRankInt = isInteger(split[5]);
-				this.neededRank = neededRankInt != null ? neededRankInt : 0;
+				this.neededRank = isInteger(split[5]);
+				if (this.neededRank < 0) this.neededRank = 0;
 			}
 			
-			
-			if(this.amount == null || this.id == null || this.subid == null || this.price == null || this.name == null) {
-				this.empty = true;
-			}
-			else if(amount < 0 || id < 0 || subid < 0 || price < 0 || this.name.isEmpty()) {
+			if(amount <= 0 || id < 0 || subid < 0 || price < 0 || this.name == null || this.name.isEmpty()) {
 				this.empty = true;
 			} else {
 				this.itemstack = new ItemStack(id, amount, subid);
 				
-				HashMap<String, String> vars = new HashMap<String, String>();
+				Map<String, String> vars = new HashMap<String, String>();
 				vars.put("amount", split[0]);
 				vars.put("good", split[1]);
 				vars.put("price", split[4]);
@@ -59,18 +57,19 @@ public class ShopGood {
 		if(this.empty) this.slot = Translator.getString("SHOP_EMPTY");
 	}
 	
-	private Integer isInteger(String s) {
+	private int isInteger(String s) {
 		try {
 			Integer a = Integer.parseInt(s);
 			return a;
 		} catch(Exception e) {
-			return null;
+			return 0;
 		}
 	}
 	
-	private Short isShort(int i) {
-		if(i > Short.MAX_VALUE || i < Short.MIN_VALUE) return null;
-		else return (short) i;
+	private short isShort(int i) {
+		if(i > Short.MAX_VALUE) return Short.MAX_VALUE;
+		if (i < Short.MIN_VALUE) return Short.MIN_VALUE;
+		return (short) i;
 	}
 	
 	public boolean isEmpty() {
@@ -89,7 +88,7 @@ public class ShopGood {
 		return this.slot;
 	}
 	
-	public Integer getPrice() {
+	public int getPrice() {
 		return this.price;
 	}
 	
@@ -97,7 +96,7 @@ public class ShopGood {
 		return this.amount;
 	}
 	
-	public Integer getId() {
+	public int getId() {
 		return this.id;
 	}
 

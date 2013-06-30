@@ -13,6 +13,9 @@ public class Rank implements Comparable<Rank> {
 	private final ItemStack leggings;
 	private final ItemStack boots;
 	
+	// will be set after sorting of all ranks:
+	private int rankIndex = 0;
+	
 	public Rank(String name, int neededPoints, String prefix, ItemStack helmet, ItemStack chestplate, ItemStack leggings, ItemStack boots) {
 		this.name = name;
 		this.neededPoints = neededPoints;
@@ -70,6 +73,14 @@ public class Rank implements Comparable<Rank> {
 		}
 		return this.getNeededPoints() - other.getNeededPoints();
 		
+	}
+
+	public int getRankIndex() {
+		return rankIndex;
+	}
+
+	void setRankIndex(int rankIndex) {
+		this.rankIndex = rankIndex;
 	}
 	
 }

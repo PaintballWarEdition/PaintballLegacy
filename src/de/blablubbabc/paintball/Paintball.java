@@ -121,6 +121,7 @@ public class Paintball extends JavaPlugin{
 	
 	public boolean ranksLobbyArmor;
 	public boolean ranksChatPrefix;
+	public boolean ranksAdminBypassShop;
 	
 	public boolean shop;
 	public List<String> shopGoods;

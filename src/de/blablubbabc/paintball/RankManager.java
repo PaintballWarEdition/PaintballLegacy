@@ -71,6 +71,10 @@ public class RankManager {
 		
 		// SORT RANK LIST:
 		Collections.sort(ranks);
+		// SET RANK INDEXES:
+		for (int i = 0; i < ranks.size(); i++) {
+			ranks.get(i).setRankIndex(i);
+		}
 		
 		// WRITE RANKS BACK TO CONFIG:
 		// reset ranks section first:
@@ -147,4 +151,10 @@ public class RankManager {
 		}
 		return null;
 	}
+	
+	public Rank getRankByIndex(int index) {
+		index = Math.max(0, Math.min(index, ranks.size() - 1));
+		return ranks.get(index);
+	}
+	
 }

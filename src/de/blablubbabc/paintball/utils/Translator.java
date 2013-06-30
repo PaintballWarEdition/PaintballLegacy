@@ -7,6 +7,7 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Map.Entry;
 import java.util.Scanner;
 import org.bukkit.ChatColor;
 import org.bukkit.plugin.Plugin;
@@ -131,24 +132,23 @@ public class Translator {
 
 	// GETTER:
 	public static String getString(String key) {
-		if (!success) {
-			return "ERROR:could_not_load_language!";
-		}
-		String value;
-		if (use_def)
-			value = def_language.get(key.toUpperCase());
-		else
-			value = translation.get(key.toUpperCase());
-		if (value == null) {
-			return "ERROR:translation_is_missing!";
-		} else {
-			// colors
-			value = ChatColor.translateAlternateColorCodes('&', value);
-			return value;
-		}
+		return getString(key, (KeyValuePair) null);
 	}
 
 	public static String getString(String key, Map<String, String> vars) {
+		if (vars == null) return getString(key);
+		
+		KeyValuePair[] values = new KeyValuePair[vars.size()];
+		// vars
+		int i = 0;
+		for (Entry<String, String> entry : vars.entrySet()) {
+			values[i++] = new KeyValuePair(entry.getKey(), entry.getValue());
+		}
+		
+		return getString(key, values);
+	}
+	
+	public static String getString(String key, KeyValuePair... values) {
 		if (!success) {
 			return "ERROR:couldn't load language!";
 		}
@@ -160,9 +160,11 @@ public class Translator {
 		if (value == null) {
 			return "ERROR:translation_is_missing!";
 		} else {
-			// vars
-			for (String v : vars.keySet()) {
-				value = value.replace("{" + v + "}", vars.get(v));
+			if (values != null) {
+				// key-value-pair replacements
+				for (KeyValuePair v : values) {
+					value = value.replace("{" + v.getKey() + "}", v.getValue());
+				}
 			}
 			// colors
 			value = ChatColor.translateAlternateColorCodes('&', value);

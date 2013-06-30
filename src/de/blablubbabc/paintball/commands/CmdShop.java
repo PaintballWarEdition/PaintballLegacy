@@ -9,6 +9,7 @@ import org.bukkit.inventory.ItemStack;
 
 import de.blablubbabc.paintball.Match;
 import de.blablubbabc.paintball.Paintball;
+import de.blablubbabc.paintball.Rank;
 import de.blablubbabc.paintball.ShopGood;
 import de.blablubbabc.paintball.extras.Airstrike;
 import de.blablubbabc.paintball.extras.ItemManager;
@@ -16,6 +17,7 @@ import de.blablubbabc.paintball.extras.Orbitalstrike;
 import de.blablubbabc.paintball.statistics.general.GeneralStat;
 import de.blablubbabc.paintball.statistics.player.PlayerStat;
 import de.blablubbabc.paintball.statistics.player.PlayerStats;
+import de.blablubbabc.paintball.utils.KeyValuePair;
 import de.blablubbabc.paintball.utils.Log;
 import de.blablubbabc.paintball.utils.Translator;
 
@@ -45,6 +47,8 @@ public class CmdShop {
 			}
 			
 			Player player = (Player) sender;
+			String playerName = player.getName();
+			
 			if (!plugin.shop && !ignoreShopDisabled) {
 				player.sendMessage(Translator.getString("SHOP_INACTIVE"));
 				return true;
@@ -55,15 +59,20 @@ public class CmdShop {
 				player.sendMessage("");
 				if (plugin.happyhour) player.sendMessage(Translator.getString("HAPPYHOUR"));
 				Map<String, String> vars = new HashMap<String, String>();
-				//boolean admin = (player.isOp() || player.hasPermission("paintball.admin"));
+				boolean admin = (player.isOp() || player.hasPermission("paintball.admin"));
+				Rank rank = plugin.rankManager.getRank(playerName);
+				String mark = Translator.getString("SHOP_INSUFFICIENT_RANK_MARK");
 				for (int i = 0; i < goods.length; i++) {
 					vars.put("id", String.valueOf(i+1));
 					vars.put("good", goods[i].getSlot());
 					String msg = Translator.getString("SHOP_ENTRY", vars);
+					// check rank:
+					if(goods[i].getNeededRank() > rank.getRankIndex() && !(admin && plugin.ranksAdminBypassShop)) msg = msg.concat(" " + mark);
 					//if(player.hasPermission("paintball.shop.not"+String.valueOf(i)) && !admin) msg = msg.concat(" "+plugin.red+"X");
 					player.sendMessage(msg);
 				}
 				player.sendMessage("");
+				player.sendMessage(Translator.getString("SHOP_INSUFFICIENT_RANK_MARK_EXPLANATION", new KeyValuePair("mark", mark)));
 				player.sendMessage(Translator.getString("SHOP_BUY"));
 				plugin.statsManager.sendCash(player, player.getName());
 				return true;
@@ -74,10 +83,19 @@ public class CmdShop {
 				if(match != null && match.isSurvivor(player)) {
 					Integer id = isNumber(args[1]);
 					if(id != null && id > 0 && id <= goods.length) {
-						ShopGood good = goods[id-1];
+						ShopGood good = goods[id - 1];
 						//if(good.isEmpty() || (player.hasPermission("paintball.shop.not"+String.valueOf(id)) && !player.isOp() && !player.hasPermission("paintball.admin")) ) {
 						if (good.isEmpty()) {
 							player.sendMessage(Translator.getString("GOOD_NOT_AVAILABLE"));
+							return true;
+						}
+						// check rank:
+						Rank rank = plugin.rankManager.getRank(playerName);
+						boolean admin = (player.isOp() || player.hasPermission("paintball.admin"));
+						if (good.getNeededRank() > rank.getRankIndex() && !(admin && plugin.ranksAdminBypassShop)) {
+							Map<String, String> vars = new HashMap<String, String>();
+							vars.put("rank", plugin.rankManager.getRankByIndex(good.getNeededRank()).getName());
+							player.sendMessage(Translator.getString("GOOD_INSUFFICIENT_RANK", vars));
 							return true;
 						}
 						
@@ -86,7 +104,6 @@ public class CmdShop {
 							return true;
 						}
 						
-						String playerName = player.getName();
 						PlayerStats stats = plugin.playerManager.getPlayerStats(playerName);
 						// stats even exist for this player ?
 						if (stats == null) {
