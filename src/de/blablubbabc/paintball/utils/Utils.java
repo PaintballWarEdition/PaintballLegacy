@@ -130,7 +130,7 @@ public class Utils {
 	}
 
 	public static ItemStack setLeatherArmorColor(ItemStack item, Color color) {
-		if (item != null && color != null && item.hasItemMeta()) {
+		if (item != null && color != null) {
 			ItemMeta itemMeta = item.getItemMeta();
 			if (itemMeta instanceof LeatherArmorMeta) {
 				LeatherArmorMeta meta = (LeatherArmorMeta) item.getItemMeta();
