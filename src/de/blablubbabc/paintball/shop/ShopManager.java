@@ -18,6 +18,7 @@ import de.blablubbabc.paintball.extras.Orbitalstrike;
 import de.blablubbabc.paintball.statistics.general.GeneralStat;
 import de.blablubbabc.paintball.statistics.player.PlayerStat;
 import de.blablubbabc.paintball.statistics.player.PlayerStats;
+import de.blablubbabc.paintball.utils.Sounds;
 import de.blablubbabc.paintball.utils.Translator;
 
 public class ShopManager {
@@ -125,6 +126,7 @@ public class ShopManager {
 			
 			// give item
 			player.getInventory().addItem(item);
+			Sounds.playEquipLoadout(player);
 			player.updateInventory();
 			
 			Map<String, String> vars = new HashMap<String, String>();

@@ -32,6 +32,7 @@ import de.blablubbabc.paintball.extras.Turret;
 import de.blablubbabc.paintball.statistics.arena.ArenaSetting;
 import de.blablubbabc.paintball.statistics.player.match.tdm.TDMMatchStat;
 import de.blablubbabc.paintball.statistics.player.match.tdm.TDMMatchStats;
+import de.blablubbabc.paintball.utils.Sounds;
 import de.blablubbabc.paintball.utils.Timer;
 import de.blablubbabc.paintball.utils.Translator;
 import de.blablubbabc.paintball.utils.Utils;
@@ -321,7 +322,7 @@ public class Match {
 		}
 		player.teleport(loc);
 		// sound
-		player.playSound(loc, Sound.BAT_TAKEOFF, 100L, 1L);
+		Sounds.playEquipLoadout(player);
 		// afk Location
 		playersLoc.put(player.getName(), loc);
 		// PLAYER
@@ -751,8 +752,7 @@ public class Match {
 			if (livesLeft.get(target) > 0) {
 				// protection
 				if (isProtected(target)) {
-					shooter.playSound(shooter.getLocation(), Sound.ANVIL_LAND, 70F, 2F);
-					target.playSound(shooter.getLocation(), Sound.ANVIL_LAND, 60F, 0F);
+					Sounds.playProtected(shooter, target);
 					shooter.sendMessage(Translator.getString("YOU_HIT_PROTECTED", vars));
 					target.sendMessage(Translator.getString("YOU_WERE_HIT_PROTECTED", vars));
 				} else {
@@ -776,8 +776,7 @@ public class Match {
 						if (plugin.useXPBar) {
 							target.setExp((float)healthLeft / setting_lives);
 						}
-						shooter.playSound(shooter.getLocation(), Sound.MAGMACUBE_WALK, 100F, 1F);
-						target.playSound(shooter.getLocation(), Sound.HURT_FLESH, 100F, 1F);
+						Sounds.playHit(shooter, target);
 						
 						vars.put("hits_taken", String.valueOf(setting_lives - healthLeft));
 						vars.put("health_left", String.valueOf(healthLeft));
@@ -795,7 +794,7 @@ public class Match {
 			matchStats.addStat(TDMMatchStat.POINTS, plugin.pointsPerTeamattack);
 			
 			// SOUND EFFECT
-			shooter.playSound(shooter.getLocation(), Sound.ANVIL_LAND, 70F, 1F);
+			Sounds.playTeamattack(shooter);
 			
 			if (plugin.pointsPerTeamattack != 0) {
 				vars.put("points", String.valueOf(plugin.pointsPerTeamattack));
@@ -814,8 +813,7 @@ public class Match {
 		String targetName = target.getName();
 		String killerName = killer.getName();
 		
-		killer.playSound(killer.getLocation(), Sound.MAGMACUBE_WALK, 100F, 0F);
-		target.playSound(target.getLocation(), Sound.GHAST_SCREAM2, 100F, 0F);
+		Sounds.playFrag(killer, target);
 
 		// STATS
 		// KILLER:
