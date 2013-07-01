@@ -381,7 +381,6 @@ public class EventListener implements Listener {
 		}
 	}
 	
-	@SuppressWarnings("deprecation")
 	@EventHandler(priority = EventPriority.NORMAL)
 	public void onPlayerInteract(PlayerInteractEvent event) {
 		final Player player = event.getPlayer();
@@ -396,11 +395,12 @@ public class EventListener implements Listener {
 		if (Lobby.LOBBY.isMember(player)) {
 			Match match = plugin.matchManager.getMatch(player);
 			if (match != null && Lobby.isPlaying(player) && match.isSurvivor(player)) {
-				if (item.getType() != Material.POTION) event.setUseItemInHand(Result.DENY);
+				Material type = item.getType();
+				if (type != Material.POTION) event.setUseItemInHand(Result.DENY);
 				if (!match.started || match.isJustRespawned(player.getName())) return;
 				String playerName = player.getName();
 				
-				switch (item.getType()) {
+				switch (type) {
 				case SNOW_BALL:
 					//MARKER
 					if (item.isSimilar(Ball.item)) {
@@ -430,9 +430,11 @@ public class EventListener implements Listener {
 								// -1 ball
 								Utils.removeInventoryItems(inv, Ball.item, 1);
 							}
+							
 						} else {
 							player.playSound(player.getEyeLocation(), Sound.FIRE_IGNITE, 1F, 2F);
 						}
+						updatePlayerInventoryLater(player);
 					}
 					break;
 					
@@ -452,6 +454,7 @@ public class EventListener implements Listener {
 										else {
 											item.setAmount(item.getAmount() - 1);
 										}
+										updatePlayerInventoryLater(player);
 									}
 								} else {
 									player.sendMessage(Translator.getString("AIRSTRIKE_PLAYER_LIMIT_REACHED"));
@@ -477,6 +480,7 @@ public class EventListener implements Listener {
 									else {
 										item.setAmount(item.getAmount() - 1);
 									}
+									updatePlayerInventoryLater(player);
 								} else {
 									player.sendMessage(Translator.getString("ORBITALSTRIKE_PLAYER_LIMIT_REACHED"));
 								}
@@ -510,6 +514,7 @@ public class EventListener implements Listener {
 							player.playSound(player.getEyeLocation(), Sound.FIRE_IGNITE, 1F, 2F);
 						}
 					}
+					updatePlayerInventoryLater(player);
 					break;
 					
 				case SLIME_BALL:
@@ -530,6 +535,7 @@ public class EventListener implements Listener {
 							item.setAmount(item.getAmount() - 1);
 							player.setItemInHand(item);
 						}
+						updatePlayerInventoryLater(player);
 					}
 					break;
 					
@@ -550,6 +556,7 @@ public class EventListener implements Listener {
 							item.setAmount(item.getAmount() - 1);
 							player.setItemInHand(item);
 						}
+						updatePlayerInventoryLater(player);
 					}
 					break;
 					
@@ -570,6 +577,7 @@ public class EventListener implements Listener {
 							item.setAmount(item.getAmount() - 1);
 							player.setItemInHand(item);
 						}
+						updatePlayerInventoryLater(player);
 					}
 					break;
 
@@ -577,8 +585,9 @@ public class EventListener implements Listener {
 					// SHOTGUN
 					if (plugin.shotgun && item.isSimilar(Shotgun.item)) {
 						PlayerInventory inv = player.getInventory();
-						if (inv.containsAtLeast(Ball.item, plugin.shotgunAmmo)) {
+						if ((match.setting_balls == -1 || inv.containsAtLeast(Ball.item, plugin.shotgunAmmo))) {
 							Utils.removeInventoryItems(inv, Ball.item, plugin.shotgunAmmo);
+							updatePlayerInventoryLater(player);
 							// INFORM MATCH
 							match.onShot(player);
 							Shotgun.shoot(player);
@@ -592,8 +601,9 @@ public class EventListener implements Listener {
 					// PUMPGUN
 					if (plugin.pumpgun && item.isSimilar(Pumpgun.item)) {
 						PlayerInventory inv = player.getInventory();
-						if (inv.containsAtLeast(Ball.item, plugin.pumpgunAmmo)) {
+						if ((match.setting_balls == -1 || inv.containsAtLeast(Ball.item, plugin.pumpgunAmmo))) {
 							Utils.removeInventoryItems(inv, Ball.item, plugin.pumpgunAmmo);
+							updatePlayerInventoryLater(player);
 							// INFORM MATCH
 							match.onShot(player);
 							Pumpgun.shoot(player);
@@ -621,6 +631,7 @@ public class EventListener implements Listener {
 									item.setAmount(item.getAmount() - 1);
 									player.setItemInHand(item);
 								}
+								updatePlayerInventoryLater(player);
 							} else {
 								player.sendMessage(Translator.getString("ROCKET_PLAYER_LIMIT_REACHED"));
 							}
@@ -646,6 +657,7 @@ public class EventListener implements Listener {
 								if (match.setting_balls != -1) {
 									// -1 ball
 									Utils.removeInventoryItems(inv, Ball.item, 1);
+									updatePlayerInventoryLater(player);
 								}
 							} else {
 								player.playSound(player.getEyeLocation(), Sound.FIRE_IGNITE, 1F, 2F);
@@ -657,13 +669,13 @@ public class EventListener implements Listener {
 				case CHEST:
 					// GIFT
 					if (plugin.giftsEnabled && item.isSimilar(Gifts.item)) {
-						plugin.getServer().getScheduler().runTaskLater(plugin, new Runnable() {
+						plugin.getServer().getScheduler().runTask(plugin, new Runnable() {
 							
 							@Override
 							public void run() {
 								Gifts.unwrapGift(player);
 							}
-						}, 1L);
+						});
 					}
 					break;
 					
@@ -680,17 +692,19 @@ public class EventListener implements Listener {
 					// no special item in hand
 					break;
 				}
-				
-				plugin.getServer().getScheduler().runTaskLater(plugin, new Runnable() {
-					
-					@Override
-					public void run() {
-						player.updateInventory();
-					}
-				}, 1L);
-
 			}
 		}
+	}
+	
+	private void updatePlayerInventoryLater(final Player player) {
+		plugin.getServer().getScheduler().runTask(plugin, new Runnable() {
+			
+			@SuppressWarnings("deprecation")
+			@Override
+			public void run() {
+				player.updateInventory();
+			}
+		});
 	}
 
 	/*private boolean isAirClick(Action action) {

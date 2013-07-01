@@ -2,6 +2,7 @@ package de.blablubbabc.paintball.extras;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 
@@ -23,7 +24,7 @@ public class Gifts {
 	private static long time;
 	
 	public static void init() {
-		time = 1000*60*Paintball.instance.wishesDelay;
+		time = 1000 * 60 * Paintball.instance.wishesDelay;
 	}
 	
 	public static void setWishes(String player) {
@@ -36,12 +37,12 @@ public class Gifts {
 	}
 	
 	private static void update() {
-		ArrayList<String> names = new ArrayList<String>();
+		List<String> names = new ArrayList<String>();
 		for(String n : wishes.keySet()) {
 			names.add(n);
 		}
 		for(String player: names) {
-			if((wishes.get(player)+time) < System.currentTimeMillis()) wishes.remove(player);
+			if((wishes.get(player) + time) < System.currentTimeMillis()) wishes.remove(player);
 		}
 	}
 	
@@ -62,18 +63,18 @@ public class Gifts {
 		player.playSound(player.getEyeLocation(), Sound.LEVEL_UP, 0.5F, 1F);
 		//remove chest from hand
 		ItemStack i = player.getItemInHand();
-		if (i.getAmount() <= 1)
+		if (i.getAmount() <= 1) {
 			player.setItemInHand(null);
-		else {
+		} else {
 			i.setAmount(i.getAmount() - 1);
 			player.setItemInHand(i);
 		}
 		if(!Paintball.instance.gifts.isEmpty()) {
 			//gift:
-			double r = (Utils.random.nextInt(1000)/10);
+			double r = (Utils.random.nextInt(1000) / 10);
 			double chance = 0.0;
 			for(Gift g : Paintball.instance.gifts) {
-				chance += (g.getChance()*Paintball.instance.giftChanceFactor);
+				chance += (g.getChance() * Paintball.instance.giftChanceFactor);
 				if(r < chance) {
 					player.sendMessage(ChatColor.GREEN + g.getMessage());
 					ItemStack item = ItemManager.setMeta(g.getItem(true));
@@ -100,7 +101,7 @@ public class Gifts {
 	}
 	
 	public static void giveGift(Player goodGuy, Player receiver) {
-		HashMap<String, String> vars = new HashMap<String, String>();
+		Map<String, String> vars = new HashMap<String, String>();
 		vars.put("from", goodGuy.getDisplayName());
 		vars.put("to", receiver.getDisplayName());
 		receiver.sendMessage(Translator.getString("RECEIVED_GIFT_FROM", vars)) ;

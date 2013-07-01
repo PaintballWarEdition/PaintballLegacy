@@ -161,7 +161,7 @@ public class CommandManager implements CommandExecutor{
 						return true;
 						
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-					} else if (args[0].equalsIgnoreCase("toggle")) {
+					} else if (args[0].equalsIgnoreCase("toggle") || args[0].equalsIgnoreCase("feed")) {
 						if (!Lobby.LOBBY.isMember(player)) {
 							player.sendMessage(Translator.getString("NOT_IN_LOBBY"));
 							return true;
@@ -180,7 +180,7 @@ public class CommandManager implements CommandExecutor{
 						plugin.statsManager.sendStats(player, player.getName());
 						return true;
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-					} else if (args[0].equalsIgnoreCase("cash")) {
+					} else if (args[0].equalsIgnoreCase("cash") || args[0].equalsIgnoreCase("money")) {
 						plugin.statsManager.sendCash(player, player.getName());
 						return true;
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
