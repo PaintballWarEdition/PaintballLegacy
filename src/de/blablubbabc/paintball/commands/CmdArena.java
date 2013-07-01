@@ -33,13 +33,36 @@ public class CmdArena {
 			}*/
 			Player player = (Player) sender;
 			if (args[1].equalsIgnoreCase("list")) {
-				//list
+				int page = 1;
+				if (args.length >= 3) {
+					try {
+						page = Math.max(1, Integer.parseInt(args[2]));
+					} catch (NumberFormatException e) {
+						player.sendMessage(Translator.getString("INVALID_NUMBER"));
+						return true;
+					}
+				}
+				// list
 				List<String> arenas = am.getAllArenaNames();
 				Map<String, String> vars = new HashMap<String, String>();
 				vars.put("arenas", String.valueOf(arenas.size()));
 				player.sendMessage(Translator.getString("ARENA_LIST_HEADER", vars));
-				for (String name : arenas) {
-					HashMap<String, String> vars2 = new HashMap<String, String>();
+				
+				int entriesPerPage = 10;
+				int start = (page - 1) * entriesPerPage;
+				// selected page to high ?
+				if (start >= arenas.size()) {
+					if (arenas.size() > 0) page = (int) Math.ceil(arenas.size() / entriesPerPage);
+					else page = 1;
+					
+					// recalculate start
+					start = (page - 1) * entriesPerPage;
+				}
+				int end = Math.min(start + entriesPerPage, arenas.size());
+				
+				Map<String, String> vars2 = new HashMap<String, String>();
+				for (int i = start; i < end; i++) {
+					String name = arenas.get(i);
 					vars2.put("arena", name);
 					vars2.put("status", am.getArenaStatus(name));
 					player.sendMessage(Translator.getString("ARENA_LIST_ENTRY", vars2));
@@ -234,7 +257,7 @@ public class CmdArena {
 							vars.put("value", String.valueOf(value));
 							player.sendMessage(Translator.getString("ARENA_SET_SETTING", vars));
 							return true;
-						} catch(Exception e) {
+						} catch(NumberFormatException e) {
 							player.sendMessage(Translator.getString("INVALID_NUMBER"));
 							return true;
 						}

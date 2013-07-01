@@ -1178,6 +1178,7 @@ public class Paintball extends JavaPlugin{
 				
 				@Override
 				public void run() {
+					// TODO check if player can still join the lobby
 					// join lobby:
 					Lobby.LOBBY.addMember(player);
 					feeder.join(playerName);
