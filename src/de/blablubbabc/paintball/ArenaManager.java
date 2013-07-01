@@ -15,6 +15,7 @@ import de.blablubbabc.paintball.utils.Utils;
 public class ArenaManager {
 	private Paintball plugin;
 	private String last = null;
+	private int current = 0;
 	private String nextArenaForce;
 
 	public ArenaManager(Paintball pl) {
@@ -129,21 +130,30 @@ public class ArenaManager {
 		if(!nextArenaForce.equalsIgnoreCase("") && ready.contains(nextArenaForce)) {
 			next = nextArenaForce;
 		} else {
-			//random next arena:
-			if (ready.size() >= 2) {
-				int index = Utils.random.nextInt(ready.size());
-				next = ready.get(index);
-				if (last != null) {
-					// get next arena which is not last:
-					while (next.equals(last)) {
-						index += 1;
-						next = ready.get(index >= ready.size() ? 0 : index);
+			if (plugin.arenaRotationRandom) {
+				// random next arena:
+				if (ready.size() >= 2) {
+					int index = Utils.random.nextInt(ready.size());
+					next = ready.get(index);
+					if (last != null) {
+						// get next arena which is not last:
+						while (next.equals(last)) {
+							index += 1;
+							next = ready.get(index >= ready.size() ? 0 : index);
+						}
 					}
+				} else {
+					// there is only one ready arena..:
+					next = ready.get(0);
 				}
 			} else {
-				// there is only one ready arena..:
-				next = ready.get(0);
+				// rotation:
+				if(current > (ready.size() - 1)) current = 0;
+				String arena = ready.get(current);
+				current++;
+				return arena;
 			}
+			
 		}
 		last = next;
 		return next;

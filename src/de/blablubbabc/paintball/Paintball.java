@@ -113,6 +113,7 @@ public class Paintball extends JavaPlugin{
 	public int roundTimer;
 	public int minPlayers;
 	public int maxPlayers;
+	public boolean arenaRotationRandom;
 	public int lives;
 	public int respawns;
 	public int balls;
@@ -389,6 +390,8 @@ public class Paintball extends JavaPlugin{
 		if(getConfig().get("Paintball.Ranks.Chat Prefix") == null)getConfig().set("Paintball.Ranks.Chat Prefix", true);
 		if(getConfig().get("Paintball.Ranks.Lobby Armor") == null)getConfig().set("Paintball.Ranks.Lobby Armor", true);
 		
+		if(getConfig().get("Paintball.Arena Rotation.Random Rotation") == null)getConfig().set("Paintball.Arena Rotation.Random Rotation", true);
+		
 		if(getConfig().get("Paintball.Only Random") == null)getConfig().set("Paintball.Only Random", false);
 		if(getConfig().get("Paintball.Auto Random") == null)getConfig().set("Paintball.Auto Random", true);
 		if(getConfig().get("Paintball.World Mode.enabled") == null)getConfig().set("Paintball.World Mode.enabled", false);
@@ -650,6 +653,9 @@ public class Paintball extends JavaPlugin{
 		// ranks
 		ranksChatPrefix = getConfig().getBoolean("Paintball.Ranks.Chat Prefix", true);
 		ranksLobbyArmor = getConfig().getBoolean("Paintball.Ranks.Lobby Armor", true);
+		
+		// arena rotation
+		arenaRotationRandom = getConfig().getBoolean("Paintball.Arena Rotation.Random Rotation", true);
 		
 		onlyRandom = getConfig().getBoolean("Paintball.Only Random", false);
 		autoRandom = getConfig().getBoolean("Paintball.Auto Random", true);
