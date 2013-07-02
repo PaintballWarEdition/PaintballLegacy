@@ -10,6 +10,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.regex.Pattern;
 
+import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.command.CommandExecutor;
@@ -18,6 +19,9 @@ import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.Player;
 import org.bukkit.plugin.Plugin;
 import org.bukkit.plugin.java.JavaPlugin;
+import org.bukkit.scoreboard.DisplaySlot;
+import org.bukkit.scoreboard.Objective;
+import org.bukkit.scoreboard.Score;
 import org.bukkit.scoreboard.Scoreboard;
 
 import de.blablubbabc.BlaDB.BlaSQLite;
@@ -52,6 +56,7 @@ import de.blablubbabc.paintball.statistics.arena.ArenaSetting;
 import de.blablubbabc.paintball.statistics.arena.ArenaStat;
 import de.blablubbabc.paintball.statistics.general.GeneralStat;
 import de.blablubbabc.paintball.statistics.player.PlayerStat;
+import de.blablubbabc.paintball.statistics.player.PlayerStats;
 import de.blablubbabc.paintball.statistics.player.match.tdm.TDMMatchStat;
 import de.blablubbabc.paintball.utils.KeyValuePair;
 import de.blablubbabc.paintball.utils.Log;
@@ -1223,11 +1228,45 @@ public class Paintball extends JavaPlugin{
 					playerManager.teleportStoreClearPlayer(player, getNextLobbySpawn());
 					// ASSIGN RANK
 					if (ranksLobbyArmor) rankManager.getRank(playerName).assignArmorToPlayer(player);
+					// ASSIGN SCOREBOARD
+					if (scoreboards) {
+						initLobbyScoreboard(player);
+					}
 					
 					// continue afterwards:
 					if (runAfterwards != null) runAfterwards.run();
 				}
 			});
+		}
+	}
+	
+	private void initLobbyScoreboard(Player player) {
+		String playerName = player.getName();
+		Scoreboard lobbyBoard = lobbyScoreboards.get(playerName);
+		if (lobbyBoard == null) {
+			lobbyBoard = Bukkit.getScoreboardManager().getNewScoreboard();
+			lobbyScoreboards.put(playerName, lobbyBoard);
+		}
+		player.setScoreboard(lobbyBoard);
+		
+		String header = Translator.getString("SCOREBOARD_LOBBY_HEADER"); 
+		Objective objective = lobbyBoard.registerNewObjective(header.length() > 16 ? header.substring(0, 16) : header, "dummy");
+		objective.setDisplaySlot(DisplaySlot.SIDEBAR);
+		updateLobbyScoreboard(playerName);
+	}
+	
+	public void updateLobbyScoreboard(String playerName) {
+		Scoreboard lobbyBoard = lobbyScoreboards.get(playerName);
+		if (lobbyBoard != null) {
+			Objective objective = lobbyBoard.getObjective(DisplaySlot.SIDEBAR);
+			PlayerStats stats = playerManager.getPlayerStats(playerName);
+			for (PlayerStat stat : PlayerStat.values()) {
+				// skip airstrikes and grenades count:
+				if (stat == PlayerStat.AIRSTRIKES || stat == PlayerStat.GRENADES) continue;	
+				String scoreName = Translator.getString("SCOREBOARD_LOBBY_" + stat.getKey().toUpperCase());
+				Score score = objective.getScore(Bukkit.getOfflinePlayer(scoreName));
+				score.setScore(stats.getStat(stat));
+			}
 		}
 	}
 	
@@ -1256,6 +1295,10 @@ public class Paintball extends JavaPlugin{
 		player.teleport(getNextLobbySpawn());
 		// ASSIGN RANK
 		if (ranksLobbyArmor) rankManager.getRank(playerName).assignArmorToPlayer(player);
+		// ASSIGN SCOREBOARD
+		if (scoreboards) {
+			initLobbyScoreboard(player);
+		}
 	}
 	
 	public synchronized boolean leaveLobby(Player player, boolean messages) {

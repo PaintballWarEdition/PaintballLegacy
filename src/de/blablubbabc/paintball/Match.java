@@ -10,11 +10,15 @@ import java.util.Map;
 import java.util.Random;
 import java.util.Set;
 
+import org.bukkit.Bukkit;
 import org.bukkit.DyeColor;
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
+import org.bukkit.scoreboard.DisplaySlot;
+import org.bukkit.scoreboard.Objective;
+import org.bukkit.scoreboard.Score;
 import org.bukkit.scoreboard.Scoreboard;
 import org.kitteh.tag.TagAPI;
 
@@ -144,16 +148,19 @@ public class Match {
 
 		// LISTS FINISHED
 
-		for (Player p : getAllPlayer()) {
+		for (Player player : getAllPlayer()) {
 			// LIVES + RESPAWNS
-			livesLeft.put(p, setting_lives);
-			respawnsLeft.put(p, setting_respawns);
+			livesLeft.put(player, setting_lives);
+			respawnsLeft.put(player, setting_respawns);
 			// STATS
-			String playerName = p.getName();
+			String playerName = player.getName();
 			playerMatchStats.put(playerName, new TDMMatchStats(plugin.playerManager.getPlayerStats(playerName)));
 
-			PlayerDataStore.clearPlayer(p, true, true);
-			spawnPlayer(p);
+			// SCOREBOARD
+			initMatchScoreboard(player);
+			
+			PlayerDataStore.clearPlayer(player, true, true);
+			spawnPlayer(player);
 		}
 
 		for (Player p : this.spec) {
@@ -397,6 +404,38 @@ public class Match {
 			}
 			
 		}, 12L);
+	}
+	
+	private void initMatchScoreboard(Player player) {
+		String playerName = player.getName();
+		Scoreboard matchBoard = scoreboards.get(playerName);
+		if (matchBoard == null) {
+			matchBoard = Bukkit.getScoreboardManager().getNewScoreboard();
+			scoreboards.put(playerName, matchBoard);
+		}
+		player.setScoreboard(matchBoard);
+		
+		// TODO own header (round timer maybe ?)
+		String header = Translator.getString("SCOREBOARD_LOBBY_HEADER"); 
+		Objective objective = matchBoard.registerNewObjective(header.length() > 16 ? header.substring(0, 16) : header, "dummy");
+		objective.setDisplaySlot(DisplaySlot.SIDEBAR);
+		updateMatchScoreboard(playerName);
+	}
+	
+	private void updateMatchScoreboard(String playerName) {
+		Scoreboard matchBoard = scoreboards.get(playerName);
+		if (matchBoard != null) {
+			Objective objective = matchBoard.getObjective(DisplaySlot.SIDEBAR);
+			TDMMatchStats stats = playerMatchStats.get(playerName);
+			for (TDMMatchStat stat : TDMMatchStat.values()) {
+				// skip airstrikes and grenades count:
+				if (stat == TDMMatchStat.AIRSTRIKES || stat == TDMMatchStat.GRENADES) continue;	
+				// TODO own match stat language support
+				String scoreName = Translator.getString("SCOREBOARD_LOBBY_" + stat.getPlayerStat().getKey().toUpperCase());
+				Score score = objective.getScore(Bukkit.getOfflinePlayer(scoreName));
+				score.setScore(stats.getStat(stat));
+			}
+		}
 	}
 	
 	public boolean isJustRespawned(String playerName) {
