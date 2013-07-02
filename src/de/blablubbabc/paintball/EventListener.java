@@ -145,9 +145,9 @@ public class EventListener implements Listener {
 			if (!fromPb && toPb) {
 				if (!Lobby.LOBBY.isMember(player)) {
 					if (plugin.autoTeam) {
-						plugin.commandManager.joinTeam(player, Lobby.RANDOM);
+						plugin.commandManager.joinTeam(player, false, Lobby.RANDOM);
 					} else {
-						plugin.commandManager.joinLobbyPre(player, null);
+						plugin.commandManager.joinLobbyPre(player, false, null);
 					}
 				}
 			} else if (fromPb && !toPb) {
@@ -1112,9 +1112,9 @@ public class EventListener implements Listener {
 			@Override
 			public void run() {
 				if (plugin.autoLobby && plugin.autoTeam)
-					plugin.commandManager.joinTeam(player, Lobby.RANDOM);
+					plugin.commandManager.joinTeam(player, false, Lobby.RANDOM);
 				else if (plugin.autoLobby)
-					plugin.commandManager.joinLobbyPre(player, null);
+					plugin.commandManager.joinLobbyPre(player, false, null);
 			}
 		}, 1L);
 

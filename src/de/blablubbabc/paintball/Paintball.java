@@ -946,9 +946,9 @@ public class Paintball extends JavaPlugin{
 		if(autoLobby) {
 			for(Player player : getServer().getOnlinePlayers()) {
 				if(autoTeam) {
-					commandManager.joinTeam(player, Lobby.RANDOM);
+					commandManager.joinTeam(player, false, Lobby.RANDOM);
 				} else {
-					commandManager.joinLobbyPre(player, null);
+					commandManager.joinLobbyPre(player, false, null);
 				}
 			}
 		}
@@ -1173,19 +1173,14 @@ public class Paintball extends JavaPlugin{
 
 	private Map<String, Scoreboard> lobbyScoreboards = new HashMap<String, Scoreboard>();
 	
-	/*public void joinLobby(Player player) {
-		PlayerDataStore.clearPlayer(player, true, true);
-		enterLobby(player);
-	}*/
-	
 	private Map<String, WaitTimer> currentlyWaiting = new HashMap<String, WaitTimer>();
 	private List<String> currentlyLoading = new ArrayList<String>();
 	
-	public void joinLobbyFresh(final Player player, final Runnable runAfterwards) {
+	public void joinLobbyFresh(final Player player, boolean withDelay, final Runnable runAfterwards) {
 		final String playerName = player.getName();
 		
 		// join delay:
-		if (joinDelaySeconds > 0) {
+		if (withDelay && joinDelaySeconds > 0) {
 			// is the player already waiting for join or waiting for stats loading -> ignore:
 			WaitTimer waitTimer = currentlyWaiting.get(playerName);
 			if (waitTimer == null && !currentlyLoading.contains(playerName)) {

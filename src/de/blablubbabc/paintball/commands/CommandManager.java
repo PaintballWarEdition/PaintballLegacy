@@ -99,24 +99,24 @@ public class CommandManager implements CommandExecutor{
 							player.sendMessage(Translator.getString("ALREADY_IN_LOBBY"));
 							return true;
 						} else {
-							joinLobbyPre(player, null);
+							joinLobbyPre(player, true, null);
 							return true;
 						}
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////			
 					} else if (args[0].equalsIgnoreCase("blue")) {
-						joinTeam(player, Lobby.BLUE);
+						joinTeam(player, true, Lobby.BLUE);
 						return true;
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 					} else if (args[0].equalsIgnoreCase("red")) {
-						joinTeam(player, Lobby.RED);
+						joinTeam(player, true, Lobby.RED);
 						return true;
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 					} else if (args[0].equalsIgnoreCase("random") || args[0].equalsIgnoreCase("join")) {
-						joinTeam(player, Lobby.RANDOM);
+						joinTeam(player, true, Lobby.RANDOM);
 						return true;
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 					} else if (args[0].equalsIgnoreCase("spec")) {
-						joinTeam(player, Lobby.SPECTATE);
+						joinTeam(player, true, Lobby.SPECTATE);
 						return true;
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 					} else if (args[0].equalsIgnoreCase("leave") || args[0].equalsIgnoreCase("exit") || args[0].equalsIgnoreCase("quit")) {
@@ -312,9 +312,9 @@ public class CommandManager implements CommandExecutor{
 		sender.sendMessage(Translator.getString("COMMAND_ADMIN_GIFTS"));
 	}
 
-	public void joinTeam(final Player player, final Lobby team) {
+	public void joinTeam(final Player player, boolean withDelay, final Lobby team) {
 		if(!Lobby.LOBBY.isMember(player)) {
-			joinLobbyPre(player, new Runnable() {
+			joinLobbyPre(player, withDelay, new Runnable() {
 				
 				@Override
 				public void run() {	
@@ -429,8 +429,8 @@ public class CommandManager implements CommandExecutor{
 		return true;
 	}
 	
-	public void joinLobbyPre(Player player, Runnable runOnSuccess) {
-		if (joinLobbyPreChecks(player)) plugin.joinLobbyFresh(player, runOnSuccess);
+	public void joinLobbyPre(Player player, boolean withDelay, Runnable runOnSuccess) {
+		if (joinLobbyPreChecks(player)) plugin.joinLobbyFresh(player, withDelay, runOnSuccess);
 	}
 
 }
