@@ -6,6 +6,8 @@ import java.sql.*;
 import java.util.HashMap;
 import java.util.Map.Entry;
 
+import de.blablubbabc.paintball.utils.Log;
+
 public class BlaSQLite {
 
 	private File databaseFile;
@@ -69,17 +71,13 @@ public class BlaSQLite {
 			connection = DriverManager.getConnection("jdbc:sqlite:" + this.databaseFile.getAbsolutePath());
 			return true;
 		} catch (SQLException ex) {
-			log("ERROR: SQL Exception!");
+			Log.severe("ERROR: SQL Exception!", true);
 			ex.printStackTrace();
 		} catch (ClassNotFoundException ex) {
-			log("ERROR: Could not find SQLite driver class!");
+			Log.severe("ERROR: Could not find SQLite driver class!", true);
 			ex.printStackTrace();
 		}
 		return false;
-	}
-
-	public void log(String msg) {
-		System.out.println("[BlaSQLite] "+msg);
 	}
 
 	public synchronized int updateQuery(String query) {
@@ -146,7 +144,7 @@ public class BlaSQLite {
 
 	/////////////////////////////
 	//PAINTBALL SPEZIFISCHER TEIL
-
+	
 	public void createDefaultTable(String name, String query, String indexOn) {
 		this.updateQuery("CREATE TABLE IF NOT EXISTS " + name + "(" + query + ");");
 		if (indexOn != null)

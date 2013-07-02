@@ -40,6 +40,10 @@ public class Log {
 		if (warn) warnings.add(message);
 	}
 	
+	public static void addWarning(String message) {
+		warnings.add(message);
+	}
+	
 	private static void printWarnings() {
 		if (warnings.size() > 0) {
 			for (String warning : warnings) {

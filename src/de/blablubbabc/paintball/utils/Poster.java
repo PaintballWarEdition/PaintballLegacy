@@ -26,7 +26,8 @@ public class Poster {
 			try {
 				post();
 			} catch (IOException e) {
-				Log.severe("Wasn't able to check version: " + e.getMessage(), true);
+				Log.info("Wasn't able to check version: " + e.getMessage());
+				Log.addWarning("Wasn't able to check version: " + e.getMessage());
 			}
 		} else {
 			Log.logColored("--------- Checking version ----------");
@@ -95,11 +96,11 @@ public class Poster {
 		} else {
 			//version check:
 			Log.info("--------- Checking version ----------");
-			if(!description.getVersion().equals(response)) {
+			if (!description.getVersion().equals(response)) {
 				Paintball.instance.needsUpdate = true;
 				Log.warning("There is a new version of paintball available: " + response, true);
 				Log.info("Download at the bukkit dev page.");
-			}else{
+			} else {
 				Log.info("You are running the latest version. :)");
 			}
 			Log.info("--------- ---------------- ----------");
