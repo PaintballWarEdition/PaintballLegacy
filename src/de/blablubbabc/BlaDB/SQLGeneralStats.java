@@ -14,9 +14,11 @@ public class SQLGeneralStats {
 
 	public SQLGeneralStats(BlaSQLite blasql) {
 		sql = blasql;
+		
+		createDefaultTables();
 	}
 
-	public void createDefaultTables() {
+	private void createDefaultTables() {
 		//general stats
 		sql.createDefaultTable("general_stats", "key TEXT, value INTEGER", "key");
 		

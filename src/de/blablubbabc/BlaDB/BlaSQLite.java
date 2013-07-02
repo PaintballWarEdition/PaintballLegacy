@@ -23,11 +23,6 @@ public class BlaSQLite {
 		sqlArenaLobby = new SQLArenaLobby(this);
 		sqlPlayers = new SQLPlayers(this);
 		sqlGeneralStats = new SQLGeneralStats(this);
-
-		//CREATE TABLES
-		sqlArenaLobby.createDefaultTables();
-		sqlPlayers.createDefaultTables();
-		sqlGeneralStats.createDefaultTables();
 	}
 
 	public void closeConnection() {
@@ -53,6 +48,7 @@ public class BlaSQLite {
 			pragmas();
 		}
 	}
+	
 	public void pragmas() {
 		//nothing here :(
 	}
@@ -79,6 +75,11 @@ public class BlaSQLite {
 		}
 		return false;
 	}
+	
+	/*public Connection getConnection() {
+		this.refreshConnection();
+		return connection;
+	}*/
 
 	public synchronized int updateQuery(String query) {
 		this.refreshConnection();

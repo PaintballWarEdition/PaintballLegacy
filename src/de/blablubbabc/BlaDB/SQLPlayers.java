@@ -15,11 +15,48 @@ public class SQLPlayers {
 
 	private static BlaSQLite sql;
 
+	/*private PreparedStatement ADD_NEW_PLAYER;
+	private PreparedStatement ADD_PLAYER_STATS;
+	private PreparedStatement CALCULATE_STATS;
+	private PreparedStatement GET_PLAYER_COUNT;
+	private PreparedStatement GET_PLAYERS_EVER_PLAYED_COUNT;
+	private PreparedStatement GET_PLAYER_STATS;
+	private PreparedStatement GET_RANK;
+	private PreparedStatement GET_TOP_10_STATS;
+	private PreparedStatement GET_TOP_STATS;
+	private PreparedStatement IS_PLAYER_EXISTING;
+	private PreparedStatement REMOVE_PLAYER;
+	private PreparedStatement RESET_ALL_PLAYER_STATS;
+	private PreparedStatement RESET_PLAYER_STATS;
+	private PreparedStatement SET_PLAYER_STATS;*/
+	
 	public SQLPlayers(BlaSQLite blasql) {
 		sql = blasql;
+		
+		createDefaultTables();
+		prepareStatements();
+		
+	}
+	
+	private void prepareStatements() {
+		// prepare statements:
+		/*ADD_NEW_PLAYER;
+		ADD_PLAYER_STATS;
+		CALCULATE_STATS;
+		GET_PLAYER_COUNT;
+		GET_PLAYERS_EVER_PLAYED_COUNT;
+		GET_PLAYER_STATS;
+		GET_RANK;
+		GET_TOP_10_STATS;
+		GET_TOP_STATS;
+		IS_PLAYER_EXISTING;
+		REMOVE_PLAYER;
+		RESET_ALL_PLAYER_STATS;
+		RESET_PLAYER_STATS;
+		SET_PLAYER_STATS;*/
 	}
 
-	public void createDefaultTables() {
+	private void createDefaultTables() {
 		//playerstats
 		HashMap<String, String> players = new HashMap<String, String>();
 		players.put("name", "TEXT");
@@ -199,8 +236,7 @@ public class SQLPlayers {
 	}
 
 	//STATS, RANGLISTEN, TOP
-	//TODO necesarry ?
-	public void calculateStats(String player) {
+	/*public void calculateStats(String player) {
 		String kd = "";
 		String hitquote = "";
 
@@ -214,7 +250,7 @@ public class SQLPlayers {
 
 		String query = "rounds=wins+deaths+draws,kd=" + kd + ",hitquote=" + hitquote + "";
 		sql.updateQuery("UPDATE OR IGNORE players SET "+query+" WHERE name='"+player+"';");
-	}
+	}*/
 
 	public LinkedHashMap<PlayerStat, SimpleEntry<String, Integer>> getTopStats() {
 		LinkedHashMap<PlayerStat, SimpleEntry<String, Integer>> topStats = new LinkedHashMap<PlayerStat, SimpleEntry<String, Integer>>();

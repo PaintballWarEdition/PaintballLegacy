@@ -23,9 +23,11 @@ public class SQLArenaLobby {
 
 	public SQLArenaLobby(BlaSQLite blasql) {
 		sql = blasql;
+		
+		createDefaultTables();
 	}
 	
-	public void createDefaultTables() {
+	private void createDefaultTables() {
 		//arenas
 		String arenasQuery = "name TEXT, active INTEGER";
 		sql.createDefaultTable("arenas", arenasQuery, "name");
