@@ -33,14 +33,15 @@ public class PlayerDataStore {
 	private float exhaustion;
 	private float saturation;
 	private int foodlevel;
-	private int health;
+	private double health;
+	private double maxHealth;
 	private int fireTicks;
 	private int remainingAir;
 	private int ticksLived;
 	private int noDamageTicks;
 	private float fallDistance;
 	private GameMode gamemode;
-	private int lastDamage;
+	private double lastDamage;
 	private EntityDamageEvent lastDamageCause;
 	// Level / exp
 	private int level;
@@ -83,6 +84,7 @@ public class PlayerDataStore {
 		saturation = player.getSaturation();
 		foodlevel = player.getFoodLevel();
 		health = player.getHealth();
+		maxHealth = player.getMaxHealth();
 		fireTicks = player.getFireTicks();
 		remainingAir = player.getRemainingAir();
 		ticksLived = player.getTicksLived();
@@ -130,6 +132,7 @@ public class PlayerDataStore {
 		player.setExhaustion(exhaustion);
 		player.setSaturation(saturation);
 		player.setFoodLevel(foodlevel);
+		player.setMaxHealth(maxHealth);
 		player.setHealth(health);
 		player.setFireTicks(fireTicks);
 		player.setRemainingAir(remainingAir);
