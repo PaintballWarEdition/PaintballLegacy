@@ -1,6 +1,7 @@
 package de.blablubbabc.paintball;
 
 import java.util.HashMap;
+import java.util.Map;
 import java.util.Set;
 import org.bukkit.ChatColor;
 import org.bukkit.Color;
@@ -17,7 +18,7 @@ public enum Lobby {
 	SPECTATE	("spectator", Color.YELLOW, ChatColor.YELLOW),
 	LOBBY		("lobby", Color.WHITE, ChatColor.WHITE);
 	
-	private HashMap<Player, Boolean> players;	//members of a team: true: playing, false: waiting; Lobby: true/false toggle messages
+	private Map<Player, Boolean> players;	//members of a team: true: playing, false: waiting; Lobby: true/false toggle messages
 	private int maxPlayers;
 	private String name;
 	private ChatColor color;

@@ -15,6 +15,7 @@ import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
+import org.bukkit.scoreboard.Scoreboard;
 import org.kitteh.tag.TagAPI;
 
 import de.blablubbabc.paintball.extras.Airstrike;
@@ -47,6 +48,7 @@ public class Match {
 	private List<Player> spec = new ArrayList<Player>();
 	private List<Player> allPlayers = new ArrayList<Player>();
 	private Map<Player, Integer> protection = new HashMap<Player, Integer>();
+	private Map<String, Scoreboard> scoreboards = new HashMap<String, Scoreboard>();
 	private Set<String> justRespawned = new HashSet<String>();
 	// STATS
 	private Map<String, TDMMatchStats> playerMatchStats = new HashMap<String, TDMMatchStats>();
@@ -859,12 +861,12 @@ public class Match {
 				// consequences after being afk:
 				plugin.afkRemove(targetName);
 				respawnsLeft.put(target, 0);
-				plugin.getServer().getScheduler().scheduleSyncDelayedTask(plugin, new Runnable() {
+				plugin.getServer().getScheduler().runTask(plugin, new Runnable() {
 					@Override
 					public void run() {
-						plugin.joinLobby(target);
+						plugin.enterLobby(target);
 					}
-				}, 1L);
+				});
 
 				Lobby.getTeam(target).removeMember(target);
 				plugin.feeder.afkLeave(target, this);
@@ -873,12 +875,12 @@ public class Match {
 				respawn(target);
 		} else {
 			resetWeaponStuff(target);
-			plugin.getServer().getScheduler().scheduleSyncDelayedTask(plugin, new Runnable() {
+			plugin.getServer().getScheduler().runTask(plugin, new Runnable() {
 				@Override
 				public void run() {
-					plugin.joinLobby(target);
+					plugin.enterLobby(target);
 				}
-			}, 1L);
+			});
 		}
 
 		// survivors?->endGame
@@ -929,12 +931,12 @@ public class Match {
 				plugin.afkRemove(targetName);
 				respawnsLeft.put(target, 0);
 				resetWeaponStuff(target);
-				plugin.getServer().getScheduler().scheduleSyncDelayedTask(plugin, new Runnable() {
+				plugin.getServer().getScheduler().runTask(plugin, new Runnable() {
 					@Override
 					public void run() {
-						plugin.joinLobby(target);
+						plugin.enterLobby(target);
 					}
-				}, 1L);
+				});
 
 				Lobby.getTeam(target).removeMember(target);
 				plugin.feeder.afkLeave(target, this);
@@ -943,12 +945,12 @@ public class Match {
 				respawn(target);
 		} else {
 			resetWeaponStuff(target);
-			plugin.getServer().getScheduler().scheduleSyncDelayedTask(plugin, new Runnable() {
+			plugin.getServer().getScheduler().runTask(plugin, new Runnable() {
 				@Override
 				public void run() {
-					plugin.joinLobby(target);
+					plugin.enterLobby(target);
 				}
-			}, 1L);
+			});
 		}
 
 		// survivors?->endGame

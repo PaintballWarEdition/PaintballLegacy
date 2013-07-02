@@ -131,7 +131,7 @@ public class CommandManager implements CommandExecutor{
 							}*/
 							if (Lobby.isPlaying(player) || Lobby.isSpectating(player)) {
 								plugin.matchManager.getMatch(player).left(player);
-								plugin.joinLobby(player);
+								plugin.enterLobby(player);
 							}
 							Lobby.getTeam(player).removeMember(player);
 							player.sendMessage(Translator.getString("YOU_LEFT_TEAM"));

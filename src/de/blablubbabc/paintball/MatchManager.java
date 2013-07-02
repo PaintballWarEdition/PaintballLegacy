@@ -43,7 +43,7 @@ public class MatchManager{
 			for (Player p : match.getAll()) {
 				if (Lobby.isPlaying(p) || Lobby.isSpectating(p)) {
 					match.resetWeaponStuff(p);
-					plugin.joinLobby(p);
+					plugin.enterLobby(p);
 				}
 			}
 
@@ -159,14 +159,14 @@ public class MatchManager{
 					}
 					
 					// TELEPORT SURVIVOR TO LOBBY:
-					plugin.joinLobby(player);
+					plugin.enterLobby(player);
 				}
 				
 			} else {
 				// SPECTATOR:
 				if (Lobby.isSpectating(player)) {
 					// TELEPORT SPECTATOR TO LOBBY:
-					plugin.joinLobby(player);
+					plugin.enterLobby(player);
 				}
 			}
 		}

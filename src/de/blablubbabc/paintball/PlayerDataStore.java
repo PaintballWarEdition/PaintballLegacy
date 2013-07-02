@@ -2,6 +2,7 @@ package de.blablubbabc.paintball;
 
 import java.util.ArrayList;
 
+import org.bukkit.Bukkit;
 import org.bukkit.GameMode;
 import org.bukkit.Location;
 import org.bukkit.entity.Player;
@@ -9,6 +10,7 @@ import org.bukkit.event.entity.EntityDamageEvent;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.PlayerInventory;
 import org.bukkit.potion.PotionEffect;
+import org.bukkit.scoreboard.Scoreboard;
 
 import de.blablubbabc.paintball.utils.Translator;
 
@@ -46,6 +48,8 @@ public class PlayerDataStore {
 	// Level / exp
 	private int level;
 	private float exp;
+	// Scoreboard
+	private Scoreboard scoreboard;
 
 	public PlayerDataStore(Player player, Location to) {
 		teleportStoreClearPlayer(player, to);
@@ -96,14 +100,18 @@ public class PlayerDataStore {
 		// Level / exp
 		level = player.getLevel();
 		exp = player.getExp();
+		// scoreboard
+		scoreboard = player.getScoreboard();
 
 		// CLEAR COMPLETE
+		// the scoreboard will be set by the lobby / match if necesarry
 		clearPlayer(player, true, true);
 	}
 
 	@SuppressWarnings("deprecation")
 	public void restoreTeleportPlayer(Player player) {
 		// PREPARE
+		// scoreboard will be reset anyway:
 		clearPlayer(player, true, true);
 		// RESTORE PLAYER
 		
@@ -144,6 +152,10 @@ public class PlayerDataStore {
 		// Level / exp
 		player.setLevel(level);
 		player.setExp(exp);
+		// scoreboard
+		if (Paintball.instance.scoreboards) {
+			player.setScoreboard(scoreboard != null ? scoreboard : Bukkit.getScoreboardManager().getMainScoreboard());
+		}
 		
 		player.setGameMode(gamemode);
 		player.updateInventory();

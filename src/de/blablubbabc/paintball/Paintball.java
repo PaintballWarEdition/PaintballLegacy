@@ -18,6 +18,7 @@ import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.Player;
 import org.bukkit.plugin.Plugin;
 import org.bukkit.plugin.java.JavaPlugin;
+import org.bukkit.scoreboard.Scoreboard;
 
 import de.blablubbabc.BlaDB.BlaSQLite;
 import de.blablubbabc.commandsigns.CommandSignsListener;
@@ -201,6 +202,9 @@ public class Paintball extends JavaPlugin{
 	public boolean checkEffects;
 	
 	public int joinDelaySeconds;
+	
+	// scoreboards
+	public boolean scoreboards;
 
 	//points und cash
 	public int pointsPerKill;
@@ -1167,10 +1171,12 @@ public class Paintball extends JavaPlugin{
 		return entries;
 	}
 
-	public void joinLobby(Player player) {
+	private Map<String, Scoreboard> lobbyScoreboards = new HashMap<String, Scoreboard>();
+	
+	/*public void joinLobby(Player player) {
 		PlayerDataStore.clearPlayer(player, true, true);
 		enterLobby(player);
-	}
+	}*/
 	
 	private Map<String, WaitTimer> currentlyWaiting = new HashMap<String, WaitTimer>();
 	private List<String> currentlyLoading = new ArrayList<String>();
@@ -1246,7 +1252,8 @@ public class Paintball extends JavaPlugin{
 		currentlyWaiting.put(player.getName(), waitTimer);
 	}
 	
-	private synchronized void enterLobby(Player player) {
+	public synchronized void enterLobby(Player player) {
+		PlayerDataStore.clearPlayer(player, true, true);
 		String playerName = player.getName();
 		//set waiting
 		if(Lobby.isPlaying(player) || Lobby.isSpectating(player)) Lobby.getTeam(player).setWaiting(player);
