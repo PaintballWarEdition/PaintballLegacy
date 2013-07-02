@@ -26,15 +26,17 @@ public class Poster {
 			try {
 				post();
 			} catch (IOException e) {
-				Log.info("Wasn't able to check version: " + e.getMessage());
-				Log.addWarning("Wasn't able to check version: " + e.getMessage());
+				Log.info("--------- Checking version ----------");
+				Log.infoWarn("Wasn't able to check version: " + e.getMessage());
+				Log.info("Maybe the update-check server is down or has bad latency.");
+				Log.info("--------- ---------------- ----------");
 			}
 		} else {
-			Log.logColored("--------- Checking version ----------");
+			Log.info("--------- Checking version ----------");
 			Log.info("You denied version checking. :(");
 			Log.info("If you want to be informed about a new version of paintball");
 			Log.info("-> enable it in the config.");
-			Log.logColored("--------- ---------------- ----------");
+			Log.info("--------- ---------------- ----------");
 		}
 	}
 

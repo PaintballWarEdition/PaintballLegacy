@@ -404,6 +404,9 @@ public class Paintball extends JavaPlugin{
 		if(getConfig().get("Paintball.Ranks.Chat Prefix") == null)getConfig().set("Paintball.Ranks.Chat Prefix", true);
 		if(getConfig().get("Paintball.Ranks.Lobby Armor") == null)getConfig().set("Paintball.Ranks.Lobby Armor", true);
 		
+		// scoreboards
+		if(getConfig().get("Paintball.Scoreboards.enabled") == null)getConfig().set("Paintball.Scoreboards.enabled", true);
+		
 		if(getConfig().get("Paintball.Arena Rotation.Random Rotation") == null)getConfig().set("Paintball.Arena Rotation.Random Rotation", true);
 		
 		if(getConfig().get("Paintball.Only Random") == null)getConfig().set("Paintball.Only Random", false);
@@ -668,6 +671,9 @@ public class Paintball extends JavaPlugin{
 		// ranks
 		ranksChatPrefix = getConfig().getBoolean("Paintball.Ranks.Chat Prefix", true);
 		ranksLobbyArmor = getConfig().getBoolean("Paintball.Ranks.Lobby Armor", true);
+		
+		// scoreboards
+		scoreboards = getConfig().getBoolean("Paintball.Scoreboards.enabled", true);
 		
 		// arena rotation
 		arenaRotationRandom = getConfig().getBoolean("Paintball.Arena Rotation.Random Rotation", true);
@@ -1247,18 +1253,19 @@ public class Paintball extends JavaPlugin{
 			lobbyBoard = Bukkit.getScoreboardManager().getNewScoreboard();
 			lobbyScoreboards.put(playerName, lobbyBoard);
 		}
-		player.setScoreboard(lobbyBoard);
 		
 		String header = Translator.getString("SCOREBOARD_LOBBY_HEADER"); 
 		Objective objective = lobbyBoard.registerNewObjective(header.length() > 16 ? header.substring(0, 16) : header, "dummy");
 		objective.setDisplaySlot(DisplaySlot.SIDEBAR);
 		updateLobbyScoreboard(playerName);
+		player.setScoreboard(lobbyBoard);
 	}
 	
 	public void updateLobbyScoreboard(String playerName) {
 		Scoreboard lobbyBoard = lobbyScoreboards.get(playerName);
 		if (lobbyBoard != null) {
 			Objective objective = lobbyBoard.getObjective(DisplaySlot.SIDEBAR);
+			if (objective == null) return;
 			PlayerStats stats = playerManager.getPlayerStats(playerName);
 			for (PlayerStat stat : PlayerStat.values()) {
 				// skip airstrikes and grenades count:

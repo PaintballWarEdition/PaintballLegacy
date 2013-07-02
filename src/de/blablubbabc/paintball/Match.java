@@ -154,7 +154,7 @@ public class Match {
 			respawnsLeft.put(player, setting_respawns);
 			// STATS
 			String playerName = player.getName();
-			playerMatchStats.put(playerName, new TDMMatchStats(plugin.playerManager.getPlayerStats(playerName)));
+			playerMatchStats.put(playerName, new TDMMatchStats(this, playerName, plugin.playerManager.getPlayerStats(playerName)));
 
 			// SCOREBOARD
 			initMatchScoreboard(player);
@@ -413,16 +413,16 @@ public class Match {
 			matchBoard = Bukkit.getScoreboardManager().getNewScoreboard();
 			scoreboards.put(playerName, matchBoard);
 		}
-		player.setScoreboard(matchBoard);
 		
 		// TODO own header (round timer maybe ?)
 		String header = Translator.getString("SCOREBOARD_LOBBY_HEADER"); 
 		Objective objective = matchBoard.registerNewObjective(header.length() > 16 ? header.substring(0, 16) : header, "dummy");
 		objective.setDisplaySlot(DisplaySlot.SIDEBAR);
 		updateMatchScoreboard(playerName);
+		player.setScoreboard(matchBoard);
 	}
 	
-	private void updateMatchScoreboard(String playerName) {
+	public void updateMatchScoreboard(String playerName) {
 		Scoreboard matchBoard = scoreboards.get(playerName);
 		if (matchBoard != null) {
 			Objective objective = matchBoard.getObjective(DisplaySlot.SIDEBAR);

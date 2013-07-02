@@ -25,6 +25,11 @@ public class Log {
 	public static void info(String message) {
 		logger.info(message);
 	}
+	
+	public static void infoWarn(String message) {
+		logger.info(message);
+		addWarning(message);
+	}
 
 	public static void logColored(String message) {
 		consoleSender.sendMessage(message);
