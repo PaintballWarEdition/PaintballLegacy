@@ -1,17 +1,18 @@
 package de.blablubbabc.paintball.joindelay;
 
 import org.bukkit.entity.Player;
-import org.bukkit.plugin.Plugin;
+
+import de.blablubbabc.paintball.Paintball;
 
 
 public class WaitTimer {
 
-	private Plugin plugin;
+	private Paintball plugin;
 	private int task = -1;
 	private int time;
 	private final JoinWaitRunnable waitRunnable;
 
-	public WaitTimer(Plugin plugin, final Player player, long preDelay, long delay, final int times, final JoinWaitRunnable waitRunnable) {
+	public WaitTimer(final Paintball plugin, final Player player, long preDelay, long delay, final int times, final JoinWaitRunnable waitRunnable) {
 		this.plugin = plugin;
 		this.waitRunnable = waitRunnable;
 		time = times;
@@ -21,7 +22,7 @@ public class WaitTimer {
 			public void run() {
 				// check if player moved:
 				if (waitRunnable.didPlayerMove(player.getLocation())) {
-					onAbort();
+					plugin.abortingJoinWaiting(player);
 				}
 				
 				time--;

@@ -52,6 +52,7 @@ import de.blablubbabc.paintball.statistics.arena.ArenaStat;
 import de.blablubbabc.paintball.statistics.general.GeneralStat;
 import de.blablubbabc.paintball.statistics.player.PlayerStat;
 import de.blablubbabc.paintball.statistics.player.match.tdm.TDMMatchStat;
+import de.blablubbabc.paintball.utils.KeyValuePair;
 import de.blablubbabc.paintball.utils.Log;
 import de.blablubbabc.paintball.utils.Metrics;
 import de.blablubbabc.paintball.utils.Poster;
@@ -1182,6 +1183,8 @@ public class Paintball extends JavaPlugin{
 			// is the player already waiting for join or waiting for stats loading -> ignore:
 			WaitTimer waitTimer = currentlyWaiting.get(playerName);
 			if (waitTimer == null && !currentlyLoading.contains(playerName)) {
+				// let the player know:
+				player.sendMessage(Translator.getString("DO_NOT_MOVE", new KeyValuePair("seconds", String.valueOf(joinDelaySeconds))));
 				// wait:
 				joinLater(player, new Runnable() {
 					
@@ -1227,10 +1230,12 @@ public class Paintball extends JavaPlugin{
 		}
 	}
 	
-	public void abortingJoinWaiting(String playerName) {
+	public void abortingJoinWaiting(Player player) {
+		String playerName = player.getName();
 		WaitTimer waitTimer = currentlyWaiting.remove(playerName);
 		if (waitTimer != null) {
 			// abort and end Timer:
+			player.sendMessage(Translator.getString("JOINING_ABORTED"));
 			waitTimer.onAbort();
 		}
 	}
