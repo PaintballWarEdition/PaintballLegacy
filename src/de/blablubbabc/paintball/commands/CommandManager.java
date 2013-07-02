@@ -384,49 +384,53 @@ public class CommandManager implements CommandExecutor{
 		plugin.feeder.players(player);
 	}
 
-	public void joinLobbyPre(Player player, Runnable runOnSuccess) {
-		//Lobby vorhanden?
-		if(plugin.getLobbyspawnsCount() == 0) {
+	public boolean joinLobbyPreChecks(Player player) {
+		// Lobby vorhanden?
+		if (plugin.getLobbyspawnsCount() == 0) {
 			player.sendMessage(Translator.getString("NO_LOBBY_FOUND"));
-			return;
+			return false;
 		}
-		//inventory
-		if(!Utils.isEmptyInventory(player) && plugin.checkInventory ) {
+		// inventory
+		if (!Utils.isEmptyInventory(player) && plugin.checkInventory) {
 			player.sendMessage(Translator.getString("NEED_CLEAR_INVENTORY"));
-			return;
+			return false;
 		}
-		//gamemode an?
-		if(!player.getGameMode().equals(GameMode.SURVIVAL) && plugin.checkGamemode ) {
+		// gamemode an?
+		if (!player.getGameMode().equals(GameMode.SURVIVAL) && plugin.checkGamemode) {
 			player.sendMessage(Translator.getString("NEED_RIGHT_GAMEMODE"));
-			return;
+			return false;
 		}
-		//flymode an? (built-in fly mode)
-		if( (player.getAllowFlight() || player.isFlying()) && plugin.checkFlymode ) {
+		// flymode an? (built-in fly mode)
+		if ((player.getAllowFlight() || player.isFlying()) && plugin.checkFlymode) {
 			player.sendMessage(Translator.getString("NEED_STOP_FLYING"));
-			return;
+			return false;
 		}
-		//brennt? fällt? taucht?
-		if( (player.getFireTicks() > 0 || player.getFallDistance() > 0 || player.getRemainingAir() < player.getMaximumAir()) && plugin.checkBurning ) {
+		// brennt? fällt? taucht?
+		if ((player.getFireTicks() > 0 || player.getFallDistance() > 0 || player.getRemainingAir() < player.getMaximumAir()) && plugin.checkBurning) {
 			player.sendMessage(Translator.getString("NEED_STOP_FALLING_BURNING_DROWNING"));
-			return;
+			return false;
 		}
-		//wenig leben
-		if(player.getHealth() < player.getMaxHealth()  && plugin.checkHealth) {
+		// wenig leben
+		if (player.getHealth() < player.getMaxHealth() && plugin.checkHealth) {
 			player.sendMessage(Translator.getString("NEED_FULL_HEALTH"));
-			return;
+			return false;
 		}
-		//hungert
-		if(player.getFoodLevel() < 20 && plugin.checkFood) {
+		// hungert
+		if (player.getFoodLevel() < 20 && plugin.checkFood) {
 			player.sendMessage(Translator.getString("NEED_FULL_FOOD"));
-			return;
+			return false;
 		}
-		//hat effekte auf sich
-		if(player.getActivePotionEffects().size() > 0  && plugin.checkEffects) {
+		// hat effekte auf sich
+		if (player.getActivePotionEffects().size() > 0 && plugin.checkEffects) {
 			player.sendMessage(Translator.getString("NEED_NO_EFFECTS"));
-			return;
+			return false;
 		}
-
-		plugin.joinLobbyFresh(player, runOnSuccess);
+		
+		return true;
+	}
+	
+	public void joinLobbyPre(Player player, Runnable runOnSuccess) {
+		if (joinLobbyPreChecks(player)) plugin.joinLobbyFresh(player, runOnSuccess);
 	}
 
 }
