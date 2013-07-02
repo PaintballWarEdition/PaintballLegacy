@@ -42,6 +42,8 @@ import de.blablubbabc.paintball.extras.Turret;
 import de.blablubbabc.paintball.features.InSignsFeature;
 import de.blablubbabc.paintball.features.TagAPIListener;
 import de.blablubbabc.paintball.features.VoteListener;
+import de.blablubbabc.paintball.joindelay.JoinWaitRunnable;
+import de.blablubbabc.paintball.joindelay.WaitTimer;
 import de.blablubbabc.paintball.melodies.Instrus;
 import de.blablubbabc.paintball.melodies.Musiker;
 import de.blablubbabc.paintball.shop.ShopManager;
@@ -196,6 +198,8 @@ public class Paintball extends JavaPlugin{
 	public boolean checkHealth;
 	public boolean checkFood;
 	public boolean checkEffects;
+	
+	public int joinDelaySeconds;
 
 	//points und cash
 	public int pointsPerKill;
@@ -438,14 +442,15 @@ public class Paintball extends JavaPlugin{
 				getConfig().set("Paintball.Gifts.gifts."+giftsDef.indexOf(g)+".chance", g.getChance());
 			}
 		}
-		//lobby join checks
+		//lobby join
+		if(getConfig().get("Paintball.Lobby join.Join Delay.Time in Seconds") == null)getConfig().set("Paintball.Lobby join.Join Delay.Time in Seconds", 5);
 		if(getConfig().get("Paintball.Lobby join.Checks.Inventory") == null)getConfig().set("Paintball.Lobby join.Checks.Inventory", false);
 		if(getConfig().get("Paintball.Lobby join.Checks.Inventory Save") == null)getConfig().set("Paintball.Lobby join.Checks.Inventory Save", true);
 		if(getConfig().get("Paintball.Lobby join.Checks.Gamemode") == null)getConfig().set("Paintball.Lobby join.Checks.Gamemode", false);
 		if(getConfig().get("Paintball.Lobby join.Checks.Creative-Fly-Mode") == null)getConfig().set("Paintball.Lobby join.Checks.Creative-Fly-Mode", false);
 		if(getConfig().get("Paintball.Lobby join.Checks.Burning, Falling, Immersion") == null)getConfig().set("Paintball.Lobby join.Checks.Burning, Falling, Immersion", true);
-		if(getConfig().get("Paintball.Lobby join.Checks.Health") == null)getConfig().set("Paintball.Lobby join.Checks.Health", true);
-		if(getConfig().get("Paintball.Lobby join.Checks.FoodLevel") == null)getConfig().set("Paintball.Lobby join.Checks.FoodLevel", true);
+		if(getConfig().get("Paintball.Lobby join.Checks.Health") == null)getConfig().set("Paintball.Lobby join.Checks.Health", false);
+		if(getConfig().get("Paintball.Lobby join.Checks.FoodLevel") == null)getConfig().set("Paintball.Lobby join.Checks.FoodLevel", false);
 		if(getConfig().get("Paintball.Lobby join.Checks.Effects") == null)getConfig().set("Paintball.Lobby join.Checks.Effects", false);
 
 		if(getConfig().get("Paintball.Match.Damage.FallDamage") == null)getConfig().set("Paintball.Match.Damage.FallDamage", false);
@@ -718,6 +723,7 @@ public class Paintball extends JavaPlugin{
 		disabledArenas = (List<String>) getConfig().getList("Paintball.Arena.Disabled Arenas", new ArrayList<String>());
 		
 		//lobby join checks
+		joinDelaySeconds = getConfig().getInt("Paintball.Lobby join.Join Delay.Time in Seconds", 5);
 		checkInventory = getConfig().getBoolean("Paintball.Lobby join.Checks.Inventory", true);
 		saveInventory = getConfig().getBoolean("Paintball.Lobby join.Checks.Inventory Save", true);
 		checkGamemode = getConfig().getBoolean("Paintball.Lobby join.Checks.Gamemode", true);
@@ -1165,11 +1171,38 @@ public class Paintball extends JavaPlugin{
 		enterLobby(player);
 	}
 	
+	private Map<String, WaitTimer> currentlyWaiting = new HashMap<String, WaitTimer>();
 	private List<String> currentlyLoading = new ArrayList<String>();
 	
 	public void joinLobbyFresh(final Player player, final Runnable runAfterwards) {
 		final String playerName = player.getName();
 		
+		// join delay:
+		if (joinDelaySeconds > 0) {
+			// is the player already waiting for join or waiting for stats loading -> ignore:
+			WaitTimer waitTimer = currentlyWaiting.get(playerName);
+			if (waitTimer == null && !currentlyLoading.contains(playerName)) {
+				// wait:
+				joinLater(player, new Runnable() {
+					
+					@Override
+					public void run() {
+						// waiting is over:
+						currentlyWaiting.remove(playerName);
+						// load and then join:
+						handleLoadingAndJoin(player, runAfterwards);
+					}
+				});
+				
+			}
+		} else {
+			// load and then join:
+			handleLoadingAndJoin(player, runAfterwards);
+		}
+	}
+	
+	private void handleLoadingAndJoin(final Player player, final Runnable runAfterwards) {
+		final String playerName = player.getName();
 		// is player already in the process of joining ?
 		if (!currentlyLoading.contains(playerName)) {
 			// load player stats and continue after loading:
@@ -1178,11 +1211,12 @@ public class Paintball extends JavaPlugin{
 				
 				@Override
 				public void run() {
+					// loading is finished:
+					currentlyLoading.remove(playerName);
 					// join lobby:
 					Lobby.LOBBY.addMember(player);
 					feeder.join(playerName);
 					playerManager.teleportStoreClearPlayer(player, getNextLobbySpawn());
-					currentlyLoading.remove(playerName);
 					// ASSIGN RANK
 					if (ranksLobbyArmor) rankManager.getRank(playerName).assignArmorToPlayer(player);
 					
@@ -1191,6 +1225,20 @@ public class Paintball extends JavaPlugin{
 				}
 			});
 		}
+	}
+	
+	public void abortingJoinWaiting(String playerName) {
+		WaitTimer waitTimer = currentlyWaiting.remove(playerName);
+		if (waitTimer != null) {
+			// abort and end Timer:
+			waitTimer.onAbort();
+		}
+	}
+	
+	private void joinLater(final Player player, final Runnable runAfterWaiting) {
+		final JoinWaitRunnable waitRunnable = new JoinWaitRunnable(runAfterWaiting, player.getLocation());
+		WaitTimer waitTimer = new WaitTimer(this, player, 0L, 20L, joinDelaySeconds, waitRunnable);
+		currentlyWaiting.put(player.getName(), waitTimer);
 	}
 	
 	private synchronized void enterLobby(Player player) {

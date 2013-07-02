@@ -1,47 +1,33 @@
-package de.blablubbabc.paintball.utils;
+package de.blablubbabc.paintball.joindelay;
 
+import org.bukkit.entity.Player;
 import org.bukkit.plugin.Plugin;
 
-public class Timer {
+
+public class WaitTimer {
 
 	private Plugin plugin;
 	private int task = -1;
 	private int time;
+	private final JoinWaitRunnable waitRunnable;
 
-	public Timer(Plugin plugin, long preDelay, long delay, final int times, final Runnable eachDelay,
-			final Runnable send, final Runnable end) {
+	public WaitTimer(Plugin plugin, final Player player, long preDelay, long delay, final int times, final JoinWaitRunnable waitRunnable) {
 		this.plugin = plugin;
+		this.waitRunnable = waitRunnable;
 		time = times;
 		task = plugin.getServer().getScheduler().runTaskTimer(plugin, new Runnable() {
 
 			@Override
 			public void run() {
-				if (eachDelay != null) eachDelay.run();
-
-				if (send != null) {
-					if (time == times && time > 0) {
-						send.run();
-						time--;
-						return;
-					}
-					if ((time % 30) == 0 && time >= 60) {
-						send.run();
-					}
-					else if ((time % 15) == 0 && time > 20 && time < 60) {
-						send.run();
-					}
-					else if ((time % 10) == 0 && time > 5 && time <= 20) {
-						send.run();
-					}
-					else if (time < 6 && time > 0) {
-						send.run();
-					}
+				// check if player moved:
+				if (waitRunnable.didPlayerMove(player.getLocation())) {
+					onAbort();
 				}
 				
 				time--;
 				if (time < 1) {
 					end();
-					if (end != null) end.run();
+					if (waitRunnable != null) waitRunnable.run();
 				}
 			}
 		}, preDelay, delay).getTaskId();
@@ -62,6 +48,11 @@ public class Timer {
 			plugin.getServer().getScheduler().cancelTask(task);
 			task = -1;
 		}
+	}
+	
+	public void onAbort() {
+		if (waitRunnable != null) waitRunnable.onAborted();
+		end();
 	}
 
 }
