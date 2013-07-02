@@ -193,7 +193,7 @@ public class SQLPlayers {
 		}
 		if (query.length() > 0) {
 			query = query.substring(0, query.length() - 1);
-			sql.updateQuery("UPDATE OR IGNORE players SET "+query+" WHERE name='" + player + "';");
+			sql.updateQuery("UPDATE OR IGNORE players SET " + query + " WHERE name='" + player + "';");
 		}
 	}
 
