@@ -435,6 +435,8 @@ public class Match {
 				Score score = objective.getScore(Bukkit.getOfflinePlayer(scoreName));
 				score.setScore(stats.getStat(stat));
 			}
+			// add overall points and cash to scoreboard:
+			// TODO
 		}
 	}
 	
