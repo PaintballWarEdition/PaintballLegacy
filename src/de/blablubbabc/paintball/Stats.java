@@ -103,7 +103,7 @@ public class Stats {
 					if (i <= players.length) {
 						vars.put("rank", String.valueOf(i));
 						vars.put("player", players[i - 1]);
-						if (stat == PlayerStat.KD || stat == PlayerStat.ACCURACY) {
+						if (stat == PlayerStat.KD || stat == PlayerStat.HITQUOTE) {
 							float valueF = (float) values[i - 1] / 100;
 							vars.put("value", decimalFormat.format(valueF));
 						} else vars.put("value", String.valueOf(values[i - 1]));
@@ -190,10 +190,10 @@ public class Stats {
 
 					//KD + HITQUOTE
 					float kdF = (float)stats.getStat(PlayerStat.KD) / 100;
-					float hitquoteF = (float)stats.getStat(PlayerStat.ACCURACY) / 100;
+					float hitquoteF = (float)stats.getStat(PlayerStat.HITQUOTE) / 100;
 					//TOP
 					int kdT = topStats.get(PlayerStat.KD).getValue();
-					int hitquoteT = topStats.get(PlayerStat.ACCURACY).getValue();
+					int hitquoteT = topStats.get(PlayerStat.HITQUOTE).getValue();
 					float kdFT = (float)kdT / 100;
 					float hitquoteFT = (float)hitquoteT / 100;
 

@@ -56,7 +56,7 @@ public class PlayerStats {
 	
 	public void calculateQuotes() {
 		// set stats, without changing dirty state:
-		stats.put(PlayerStat.ACCURACY, Utils.calculateQuote(getStat(PlayerStat.HITS), getStat(PlayerStat.SHOTS)));
+		stats.put(PlayerStat.HITQUOTE, Utils.calculateQuote(getStat(PlayerStat.HITS), getStat(PlayerStat.SHOTS)));
 		stats.put(PlayerStat.KD, Utils.calculateQuote(getStat(PlayerStat.KILLS), getStat(PlayerStat.DEATHS)));
 	}
 	

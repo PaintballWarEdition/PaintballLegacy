@@ -42,7 +42,7 @@ public class InSignsFeature {
 						PlayerStats stats = plugin.playerManager.getPlayerStats(playerName);
 						if(stats != null) {
 							Integer statValue = stats.getStat(stat);
-							if(stat == PlayerStat.ACCURACY || stat == PlayerStat.KD) {
+							if(stat == PlayerStat.HITQUOTE || stat == PlayerStat.KD) {
 								float statF = ((float) statValue) / 100;
 								return format.format(statF);
 							} else return String.valueOf(statValue);

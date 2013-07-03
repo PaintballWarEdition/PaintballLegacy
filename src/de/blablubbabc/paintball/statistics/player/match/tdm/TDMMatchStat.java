@@ -11,7 +11,7 @@ public enum TDMMatchStat {
 	KD(PlayerStat.KD),
 	SHOTS(PlayerStat.SHOTS),
 	HITS(PlayerStat.HITS),
-	ACCURACY(PlayerStat.ACCURACY),
+	HITQUOTE(PlayerStat.HITQUOTE),
 	TEAMATTACKS(PlayerStat.TEAMATTACKS),
 	GRENADES(PlayerStat.GRENADES),
 	AIRSTRIKES(PlayerStat.AIRSTRIKES);

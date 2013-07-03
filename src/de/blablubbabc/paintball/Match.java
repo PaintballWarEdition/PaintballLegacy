@@ -34,8 +34,10 @@ import de.blablubbabc.paintball.extras.Orbitalstrike;
 import de.blablubbabc.paintball.extras.Sniper;
 import de.blablubbabc.paintball.extras.Turret;
 import de.blablubbabc.paintball.statistics.arena.ArenaSetting;
+import de.blablubbabc.paintball.statistics.player.PlayerStat;
 import de.blablubbabc.paintball.statistics.player.match.tdm.TDMMatchStat;
 import de.blablubbabc.paintball.statistics.player.match.tdm.TDMMatchStats;
+import de.blablubbabc.paintball.utils.KeyValuePair;
 import de.blablubbabc.paintball.utils.Sounds;
 import de.blablubbabc.paintball.utils.Timer;
 import de.blablubbabc.paintball.utils.Translator;
@@ -157,7 +159,7 @@ public class Match {
 			playerMatchStats.put(playerName, new TDMMatchStats(this, playerName, plugin.playerManager.getPlayerStats(playerName)));
 
 			// SCOREBOARD
-			initMatchScoreboard(player);
+			if (plugin.scoreboards) initMatchScoreboard(player);
 			
 			PlayerDataStore.clearPlayer(player, true, true);
 			spawnPlayer(player);
@@ -187,6 +189,9 @@ public class Match {
 						p.teleport(loc);
 					}	
 				}
+				
+				// scoreboard:
+				if (plugin.scoreboards) updateAllMatchScoreboardTimers(startTimer.getTime());
 			}
 		}, new Runnable() {
 			
@@ -263,6 +268,9 @@ public class Match {
 						player.setLevel(roundTimer.getTime());
 					}
 				}
+				
+				// scoreboard:
+				if (plugin.scoreboards) updateAllMatchScoreboardTimers(startTimer.getTime());
 			}
 		}, new Runnable() {
 			
@@ -414,12 +422,25 @@ public class Match {
 			scoreboards.put(playerName, matchBoard);
 		}
 		
-		// TODO own header (round timer maybe ?)
-		String header = Translator.getString("SCOREBOARD_LOBBY_HEADER"); 
+		String header = Translator.getString("SCOREBOARD_MATCH_HEADER", new KeyValuePair("round_time", "0:00")); 
 		Objective objective = matchBoard.registerNewObjective(header.length() > 16 ? header.substring(0, 16) : header, "dummy");
 		objective.setDisplaySlot(DisplaySlot.SIDEBAR);
 		updateMatchScoreboard(playerName);
 		player.setScoreboard(matchBoard);
+	}
+	
+	private void updateAllMatchScoreboardTimers(int timeInSeconds) {
+		int minutes = (int) (timeInSeconds / 60);
+		int seconds = timeInSeconds % 60;
+		
+		String secondsString = String.valueOf(seconds);
+		String header = Translator.getString("SCOREBOARD_MATCH_HEADER", 
+				new KeyValuePair("round_time", String.valueOf(minutes) + ":" + (seconds >= 10 ? secondsString : "0" + secondsString))); 
+		header = header.length() > 16 ? header.substring(0, 16) : header;
+		
+		for (Scoreboard scoreboard : scoreboards.values()) {
+			scoreboard.getObjective(DisplaySlot.SIDEBAR).setDisplayName(header);
+		}
 	}
 	
 	public void updateMatchScoreboard(String playerName) {
@@ -428,15 +449,20 @@ public class Match {
 			Objective objective = matchBoard.getObjective(DisplaySlot.SIDEBAR);
 			TDMMatchStats stats = playerMatchStats.get(playerName);
 			for (TDMMatchStat stat : TDMMatchStat.values()) {
-				// skip airstrikes and grenades count:
-				if (stat == TDMMatchStat.AIRSTRIKES || stat == TDMMatchStat.GRENADES) continue;	
-				// TODO own match stat language support
-				String scoreName = Translator.getString("SCOREBOARD_LOBBY_" + stat.getPlayerStat().getKey().toUpperCase());
-				Score score = objective.getScore(Bukkit.getOfflinePlayer(scoreName));
+				// skip airstrikes, grenades and teamattacks count:
+				if (stat == TDMMatchStat.AIRSTRIKES || stat == TDMMatchStat.GRENADES || stat == TDMMatchStat.TEAMATTACKS) continue;	
+				String scoreName = Translator.getString("SCOREBOARD_MATCH_" + stat.getPlayerStat().getKey().toUpperCase());
+				Score score = objective.getScore(Bukkit.getOfflinePlayer(scoreName.length() > 16 ? scoreName.substring(0, 16) : scoreName));
 				score.setScore(stats.getStat(stat));
 			}
 			// add overall points and cash to scoreboard:
-			// TODO
+			String overallPoints = Translator.getString("SCOREBOARD_MATCH_OVERALL_POINTS");
+			Score overallPointsScore = objective.getScore(Bukkit.getOfflinePlayer(overallPoints.length() > 16 ? overallPoints.substring(0, 16) : overallPoints));
+			overallPointsScore.setScore(stats.getPlayerStats().getStat(PlayerStat.POINTS));
+			
+			String overallCash = Translator.getString("SCOREBOARD_MATCH_OVERALL_MONEY");
+			Score overallCashScore = objective.getScore(Bukkit.getOfflinePlayer(overallCash.length() > 16 ? overallCash.substring(0, 16) : overallCash));
+			overallCashScore.setScore(stats.getPlayerStats().getStat(PlayerStat.MONEY));
 		}
 	}
 	

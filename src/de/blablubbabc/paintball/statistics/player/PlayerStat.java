@@ -9,7 +9,7 @@ public enum PlayerStat {
 	KD("kd"),
 	SHOTS("shots"),
 	HITS("hits"),
-	ACCURACY("hitquote"),
+	HITQUOTE("hitquote"),
 	TEAMATTACKS("teamattacks"),
 	ROUNDS("rounds"),
 	WINS("wins"),

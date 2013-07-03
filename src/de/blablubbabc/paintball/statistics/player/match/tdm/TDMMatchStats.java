@@ -23,6 +23,10 @@ public class TDMMatchStats {
 		resetStats();
 	}
 	
+	public PlayerStats getPlayerStats() {
+		return playerStats;
+	}
+	
 	public void resetStats() {
 		for(TDMMatchStat stat : TDMMatchStat.values()) {
 			stats.put(stat, 0);
@@ -46,7 +50,7 @@ public class TDMMatchStats {
 	}
 	
 	public void calculateQuotes() {
-		stats.put(TDMMatchStat.ACCURACY, Utils.calculateQuote(getStat(TDMMatchStat.HITS), getStat(TDMMatchStat.SHOTS)));
+		stats.put(TDMMatchStat.HITQUOTE, Utils.calculateQuote(getStat(TDMMatchStat.HITS), getStat(TDMMatchStat.SHOTS)));
 		stats.put(TDMMatchStat.KD, Utils.calculateQuote(getStat(TDMMatchStat.KILLS), getStat(TDMMatchStat.DEATHS)));
 		
 		if (playerStats != null) playerStats.calculateQuotes();
