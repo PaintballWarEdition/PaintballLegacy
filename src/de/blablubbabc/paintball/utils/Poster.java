@@ -99,11 +99,12 @@ public class Poster {
 			// version check:
 			String version = description.getVersion();
 			// higher or lower version ?
-			String[] splitVersion = version.split(".");
-			String[] splitResponse = response.split(".");
-			int maxIndex = Math.max(splitVersion.length, splitResponse.length);
+			String[] splitVersion = version.split("\\.");
+			String[] splitResponse = response.split("\\.");
+			int maxIndex = Math.max(splitVersion.length, splitResponse.length) - 1;
 			int versionValue = calcVersion(splitVersion, maxIndex);
 			int responseValue = calcVersion(splitResponse, maxIndex);
+			
 			
 			Log.info("--------- Checking version ----------");
 			if (responseValue > versionValue) {
