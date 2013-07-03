@@ -23,7 +23,7 @@ import de.blablubbabc.paintball.utils.Translator;
 
 public class ShopManager {
 	
-	public final ItemStack item = ItemManager.setMeta(new ItemStack(Material.BOOK_AND_QUILL));
+	public final ItemStack item = ItemManager.setMeta(new ItemStack(Material.BOOK));
 	
 	private Paintball plugin;
 	private ShopGood[] goods;

@@ -73,7 +73,7 @@ public class ItemManager {
 			meta.setDisplayName(Translator.getString("WEAPON_PUMPGUN"));
 			break;
 			
-		case BOOK_AND_QUILL:
+		case BOOK:
 			meta.setDisplayName(Translator.getString("SHOP_ITEM"));
 			break;
 			
