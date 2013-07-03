@@ -1252,11 +1252,12 @@ public class Paintball extends JavaPlugin{
 		if (lobbyBoard == null) {
 			lobbyBoard = Bukkit.getScoreboardManager().getNewScoreboard();
 			lobbyScoreboards.put(playerName, lobbyBoard);
+			
+			String header = Translator.getString("SCOREBOARD_LOBBY_HEADER"); 
+			Objective objective = lobbyBoard.registerNewObjective(header.length() > 16 ? header.substring(0, 16) : header, "dummy");
+			objective.setDisplaySlot(DisplaySlot.SIDEBAR);
 		}
 		
-		String header = Translator.getString("SCOREBOARD_LOBBY_HEADER"); 
-		Objective objective = lobbyBoard.registerNewObjective(header.length() > 16 ? header.substring(0, 16) : header, "dummy");
-		objective.setDisplaySlot(DisplaySlot.SIDEBAR);
 		updateLobbyScoreboard(playerName);
 		player.setScoreboard(lobbyBoard);
 	}
