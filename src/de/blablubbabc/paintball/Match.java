@@ -156,7 +156,7 @@ public class Match {
 			respawnsLeft.put(player, setting_respawns);
 			// STATS
 			String playerName = player.getName();
-			playerMatchStats.put(playerName, new TDMMatchStats(this, playerName, plugin.playerManager.getPlayerStats(playerName)));
+			playerMatchStats.put(playerName, new TDMMatchStats(plugin.playerManager.getPlayerStats(playerName)));
 
 			// SCOREBOARD
 			if (plugin.scoreboards) initMatchScoreboard(player);
@@ -782,6 +782,7 @@ public class Match {
 		TDMMatchStats matchStats = playerMatchStats.get(playerName);
 		matchStats.addStat(TDMMatchStat.SHOTS, 1);
 		matchStats.calculateQuotes();
+		if (plugin.scoreboards) updateMatchScoreboard(playerName);
 	}
 
 	public void onGrenade(Player player) {
@@ -834,6 +835,7 @@ public class Match {
 					matchStats.addStat(TDMMatchStat.POINTS, plugin.pointsPerHit);
 					matchStats.addStat(TDMMatchStat.MONEY, plugin.cashPerHit);
 					matchStats.calculateQuotes();
+					if (plugin.scoreboards) updateMatchScoreboard(shooterName);
 					
 					// dead?->frag
 					// message:
@@ -890,10 +892,12 @@ public class Match {
 		killerStats.addStat(TDMMatchStat.POINTS, plugin.pointsPerKill);
 		killerStats.addStat(TDMMatchStat.MONEY, plugin.cashPerKill);
 		killerStats.calculateQuotes();
+		if (plugin.scoreboards) updateMatchScoreboard(killerName);
 		// TARGET:
 		TDMMatchStats targetStats = playerMatchStats.get(targetName);
 		targetStats.addStat(TDMMatchStat.DEATHS, 1);
 		targetStats.calculateQuotes();
+		if (plugin.scoreboards) updateMatchScoreboard(targetName);
 		
 		// 0 lives = -> out
 		livesLeft.put(target, 0);
@@ -970,6 +974,7 @@ public class Match {
 		TDMMatchStats targetStats = playerMatchStats.get(targetName);
 		targetStats.addStat(TDMMatchStat.DEATHS, 1);
 		targetStats.calculateQuotes();
+		if (plugin.scoreboards) updateMatchScoreboard(targetName);
 		
 		// FEED
 		target.sendMessage(Translator.getString("YOU_DIED"));
