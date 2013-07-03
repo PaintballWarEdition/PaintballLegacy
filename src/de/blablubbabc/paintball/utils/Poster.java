@@ -96,17 +96,44 @@ public class Poster {
 		if (response == null || response.startsWith("ERR")) {
 			throw new IOException(response); 
 		} else {
-			//version check:
+			// version check:
+			String version = description.getVersion();
+			// higher or lower version ?
+			String[] splitVersion = version.split(".");
+			String[] splitResponse = response.split(".");
+			int maxIndex = Math.max(splitVersion.length, splitResponse.length);
+			int versionValue = calcVersion(splitVersion, maxIndex);
+			int responseValue = calcVersion(splitResponse, maxIndex);
+			
 			Log.info("--------- Checking version ----------");
-			if (!description.getVersion().equals(response)) {
+			if (responseValue > versionValue) {
 				Paintball.instance.needsUpdate = true;
 				Log.infoWarn("There is a new version of paintball available: " + response);
 				Log.info("Download at the bukkit dev page.");
+			} else if (versionValue > responseValue) {
+				Log.info("You are running a newer version. :o");
 			} else {
 				Log.info("You are running the latest version. :)");
 			}
 			Log.info("--------- ---------------- ----------");
 		}
+	}
+	
+	private int calcVersion(String[] versionSplit, int highestIndex) {
+		int result = 0;
+		if (versionSplit != null) {
+			for (int i = highestIndex; i >= 0; i--) {
+				if (i < versionSplit.length) {
+					try {
+						result += Integer.valueOf(versionSplit[i]) * Math.pow(10, highestIndex - i);
+					} catch (NumberFormatException e) {
+						continue;
+					}
+				}
+				// else add nothing
+			}
+		}
+		return result;
 	}
 
 	private static void encodeDataPair(final StringBuilder buffer, final String key, final String value) throws UnsupportedEncodingException {
