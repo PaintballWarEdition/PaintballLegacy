@@ -820,7 +820,7 @@ public class EventListener implements Listener {
 					fireTicks = target.getFireTicks();
 					target.setFireTicks(0);
 				}
-				double damage = event.getDamage();
+				int damage = event.getDamage();
 				event.setDamage(0);
 				event.setCancelled(true);
 				Match match = plugin.matchManager.getMatch(target);
