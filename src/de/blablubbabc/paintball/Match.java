@@ -270,7 +270,7 @@ public class Match {
 				}
 				
 				// scoreboard:
-				if (plugin.scoreboards) updateAllMatchScoreboardTimers(startTimer.getTime());
+				if (plugin.scoreboards) updateAllMatchScoreboardTimers(roundTimer.getTime());
 			}
 		}, new Runnable() {
 			

@@ -1320,6 +1320,10 @@ public class Paintball extends JavaPlugin{
 			playerManager.clearRestoreTeleportPlayer(player);
 			// if player not in lobby and not in match -> stats no longer needed:
 			if (!Lobby.LOBBY.isMember(player) && matchManager.getMatch(player) == null) playerManager.unloadPlayerStats(playerName);
+			// remove scoreboard for this player
+			if (scoreboards) {
+				lobbyScoreboards.remove(playerName);
+			}
 			//messages:
 			if(messages) {
 				player.sendMessage(Translator.getString("YOU_LEFT_LOBBY"));
