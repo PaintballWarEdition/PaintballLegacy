@@ -679,7 +679,7 @@ public class EventListener implements Listener {
 					}
 					break;
 					
-				case BOOK_AND_QUILL:
+				case BOOK:
 					// SHOP
 					if (plugin.shop && item.isSimilar(plugin.shopManager.item)) {
 						// no book opening
