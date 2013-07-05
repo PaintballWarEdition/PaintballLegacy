@@ -73,6 +73,7 @@ public class ShopGood {
 			
 		} else {
 			this.icon = itemstack.clone();
+			if (itemstack.getAmount() > 64) this.icon.setAmount(1);
 			
 			List<String> desc = new ArrayList<String>();
 			desc.add(ChatColor.RED + "__Price: " + ChatColor.GREEN + price + "$");
