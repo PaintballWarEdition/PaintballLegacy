@@ -41,7 +41,6 @@ public class Utils {
 		upVectors.add(new Vector(1, 1, 0));
 		upVectors.add(new Vector(1, 0, 1));
 		upVectors.add(new Vector(0, 1, 1));
-		upVectors.add(new Vector(0, 0, 0));
 		upVectors.add(new Vector(1, 1, 1));
 		upVectors.add(new Vector(-1, 0, 0));
 		upVectors.add(new Vector(0, 0, -1));
