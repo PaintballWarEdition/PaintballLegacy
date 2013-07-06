@@ -22,7 +22,6 @@ import org.bukkit.scoreboard.Score;
 import org.bukkit.scoreboard.Scoreboard;
 import org.kitteh.tag.TagAPI;
 
-import de.blablubbabc.paintball.extras.AirstrikeCall;
 import de.blablubbabc.paintball.extras.Ball;
 import de.blablubbabc.paintball.extras.Flashbang;
 import de.blablubbabc.paintball.extras.Gifts;
@@ -33,6 +32,7 @@ import de.blablubbabc.paintball.extras.Mine;
 import de.blablubbabc.paintball.extras.Orbitalstrike;
 import de.blablubbabc.paintball.extras.Sniper;
 import de.blablubbabc.paintball.extras.Turret;
+import de.blablubbabc.paintball.extras.weapons.AirstrikeCall;
 import de.blablubbabc.paintball.statistics.arena.ArenaSetting;
 import de.blablubbabc.paintball.statistics.player.PlayerStat;
 import de.blablubbabc.paintball.statistics.player.match.tdm.TDMMatchStat;
@@ -203,6 +203,7 @@ public class Match {
 				vars.put("seconds", String.valueOf(startTimer.getTime()));
 				String msg = Translator.getString("COUNTDOWN_START", vars);
 				for (Player player : getAll()) {
+					if (!isSurvivor(player)) continue;
 					if (plugin.useXPBar) player.setLevel(startTimer.getTime());
 					player.sendMessage(msg);
 				}
@@ -529,7 +530,9 @@ public class Match {
 
 	private void makeAllVisible() {
 		for (Player pl : getAll()) {
+			if (!isSurvivor(pl)) continue;
 			for (Player p : getAll()) {
+				if (!isSurvivor(p)) continue;
 				if (!p.equals(pl))
 					pl.showPlayer(p);
 			}
