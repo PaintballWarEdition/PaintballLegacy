@@ -22,7 +22,7 @@ import org.bukkit.scoreboard.Score;
 import org.bukkit.scoreboard.Scoreboard;
 import org.kitteh.tag.TagAPI;
 
-import de.blablubbabc.paintball.extras.Airstrike;
+import de.blablubbabc.paintball.extras.AirstrikeCall;
 import de.blablubbabc.paintball.extras.Ball;
 import de.blablubbabc.paintball.extras.Flashbang;
 import de.blablubbabc.paintball.extras.Gifts;
@@ -181,6 +181,8 @@ public class Match {
 			@Override
 			public void run() {
 				for (Player p : getAllPlayer()) {
+					// player left (= dead) ?
+					if (!isSurvivor(p)) continue;
 					Location ploc = p.getLocation();
 					Location loc = playersLoc.get(p.getName());
 					if (ploc.getBlockX() != loc.getBlockX() || ploc.getBlockY() != loc.getBlockY() || ploc.getBlockZ() != loc.getBlockZ()) {
@@ -1081,7 +1083,7 @@ public class Match {
 	
 	public void resetWeaponStuffEnd() {
 		//remove airstrikes
-		Airstrike.clear();
+		AirstrikeCall.clear();
 		//remove orbitalstrikes
 		Orbitalstrike.clear();
 		//remove grenades
