@@ -4,7 +4,6 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.bukkit.DyeColor;
-import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.block.Block;
 import org.bukkit.entity.Entity;
@@ -31,12 +30,12 @@ public class WeaponManager {
 	
 	public WeaponManager(Paintball plugin) {
 		ballHandler = new GadgetManager();
-		giftHandler = new GiftHandler(plugin, Material.CHEST.getId(), false);
+		giftHandler = new GiftHandler(Material.CHEST.getId(), false);
 		// init all default weapons and gadgets:
-		new Marker(plugin, Material.SNOW_BALL.getId(), false);
-		new AirstrikeHandler(plugin, Material.STICK.getId(), false);
-		new FlashbangHandler(plugin, Material.GHAST_TEAR.getId(), false);
-		new ConcussionHandler(plugin, Material.SPIDER_EYE.getId(), false);
+		new Marker(Material.SNOW_BALL.getId(), false);
+		new AirstrikeHandler(Material.STICK.getId(), false);
+		new FlashbangHandler(Material.GHAST_TEAR.getId(), false);
+		new ConcussionHandler(Material.SPIDER_EYE.getId(), false);
 		
 		//TODO
 		

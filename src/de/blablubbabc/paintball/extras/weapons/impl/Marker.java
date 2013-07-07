@@ -24,8 +24,8 @@ import de.blablubbabc.paintball.utils.Utils;
 
 public class Marker extends WeaponHandler {
 	
-	public Marker(Paintball plugin, int customItemTypeID, boolean useDefaultType) {
-		super(plugin, customItemTypeID, useDefaultType);
+	public Marker(int customItemTypeID, boolean useDefaultType) {
+		super(customItemTypeID, useDefaultType);
 	}
 
 	@Override
@@ -60,12 +60,12 @@ public class Marker extends WeaponHandler {
 				Snowball snowball = (Snowball) world.spawnEntity(eyeLoc, EntityType.SNOWBALL);
 				snowball.setShooter(player);
 				// REGISTER:
-				new Ball(plugin.weaponManager.getBallManager(), match, player, snowball, Origin.MARKER);
+				new Ball(Paintball.instance.weaponManager.getBallManager(), match, player, snowball, Origin.MARKER);
 				// BOOST:
-				snowball.setVelocity(player.getLocation().getDirection().normalize().multiply(plugin.speedmulti));
+				snowball.setVelocity(player.getLocation().getDirection().normalize().multiply(Paintball.instance.speedmulti));
 				// STATS
 				// PLAYERSTATS
-				PlayerStats playerStats = plugin.playerManager.getPlayerStats(playerName);
+				PlayerStats playerStats = Paintball.instance.playerManager.getPlayerStats(playerName);
 				playerStats.addStat(PlayerStat.SHOTS, 1);
 				// INFORM MATCH
 				match.onShot(player);
@@ -78,7 +78,7 @@ public class Marker extends WeaponHandler {
 			} else {
 				player.playSound(player.getEyeLocation(), Sound.FIRE_IGNITE, 1F, 2F);
 			}
-			Utils.updatePlayerInventoryLater(plugin, player);
+			Utils.updatePlayerInventoryLater(Paintball.instance, player);
 		}
 	}
 	

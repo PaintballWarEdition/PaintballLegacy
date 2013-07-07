@@ -39,10 +39,10 @@ public class TurretHandler extends WeaponHandler implements Listener {
 	
 	private Location nextTurretSpawn = null;
 	
-	public TurretHandler(Paintball plugin, int customItemTypeID, boolean useDefaultType) {
-		super(plugin, customItemTypeID, useDefaultType);
-		calculateTable(plugin.turretAngleMin, plugin.turretAngleMax, plugin.turretTicks, plugin.turretXSize, plugin.turretYSize, plugin.speedmulti);
-		plugin.getServer().getPluginManager().registerEvents(this, plugin);
+	public TurretHandler(int customItemTypeID, boolean useDefaultType) {
+		super(customItemTypeID, useDefaultType);
+		calculateTable(Paintball.instance.turretAngleMin, Paintball.instance.turretAngleMax, Paintball.instance.turretTicks, Paintball.instance.turretXSize, Paintball.instance.turretYSize, Paintball.instance.speedmulti);
+		Paintball.instance.getServer().getPluginManager().registerEvents(this, Paintball.instance);
 	}
 	
 	@EventHandler(priority = EventPriority.HIGHEST, ignoreCancelled = false)
@@ -86,24 +86,22 @@ public class TurretHandler extends WeaponHandler implements Listener {
 
 	@Override
 	protected void cleanUp(Match match, String playerName) {
-		// TODO Auto-generated method stub
-		
+		gadgetHandler.cleanUp(match, playerName);
 	}
 
 	@Override
 	protected void cleanUp(Match match) {
-		// TODO Auto-generated method stub
-		
+		gadgetHandler.cleanUp(match);
 	}
 
 	@Override
 	protected void onBlockPlace(Player player, Block block, Match match) {
-		if (plugin.turret && block.getType() == Material.PUMPKIN) {
+		if (Paintball.instance.turret && block.getType() == Material.PUMPKIN) {
 			ItemStack itemInHand = player.getItemInHand();
 			if (itemInHand.isSimilar(getItem())) {
 				String playerName = player.getName();
-				if (gadgetHandler.getMatchGadgetCount(match) < plugin.turretMatchLimit) {
-					if (gadgetHandler.getPlayerGadgetCount(match, playerName) < plugin.turretPlayerLimit) {
+				if (gadgetHandler.getMatchGadgetCount(match) < Paintball.instance.turretMatchLimit) {
+					if (gadgetHandler.getPlayerGadgetCount(match, playerName) < Paintball.instance.turretPlayerLimit) {
 						Location spawnLoc = block.getLocation();
 						nextTurretSpawn = spawnLoc;
 						Snowman snowman = (Snowman) block.getLocation().getWorld().spawnEntity(spawnLoc, EntityType.SNOWMAN);
@@ -254,7 +252,7 @@ public class TurretHandler extends WeaponHandler implements Listener {
 						@Override
 						public void run() {
 							if (target == null) {
-								target = searchTarget(plugin.turretXSize, 15);
+								target = searchTarget(Paintball.instance.turretXSize, 15);
 							}
 
 							if (cooldown == 0) {
@@ -346,7 +344,7 @@ public class TurretHandler extends WeaponHandler implements Listener {
 									Snowball ball = entity.getLocation().getWorld().spawn(entity.getLocation().add(new Vector(0, 2, 0)).add(dir2), Snowball.class);
 									ball.setShooter(player);
 									
-									plugin.weaponManager.getBallManager().addGadget(match, playerName, new Ball(plugin.weaponManager.getBallManager(), match, player, ball, Origin.TURRET));
+									Paintball.instance.weaponManager.getBallManager().addGadget(match, playerName, new Ball(Paintball.instance.weaponManager.getBallManager(), match, player, ball, Origin.TURRET));
 
 									ball.setVelocity(getAimVector(entVec.clone().add(new Vector(0, 2, 0)).add(dir2), targetVec.clone(),dir2.clone()));
 

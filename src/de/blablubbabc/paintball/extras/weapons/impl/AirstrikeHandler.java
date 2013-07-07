@@ -35,8 +35,8 @@ public class AirstrikeHandler extends WeaponHandler {
 	private Map<String, Block> finalmarks = new HashMap<String, Block>();
 	private GadgetManager gadgetHandler = new GadgetManager();
 	
-	public AirstrikeHandler(Paintball plugin, int customItemTypeID, boolean useDefaultType) {
-		super(plugin, customItemTypeID, useDefaultType);
+	public AirstrikeHandler(int customItemTypeID, boolean useDefaultType) {
+		super(customItemTypeID, useDefaultType);
 	}
 
 	@Override
@@ -58,10 +58,10 @@ public class AirstrikeHandler extends WeaponHandler {
 		String playerName = player.getName();
 		ItemStack itemInHand = player.getItemInHand();
 		
-		if (plugin.airstrike && itemInHand.isSimilar(this.item)) {
+		if (Paintball.instance.airstrike && itemInHand.isSimilar(this.item)) {
 			if (marked(player.getName())) {
-				if (gadgetHandler.getMatchGadgetCount(match) < plugin.airstrikeMatchLimit) {
-					if (gadgetHandler.getPlayerGadgetCount(match, playerName) < plugin.airstrikePlayerLimit) {
+				if (gadgetHandler.getMatchGadgetCount(match) < Paintball.instance.airstrikeMatchLimit) {
+					if (gadgetHandler.getPlayerGadgetCount(match, playerName) < Paintball.instance.airstrikePlayerLimit) {
 						new AirstrikeCall(gadgetHandler, match, player);
 						// INFORM MATCH
 						match.onAirstrike(player);
@@ -72,7 +72,7 @@ public class AirstrikeHandler extends WeaponHandler {
 							else {
 								itemInHand.setAmount(itemInHand.getAmount() - 1);
 							}
-							Utils.updatePlayerInventoryLater(plugin, player);
+							Utils.updatePlayerInventoryLater(Paintball.instance, player);
 						}
 					} else {
 						player.sendMessage(Translator.getString("AIRSTRIKE_PLAYER_LIMIT_REACHED"));

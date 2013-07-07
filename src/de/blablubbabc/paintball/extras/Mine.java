@@ -172,8 +172,9 @@ public class Mine {
 			exploded = true;
 			if (tickTask != -1)
 				Paintball.instance.getServer().getScheduler().cancelTask(tickTask);
-			if (block.getType() == Material.FLOWER_POT) 
-				oldState.update();
+			// remove flower pot and reset to old block:
+			oldState.update(true);
+			
 			final String playerName = player.getName();
 			removeMine(playerName, this);
 

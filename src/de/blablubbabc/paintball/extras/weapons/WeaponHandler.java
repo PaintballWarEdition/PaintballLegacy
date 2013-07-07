@@ -12,12 +12,10 @@ import de.blablubbabc.paintball.Match;
 import de.blablubbabc.paintball.Paintball;
 
 public abstract class WeaponHandler {
-	protected final Paintball plugin;
 	protected final ItemStack item;
 	
-	public WeaponHandler(Paintball plugin, int customItemTypeID, boolean useDefaultType) {
-		plugin.weaponManager.registerWeaponHandler(this);
-		this.plugin = plugin;
+	public WeaponHandler(int customItemTypeID, boolean useDefaultType) {
+		Paintball.instance.weaponManager.registerWeaponHandler(this);
 		item = setItemMeta(new ItemStack(useDefaultType ? getDefaultItemTypeID() : customItemTypeID));
 	}
 	

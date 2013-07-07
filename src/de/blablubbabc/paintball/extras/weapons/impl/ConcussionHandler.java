@@ -30,8 +30,8 @@ public class ConcussionHandler extends WeaponHandler {
 	private GadgetManager gadgetHandler = new GadgetManager();
 	private int next = 0;
 	
-	public ConcussionHandler(Paintball plugin, int customItemTypeID, boolean useDefaultType) {
-		super(plugin, customItemTypeID, useDefaultType);
+	public ConcussionHandler(int customItemTypeID, boolean useDefaultType) {
+		super(customItemTypeID, useDefaultType);
 	}
 	
 	private int getNext() {
@@ -56,14 +56,14 @@ public class ConcussionHandler extends WeaponHandler {
 		Player player = event.getPlayer();
 		ItemStack itemInHand = player.getItemInHand();
 		
-		if (plugin.concussion && itemInHand.isSimilar(getItem())) {
+		if (Paintball.instance.concussion && itemInHand.isSimilar(getItem())) {
 			player.getWorld().playSound(player.getLocation(), Sound.IRONGOLEM_THROW, 2.0F, 1F);
 			ItemStack nadeItem = getItem().clone();
 			ItemMeta meta = nadeItem.getItemMeta();
 			meta.setDisplayName("Concussion " + getNext());
 			nadeItem.setItemMeta(meta);
 			Item nade = player.getWorld().dropItem(player.getEyeLocation(), nadeItem);
-			nade.setVelocity(player.getLocation().getDirection().normalize().multiply(plugin.concussionSpeed));
+			nade.setVelocity(player.getLocation().getDirection().normalize().multiply(Paintball.instance.concussionSpeed));
 			new ConcussionNade(gadgetHandler, match, player, nade, Origin.CONCUSSION);
 			if (itemInHand.getAmount() <= 1) {
 				player.setItemInHand(null);
@@ -71,7 +71,7 @@ public class ConcussionHandler extends WeaponHandler {
 				itemInHand.setAmount(itemInHand.getAmount() - 1);
 				player.setItemInHand(itemInHand);
 			}
-			Utils.updatePlayerInventoryLater(plugin, player);
+			Utils.updatePlayerInventoryLater(Paintball.instance, player);
 		}
 	}
 	
@@ -113,7 +113,7 @@ public class ConcussionHandler extends WeaponHandler {
 		}
 		
 		private void explode() {
-			if (!entity.isDead() && entity.isValid()) {
+			if (entity.isValid()) {
 				Location location = entity.getLocation();
 				// EFFECTS
 				// small explosion
