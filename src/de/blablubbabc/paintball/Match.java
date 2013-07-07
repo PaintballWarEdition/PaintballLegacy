@@ -28,7 +28,6 @@ import de.blablubbabc.paintball.extras.ItemManager;
 import de.blablubbabc.paintball.extras.Mine;
 import de.blablubbabc.paintball.extras.Orbitalstrike;
 import de.blablubbabc.paintball.extras.Sniper;
-import de.blablubbabc.paintball.extras.Turret;
 import de.blablubbabc.paintball.statistics.arena.ArenaSetting;
 import de.blablubbabc.paintball.statistics.player.PlayerStat;
 import de.blablubbabc.paintball.statistics.player.match.tdm.TDMMatchStat;
@@ -44,11 +43,11 @@ public class Match {
 	private Paintball plugin;
 	private Map<Player, Integer> livesLeft = new HashMap<Player, Integer>();
 	private Map<Player, Integer> respawnsLeft = new HashMap<Player, Integer>();
-	private List<Player> redT = new ArrayList<Player>();
-	private List<Player> blueT = new ArrayList<Player>();
-	private List<Player> bothTeams = new ArrayList<Player>();
-	private List<Player> spec = new ArrayList<Player>();
-	private List<Player> allPlayers = new ArrayList<Player>();
+	private Set<Player> redT = new HashSet<Player>();
+	private Set<Player> blueT = new HashSet<Player>();
+	private Set<Player> bothTeams = new HashSet<Player>();
+	private Set<Player> spec = new HashSet<Player>();
+	private Set<Player> allPlayers = new HashSet<Player>();
 	private Map<Player, Integer> protection = new HashMap<Player, Integer>();
 	private Map<String, Scoreboard> scoreboards = new HashMap<String, Scoreboard>();
 	private Set<String> justRespawned = new HashSet<String>();
@@ -292,12 +291,12 @@ public class Match {
 				if (matchOver)
 					return;
 				// winner?
-				List<Player> winnerTeam = getWinner();
+				Set<Player> winnerTeam = getWinner();
 				if (winnerTeam == null) {
 					// draw:
 					gameEnd(true, null, null, null, null);
 				} else {
-					Player p = winnerTeam.get(0);
+					Player p = winnerTeam.iterator().next();
 					gameEnd(false, winnerTeam, getEnemyTeam(p), getTeamName(p),
 							getEnemyTeamName(p));
 				}
@@ -305,7 +304,7 @@ public class Match {
 		});
 	}
 
-	private List<Player> getWinner() {
+	private Set<Player> getWinner() {
 		// compare survivors:
 		if (survivors(redT) > survivors(blueT))
 			return redT;
@@ -604,7 +603,7 @@ public class Match {
 		return this.arena;
 	}
 
-	public synchronized int survivors(List<Player> team) {
+	public synchronized int survivors(Set<Player> team) {
 		int survivors = 0;
 		for (Player p : team) {
 			if (isSurvivor(p)) {
@@ -664,7 +663,7 @@ public class Match {
 			return false;
 	}
 
-	public List<Player> getTeam(Player player) {
+	public Set<Player> getTeam(Player player) {
 		if (redT.contains(player))
 			return redT;
 		if (blueT.contains(player))
@@ -672,7 +671,7 @@ public class Match {
 		return null;
 	}
 
-	public List<Player> getEnemyTeam(Player player) {
+	public Set<Player> getEnemyTeam(Player player) {
 		if (redT.contains(player))
 			return blueT;
 		if (blueT.contains(player))
@@ -715,14 +714,14 @@ public class Match {
 		return false;
 	}
 
-	public List<Player> getAllPlayer() {
+	public Set<Player> getAllPlayer() {
 		// ArrayList<Player> players = new ArrayList<Player>();
 		// players.addAll(redT);
 		// players.addAll(blueT);
 		return bothTeams;
 	}
 
-	public List<Player> getAllSpec() {
+	public Set<Player> getAllSpec() {
 		/*
 		 * ArrayList<Player> list = new ArrayList<Player>(); for (Player p :
 		 * spec) { list.add(p); } return list;
@@ -730,7 +729,7 @@ public class Match {
 		return spec;
 	}
 
-	public List<Player> getAll() {
+	public Set<Player> getAll() {
 		/*
 		 * // return players; ArrayList<Player> list = new
 		 * ArrayList<Player>(getAllPlayer()); for (Player p : spec) {
@@ -1048,8 +1047,8 @@ public class Match {
 		}
 	}
 
-	private synchronized void gameEnd(final boolean draw, List<Player> winnerS,
-			List<Player> looserS, String winS, String looseS) {
+	private synchronized void gameEnd(final boolean draw, Set<Player> winnerS,
+			Set<Player> looserS, String winS, String looseS) {
 		matchOver = true;
 		endTimers();
 		undoAllColors();

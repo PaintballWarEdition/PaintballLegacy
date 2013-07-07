@@ -34,6 +34,10 @@ public class ConcussionHandler extends WeaponHandler {
 		super(customItemTypeID, useDefaultType);
 	}
 	
+	public Concussion createConcussion(Match match, Player player, Item nade, Origin origin) {
+		return new Concussion(gadgetHandler, match, player, nade, origin);
+	}
+	
 	private int getNext() {
 		return ++next;
 	}
@@ -64,7 +68,9 @@ public class ConcussionHandler extends WeaponHandler {
 			nadeItem.setItemMeta(meta);
 			Item nade = player.getWorld().dropItem(player.getEyeLocation(), nadeItem);
 			nade.setVelocity(player.getLocation().getDirection().normalize().multiply(Paintball.instance.concussionSpeed));
-			new ConcussionNade(gadgetHandler, match, player, nade, Origin.CONCUSSION);
+			
+			createConcussion(match, player, nade, Origin.CONCUSSION);
+			
 			if (itemInHand.getAmount() <= 1) {
 				player.setItemInHand(null);
 			} else {
@@ -93,12 +99,12 @@ public class ConcussionHandler extends WeaponHandler {
 		next = 0;
 	}
 
-	private class ConcussionNade extends Gadget {
+	public class Concussion extends Gadget {
 		
 		private final Item entity;
 		private final Origin origin;
 
-		private ConcussionNade(GadgetManager gadgetHandler, Match match, Player player, Item nade, Origin origin) {
+		private Concussion(GadgetManager gadgetHandler, Match match, Player player, Item nade, Origin origin) {
 			super(gadgetHandler, match, player.getName());
 			this.entity = nade;
 			this.origin = origin;

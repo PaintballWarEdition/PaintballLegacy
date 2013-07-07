@@ -6,14 +6,15 @@ import org.bukkit.entity.Snowball;
 
 import de.blablubbabc.paintball.Match;
 import de.blablubbabc.paintball.Origin;
+import de.blablubbabc.paintball.Paintball;
 
 public class Ball extends Gadget {
 	
 	private final Snowball entity;
 	private final Origin origin;
 
-	public Ball(GadgetManager gadgetHandler, Match match, Player player, Snowball entity, Origin origin) {
-		super(gadgetHandler, match, player.getName());
+	public Ball(Match match, Player player, Snowball entity, Origin origin) {
+		super(Paintball.instance.weaponManager.getBallManager(), match, player.getName());
 		this.entity = entity;
 		this.origin = origin;
 	}

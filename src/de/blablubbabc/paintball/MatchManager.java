@@ -5,6 +5,8 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
+
 import org.bukkit.Location;
 import org.bukkit.Sound;
 import org.bukkit.entity.Player;
@@ -116,7 +118,7 @@ public class MatchManager{
 		matches.add(match);
 	}
 	
-	public synchronized void gameEnd(final Match match, boolean draw, Map<String, Location> playersLoc, List<Player> specs, Map<String, TDMMatchStats> matchStats) {
+	public synchronized void gameEnd(final Match match, boolean draw, Map<String, Location> playersLoc, Set<Player> specs, Map<String, TDMMatchStats> matchStats) {
 		// TIME
 		final long time1 = System.nanoTime();
 
@@ -382,11 +384,18 @@ public class MatchManager{
 	}
 
 	public synchronized Match getMatch(Player player) {
-		for (Match m : matches) {
-			if (m.inMatch(player)) return m;
+		for (Match match : matches) {
+			if (match.inMatch(player)) return match;
 		}
 		return null;
 	}
+	
+	/*public synchronized Match getActiveMatch(Player player) {
+		for (Match match : matches) {
+			if (match.isSurvivor(player)) return match;
+		}
+		return null;
+	}*/
 
 	public synchronized String ready() {
 		//softreload-check:

@@ -31,7 +31,11 @@ public class GrenadeM2Handler extends WeaponHandler {
 		super(customItemTypeID, useDefaultType);
 	}
 	
-	public int getNext() {
+	public GrenadeM2 createGrenadeM2(Match match, Player player, Item nade, Origin origin) {
+		return new GrenadeM2(gadgetHandler, match, player, nade, origin);
+	}
+	
+	private int getNext() {
 		return ++next;
 	}
 	
@@ -63,7 +67,7 @@ public class GrenadeM2Handler extends WeaponHandler {
 			Item nade = player.getWorld().dropItem(player.getEyeLocation(), nadeItem);
 			nade.setVelocity(player.getLocation().getDirection().normalize().multiply(Paintball.instance.grenade2Speed));
 			
-			new GrenadeM2(gadgetHandler, match, player, nade, Origin.GRENADE2);
+			createGrenadeM2(match, player, nade, Origin.GRENADEM2);
 			
 			if (itemInHand.getAmount() <= 1)
 				player.setItemInHand(null);
@@ -76,7 +80,7 @@ public class GrenadeM2Handler extends WeaponHandler {
 	}
 
 	
-	private class GrenadeM2 extends Gadget {
+	public class GrenadeM2 extends Gadget {
 		
 		private final Item entity;
 		private final Origin origin;
@@ -104,7 +108,7 @@ public class GrenadeM2Handler extends WeaponHandler {
 					for (Vector v : Utils.getDirections()) {
 						final Snowball snowball = location.getWorld().spawn(location, Snowball.class);
 						snowball.setShooter(player);
-						final Ball ball = new Ball(gadgetHandler, match, player, snowball, origin);
+						final Ball ball = new Ball(match, player, snowball, origin);
 						Paintball.instance.weaponManager.getBallManager().addGadget(match, playerName, ball);
 						Vector v2 = v.clone();
 						v2.setX(v.getX() + Math.random() - Math.random());

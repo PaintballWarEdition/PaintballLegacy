@@ -72,7 +72,6 @@ import de.blablubbabc.paintball.extras.Pumpgun;
 import de.blablubbabc.paintball.extras.Rocket;
 import de.blablubbabc.paintball.extras.Shotgun;
 import de.blablubbabc.paintball.extras.Sniper;
-import de.blablubbabc.paintball.extras.Turret;
 import de.blablubbabc.paintball.extras.weapons.Ball;
 import de.blablubbabc.paintball.extras.weapons.Gadget;
 import de.blablubbabc.paintball.extras.weapons.WeaponManager;
@@ -264,7 +263,7 @@ public class EventListener implements Listener {
 										if (shot instanceof Snowball) {
 											// match
 											
-											Gadget ball = plugin.weaponManager.getBallManager().getGadget(shot, false);
+											Gadget ball = plugin.weaponManager.getBallManager().getGadget(shot, matchA, shooter.getName(), false);
 											if (ball != null) {
 												matchA.onHitByBall(target, shooter, ball.getOrigin());
 											}
@@ -545,7 +544,7 @@ public class EventListener implements Listener {
 						nadeItem.setItemMeta(meta);
 						Item nade = player.getWorld().dropItem(player.getEyeLocation(), nadeItem);
 						nade.setVelocity(player.getLocation().getDirection().normalize().multiply(plugin.grenade2Speed));
-						GrenadeM2.registerNade(nade, playerName, Origin.GRENADE2);
+						GrenadeM2.registerNade(nade, playerName, Origin.GRENADEM2);
 						if (item.getAmount() <= 1)
 							player.setItemInHand(null);
 						else {
@@ -764,13 +763,13 @@ public class EventListener implements Listener {
 		if (shot.getShooter() instanceof Player) {
 			Player shooter = (Player) shot.getShooter();
 			String shooterName = shooter.getName();
+			Match match = plugin.matchManager.getMatch(shooter);
 			
-			if (shot instanceof Snowball) {
-				Gadget ball = plugin.weaponManager.getBallManager().getGadget(shot, true);
-				// is ball
-				if (ball != null) {
-					Match match = plugin.matchManager.getMatch(shooter);
-					if (match != null) {
+			if (match != null) {
+				if (shot instanceof Snowball) {
+					Gadget ball = plugin.weaponManager.getBallManager().getGadget(shot, match, shooterName, true);
+					// is ball
+					if (ball != null) {
 						Location loc = shot.getLocation();
 						// mine
 						if (plugin.mine) {
@@ -799,19 +798,15 @@ public class EventListener implements Listener {
 							}
 						}
 					}
-				}
-			} else if (plugin.grenade && shot instanceof Egg) {
-				Grenade nade = Grenade.getGrenade(shot.getEntityId(), shooter.getName(), true);
-				if (nade != null) {
-					Match match = plugin.matchManager.getMatch(shooter);
-					if (match != null) {
+				} else if (plugin.grenade && shot instanceof Egg) {
+					Grenade nade = Grenade.getGrenade(shot.getEntityId(), shooter.getName(), true);
+					if (nade != null) {
 						nade.explode(shot.getLocation(), shooter);	
 					}
+				} else if (plugin.rocket && shot instanceof Fireball) {
+					Rocket rocket = Rocket.getRocket(shot.getEntityId(), shooterName, true);
+					if (rocket != null) rocket.die();
 				}
-			} else if (plugin.rocket && shot instanceof Fireball) {
-				Rocket rocket = Rocket.getRocket(shot.getEntityId(), shooterName, true);
-				if (rocket != null)
-					rocket.die();
 			}
 		}
 	}

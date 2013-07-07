@@ -170,8 +170,9 @@ public class Mine {
 	public void explode(final boolean effect) {
 		if (!exploded) {
 			exploded = true;
-			if (tickTask != -1)
+			if (tickTask != -1) {
 				Paintball.instance.getServer().getScheduler().cancelTask(tickTask);
+			}
 			// remove flower pot and reset to old block:
 			oldState.update(true);
 			

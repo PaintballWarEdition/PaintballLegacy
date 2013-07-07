@@ -1,12 +1,15 @@
 package de.blablubbabc.paintball.extras.weapons.impl;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.LinkedList;
+import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
 import org.bukkit.Location;
 import org.bukkit.Material;
+import org.bukkit.World;
 import org.bukkit.block.Block;
 import org.bukkit.block.BlockFace;
 import org.bukkit.entity.Egg;
@@ -21,7 +24,6 @@ import org.bukkit.util.Vector;
 import de.blablubbabc.paintball.Match;
 import de.blablubbabc.paintball.Origin;
 import de.blablubbabc.paintball.Paintball;
-import de.blablubbabc.paintball.extras.Grenade;
 import de.blablubbabc.paintball.extras.weapons.Gadget;
 import de.blablubbabc.paintball.extras.weapons.GadgetManager;
 import de.blablubbabc.paintball.extras.weapons.WeaponHandler;
@@ -30,15 +32,20 @@ import de.blablubbabc.paintball.utils.Utils;
 
 public class AirstrikeHandler extends WeaponHandler {
 
+	private GadgetManager gadgetHandler = new GadgetManager();
+	
 	private ConcurrentHashMap<String, Integer> taskIds = new ConcurrentHashMap<String, Integer>();;
 	private Map<String, Block> marks = new HashMap<String, Block>();
-	private Map<String, Block> finalmarks = new HashMap<String, Block>();
-	private GadgetManager gadgetHandler = new GadgetManager();
+	private Map<String, List<FinalMark>> finalMarks = new HashMap<String, List<FinalMark>>();
 	
 	public AirstrikeHandler(int customItemTypeID, boolean useDefaultType) {
 		super(customItemTypeID, useDefaultType);
 	}
 
+	public AirstrikeCall callAirstrike(Match match, Player player, Location location) {
+		return new AirstrikeCall(gadgetHandler, match, player, location);
+	}
+	
 	@Override
 	protected int getDefaultItemTypeID() {
 		return Material.STICK.getId();
@@ -54,15 +61,21 @@ public class AirstrikeHandler extends WeaponHandler {
 	
 	@Override
 	protected void onInteract(PlayerInteractEvent event, Match match) {
-		Player player = event.getPlayer();
+		final Player player = event.getPlayer();
 		String playerName = player.getName();
 		ItemStack itemInHand = player.getItemInHand();
 		
 		if (Paintball.instance.airstrike && itemInHand.isSimilar(this.item)) {
-			if (marked(player.getName())) {
+			Block block = marks.get(playerName);
+			if (block != null) {
 				if (gadgetHandler.getMatchGadgetCount(match) < Paintball.instance.airstrikeMatchLimit) {
 					if (gadgetHandler.getPlayerGadgetCount(match, playerName) < Paintball.instance.airstrikePlayerLimit) {
-						new AirstrikeCall(gadgetHandler, match, player);
+						
+						demark(player);
+						addFinalMark(block, player);
+						
+						callAirstrike(match, player, block.getLocation());
+						
 						// INFORM MATCH
 						match.onAirstrike(player);
 						// remove stick if not infinite
@@ -96,29 +109,14 @@ public class AirstrikeHandler extends WeaponHandler {
 	}
 	
 	
-	private void finalMark(Block block, Player player) {
-		String name = player.getName();
-		finalmarks.put(name, block);
-		Block last = block;
-		for (int i = 0; i < 10; i++) {
-			last = last.getRelative(BlockFace.UP);
-			player.sendBlockChange(last.getLocation(), Material.FENCE, (byte) 0);
+	private void addFinalMark(Block block, Player player) {
+		String playerName = player.getName();
+		List<FinalMark> playerFinalMarks = finalMarks.get(playerName);
+		if (playerFinalMarks == null) {
+			playerFinalMarks = new ArrayList<FinalMark>();
+			finalMarks.put(playerName, playerFinalMarks);
 		}
-		last = last.getRelative(BlockFace.UP);
-		player.sendBlockChange(last.getLocation(), Material.TORCH, (byte) 0);
-	}
-	
-	private void definalMark(Player player) {
-		String name = player.getName();
-		if (finalmarks.get(name) != null) {
-			Block last = finalmarks.get(name);
-			for (int i = 0; i < 11; i++) {
-				last = last.getRelative(BlockFace.UP);
-				Location loc = last.getLocation();
-				player.sendBlockChange(loc, player.getWorld().getBlockAt(loc).getType(), player.getWorld().getBlockAt(loc).getData());
-			}
-			finalmarks.remove(name);
-		}
+		playerFinalMarks.add(new FinalMark(block, player));
 	}
 	
 	private void mark(Block block, Player player) {
@@ -133,7 +131,8 @@ public class AirstrikeHandler extends WeaponHandler {
 	
 	private void demark(Player player) {
 		String name = player.getName();
-		if (marked(name)) {
+		Block block = marks.get(name);
+		if (block != null) {
 			Block last = marks.get(name);
 			for (int i = 0; i < 10; i++) {
 				last = last.getRelative(BlockFace.UP);
@@ -147,10 +146,6 @@ public class AirstrikeHandler extends WeaponHandler {
 	private boolean isBlock(Block block, String name) {
 		Block b = marks.get(name);
 		return b == null ? false : b.equals(block);
-	}
-	
-	private boolean marked(String name) {
-		return marks.get(name) != null;
 	}
 	
 	@Override
@@ -187,42 +182,86 @@ public class AirstrikeHandler extends WeaponHandler {
 		}
 	}
 	
+	private class FinalMark {
+		private final Block block;
+		
+		private FinalMark(Block block, final Player player) {
+			this.block = block;
+			
+			// mark:
+			Block last = block;
+			for (int i = 0; i < 10; i++) {
+				last = last.getRelative(BlockFace.UP);
+				player.sendBlockChange(last.getLocation(), Material.FENCE, (byte) 0);
+			}
+			last = last.getRelative(BlockFace.UP);
+			player.sendBlockChange(last.getLocation(), Material.TORCH, (byte) 0);
+			
+			// demark after a certain time:
+			Paintball.instance.getServer().getScheduler().runTaskLater(Paintball.instance, new Runnable() {
+				
+				@Override
+				public void run() {
+					demark(player);
+				}
+			}, Paintball.instance.airstrikeBombs * 5L);
+			
+		}
+		
+		private void demark(Player player) {
+			Block last = block;
+			World world = player.getWorld();
+			for (int i = 0; i < 11; i++) {
+				last = last.getRelative(BlockFace.UP);
+				Location loc = last.getLocation();
+				Block current = world.getBlockAt(loc);
+				player.sendBlockChange(loc, current.getType(), current.getData());
+			}
+			
+			// remove from map:
+			String playerName = player.getName();
+			List<FinalMark> playerFinalMarks = finalMarks.get(playerName);
+			playerFinalMarks.remove(this);
+			if (playerFinalMarks.size() == 0) finalMarks.remove(playerName);
+		}
+		
+	}
 	
-	private class AirstrikeCall extends Gadget {
+	public class AirstrikeCall extends Gadget {
 		
 		private final Player player;
 		private Entity chick = null;
 		private int task = -1;
 
-		private AirstrikeCall(GadgetManager gadgetHandler, Match match, Player player) {
+		private AirstrikeCall(GadgetManager gadgetHandler, Match match, Player player, Location location) {
 			super(gadgetHandler, match, player.getName());
 			this.player = player;
-			call();
+			call(location);
 		}
 		
-		private void call() {
-			Block block = marks.get(playerName);
-			demark(player);
-			finalMark(block, player);
+		private void call(Location location) {
+			Location playerLoc = player.getLocation();
 			//airstrike
-			Vector pv = new Vector(player.getLocation().getX(),block.getLocation().getY()+Paintball.instance.airstrikeHeight,player.getLocation().getZ());
-			Vector bv =	new Vector(block.getLocation().getX(),block.getLocation().getY()+Paintball.instance.airstrikeHeight,block.getLocation().getZ());
+			Vector pv = new Vector(playerLoc.getX(), location.getY() + Paintball.instance.airstrikeHeight, playerLoc.getZ());
+			Vector bv =	new Vector(location.getX(), location.getY() + Paintball.instance.airstrikeHeight, location.getZ());
 			Vector bp = new Vector() ; bp.copy(bv); bp.subtract(pv).normalize();
-			Vector bpr = new Vector(-bp.getZ(),0,bp.getX()); bpr.normalize();
+			Vector bpr = new Vector(-bp.getZ(), 0, bp.getX()).normalize(); 
 			Location b1 = bv.clone().toLocation(player.getWorld());
 			b1.subtract(bpr.clone().multiply(Paintball.instance.airstrikeRange));
 			//Block b2 = player.getWorld().getBlockAt(block.getLocation().add(bp.multiply(range)));
 			double bombDiff = ( (2*Paintball.instance.airstrikeRange) / Paintball.instance.airstrikeBombs );
 			
 			final LinkedList<Location> bombs = new LinkedList<Location>();
-			for(int i = 1; i <= Paintball.instance.airstrikeBombs; i++) {
-				bombs.add(b1.clone().add(bpr.clone().multiply((bombDiff*i))));
+			for (int i = 1; i <= Paintball.instance.airstrikeBombs; i++) {
+				bombs.add(b1.clone().add(bpr.clone().multiply((bombDiff * i))));
 			}
 			player.sendMessage(Translator.getString("AIRSTRIKE_CALLED"));
 			//chicken
 			Location lc = new Location(player.getWorld(), bombs.getFirst().getX(), bombs.getFirst().getY(), bombs.getFirst().getZ(), 0, Utils.getLookAtYaw(bpr));
-			chick = player.getWorld().spawnEntity(lc.add(new Vector(0,5,0)), EntityType.CHICKEN);
-			final Vector chickVel = bpr.clone().multiply(bombDiff/5);
+			chick = player.getWorld().spawnEntity(lc.add(new Vector(0, 5, 0)), EntityType.CHICKEN);
+			final Vector chickVel = bpr.clone().multiply(bombDiff / 5);
+			
+			final GrenadeHandler grenadeHandler = Paintball.instance.weaponManager.getGrenadeHandler();
 			
 			task = Paintball.instance.getServer().getScheduler().scheduleSyncRepeatingTask(Paintball.instance, new Runnable() {
 				int i = 0;
@@ -231,7 +270,7 @@ public class AirstrikeHandler extends WeaponHandler {
 					Location l = bombs.get(i);
 					Egg egg = player.getWorld().spawn(l, Egg.class);
 					egg.setShooter(player);
-					Grenade.registerGrenade(egg, playerName, Origin.AIRSTRIKE);
+					grenadeHandler.createGrenade(match, player, egg, Origin.AIRSTRIKE);
 					chick.setVelocity(chickVel);
 					i++;
 					if(i > (bombs.size() - 1)) {
@@ -244,8 +283,8 @@ public class AirstrikeHandler extends WeaponHandler {
 		@Override
 		public void dispose(boolean removeFromGadgetHandlerTracking, boolean cheapEffects) {
 			if (this.task != -1) Paintball.instance.getServer().getScheduler().cancelTask(task);
-			definalMark(player);
 			if (this.chick != null) chick.remove();
+			
 			super.dispose(removeFromGadgetHandlerTracking, cheapEffects);
 		}
 

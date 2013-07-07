@@ -45,14 +45,18 @@ public class GadgetManager {
 		overallCounter++;
 	}
 	
-	public void removeGadget(Match match, String playerName, Gadget gadget) {
+	// returns true, if gadget was found and removed
+	public boolean removeGadget(Match match, String playerName, Gadget gadget) {
 		if (match == null || playerName == null || gadget == null) throw new IllegalArgumentException();
 		MatchEntry matchEntry = gadgets.get(match);
 		if (matchEntry != null) {
-			matchEntry.removeMatchGadget(playerName, gadget);
-			if (matchEntry.getMatchGadgetCount() == 0) gadgets.remove(match);
-			overallCounter--;
+			if (matchEntry.removeMatchGadget(playerName, gadget)) {
+				if (matchEntry.getMatchGadgetCount() == 0) gadgets.remove(match);
+				overallCounter--;
+				return true;
+			}
 		}
+		return false;
 	}
 	
 	public List<Gadget> getGadgets(Match match, String playerName) {
@@ -66,10 +70,49 @@ public class GadgetManager {
 		return getGadget(entity, false) != null;
 	}
 	
+	public boolean isGadget(Entity entity, String playerName) {
+		return getGadget(entity, playerName, false) != null;
+	}
+	
+	public boolean isGadget(Entity entity, Match match, String playerName) {
+		return getGadget(entity, match, playerName, false) != null;
+	}
+	
 	public Gadget getGadget(Entity entity, boolean removeWhenFound) {
 		if (entity == null) throw new IllegalArgumentException();
 		for (MatchEntry matchEntry : gadgets.values()) {
 			Gadget gadget = matchEntry.getGadget(entity, removeWhenFound);
+			if (gadget != null) {
+				if (removeWhenFound) {
+					if (matchEntry.getMatchGadgetCount() == 0) gadgets.remove(matchEntry.match);
+					overallCounter--;
+				}
+				return gadget;
+			}
+		}
+		return null;
+	}
+	
+	public Gadget getGadget(Entity entity, String playerName, boolean removeWhenFound) {
+		if (entity == null || playerName == null) throw new IllegalArgumentException();
+		for (MatchEntry matchEntry : gadgets.values()) {
+			Gadget gadget = matchEntry.getGadget(entity, playerName, removeWhenFound);
+			if (gadget != null) {
+				if (removeWhenFound) {
+					if (matchEntry.getMatchGadgetCount() == 0) gadgets.remove(matchEntry.match);
+					overallCounter--;
+				}
+				return gadget;
+			}
+		}
+		return null;
+	}
+	
+	public Gadget getGadget(Entity entity, Match match, String playerName, boolean removeWhenFound) {
+		if (entity == null || match == null || playerName == null) throw new IllegalArgumentException();
+		MatchEntry matchEntry = gadgets.get(match);
+		if (matchEntry != null) {
+			Gadget gadget = matchEntry.getGadget(entity, playerName, removeWhenFound);
 			if (gadget != null) {
 				if (removeWhenFound) {
 					if (matchEntry.getMatchGadgetCount() == 0) gadgets.remove(matchEntry.match);
@@ -119,14 +162,17 @@ public class GadgetManager {
 			overallMatchCounter++;
 		}
 		
-		private void removeMatchGadget(String playerName, Gadget gadget) {
+		// returns true, if gadget was found and removed
+		private boolean removeMatchGadget(String playerName, Gadget gadget) {
 			List<Gadget> playerGadgets = matchPlayerGadgets.get(playerName);
 			if (playerGadgets != null) {
 				if (playerGadgets.remove(gadget)) {
 					if (playerGadgets.size() == 0) matchPlayerGadgets.remove(playerName);
 					overallMatchCounter--;
+					return true;
 				}
 			}
+			return false;
 		}
 		
 		private List<Gadget> getMatchGadgets(String playerName) {
@@ -148,7 +194,7 @@ public class GadgetManager {
 					}
 				}
 				
-				if (found != null) {
+				if (found != null && removeWhenFound) {
 					if (playerGadgets.remove(found)) {
 						if (playerGadgets.size() == 0) matchPlayerGadgets.remove(playerEntry.getKey());
 						overallMatchCounter--;
@@ -158,6 +204,22 @@ public class GadgetManager {
 			}
 			
 			return found;
+		}
+		
+		private Gadget getGadget(Entity entity, String playerName, boolean removeWhenFound) {
+			List<Gadget> playerGadgets = matchPlayerGadgets.get(playerName);
+			if (playerGadgets != null) {
+				for (Gadget gadget : playerGadgets) {
+					if (gadget.isSimiliar(entity)) {
+						if (removeWhenFound && playerGadgets.remove(gadget)) {
+							if (playerGadgets.size() == 0) matchPlayerGadgets.remove(playerName);
+							overallMatchCounter--;
+						}
+						return gadget;
+					}
+				}
+			}
+			return null;
 		}
 		
 		private int getMatchGadgetCount() {

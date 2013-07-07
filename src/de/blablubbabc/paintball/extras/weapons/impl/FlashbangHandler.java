@@ -34,6 +34,10 @@ public class FlashbangHandler extends WeaponHandler {
 		super(customItemTypeID, useDefaultType);
 	}
 	
+	public Flashbang createFlashbang(Match match, Player player, Item nade, Origin origin) {
+		return new Flashbang(gadgetHandler, match, player, nade, origin);
+	}
+	
 	private int getNext() {
 		return ++next;
 	}
@@ -64,7 +68,9 @@ public class FlashbangHandler extends WeaponHandler {
 			nadeItem.setItemMeta(meta);
 			Item nade = player.getWorld().dropItem(player.getEyeLocation(), nadeItem);
 			nade.setVelocity(player.getLocation().getDirection().normalize().multiply(Paintball.instance.flashbangSpeed));
-			new FlashbangNade(gadgetHandler, match, player, nade, Origin.FLASHBANG);
+			
+			createFlashbang(match, player, nade, Origin.FLASHBANG);
+			
 			if (itemInHand.getAmount() <= 1) {
 				player.setItemInHand(null);
 			} else {
@@ -93,12 +99,12 @@ public class FlashbangHandler extends WeaponHandler {
 		next = 0;
 	}
 
-	private class FlashbangNade extends Gadget {
+	public class Flashbang extends Gadget {
 		
 		private final Item entity;
 		private final Origin origin;
 
-		private FlashbangNade(GadgetManager gadgetHandler, Match match, Player player, Item nade, Origin origin) {
+		private Flashbang(GadgetManager gadgetHandler, Match match, Player player, Item nade, Origin origin) {
 			super(gadgetHandler, match, player.getName());
 			this.entity = nade;
 			this.origin = origin;

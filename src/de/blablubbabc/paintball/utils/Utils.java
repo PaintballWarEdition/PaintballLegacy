@@ -4,11 +4,15 @@ import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Random;
+import java.util.Set;
 
 import org.bukkit.ChatColor;
+import org.bukkit.Chunk;
 import org.bukkit.Color;
+import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.block.BlockFace;
+import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
@@ -206,6 +210,24 @@ public class Utils {
         }
         return (float) (-yaw * 180 / Math.PI);
     }
+	
+	// loading chunks? if yes -> issues with that?
+	public Set<Entity> getNearbyEntities(Location location, int radius) {
+		int radius2 = radius * radius;
+		int chunkRadius = radius < 16 ? 1 : (int) (radius / 16);
+		Set<Entity> entities = new HashSet<Entity>();
+		for (int chunkX = -chunkRadius; chunkX <= chunkRadius; chunkX++) {
+			for (int chunkZ = -chunkRadius; chunkZ <= chunkRadius; chunkZ++) {
+				Chunk chunk = location.getWorld().getChunkAt(chunkX, chunkZ);
+				for (Entity entity : chunk.getEntities()) {
+					if (entity.getLocation().distanceSquared(location) <= radius2) {
+						entities.add(entity);
+					}
+				}
+			}
+		}
+		return entities;
+	}
 	
 	
 	/////////////////////////////

@@ -1,12 +1,15 @@
 package de.blablubbabc.paintball.extras.weapons.impl;
 
+import org.bukkit.Effect;
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.Sound;
 import org.bukkit.World;
 import org.bukkit.entity.EntityType;
 import org.bukkit.entity.Player;
+import org.bukkit.entity.Projectile;
 import org.bukkit.entity.Snowball;
+import org.bukkit.event.entity.ProjectileHitEvent;
 import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.PlayerInventory;
@@ -16,15 +19,17 @@ import de.blablubbabc.paintball.Match;
 import de.blablubbabc.paintball.Origin;
 import de.blablubbabc.paintball.Paintball;
 import de.blablubbabc.paintball.extras.weapons.Ball;
+import de.blablubbabc.paintball.extras.weapons.Gadget;
 import de.blablubbabc.paintball.extras.weapons.WeaponHandler;
+import de.blablubbabc.paintball.extras.weapons.events.PaintballHitEvent;
 import de.blablubbabc.paintball.statistics.player.PlayerStat;
 import de.blablubbabc.paintball.statistics.player.PlayerStats;
 import de.blablubbabc.paintball.utils.Translator;
 import de.blablubbabc.paintball.utils.Utils;
 
-public class Marker extends WeaponHandler {
+public class MarkerHandler extends WeaponHandler {
 	
-	public Marker(int customItemTypeID, boolean useDefaultType) {
+	public MarkerHandler(int customItemTypeID, boolean useDefaultType) {
 		super(customItemTypeID, useDefaultType);
 	}
 
@@ -60,7 +65,7 @@ public class Marker extends WeaponHandler {
 				Snowball snowball = (Snowball) world.spawnEntity(eyeLoc, EntityType.SNOWBALL);
 				snowball.setShooter(player);
 				// REGISTER:
-				new Ball(Paintball.instance.weaponManager.getBallManager(), match, player, snowball, Origin.MARKER);
+				new Ball(match, player, snowball, Origin.MARKER);
 				// BOOST:
 				snowball.setVelocity(player.getLocation().getDirection().normalize().multiply(Paintball.instance.speedmulti));
 				// STATS
@@ -79,6 +84,30 @@ public class Marker extends WeaponHandler {
 				player.playSound(player.getEyeLocation(), Sound.FIRE_IGNITE, 1F, 2F);
 			}
 			Utils.updatePlayerInventoryLater(Paintball.instance, player);
+		}
+	}
+	
+	@Override
+	protected void onProjectileHit(ProjectileHitEvent event, Projectile projectile, Match match, Player shooter) {
+		if (projectile.getType() == EntityType.SNOWBALL) {
+			String shooterName = shooter.getName();
+			Gadget ball = Paintball.instance.weaponManager.getBallManager().getGadget(projectile, match, shooterName, true);
+			// is paintball ?
+			if (ball != null) {
+				Location location = projectile.getLocation();
+				
+				// effect
+				if (Paintball.instance.effects) {
+					if (match.isBlue(shooter)) {
+						location.getWorld().playEffect(location, Effect.POTION_BREAK, 0);
+					} else if (match.isRed(shooter)) {
+						location.getWorld().playEffect(location, Effect.POTION_BREAK, 5);
+					}
+				}
+				
+				// call event for others:
+				Paintball.instance.getServer().getPluginManager().callEvent(new PaintballHitEvent(event, match, shooter));
+			}
 		}
 	}
 	

@@ -8,7 +8,9 @@ import org.bukkit.Material;
 import org.bukkit.block.Block;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
+import org.bukkit.entity.Projectile;
 import org.bukkit.event.entity.EntityDamageByEntityEvent;
+import org.bukkit.event.entity.ProjectileHitEvent;
 import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.event.player.PlayerPickupItemEvent;
 import org.bukkit.inventory.ItemStack;
@@ -20,7 +22,10 @@ import de.blablubbabc.paintball.extras.weapons.impl.AirstrikeHandler;
 import de.blablubbabc.paintball.extras.weapons.impl.ConcussionHandler;
 import de.blablubbabc.paintball.extras.weapons.impl.FlashbangHandler;
 import de.blablubbabc.paintball.extras.weapons.impl.GiftHandler;
-import de.blablubbabc.paintball.extras.weapons.impl.Marker;
+import de.blablubbabc.paintball.extras.weapons.impl.GrenadeHandler;
+import de.blablubbabc.paintball.extras.weapons.impl.GrenadeM2Handler;
+import de.blablubbabc.paintball.extras.weapons.impl.MarkerHandler;
+import de.blablubbabc.paintball.extras.weapons.impl.TurretHandler;
 import de.blablubbabc.paintball.utils.Translator;
 
 public class WeaponManager {
@@ -28,18 +33,63 @@ public class WeaponManager {
 	private GadgetManager ballHandler;
 	private GiftHandler giftHandler;
 	
+	private MarkerHandler markerHandler;
+	private AirstrikeHandler airstrikeHandler;
+	private FlashbangHandler flashbangHandler;
+	private ConcussionHandler concussionHandler;
+	private GrenadeHandler grenadeHandler;
+	private GrenadeM2Handler grenadeM2Handler;
+	private TurretHandler turretHandler;
+	
 	public WeaponManager(Paintball plugin) {
 		ballHandler = new GadgetManager();
 		giftHandler = new GiftHandler(Material.CHEST.getId(), false);
+		
 		// init all default weapons and gadgets:
-		new Marker(Material.SNOW_BALL.getId(), false);
-		new AirstrikeHandler(Material.STICK.getId(), false);
-		new FlashbangHandler(Material.GHAST_TEAR.getId(), false);
-		new ConcussionHandler(Material.SPIDER_EYE.getId(), false);
+		markerHandler = new MarkerHandler(Material.SNOW_BALL.getId(), false);
+		airstrikeHandler = new AirstrikeHandler(Material.STICK.getId(), false);
+		flashbangHandler = new FlashbangHandler(Material.GHAST_TEAR.getId(), false);
+		concussionHandler = new ConcussionHandler(Material.SPIDER_EYE.getId(), false);
+		grenadeHandler = new GrenadeHandler(Material.EGG.getId(), false);
+		grenadeM2Handler = new GrenadeM2Handler(Material.SLIME_BALL.getId(), false);
+		turretHandler = new TurretHandler(Material.PUMPKIN.getId(), false);
 		
 		//TODO
 		
 	}
+	
+	//////// Default weapon handlers /////////////
+	
+	public MarkerHandler getMarkerHandler() {
+		return markerHandler;
+	}
+	
+	public GrenadeHandler getGrenadeHandler() {
+		return grenadeHandler;
+	}
+	
+	public GrenadeM2Handler getGrenadeM2Handler() {
+		return grenadeM2Handler;
+	}
+	
+	public FlashbangHandler getFlashbangHandler() {
+		return flashbangHandler;
+	}
+	
+	public ConcussionHandler getConcussionHandler() {
+		return concussionHandler;
+	}
+	
+	public AirstrikeHandler getAirstrikeHandler() {
+		return airstrikeHandler;
+	}
+	
+	public TurretHandler getTurretHandler() {
+		return turretHandler;
+	}
+	
+	
+	//////////////////////////////////////////////
 	
 	public void registerWeaponHandler(WeaponHandler weaponHandler) {
 		weaponHandlers.add(weaponHandler);
@@ -74,6 +124,12 @@ public class WeaponManager {
 	public void onDamagedByEntity(EntityDamageByEntityEvent event, Entity damagedEntity, Match match, Player attacker) {
 		for (WeaponHandler weaponHandler : weaponHandlers) {
 			weaponHandler.onDamagedByEntity(event, damagedEntity, match, attacker);
+		}
+	}
+	
+	public void onProjectileHit(ProjectileHitEvent event, Projectile projectile, Match match, Player shooter) {
+		for (WeaponHandler weaponHandler : weaponHandlers) {
+			weaponHandler.onProjectileHit(event, projectile, match, shooter);
 		}
 	}
 	

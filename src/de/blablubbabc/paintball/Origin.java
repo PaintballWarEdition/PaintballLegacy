@@ -14,5 +14,5 @@ public enum Origin {
 	MELEE,
 	FLASHBANG,
 	CONCUSSION,
-	GRENADE2;
+	GRENADEM2;
 }

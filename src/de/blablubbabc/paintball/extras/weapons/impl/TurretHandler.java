@@ -1,5 +1,6 @@
 package de.blablubbabc.paintball.extras.weapons.impl;
 
+import org.bukkit.Bukkit;
 import org.bukkit.Effect;
 import org.bukkit.Location;
 import org.bukkit.Material;
@@ -8,6 +9,7 @@ import org.bukkit.World;
 import org.bukkit.block.Block;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.EntityType;
+import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
 import org.bukkit.entity.Snowball;
 import org.bukkit.entity.Snowman;
@@ -18,6 +20,7 @@ import org.bukkit.event.block.EntityBlockFormEvent;
 import org.bukkit.event.entity.CreatureSpawnEvent;
 import org.bukkit.event.entity.EntityDamageByEntityEvent;
 import org.bukkit.event.entity.EntityDeathEvent;
+import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.util.Vector;
@@ -45,29 +48,29 @@ public class TurretHandler extends WeaponHandler implements Listener {
 		Paintball.instance.getServer().getPluginManager().registerEvents(this, Paintball.instance);
 	}
 	
+	public Turret createTurret(Match match, Player player, LivingEntity entity) {
+		return new Turret(gadgetHandler, match, player, entity);
+	}
+	
 	@EventHandler(priority = EventPriority.HIGHEST, ignoreCancelled = false)
 	public void onCreatureSpawn(CreatureSpawnEvent event) {
-		if (nextTurretSpawn != null && event.getEntityType() == EntityType.SNOWMAN && event.getLocation().equals(nextTurretSpawn)) {
+		if (nextTurretSpawn != null && event.getLocation().equals(nextTurretSpawn)) {
 			event.setCancelled(false);
 		}
 	}
 	
 	@EventHandler(priority = EventPriority.NORMAL)
 	public void onSnowmanTrail(EntityBlockFormEvent event) {
-		if (event.getEntity().getType() == EntityType.SNOWMAN) {
-			if (gadgetHandler.isGadget(event.getEntity())) {
-				event.setCancelled(true);
-			}
+		if (gadgetHandler.isGadget(event.getEntity())) {
+			event.setCancelled(true);
 		}
 	}
 	
 	@EventHandler(priority = EventPriority.NORMAL)
 	public void onEntityDeath(EntityDeathEvent event) {
-		if (event.getEntityType() == EntityType.SNOWMAN) {
-			Gadget turret = gadgetHandler.getGadget(event.getEntity(), true);
-			if (turret != null) {
-				turret.dispose(false, false);
-			}
+		Gadget turret = gadgetHandler.getGadget(event.getEntity(), true);
+		if (turret != null) {
+			turret.dispose(false, false);
 		}
 	}
 
@@ -94,6 +97,11 @@ public class TurretHandler extends WeaponHandler implements Listener {
 		gadgetHandler.cleanUp(match);
 	}
 
+	@Override
+	protected void onInteract(PlayerInteractEvent event, Match match) {
+		
+	}
+	
 	@Override
 	protected void onBlockPlace(Player player, Block block, Match match) {
 		if (Paintball.instance.turret && block.getType() == Material.PUMPKIN) {
@@ -125,14 +133,12 @@ public class TurretHandler extends WeaponHandler implements Listener {
 	
 	@Override
 	protected void onDamagedByEntity(EntityDamageByEntityEvent event, Entity damagedEntity, Match match, Player attacker) {
-		if (damagedEntity.getType() == EntityType.SNOWMAN) {
-			Gadget turretGadget = gadgetHandler.getGadget(damagedEntity, false);
-			if (turretGadget != null && match == turretGadget.getMatch()) {
-				Turret turret = (Turret) turretGadget;
-				if (match.enemys(attacker, turret.getOwner())) {
-					turret.hit();
-					event.setCancelled(true);
-				}
+		Gadget turretGadget = gadgetHandler.getGadget(damagedEntity, false);
+		if (turretGadget != null && match == turretGadget.getMatch()) {
+			Turret turret = (Turret) turretGadget;
+			if (match.enemys(attacker, turret.getOwner())) {
+				turret.hit();
+				event.setCancelled(true);
 			}
 		}
 	}
@@ -212,10 +218,9 @@ public class TurretHandler extends WeaponHandler implements Listener {
 	}
 	
 
-	private class Turret extends Gadget {
+	public class Turret extends Gadget {
 
-		private final Snowman entity;
-		private final Player player;
+		private final LivingEntity entity;
 		
 		private int tickTask = -1;
 		private int salveTask = -1;
@@ -225,10 +230,9 @@ public class TurretHandler extends WeaponHandler implements Listener {
 		private int salve;
 		private int lives;
 		
-		private Turret(GadgetManager gadgetHandler, Match match, Player player, Snowman entity) {
+		private Turret(GadgetManager gadgetHandler, Match match, Player player, LivingEntity entity) {
 			super(gadgetHandler, match, player.getName());
 			this.entity = entity;
-			this.player = player;
 			this.cooldown = Paintball.instance.turretCooldown;
 			this.salve = Paintball.instance.turretSalve;
 			this.lives = Paintball.instance.turretLives;
@@ -271,15 +275,20 @@ public class TurretHandler extends WeaponHandler implements Listener {
 					}, 20L);
 		}
 		
+		/**
+		 * Returns the creator of this turret. Can return null, if the player can't be found by name.
+		 * 
+		 * @return the creator of the turret
+		 */
 		public Player getOwner() {
-			return player;
+			return Bukkit.getPlayerExact(playerName);
 		}
 
 		private Player searchTarget(int maxRadius, int instantRadius) {
 			Vector entVec = entity.getLocation().toVector();
 			Player nearest = null;
 			double distance = 0;
-			for (Player p : match.getEnemyTeam(player)) {
+			for (Player p : match.getEnemyTeam(getOwner())) {
 				if (match.isSurvivor(p)) {
 					Location ploc = p.getLocation();
 					if (ploc.getWorld().equals(entity.getWorld())) {
@@ -342,9 +351,10 @@ public class TurretHandler extends WeaponHandler implements Listener {
 									entity.getWorld().playSound(entity.getEyeLocation(), Sound.IRONGOLEM_THROW, 2.0F, 1F);
 									entity.getWorld().playSound(entity.getEyeLocation(), Sound.CHICKEN_EGG_POP, 2.0F, 1F);
 									Snowball ball = entity.getLocation().getWorld().spawn(entity.getLocation().add(new Vector(0, 2, 0)).add(dir2), Snowball.class);
+									Player player = getOwner();
 									ball.setShooter(player);
 									
-									Paintball.instance.weaponManager.getBallManager().addGadget(match, playerName, new Ball(Paintball.instance.weaponManager.getBallManager(), match, player, ball, Origin.TURRET));
+									Paintball.instance.weaponManager.getBallManager().addGadget(match, playerName, new Ball(match, player, ball, Origin.TURRET));
 
 									ball.setVelocity(getAimVector(entVec.clone().add(new Vector(0, 2, 0)).add(dir2), targetVec.clone(),dir2.clone()));
 
