@@ -1,4 +1,4 @@
-package de.blablubbabc.paintball.extras;
+package de.blablubbabc.paintball.extras.weapons.impl;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -10,33 +10,66 @@ import org.bukkit.ChatColor;
 import org.bukkit.Material;
 import org.bukkit.Sound;
 import org.bukkit.entity.Player;
+import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.inventory.ItemStack;
+import org.bukkit.inventory.meta.ItemMeta;
 
+import de.blablubbabc.paintball.Match;
 import de.blablubbabc.paintball.Paintball;
+import de.blablubbabc.paintball.extras.weapons.Gift;
+import de.blablubbabc.paintball.extras.weapons.WeaponHandler;
 import de.blablubbabc.paintball.utils.Translator;
 import de.blablubbabc.paintball.utils.Utils;
 
-public class Gifts {
+public class GiftHandler extends WeaponHandler {
 	
-	public final static ItemStack item = ItemManager.setMeta(new ItemStack(Material.CHEST));
+	private final Map<String, Long> wishes = new HashMap<String, Long>();
+	private long time;
 	
-	private static final Map<String, Long> wishes = new HashMap<String, Long>();
-	private static long time;
-	
-	public static void init() {
+	public GiftHandler(Paintball plugin, int customItemTypeID, boolean useDefaultType) {
+		super(plugin, customItemTypeID, useDefaultType);
 		time = 1000 * 60 * Paintball.instance.wishesDelay;
 	}
 	
-	public static void setWishes(String player) {
+	@Override
+	protected int getDefaultItemTypeID() {
+		return Material.CHEST.getId();
+	}
+
+	@Override
+	protected ItemStack setItemMeta(ItemStack itemStack) {
+		ItemMeta meta = itemStack.getItemMeta();
+		meta.setDisplayName(Translator.getString("WEAPON_GIFT"));
+		itemStack.setItemMeta(meta);
+		return itemStack;
+	}
+
+	@Override
+	protected void onInteract(PlayerInteractEvent event, Match match) {
+		final Player player = event.getPlayer();
+		ItemStack itemInHand = player.getItemInHand();
+		
+		if (plugin.giftsEnabled && itemInHand.isSimilar(getItem())) {
+			plugin.getServer().getScheduler().runTask(plugin, new Runnable() {
+				
+				@Override
+				public void run() {
+					unwrapGift(player);
+				}
+			});
+		}
+	}
+	
+	private void setWishes(String player) {
 		wishes.put(player, System.currentTimeMillis());
 	}
 	
-	public static boolean alreadyWished(String player) {
-		update();
+	private boolean alreadyWished(String player) {
+		updateWishes();
 		return wishes.containsKey(player);
 	}
 	
-	private static void update() {
+	private void updateWishes() {
 		List<String> names = new ArrayList<String>();
 		for(String n : wishes.keySet()) {
 			names.add(n);
@@ -46,11 +79,11 @@ public class Gifts {
 		}
 	}
 	
-	public static void receiveGift(Player player, int amount, boolean all) {
+	public void giveGift(Player player, int amount, boolean all) {
 		if(all) player.sendMessage(Translator.getString("ALL_RECEIVED_GIFT"));
 		else player.sendMessage(Translator.getString("RECEIVED_GIFT")) ;
 		
-		player.getInventory().addItem(ItemManager.setMeta(new ItemStack(item.getType(), amount)));
+		player.getInventory().addItem(plugin.weaponManager.setMeta(new ItemStack(getItem().getType(), amount)));
 		/*if(player.getInventory().firstEmpty() != -1) {
 			player.getInventory().addItem(new ItemStack(Material.CHEST, amount));
 		} else {
@@ -59,7 +92,7 @@ public class Gifts {
 	}
 	
 	@SuppressWarnings("deprecation")
-	public static void unwrapGift(Player player) {
+	private void unwrapGift(Player player) {
 		player.playSound(player.getEyeLocation(), Sound.LEVEL_UP, 0.5F, 1F);
 		//remove chest from hand
 		ItemStack i = player.getItemInHand();
@@ -69,24 +102,20 @@ public class Gifts {
 			i.setAmount(i.getAmount() - 1);
 			player.setItemInHand(i);
 		}
-		if(!Paintball.instance.gifts.isEmpty()) {
+		if (!Paintball.instance.gifts.isEmpty()) {
 			//gift:
 			double r = (Utils.random.nextInt(1000) / 10);
 			double chance = 0.0;
-			for(Gift g : Paintball.instance.gifts) {
+			for (Gift g : Paintball.instance.gifts) {
 				chance += (g.getChance() * Paintball.instance.giftChanceFactor);
-				if(r < chance) {
+				if (r < chance) {
 					player.sendMessage(ChatColor.GREEN + g.getMessage());
-					ItemStack item = ItemManager.setMeta(g.getItem(true));
+					ItemStack item = plugin.weaponManager.setMeta(g.getItem(true));
 					player.getInventory().addItem(item);
-					//airstrike item in hand update
-					if (Paintball.instance.airstrike) {
-						Airstrike.handleItemInHand(player, item);
-					}
 					
-					if (Paintball.instance.orbitalstrike) {
-						Orbitalstrike.handleItemInHand(player, item);
-					}
+					// item in hand update
+					plugin.weaponManager.onItemHeld(player);
+					
 					player.updateInventory();
 					break;
 				}
@@ -95,26 +124,27 @@ public class Gifts {
 		//wishes
 		String name = player.getName();
 		if (Paintball.instance.bWishes && !alreadyWished(name)) {
-			player.sendMessage(ChatColor.translateAlternateColorCodes('&', Paintball.instance.wishes));
+			player.sendMessage(Paintball.instance.wishes);
 			setWishes(name);
 		}
 	}
 	
-	public static void giveGift(Player goodGuy, Player receiver) {
+	public void transferGift(Player goodGuy, Player receiver) {
 		Map<String, String> vars = new HashMap<String, String>();
 		vars.put("from", goodGuy.getDisplayName());
 		vars.put("to", receiver.getDisplayName());
 		receiver.sendMessage(Translator.getString("RECEIVED_GIFT_FROM", vars)) ;
 		goodGuy.sendMessage(Translator.getString("GAVE_GIFT_TO", vars)) ;
 		
-		receiver.getInventory().addItem(ItemManager.setMeta(new ItemStack(item.getType(), 1)));
+		receiver.getInventory().addItem(plugin.weaponManager.setMeta(new ItemStack(getItemTypeID(), 1)));
 		
 		ItemStack i = goodGuy.getItemInHand();
-		if (i.getAmount() <= 1)
+		if (i.getAmount() <= 1) {
 			goodGuy.setItemInHand(null);
-		else {
+		} else {
 			i.setAmount(i.getAmount() - 1);
 			goodGuy.setItemInHand(i);
 		}
 	}
+	
 }

@@ -1,4 +1,4 @@
-package de.blablubbabc.paintball.extras;
+package de.blablubbabc.paintball.extras.weapons;
 
 import org.bukkit.inventory.ItemStack;
 

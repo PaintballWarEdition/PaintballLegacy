@@ -14,6 +14,7 @@ import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.inventory.meta.LeatherArmorMeta;
+import org.bukkit.plugin.Plugin;
 import org.bukkit.util.Vector;
 
 public class Utils {
@@ -105,6 +106,17 @@ public class Utils {
 		p.getInventory().clear();
 		p.getInventory().setArmorContents(null);
 	}
+	
+	public static void updatePlayerInventoryLater(Plugin plugin, final Player player) {
+		plugin.getServer().getScheduler().runTask(plugin, new Runnable() {
+			
+			@SuppressWarnings("deprecation")
+			@Override
+			public void run() {
+				player.updateInventory();
+			}
+		});
+	}
 
 	/*
 	 * public static void removeInventoryItems(Inventory inv, ItemStack item) {
@@ -175,6 +187,28 @@ public class Utils {
 	}
 
 	// ///////////////////////////
+	
+	public static float getLookAtYaw(Vector motion) {
+        double dx = motion.getX();
+        double dz = motion.getZ();
+        double yaw = 0;
+        // Set yaw
+        if (dx != 0) {
+            // Set yaw start value based on dx
+            if (dx < 0) {
+                yaw = 1.5 * Math.PI;
+            } else {
+                yaw = 0.5 * Math.PI;
+            }
+            yaw -= Math.atan(dz / dx);
+        } else if (dz < 0) {
+            yaw = Math.PI;
+        }
+        return (float) (-yaw * 180 / Math.PI);
+    }
+	
+	
+	/////////////////////////////
 	public static final BlockFace[] axis = { BlockFace.NORTH, BlockFace.EAST, BlockFace.SOUTH, BlockFace.WEST };
 	public static final BlockFace[] radial = { BlockFace.NORTH, BlockFace.NORTH_EAST, BlockFace.EAST, BlockFace.SOUTH_EAST, BlockFace.SOUTH,
 			BlockFace.SOUTH_WEST, BlockFace.WEST, BlockFace.NORTH_WEST };

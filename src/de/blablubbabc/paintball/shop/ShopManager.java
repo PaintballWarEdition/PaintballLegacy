@@ -12,9 +12,7 @@ import org.bukkit.inventory.ItemStack;
 import de.blablubbabc.paintball.Match;
 import de.blablubbabc.paintball.Paintball;
 import de.blablubbabc.paintball.Rank;
-import de.blablubbabc.paintball.extras.Airstrike;
 import de.blablubbabc.paintball.extras.ItemManager;
-import de.blablubbabc.paintball.extras.Orbitalstrike;
 import de.blablubbabc.paintball.statistics.general.GeneralStat;
 import de.blablubbabc.paintball.statistics.player.PlayerStat;
 import de.blablubbabc.paintball.statistics.player.PlayerStats;
@@ -138,11 +136,11 @@ public class ShopManager {
 			
 			//airstrike item in hand update
 			if (plugin.airstrike) {
-				Airstrike.handleItemInHand(player, item);
+				plugin.weaponManager.onItemHeld(player);
 			}
 			
 			if (plugin.orbitalstrike) {
-				Orbitalstrike.handleItemInHand(player, item);
+				plugin.weaponManager.onItemHeld(player);
 			}
 			
 			return true;

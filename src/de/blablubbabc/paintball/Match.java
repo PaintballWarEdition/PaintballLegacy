@@ -22,9 +22,6 @@ import org.bukkit.scoreboard.Score;
 import org.bukkit.scoreboard.Scoreboard;
 import org.kitteh.tag.TagAPI;
 
-import de.blablubbabc.paintball.extras.Ball;
-import de.blablubbabc.paintball.extras.Flashbang;
-import de.blablubbabc.paintball.extras.Gifts;
 import de.blablubbabc.paintball.extras.Grenade;
 import de.blablubbabc.paintball.extras.GrenadeM2;
 import de.blablubbabc.paintball.extras.ItemManager;
@@ -32,7 +29,6 @@ import de.blablubbabc.paintball.extras.Mine;
 import de.blablubbabc.paintball.extras.Orbitalstrike;
 import de.blablubbabc.paintball.extras.Sniper;
 import de.blablubbabc.paintball.extras.Turret;
-import de.blablubbabc.paintball.extras.weapons.AirstrikeCall;
 import de.blablubbabc.paintball.statistics.arena.ArenaSetting;
 import de.blablubbabc.paintball.statistics.player.PlayerStat;
 import de.blablubbabc.paintball.statistics.player.match.tdm.TDMMatchStat;
@@ -387,7 +383,7 @@ public class Match {
 		if (plugin.giftsEnabled) {
 			int r = random.nextInt(1000);
 			if (plugin.giftOnSpawnChance > (r / 10)) {
-				Gifts.receiveGift(player, 1, false);
+				plugin.weaponManager.getGiftManager().giveGift(player, 1, false);
 			}
 		}
 		player.updateInventory();
@@ -695,6 +691,21 @@ public class Match {
 			return true;
 		return false;
 	}
+	
+	/*public boolean enemys(String playerName1, String playerName2) {
+		if (containsPlayerName(redT, playerName1) && containsPlayerName(blueT, playerName2))
+			return true;
+		if (containsPlayerName(redT, playerName2) && containsPlayerName(blueT, playerName1))
+			return true;
+		return false;
+	}
+	
+	private boolean containsPlayerName(List<Player> playerList, String playerName) {
+		for (Player player : playerList) {
+			if (player.getName().equals(playerName)) return true;
+		}
+		return false;
+	}*/
 
 	public boolean friendly(Player player1, Player player2) {
 		if (redT.contains(player1) && redT.contains(player2))
@@ -1085,6 +1096,7 @@ public class Match {
 	}
 	
 	public void resetWeaponStuffEnd() {
+		plugin.weaponManager.
 		//remove airstrikes
 		AirstrikeCall.clear();
 		//remove orbitalstrikes
@@ -1092,7 +1104,7 @@ public class Match {
 		//remove grenades
 		Grenade.clear();
 		GrenadeM2.clear();
-		Flashbang.clear();
+		FlashbangHandler.clear();
 		Ball.clear();
 	}
 

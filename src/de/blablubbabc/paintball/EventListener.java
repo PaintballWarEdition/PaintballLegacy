@@ -64,11 +64,6 @@ import org.bukkit.inventory.PlayerInventory;
 import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.util.BlockIterator;
 
-import de.blablubbabc.paintball.extras.Airstrike;
-import de.blablubbabc.paintball.extras.Ball;
-import de.blablubbabc.paintball.extras.Concussion;
-import de.blablubbabc.paintball.extras.Flashbang;
-import de.blablubbabc.paintball.extras.Gifts;
 import de.blablubbabc.paintball.extras.Grenade;
 import de.blablubbabc.paintball.extras.GrenadeM2;
 import de.blablubbabc.paintball.extras.Mine;
@@ -78,6 +73,10 @@ import de.blablubbabc.paintball.extras.Rocket;
 import de.blablubbabc.paintball.extras.Shotgun;
 import de.blablubbabc.paintball.extras.Sniper;
 import de.blablubbabc.paintball.extras.Turret;
+import de.blablubbabc.paintball.extras.weapons.Ball;
+import de.blablubbabc.paintball.extras.weapons.Gadget;
+import de.blablubbabc.paintball.extras.weapons.WeaponManager;
+import de.blablubbabc.paintball.extras.weapons.impl.ConcussionHandler;
 import de.blablubbabc.paintball.statistics.player.PlayerStat;
 import de.blablubbabc.paintball.statistics.player.PlayerStats;
 import de.blablubbabc.paintball.utils.Log;
@@ -264,9 +263,10 @@ public class EventListener implements Listener {
 										// Geschoss?
 										if (shot instanceof Snowball) {
 											// match
-											Ball ball = Ball.getBall(shot.getEntityId(), shooter.getName(), false);
+											
+											Gadget ball = plugin.weaponManager.getBallManager().getGadget(shot, false);
 											if (ball != null) {
-												matchA.onHitByBall(target, shooter, ball.getSource());
+												matchA.onHitByBall(target, shooter, ball.getOrigin());
 											}
 										}
 									}
@@ -374,9 +374,26 @@ public class EventListener implements Listener {
 				if (event.getRightClicked() instanceof Player) {
 					Player receiver = (Player) event.getRightClicked();
 					if (Lobby.getTeam(receiver) != null) {
-						Gifts.giveGift(player, receiver);
+						plugin.weaponManager.getGiftManager().transferGift(player, receiver);
 					}
 				}
+			}
+		}
+	}
+	
+	@EventHandler(priority = EventPriority.NORMAL)
+	public void onPlayerInteractHandleWeapons(PlayerInteractEvent event) {
+		Player player = event.getPlayer();
+		String playerName = player.getName();
+		if (player.getGameMode() == GameMode.CREATIVE) return;
+		if (Lobby.LOBBY.isMember(player)) {
+			Match match = plugin.matchManager.getMatch(player);
+			if (match != null && Lobby.isPlaying(player) && match.isSurvivor(player)) {
+				ItemStack item = event.getItem();
+				if (item != null && item.getType() != Material.POTION)
+					event.setUseItemInHand(Result.DENY);
+				if (!match.started || match.isJustRespawned(playerName)) return;
+				plugin.weaponManager.onInteract(event, match);
 			}
 		}
 	}
@@ -440,11 +457,11 @@ public class EventListener implements Listener {
 					
 				case STICK:
 					// AIRSTRIKE
-					if (plugin.airstrike && item.isSimilar(Airstrike.item)) {
-						if (Airstrike.marked(player.getName())) {
-							if (Airstrike.getAirstrikeCountMatch() < plugin.airstrikeMatchLimit) {
-								if (Airstrike.getAirstrikeCountPlayer(playerName) < plugin.airstrikePlayerLimit) {
-									new Airstrike(player);
+					if (plugin.airstrike && item.isSimilar(AirstrikeCall.item)) {
+						if (AirstrikeCall.marked(player.getName())) {
+							if (AirstrikeCall.getAirstrikeCountMatch() < plugin.airstrikeMatchLimit) {
+								if (AirstrikeCall.getAirstrikeCountPlayer(playerName) < plugin.airstrikePlayerLimit) {
+									new AirstrikeCall(player);
 									// INFORM MATCH
 									match.onAirstrike(player);
 									// remove stick if not infinite
@@ -524,7 +541,7 @@ public class EventListener implements Listener {
 						player.sendMessage(Translator.getString("GRENADE_THROW"));
 						ItemStack nadeItem = GrenadeM2.item.clone();
 						ItemMeta meta = nadeItem.getItemMeta();
-						meta.setDisplayName("GrenadeM2 " + Flashbang.getNext());
+						meta.setDisplayName("GrenadeM2 " + FlashbangHandler.getNext());
 						nadeItem.setItemMeta(meta);
 						Item nade = player.getWorld().dropItem(player.getEyeLocation(), nadeItem);
 						nade.setVelocity(player.getLocation().getDirection().normalize().multiply(plugin.grenade2Speed));
@@ -541,15 +558,15 @@ public class EventListener implements Listener {
 					
 				case GHAST_TEAR:
 					// FLASHBANG
-					if (plugin.flashbang && item.isSimilar(Flashbang.item)) {
+					if (plugin.flashbang && item.isSimilar(FlashbangHandler.item)) {
 						player.getWorld().playSound(player.getLocation(), Sound.IRONGOLEM_THROW, 2.0F, 1F);
-						ItemStack nadeItem = Flashbang.item.clone();
+						ItemStack nadeItem = FlashbangHandler.item.clone();
 						ItemMeta meta = nadeItem.getItemMeta();
-						meta.setDisplayName("Flashbang " + Flashbang.getNext());
+						meta.setDisplayName("Flashbang " + FlashbangHandler.getNext());
 						nadeItem.setItemMeta(meta);
 						Item nade = player.getWorld().dropItem(player.getEyeLocation(), nadeItem);
 						nade.setVelocity(player.getLocation().getDirection().normalize().multiply(plugin.flashbangSpeed));
-						Flashbang.registerNade(nade, playerName, Origin.FLASHBANG);
+						FlashbangHandler.registerNade(nade, playerName, Origin.FLASHBANG);
 						if (item.getAmount() <= 1)
 							player.setItemInHand(null);
 						else {
@@ -562,15 +579,15 @@ public class EventListener implements Listener {
 					
 				case SPIDER_EYE:
 					// CONCUSSION
-					if (plugin.concussion && item.isSimilar(Concussion.item)) {
+					if (plugin.concussion && item.isSimilar(ConcussionHandler.item)) {
 						player.getWorld().playSound(player.getLocation(), Sound.IRONGOLEM_THROW, 2.0F, 1F);
-						ItemStack nadeItem = Concussion.item.clone();
+						ItemStack nadeItem = ConcussionHandler.item.clone();
 						ItemMeta meta = nadeItem.getItemMeta();
-						meta.setDisplayName("Concussion " + Flashbang.getNext());
+						meta.setDisplayName("Concussion " + FlashbangHandler.getNext());
 						nadeItem.setItemMeta(meta);
 						Item nade = player.getWorld().dropItem(player.getEyeLocation(), nadeItem);
 						nade.setVelocity(player.getLocation().getDirection().normalize().multiply(plugin.concussionSpeed));
-						Concussion.registerNade(nade, playerName, Origin.CONCUSSION);
+						ConcussionHandler.registerNade(nade, playerName, Origin.CONCUSSION);
 						if (item.getAmount() <= 1)
 							player.setItemInHand(null);
 						else {
@@ -728,7 +745,7 @@ public class EventListener implements Listener {
 		}
 	}*/
 
-	@EventHandler(priority = EventPriority.NORMAL)
+	@EventHandler(priority = EventPriority.MONITOR)
 	public void onItemInHand(PlayerItemHeldEvent event) {
 		Player player = event.getPlayer();
 		if (Lobby.LOBBY.isMember(player)) {
@@ -736,16 +753,8 @@ public class EventListener implements Listener {
 			if (Sniper.isZooming(player))
 				Sniper.setNotZooming(player);
 
-			ItemStack item = player.getInventory().getItem(event.getNewSlot());
-			
-			if (plugin.airstrike) {
-				Airstrike.handleItemInHand(player, item);
-			}
-			
-			if (plugin.orbitalstrike) {
-				Orbitalstrike.handleItemInHand(player, item);
-			}
-			
+			//ItemStack item = player.getInventory().getItem(event.getNewSlot());
+			plugin.weaponManager.onItemHeld(player);
 		}
 	}
 
@@ -757,7 +766,7 @@ public class EventListener implements Listener {
 			String shooterName = shooter.getName();
 			
 			if (shot instanceof Snowball) {
-				Ball ball = Ball.getBall(shot.getEntityId(), shooterName, true);
+				Gadget ball = plugin.weaponManager.getBallManager().getGadget(shot, true);
 				// is ball
 				if (ball != null) {
 					Match match = plugin.matchManager.getMatch(shooter);
@@ -875,16 +884,17 @@ public class EventListener implements Listener {
 	@EventHandler(priority = EventPriority.LOWEST, ignoreCancelled = false)
 	public void onPlayerPlace(BlockPlaceEvent event) {
 		Player player = event.getPlayer();
+		if (player.getGameMode() == GameMode.CREATIVE) return;
+		
 		if (Lobby.LOBBY.isMember(player)) {
 			// if (!player.isOp() && !player.hasPermission("paintball.admin")) {
-			if (player.getGameMode() == GameMode.CREATIVE) return;
 			event.setCancelled(true);
 			// }
 			final Block block = event.getBlockPlaced();
 			Match m = plugin.matchManager.getMatch(player);
 			if (m != null && m.started && m.isSurvivor(player)) {
 				ItemStack item = player.getItemInHand();
-				if (plugin.turret && block.getType() == Material.PUMPKIN && item.hasItemMeta() && item.getItemMeta().getDisplayName().equals(Translator.getString("WEAPON_TURRET"))) {
+				if (plugin.turret && block.getType() == Material.PUMPKIN && item.isSimilar(Turret.item)) {
 					// turret:
 					if (Turret.getTurretCountMatch() < plugin.turretMatchLimit) {
 						if (Turret.getTurrets(player.getName()).size() < plugin.turretPlayerLimit) {
@@ -893,9 +903,9 @@ public class EventListener implements Listener {
 							Snowman snowman = (Snowman) block.getLocation().getWorld().spawnEntity(spawnLoc, EntityType.SNOWMAN);
 							nextTurretSpawn = null;
 							new Turret(player, snowman, plugin.matchManager.getMatch(player));
-							if (item.getAmount() <= 1)
+							if (item.getAmount() <= 1) {
 								player.setItemInHand(null);
-							else {
+							} else {
 								item.setAmount(item.getAmount() - 1);
 								player.setItemInHand(item);
 							}
@@ -950,11 +960,9 @@ public class EventListener implements Listener {
 
 	@EventHandler(priority = EventPriority.NORMAL)
 	public void onPlayerItemsI(PlayerPickupItemEvent event) {
-		int id = event.getItem().getEntityId();
-		if (Flashbang.isNade(id) || GrenadeM2.isNade(id) ||  Concussion.isNade(id)) {
-			event.setCancelled(true);
-			return;
-		}
+		plugin.weaponManager.onItemPickup(event);
+		if (event.isCancelled()) return;
+		
 		Player player = event.getPlayer();
 		if (Lobby.LOBBY.isMember(player)) {
 			// if (!player.isOp() && !player.hasPermission("paintball.admin"))

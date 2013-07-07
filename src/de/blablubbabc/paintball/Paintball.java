@@ -11,6 +11,7 @@ import java.util.Map;
 import java.util.regex.Pattern;
 
 import org.bukkit.Bukkit;
+import org.bukkit.ChatColor;
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.command.CommandExecutor;
@@ -27,12 +28,6 @@ import org.bukkit.scoreboard.Scoreboard;
 import de.blablubbabc.BlaDB.BlaSQLite;
 import de.blablubbabc.commandsigns.CommandSignsListener;
 import de.blablubbabc.paintball.commands.CommandManager;
-import de.blablubbabc.paintball.extras.Airstrike;
-import de.blablubbabc.paintball.extras.Ball;
-import de.blablubbabc.paintball.extras.Concussion;
-import de.blablubbabc.paintball.extras.Flashbang;
-import de.blablubbabc.paintball.extras.Gift;
-import de.blablubbabc.paintball.extras.Gifts;
 import de.blablubbabc.paintball.extras.Grenade;
 import de.blablubbabc.paintball.extras.GrenadeM2;
 import de.blablubbabc.paintball.extras.ItemManager;
@@ -44,6 +39,9 @@ import de.blablubbabc.paintball.extras.Rocket;
 import de.blablubbabc.paintball.extras.Shotgun;
 import de.blablubbabc.paintball.extras.Sniper;
 import de.blablubbabc.paintball.extras.Turret;
+import de.blablubbabc.paintball.extras.weapons.Gift;
+import de.blablubbabc.paintball.extras.weapons.WeaponManager;
+import de.blablubbabc.paintball.extras.weapons.impl.ConcussionHandler;
 import de.blablubbabc.paintball.features.InSignsFeature;
 import de.blablubbabc.paintball.features.TagAPIListener;
 import de.blablubbabc.paintball.features.VoteListener;
@@ -97,6 +95,7 @@ public class Paintball extends JavaPlugin{
 	public Musiker musik;
 	public Stats statsManager;
 	public RankManager rankManager;
+	public WeaponManager weaponManager;
 	public Serverlister serverList;
 	public InSignsFeature insignsFeature;
 	public boolean active;
@@ -707,7 +706,7 @@ public class Paintball extends JavaPlugin{
 		giftOnSpawnChance = (giftOnSpawnChance < 0.0 ? 0.0 : giftOnSpawnChance);
 		giftOnSpawnChance = (giftOnSpawnChance > 100.0 ? 100.0 : giftOnSpawnChance);
 		bWishes = getConfig().getBoolean("Paintball.Gifts.wishes", true);
-		wishes = getConfig().getString("Paintball.Gifts.wishes text", "&cblablubbabc&5, &cAlphaX &5and &cthe server team &5are wishing you a merry christmas and a happy new year!");
+		wishes = ChatColor.translateAlternateColorCodes('&', getConfig().getString("Paintball.Gifts.wishes text", "&cblablubbabc&5, &cAlphaX &5and &cthe server team &5are wishing you lot of fun!"));
 		wishesDelay = getConfig().getInt("Paintball.Gifts.wishes delay in minutes", 60);
 		wishesDelay = (wishesDelay < 0 ? 0 : wishesDelay);
 		gifts = new ArrayList<Gift>();
@@ -887,14 +886,15 @@ public class Paintball extends JavaPlugin{
 			getServer().getPluginManager().disablePlugin(this);
 			return;
 		}
+		// WEAPON MANAGER
+		weaponManager = new WeaponManager(this);
 		
 		// INIT STATICS
 		ItemManager.init();
 
-		Airstrike.init();
 		Ball.init();
-		Flashbang.init();
-		Concussion.init();
+		FlashbangHandler.init();
+		ConcussionHandler.init();
 		Gifts.init();
 		Grenade.init();
 		GrenadeM2.init();
@@ -1062,9 +1062,6 @@ public class Paintball extends JavaPlugin{
 				Log.info("Plugin 'Votifier' not found. Additional vote features disabled.");
 			}
 		}
-		
-		//calculating turret angles:
-		Turret.calculateTable(turretAngleMin, turretAngleMax, turretTicks, turretXSize, turretYSize, this);
 		
 		
 		final Paintball plugin = this;

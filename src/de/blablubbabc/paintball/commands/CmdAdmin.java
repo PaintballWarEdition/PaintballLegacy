@@ -11,7 +11,6 @@ import org.bukkit.entity.Player;
 
 import de.blablubbabc.paintball.Lobby;
 import de.blablubbabc.paintball.Paintball;
-import de.blablubbabc.paintball.extras.Gifts;
 import de.blablubbabc.paintball.statistics.player.PlayerStat;
 import de.blablubbabc.paintball.statistics.player.PlayerStats;
 import de.blablubbabc.paintball.utils.Translator;
@@ -374,7 +373,7 @@ public class CmdAdmin {
 					}
 					for(Player p : Lobby.LOBBY.getMembers()) {
 						if(Lobby.isPlaying(p)) {
-							Gifts.receiveGift(p, amount, true);
+							plugin.weaponManager.getGiftManager().giveGift(p, amount, true);
 						}
 					}	
 				}

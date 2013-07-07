@@ -15,7 +15,14 @@ public class ItemManager {
 	public static ItemStack setMeta(ItemStack item) {
 		ItemMeta meta = item.getItemMeta();
 		Material type = item.getType();
+		
 		// set meta:
+		if (type == Ball.getItemType()) {
+			
+		} else if () {
+			
+		}
+		
 		switch (type) {
 		case SNOW_BALL:
 			meta.setDisplayName(Translator.getString("WEAPON_PAINTBALL"));
