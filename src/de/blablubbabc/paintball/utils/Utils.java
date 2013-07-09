@@ -211,6 +211,32 @@ public class Utils {
         return (float) (-yaw * 180 / Math.PI);
     }
 	
+	public static Vector rotateAxis(Vector dir, Vector n, int angleD) {
+		double angleR = Math.toRadians(angleD);
+		double x = dir.getX();
+		double y = dir.getY();
+		double z = dir.getZ();
+		
+		double n1 = n.getX();
+		double n2 = n.getY();
+		double n3 = n.getZ();
+		
+		double cos = Math.cos(angleR);
+		double sin = Math.sin(angleR);
+		return new Vector(x*(n1*n1*(1-cos)+cos) + y*(n2*n1*(1-cos)+n3*sin) + z*(n3*n1*(1-cos)-n2*sin), 
+				x*(n1*n2*(1-cos)-n3*sin) + y*(n2*n2*(1-cos)+cos) + z*(n3*n2*(1-cos)+n1*sin),
+				x*(n1*n3*(1-cos)+n2*sin) + y*(n2*n3*(1-cos)-n1*sin) + z*(n3*n3*(1-cos)+cos));
+	}
+	
+	public static Vector rotateYAxis(Vector dir, double angleD) {
+		double angleR = Math.toRadians(angleD);
+		double x = dir.getX();
+		double z = dir.getZ();
+		double cos = Math.cos(angleR);
+		double sin = Math.sin(angleR);
+		return (new Vector(x*cos+z*(-sin), 0.0, x*sin+z*cos)).normalize();
+	}
+	
 	// loading chunks? if yes -> issues with that?
 	public Set<Entity> getNearbyEntities(Location location, int radius) {
 		int radius2 = radius * radius;

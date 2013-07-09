@@ -7,6 +7,7 @@ import org.bukkit.entity.Entity;
 import org.bukkit.entity.Item;
 import org.bukkit.entity.Player;
 import org.bukkit.entity.Snowball;
+import org.bukkit.event.block.Action;
 import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
@@ -15,10 +16,10 @@ import org.bukkit.util.Vector;
 import de.blablubbabc.paintball.Match;
 import de.blablubbabc.paintball.Origin;
 import de.blablubbabc.paintball.Paintball;
-import de.blablubbabc.paintball.extras.weapons.Ball;
 import de.blablubbabc.paintball.extras.weapons.Gadget;
 import de.blablubbabc.paintball.extras.weapons.GadgetManager;
 import de.blablubbabc.paintball.extras.weapons.WeaponHandler;
+import de.blablubbabc.paintball.extras.weapons.impl.BallHandler.Ball;
 import de.blablubbabc.paintball.utils.Translator;
 import de.blablubbabc.paintball.utils.Utils;
 
@@ -47,17 +48,18 @@ public class GrenadeM2Handler extends WeaponHandler {
 	@Override
 	protected ItemStack setItemMeta(ItemStack itemStack) {
 		ItemMeta meta = itemStack.getItemMeta();
-		meta.setDisplayName(Translator.getString("WEAPON_GRENADE2"));
+		meta.setDisplayName(Translator.getString("WEAPON_GRENADEM2"));
 		itemStack.setItemMeta(meta);
 		return itemStack;
 	}
 	
 	@Override
 	protected void onInteract(PlayerInteractEvent event, Match match) {
+		if (event.getAction() == Action.PHYSICAL || !Paintball.instance.grenade2) return;
 		Player player = event.getPlayer();
 		ItemStack itemInHand = player.getItemInHand();
 		
-		if (Paintball.instance.grenade2 && itemInHand.isSimilar(getItem())) {
+		if (itemInHand.isSimilar(getItem())) {
 			player.getWorld().playSound(player.getLocation(), Sound.IRONGOLEM_THROW, 2.0F, 1F);
 			player.sendMessage(Translator.getString("GRENADE_THROW"));
 			ItemStack nadeItem = getItem().clone();
@@ -108,8 +110,7 @@ public class GrenadeM2Handler extends WeaponHandler {
 					for (Vector v : Utils.getDirections()) {
 						final Snowball snowball = location.getWorld().spawn(location, Snowball.class);
 						snowball.setShooter(player);
-						final Ball ball = new Ball(match, player, snowball, origin);
-						Paintball.instance.weaponManager.getBallManager().addGadget(match, playerName, ball);
+						final Ball ball = Paintball.instance.weaponManager.getBallHandler().createBall(match, player, snowball, origin);
 						Vector v2 = v.clone();
 						v2.setX(v.getX() + Math.random() - Math.random());
 						v2.setY(v.getY() + Math.random() - Math.random());

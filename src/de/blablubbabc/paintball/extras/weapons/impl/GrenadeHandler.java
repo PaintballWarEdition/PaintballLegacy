@@ -12,6 +12,7 @@ import org.bukkit.entity.Snowball;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
+import org.bukkit.event.block.Action;
 import org.bukkit.event.entity.ProjectileHitEvent;
 import org.bukkit.event.player.PlayerEggThrowEvent;
 import org.bukkit.event.player.PlayerInteractEvent;
@@ -23,10 +24,10 @@ import org.bukkit.util.Vector;
 import de.blablubbabc.paintball.Match;
 import de.blablubbabc.paintball.Origin;
 import de.blablubbabc.paintball.Paintball;
-import de.blablubbabc.paintball.extras.weapons.Ball;
 import de.blablubbabc.paintball.extras.weapons.Gadget;
 import de.blablubbabc.paintball.extras.weapons.GadgetManager;
 import de.blablubbabc.paintball.extras.weapons.WeaponHandler;
+import de.blablubbabc.paintball.extras.weapons.impl.BallHandler.Ball;
 import de.blablubbabc.paintball.utils.Translator;
 import de.blablubbabc.paintball.utils.Utils;
 
@@ -70,10 +71,11 @@ public class GrenadeHandler extends WeaponHandler implements Listener {
 	
 	@Override
 	protected void onInteract(PlayerInteractEvent event, Match match) {
+		if (event.getAction() == Action.PHYSICAL || !Paintball.instance.grenade) return;
 		Player player = event.getPlayer();
 		ItemStack itemInHand = player.getItemInHand();
 		
-		if (Paintball.instance.grenade && itemInHand.isSimilar(getItem())) {
+		if (itemInHand.isSimilar(getItem())) {
 			PlayerInventory inv = player.getInventory();
 			if (match.setting_grenades == -1 || inv.containsAtLeast(getItem(),  1)) {
 				player.sendMessage(Translator.getString("GRENADE_THROW"));
@@ -124,7 +126,7 @@ public class GrenadeHandler extends WeaponHandler implements Listener {
 			for (Vector v : Utils.getDirections()) {
 				final Snowball snowball  = location.getWorld().spawn(location, Snowball.class);
 				snowball.setShooter(shooter);
-				final Ball ball = new Ball(match, shooter, snowball, origin);
+				final Ball ball = Paintball.instance.weaponManager.getBallHandler().createBall(match, shooter, snowball, origin);
 				Vector v2 = v.clone();
 				v2.setX(v.getX() + Math.random() - Math.random());
 				v2.setY(v.getY() + Math.random() - Math.random());

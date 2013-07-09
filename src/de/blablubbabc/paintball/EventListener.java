@@ -64,15 +64,12 @@ import org.bukkit.inventory.PlayerInventory;
 import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.util.BlockIterator;
 
-import de.blablubbabc.paintball.extras.Grenade;
-import de.blablubbabc.paintball.extras.GrenadeM2;
 import de.blablubbabc.paintball.extras.Mine;
 import de.blablubbabc.paintball.extras.Orbitalstrike;
 import de.blablubbabc.paintball.extras.Pumpgun;
 import de.blablubbabc.paintball.extras.Rocket;
 import de.blablubbabc.paintball.extras.Shotgun;
 import de.blablubbabc.paintball.extras.Sniper;
-import de.blablubbabc.paintball.extras.weapons.Ball;
 import de.blablubbabc.paintball.extras.weapons.Gadget;
 import de.blablubbabc.paintball.extras.weapons.WeaponManager;
 import de.blablubbabc.paintball.extras.weapons.impl.ConcussionHandler;
@@ -86,27 +83,13 @@ public class EventListener implements Listener {
 	private Paintball plugin;
 	
 	private long lastSignUpdate = 0;
-	// used to override creature-spawn-cancelling of other plugins for turrets
-	private Location nextTurretSpawn = null;
-
-	// private HashMap<Player, String> chatMessages;
 
 	public EventListener(Paintball pl) {
 		plugin = pl;
-		// chatMessages = new HashMap<Player, String>();
 	}
 
 	// /////////////////////////////////////////
 	// EVENTS
-
-	/*
-	 * @EventHandler(ignoreCancelled = true) public void
-	 * onPlayerMove(PlayerMoveEvent event) { Player player = event.getPlayer();
-	 * Match match = mm.getMatch(player); if (match != null) { if
-	 * (!match.started) { if (event.getFrom().getX() != event.getTo().getX() ||
-	 * event.getFrom().getZ() != event.getTo().getZ()) {
-	 * event.setCancelled(true); } } } }
-	 */
 
 	@EventHandler(priority = EventPriority.NORMAL, ignoreCancelled = true)
 	public void onSignCreate(SignChangeEvent event) {
@@ -150,26 +133,6 @@ public class EventListener implements Listener {
 				}
 			} else if (fromPb && !toPb) {
 				plugin.leaveLobby(player, true);
-			}
-		}
-	}
-	
-	@EventHandler(priority = EventPriority.NORMAL)
-	public void onSnowmanTrail(EntityBlockFormEvent event) {
-		if (event.getEntity().getType() == EntityType.SNOWMAN) {
-			if (Turret.getIsTurret((Snowman) event.getEntity()) != null) {
-				event.setCancelled(true);
-			}
-		}
-	}
-	
-	@EventHandler(priority = EventPriority.NORMAL)
-	public void onEntityDeath(EntityDeathEvent event) {
-		if (event.getEntityType() == EntityType.SNOWMAN) {
-			Snowman snowman = (Snowman) event.getEntity();
-			Turret turret = Turret.getIsTurret(snowman);
-			if (turret != null) {
-				turret.die(true);
 			}
 		}
 	}
@@ -263,7 +226,7 @@ public class EventListener implements Listener {
 										if (shot instanceof Snowball) {
 											// match
 											
-											Gadget ball = plugin.weaponManager.getBallManager().getGadget(shot, matchA, shooter.getName(), false);
+											Gadget ball = plugin.weaponManager.getBallHandler().getBall(shot, matchA, shooter.getName(), false);
 											if (ball != null) {
 												matchA.onHitByBall(target, shooter, ball.getOrigin());
 											}
@@ -338,17 +301,6 @@ public class EventListener implements Listener {
 			Player player = (Player) event.getEntity().getShooter();
 			if (Lobby.isPlaying(player)) {
 				if (event.getEntity().getType() != EntityType.SPLASH_POTION) event.setCancelled(true);
-			}
-		}
-	}
-
-	@EventHandler(priority = EventPriority.NORMAL)
-	public void onEggThrow(PlayerEggThrowEvent event) {
-		Egg egg = event.getEgg();
-		if (egg.getShooter() instanceof Player) {
-			Player player = (Player) egg.getShooter();
-			if (Grenade.getGrenade(egg.getEntityId(), player.getName(), false) != null) {
-				event.setHatching(false);
 			}
 		}
 	}
@@ -767,7 +719,7 @@ public class EventListener implements Listener {
 			
 			if (match != null) {
 				if (shot instanceof Snowball) {
-					Gadget ball = plugin.weaponManager.getBallManager().getGadget(shot, match, shooterName, true);
+					Gadget ball = plugin.weaponManager.getBallHandler().getBall(shot, match, shooterName, true);
 					// is ball
 					if (ball != null) {
 						Location loc = shot.getLocation();
@@ -866,13 +818,6 @@ public class EventListener implements Listener {
 		if (Lobby.LOBBY.isMember(player)) {
 			if (player.getGameMode() != GameMode.CREATIVE)
 				event.setCancelled(true);
-		}
-	}
-
-	@EventHandler(priority = EventPriority.HIGHEST, ignoreCancelled = false)
-	public void onCreatureSpawn(CreatureSpawnEvent event) {
-		if (nextTurretSpawn != null && event.getEntityType() == EntityType.SNOWMAN && event.getLocation().equals(nextTurretSpawn)) {
-			event.setCancelled(false);
 		}
 	}
 

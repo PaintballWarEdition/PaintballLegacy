@@ -24,11 +24,11 @@ public abstract class WeaponHandler {
 	protected abstract int getDefaultItemTypeID();
 	protected abstract ItemStack setItemMeta(ItemStack itemStack);
 	
-	protected int getItemTypeID() {
+	public int getItemTypeID() {
 		return item.getTypeId();
 	}
 	
-	protected ItemStack getItem() {
+	public ItemStack getItem() {
 		return item;
 	}
 	

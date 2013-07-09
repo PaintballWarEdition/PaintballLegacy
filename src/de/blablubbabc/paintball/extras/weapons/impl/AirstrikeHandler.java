@@ -16,6 +16,7 @@ import org.bukkit.entity.Egg;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.EntityType;
 import org.bukkit.entity.Player;
+import org.bukkit.event.block.Action;
 import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
@@ -61,11 +62,13 @@ public class AirstrikeHandler extends WeaponHandler {
 	
 	@Override
 	protected void onInteract(PlayerInteractEvent event, Match match) {
+		if (event.getAction() == Action.PHYSICAL || !Paintball.instance.airstrike) return;
+		
 		final Player player = event.getPlayer();
 		String playerName = player.getName();
 		ItemStack itemInHand = player.getItemInHand();
 		
-		if (Paintball.instance.airstrike && itemInHand.isSimilar(this.item)) {
+		if (itemInHand.isSimilar(this.item)) {
 			Block block = marks.get(playerName);
 			if (block != null) {
 				if (gadgetHandler.getMatchGadgetCount(match) < Paintball.instance.airstrikeMatchLimit) {

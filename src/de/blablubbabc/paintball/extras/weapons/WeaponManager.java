@@ -19,6 +19,7 @@ import org.bukkit.inventory.meta.ItemMeta;
 import de.blablubbabc.paintball.Match;
 import de.blablubbabc.paintball.Paintball;
 import de.blablubbabc.paintball.extras.weapons.impl.AirstrikeHandler;
+import de.blablubbabc.paintball.extras.weapons.impl.BallHandler;
 import de.blablubbabc.paintball.extras.weapons.impl.ConcussionHandler;
 import de.blablubbabc.paintball.extras.weapons.impl.FlashbangHandler;
 import de.blablubbabc.paintball.extras.weapons.impl.GiftHandler;
@@ -30,8 +31,11 @@ import de.blablubbabc.paintball.utils.Translator;
 
 public class WeaponManager {
 	private List<WeaponHandler> weaponHandlers = new ArrayList<WeaponHandler>();
-	private GadgetManager ballHandler;
+	
 	private GiftHandler giftHandler;
+	private NoGravityHandler noGravityHandler;
+	
+	private BallHandler ballHandler;
 	
 	private MarkerHandler markerHandler;
 	private AirstrikeHandler airstrikeHandler;
@@ -42,8 +46,10 @@ public class WeaponManager {
 	private TurretHandler turretHandler;
 	
 	public WeaponManager(Paintball plugin) {
-		ballHandler = new GadgetManager();
 		giftHandler = new GiftHandler(Material.CHEST.getId(), false);
+		noGravityHandler = new NoGravityHandler();
+		
+		ballHandler = new BallHandler(Material.SNOW_BALL.getId(), false);
 		
 		// init all default weapons and gadgets:
 		markerHandler = new MarkerHandler(Material.SNOW_BALL.getId(), false);
@@ -95,12 +101,16 @@ public class WeaponManager {
 		weaponHandlers.add(weaponHandler);
 	}
 	
-	public GadgetManager getBallManager() {
-		return ballHandler;
-	}
-	
 	public GiftHandler getGiftManager() {
 		return giftHandler;
+	}
+	
+	public NoGravityHandler getNoGravityHandler() {
+		return noGravityHandler;
+	}
+	
+	public BallHandler getBallHandler() {
+		return ballHandler;
 	}
 	
 	public void onInteract(PlayerInteractEvent event, Match match) {

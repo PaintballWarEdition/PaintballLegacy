@@ -28,7 +28,6 @@ import org.bukkit.util.Vector;
 import de.blablubbabc.paintball.Match;
 import de.blablubbabc.paintball.Origin;
 import de.blablubbabc.paintball.Paintball;
-import de.blablubbabc.paintball.extras.weapons.Ball;
 import de.blablubbabc.paintball.extras.weapons.Gadget;
 import de.blablubbabc.paintball.extras.weapons.GadgetManager;
 import de.blablubbabc.paintball.extras.weapons.WeaponHandler;
@@ -354,7 +353,7 @@ public class TurretHandler extends WeaponHandler implements Listener {
 									Player player = getOwner();
 									ball.setShooter(player);
 									
-									Paintball.instance.weaponManager.getBallManager().addGadget(match, playerName, new Ball(match, player, ball, Origin.TURRET));
+									Paintball.instance.weaponManager.getBallHandler().createBall(match, player, ball, Origin.TURRET);
 
 									ball.setVelocity(getAimVector(entVec.clone().add(new Vector(0, 2, 0)).add(dir2), targetVec.clone(),dir2.clone()));
 

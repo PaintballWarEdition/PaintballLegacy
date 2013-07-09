@@ -9,6 +9,7 @@ import org.bukkit.entity.Entity;
 import org.bukkit.entity.EntityType;
 import org.bukkit.entity.Item;
 import org.bukkit.entity.Player;
+import org.bukkit.event.block.Action;
 import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.event.player.PlayerPickupItemEvent;
 import org.bukkit.inventory.ItemStack;
@@ -44,23 +45,24 @@ public class FlashbangHandler extends WeaponHandler {
 	
 	@Override
 	protected int getDefaultItemTypeID() {
-		return Material.SPIDER_EYE.getId();
+		return Material.GHAST_TEAR.getId();
 	}
 
 	@Override
 	protected ItemStack setItemMeta(ItemStack itemStack) {
 		ItemMeta meta = itemStack.getItemMeta();
-		meta.setDisplayName(Translator.getString("WEAPON_CONCUSSION"));
+		meta.setDisplayName(Translator.getString("WEAPON_FLASHBANG"));
 		itemStack.setItemMeta(meta);
 		return itemStack;
 	}
 
 	@Override
 	protected void onInteract(PlayerInteractEvent event, Match match) {
+		if (event.getAction() == Action.PHYSICAL || !Paintball.instance.flashbang) return;
 		Player player = event.getPlayer();
 		ItemStack itemInHand = player.getItemInHand();
 		
-		if (Paintball.instance.concussion && itemInHand.isSimilar(getItem())) {
+		if (itemInHand.isSimilar(getItem())) {
 			player.getWorld().playSound(player.getLocation(), Sound.IRONGOLEM_THROW, 2.0F, 1F);
 			ItemStack nadeItem = getItem().clone();
 			ItemMeta meta = nadeItem.getItemMeta();
@@ -115,7 +117,7 @@ public class FlashbangHandler extends WeaponHandler {
 				public void run() {
 					explode();
 				}
-			}, 20L * Paintball.instance.concussionTimeUntilExplosion);
+			}, 20L * Paintball.instance.flashbangTimeUntilExplosion);
 		}
 		
 		private void explode() {

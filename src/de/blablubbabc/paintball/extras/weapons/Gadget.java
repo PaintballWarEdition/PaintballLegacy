@@ -18,7 +18,7 @@ public abstract class Gadget {
 		gadgetHandler.addGadget(match, playerName, this);
 	}
 	
-	public GadgetManager getGadgetManager() {
+	protected GadgetManager getGadgetManager() {
 		return gadgetHandler;
 	}
 	

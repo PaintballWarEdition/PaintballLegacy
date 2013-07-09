@@ -9,6 +9,7 @@ import org.bukkit.entity.EntityType;
 import org.bukkit.entity.Player;
 import org.bukkit.entity.Projectile;
 import org.bukkit.entity.Snowball;
+import org.bukkit.event.block.Action;
 import org.bukkit.event.entity.ProjectileHitEvent;
 import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.inventory.ItemStack;
@@ -18,7 +19,6 @@ import org.bukkit.inventory.meta.ItemMeta;
 import de.blablubbabc.paintball.Match;
 import de.blablubbabc.paintball.Origin;
 import de.blablubbabc.paintball.Paintball;
-import de.blablubbabc.paintball.extras.weapons.Ball;
 import de.blablubbabc.paintball.extras.weapons.Gadget;
 import de.blablubbabc.paintball.extras.weapons.WeaponHandler;
 import de.blablubbabc.paintball.extras.weapons.events.PaintballHitEvent;
@@ -48,6 +48,7 @@ public class MarkerHandler extends WeaponHandler {
 	
 	@Override
 	protected void onInteract(PlayerInteractEvent event, Match match) {
+		if (event.getAction() == Action.PHYSICAL) return;
 		Player player = event.getPlayer();
 		String playerName = player.getName();
 		ItemStack itemInHand = player.getItemInHand();
@@ -65,7 +66,7 @@ public class MarkerHandler extends WeaponHandler {
 				Snowball snowball = (Snowball) world.spawnEntity(eyeLoc, EntityType.SNOWBALL);
 				snowball.setShooter(player);
 				// REGISTER:
-				new Ball(match, player, snowball, Origin.MARKER);
+				Paintball.instance.weaponManager.getBallHandler().createBall(match, player, snowball, Origin.MARKER);
 				// BOOST:
 				snowball.setVelocity(player.getLocation().getDirection().normalize().multiply(Paintball.instance.speedmulti));
 				// STATS
@@ -91,7 +92,7 @@ public class MarkerHandler extends WeaponHandler {
 	protected void onProjectileHit(ProjectileHitEvent event, Projectile projectile, Match match, Player shooter) {
 		if (projectile.getType() == EntityType.SNOWBALL) {
 			String shooterName = shooter.getName();
-			Gadget ball = Paintball.instance.weaponManager.getBallManager().getGadget(projectile, match, shooterName, true);
+			Gadget ball = Paintball.instance.weaponManager.getBallHandler().getBall(projectile, match, shooterName, true);
 			// is paintball ?
 			if (ball != null) {
 				Location location = projectile.getLocation();
