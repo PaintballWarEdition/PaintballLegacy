@@ -67,7 +67,7 @@ public class WeaponManager {
 		ballHandler = new BallHandler(Material.SNOW_BALL.getId(), false);
 		
 		// init all default weapons and gadgets:
-		markerHandler = new MarkerHandler(Material.SNOW_BALL.getId(), false);
+		markerHandler = new MarkerHandler(Material.SNOW_BALL.getId(), true);
 		airstrikeHandler = new AirstrikeHandler(Material.STICK.getId(), false);
 		flashbangHandler = new FlashbangHandler(Material.GHAST_TEAR.getId(), false);
 		concussionHandler = new ConcussionHandler(Material.SPIDER_EYE.getId(), false);
@@ -201,7 +201,6 @@ public class WeaponManager {
 		for (WeaponHandler weaponHandler : weaponHandlers) {
 			weaponHandler.cleanUp(match);
 		}
-		ballHandler.cleanUp(match);
 	}
 
 	public ItemStack setMeta(ItemStack itemStack) {

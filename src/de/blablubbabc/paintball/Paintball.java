@@ -876,6 +876,7 @@ public class Paintball extends JavaPlugin{
 		}
 		// WEAPON MANAGER
 		weaponManager = new WeaponManager(this);
+		weaponManager.initWeaponHandlers();
 		
 		// INIT STATICS
 		Utils.init();

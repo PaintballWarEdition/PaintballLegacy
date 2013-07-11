@@ -285,7 +285,7 @@ public class EventListener implements Listener {
 		}
 	}
 	
-	@EventHandler(priority = EventPriority.NORMAL)
+	@EventHandler(priority = EventPriority.NORMAL, ignoreCancelled = false)
 	public void onPlayerInteractHandleWeapons(PlayerInteractEvent event) {
 		Player player = event.getPlayer();
 		String playerName = player.getName();
@@ -297,6 +297,12 @@ public class EventListener implements Listener {
 				if (item != null && item.getType() != Material.POTION)
 					event.setUseItemInHand(Result.DENY);
 				if (!match.hasStarted() || match.isJustRespawned(playerName)) return;
+				
+				// shop book:
+				if (plugin.shop && item.isSimilar(plugin.shopManager.item)) {
+					plugin.shopManager.getShopMenu().open(player);
+					return;
+				}
 				
 				// handle weapons and gadgets:
 				plugin.weaponManager.onInteract(event, match);

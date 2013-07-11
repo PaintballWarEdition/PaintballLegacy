@@ -64,7 +64,7 @@ public class GrenadeHandler extends WeaponHandler implements Listener {
 	@Override
 	protected ItemStack setItemMeta(ItemStack itemStack) {
 		ItemMeta meta = itemStack.getItemMeta();
-		meta.setDisplayName(Translator.getString("WEAPON_GRENADE2"));
+		meta.setDisplayName(Translator.getString("WEAPON_GRENADE"));
 		itemStack.setItemMeta(meta);
 		return itemStack;
 	}

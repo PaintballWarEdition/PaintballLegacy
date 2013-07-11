@@ -68,7 +68,7 @@ public class BallHandler extends WeaponHandler {
 
 	@Override
 	protected void onInteract(PlayerInteractEvent event, Match match) {
-		// Done by MarkerHandler
+		// done by MarkerHandler
 	}
 	
 	@Override
