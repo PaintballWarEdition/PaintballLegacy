@@ -25,6 +25,12 @@ import de.blablubbabc.paintball.gadgets.handlers.GiftHandler;
 import de.blablubbabc.paintball.gadgets.handlers.GrenadeHandler;
 import de.blablubbabc.paintball.gadgets.handlers.GrenadeM2Handler;
 import de.blablubbabc.paintball.gadgets.handlers.MarkerHandler;
+import de.blablubbabc.paintball.gadgets.handlers.MineHandler;
+import de.blablubbabc.paintball.gadgets.handlers.OrbitalstrikeHandler;
+import de.blablubbabc.paintball.gadgets.handlers.PumpgunHandler;
+import de.blablubbabc.paintball.gadgets.handlers.RocketHandler;
+import de.blablubbabc.paintball.gadgets.handlers.ShotgunHandler;
+import de.blablubbabc.paintball.gadgets.handlers.SniperHandler;
 import de.blablubbabc.paintball.gadgets.handlers.TurretHandler;
 import de.blablubbabc.paintball.utils.Translator;
 
@@ -43,8 +49,18 @@ public class WeaponManager {
 	private GrenadeHandler grenadeHandler;
 	private GrenadeM2Handler grenadeM2Handler;
 	private TurretHandler turretHandler;
+	private MineHandler mineHandler;
+	private OrbitalstrikeHandler orbitalstrikeHandler;
+	private PumpgunHandler pumpgunHandler;
+	private RocketHandler rocketHandler;
+	private ShotgunHandler shotgunHandler;
+	private SniperHandler sniperHandler;
 	
 	public WeaponManager(Paintball plugin) {
+		
+	}
+	
+	public void initWeaponHandlers() {
 		giftHandler = new GiftHandler(Material.CHEST.getId(), false);
 		noGravityHandler = new NoGravityHandler();
 		
@@ -58,9 +74,12 @@ public class WeaponManager {
 		grenadeHandler = new GrenadeHandler(Material.EGG.getId(), false);
 		grenadeM2Handler = new GrenadeM2Handler(Material.SLIME_BALL.getId(), false);
 		turretHandler = new TurretHandler(Material.PUMPKIN.getId(), false);
-		
-		//TODO
-		
+		mineHandler = new MineHandler(Material.FLOWER_POT_ITEM.getId(), false);
+		orbitalstrikeHandler = new OrbitalstrikeHandler(Material.BLAZE_ROD.getId(), false);
+		pumpgunHandler = new PumpgunHandler(Material.STONE_AXE.getId(), false);
+		rocketHandler = new RocketHandler(0, true);
+		shotgunHandler = new ShotgunHandler(0, true);
+		sniperHandler = new SniperHandler(0, true);
 	}
 	
 	//////// Default weapon handlers /////////////
@@ -91,6 +110,30 @@ public class WeaponManager {
 	
 	public TurretHandler getTurretHandler() {
 		return turretHandler;
+	}
+	
+	public MineHandler getMineHandler() {
+		return mineHandler;
+	}
+	
+	public OrbitalstrikeHandler getOrbitalstrikeHandler() {
+		return orbitalstrikeHandler;
+	}
+	
+	public PumpgunHandler getPumpgunHandler() {
+		return pumpgunHandler;
+	}
+	
+	public ShotgunHandler getShotgunHandler() {
+		return shotgunHandler;
+	}
+	
+	public RocketHandler getRocketHandler() {
+		return rocketHandler;
+	}
+	
+	public SniperHandler getSniperHandler() {
+		return sniperHandler;
 	}
 	
 	
