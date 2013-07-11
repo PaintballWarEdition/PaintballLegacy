@@ -52,7 +52,7 @@ public class CmdArena {
 				int start = (page - 1) * entriesPerPage;
 				// selected page to high ?
 				if (start >= arenas.size()) {
-					if (arenas.size() > 0) page = (int) Math.ceil(arenas.size() / entriesPerPage);
+					if (arenas.size() > 0) page = (int) Math.ceil((double) arenas.size() / entriesPerPage);
 					else page = 1;
 					
 					// recalculate start
