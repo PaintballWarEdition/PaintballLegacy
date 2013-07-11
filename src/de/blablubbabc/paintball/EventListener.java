@@ -294,15 +294,16 @@ public class EventListener implements Listener {
 			Match match = plugin.matchManager.getMatch(player);
 			if (match != null && Lobby.isPlaying(player) && match.isSurvivor(player)) {
 				ItemStack item = event.getItem();
-				if (item != null && item.getType() != Material.POTION)
+				if (item != null && item.getType() != Material.POTION) {
 					event.setUseItemInHand(Result.DENY);
-				if (!match.hasStarted() || match.isJustRespawned(playerName)) return;
+				}
 				
 				// shop book:
 				if (plugin.shop && item.isSimilar(plugin.shopManager.item)) {
 					plugin.shopManager.getShopMenu().open(player);
 					return;
 				}
+				if (!match.hasStarted() || match.isJustRespawned(playerName)) return;
 				
 				// handle weapons and gadgets:
 				plugin.weaponManager.onInteract(event, match);
