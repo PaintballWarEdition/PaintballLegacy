@@ -220,9 +220,10 @@ public class EventListener implements Listener {
 											}
 										}
 									} else if (plugin.allowMelee && event.getCause() == DamageCause.ENTITY_ATTACK) {
-										if (target.getHealth() > plugin.meleeDamage)
+										if (target.getHealth() > plugin.meleeDamage) {
 											target.setHealth(target.getHealth() - plugin.meleeDamage);
-										else {
+											//TODO sound
+										} else {
 											matchA.frag(target, attacker, Origin.MELEE);
 										}
 									}
