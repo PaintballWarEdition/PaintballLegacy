@@ -116,6 +116,7 @@ public class FlashbangHandler extends WeaponHandler implements Listener {
 	public class Flashbang extends Gadget {
 		
 		private final Item entity;
+		private boolean exploded = false;
 
 		private Flashbang(GadgetManager gadgetHandler, Match match, Player player, Item nade, Origin origin) {
 			super(gadgetHandler, match, player.getName(), origin);
@@ -131,7 +132,8 @@ public class FlashbangHandler extends WeaponHandler implements Listener {
 		}
 		
 		public void explode() {
-			if (entity.isValid()) {
+			if (!exploded) {
+				exploded = true;
 				Location location = entity.getLocation();
 				// EFFECTS
 				// small explosion

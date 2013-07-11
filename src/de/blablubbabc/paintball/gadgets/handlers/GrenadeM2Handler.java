@@ -107,6 +107,7 @@ public class GrenadeM2Handler extends WeaponHandler implements Listener {
 	public class GrenadeM2 extends Gadget {
 		
 		private final Item entity;
+		private boolean exploded = false;
 
 		private GrenadeM2(GadgetManager gadgetHandler, Match match, Player player, Item nade, Origin origin) {
 			super(gadgetHandler, match, player.getName(), origin);
@@ -122,7 +123,8 @@ public class GrenadeM2Handler extends WeaponHandler implements Listener {
 		}
 		
 		public void explode() {
-			if (entity.isValid()) {
+			if (!exploded) {
+				exploded = true;
 				Location location = entity.getLocation();
 				location.getWorld().createExplosion(location, -1F);
 				Player player = Paintball.instance.getServer().getPlayerExact(playerName);

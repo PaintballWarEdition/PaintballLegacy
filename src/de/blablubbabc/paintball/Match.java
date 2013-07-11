@@ -141,7 +141,7 @@ public class Match {
 			playerMatchStats.put(playerName, new TDMMatchStats(plugin.playerManager.getPlayerStats(playerName)));
 
 			// SCOREBOARD
-			if (plugin.scoreboards) initMatchScoreboard(player);
+			initMatchScoreboard(player);
 			
 			PlayerDataStore.clearPlayer(player, true, true);
 			spawnPlayer(player);
@@ -175,7 +175,7 @@ public class Match {
 				}
 				
 				// scoreboard:
-				if (plugin.scoreboards) updateAllMatchScoreboardTimers(startTimer.getTime());
+				updateAllMatchScoreboardTimers(startTimer.getTime());
 			}
 		}, new Runnable() {
 			
@@ -217,6 +217,10 @@ public class Match {
 		
 	}
 
+	public TDMMatchStats getMatchStats(String playerName) {
+		return playerMatchStats.get(playerName);
+	}
+	
 	private void addToPlayerLists(Player p) {
 		this.allPlayers.add(p);
 		this.bothTeams.add(p);
@@ -255,7 +259,7 @@ public class Match {
 				}
 				
 				// scoreboard:
-				if (plugin.scoreboards) updateAllMatchScoreboardTimers(roundTimer.getTime());
+				updateAllMatchScoreboardTimers(roundTimer.getTime());
 			}
 		}, new Runnable() {
 			
@@ -400,54 +404,60 @@ public class Match {
 	}
 	
 	private void initMatchScoreboard(Player player) {
-		String playerName = player.getName();
-		Scoreboard matchBoard = scoreboards.get(playerName);
-		if (matchBoard == null) {
-			matchBoard = Bukkit.getScoreboardManager().getNewScoreboard();
-			scoreboards.put(playerName, matchBoard);
+		if (plugin.scoreboards) {
+			String playerName = player.getName();
+			Scoreboard matchBoard = scoreboards.get(playerName);
+			if (matchBoard == null) {
+				matchBoard = Bukkit.getScoreboardManager().getNewScoreboard();
+				scoreboards.put(playerName, matchBoard);
+			}
+			
+			String header = Translator.getString("SCOREBOARD_MATCH_HEADER", new KeyValuePair("round_time", "0:00")); 
+			Objective objective = matchBoard.registerNewObjective(header.length() > 16 ? header.substring(0, 16) : header, "dummy");
+			objective.setDisplaySlot(DisplaySlot.SIDEBAR);
+			updateMatchScoreboard(playerName);
+			player.setScoreboard(matchBoard);
 		}
-		
-		String header = Translator.getString("SCOREBOARD_MATCH_HEADER", new KeyValuePair("round_time", "0:00")); 
-		Objective objective = matchBoard.registerNewObjective(header.length() > 16 ? header.substring(0, 16) : header, "dummy");
-		objective.setDisplaySlot(DisplaySlot.SIDEBAR);
-		updateMatchScoreboard(playerName);
-		player.setScoreboard(matchBoard);
 	}
 	
 	private void updateAllMatchScoreboardTimers(int timeInSeconds) {
-		int minutes = (int) (timeInSeconds / 60);
-		int seconds = timeInSeconds % 60;
-		
-		String secondsString = String.valueOf(seconds);
-		String header = Translator.getString("SCOREBOARD_MATCH_HEADER", 
-				new KeyValuePair("round_time", String.valueOf(minutes) + ":" + (seconds >= 10 ? secondsString : "0" + secondsString))); 
-		header = header.length() > 16 ? header.substring(0, 16) : header;
-		
-		for (Scoreboard scoreboard : scoreboards.values()) {
-			scoreboard.getObjective(DisplaySlot.SIDEBAR).setDisplayName(header);
+		if (plugin.scoreboards) {
+			int minutes = (int) (timeInSeconds / 60);
+			int seconds = timeInSeconds % 60;
+			
+			String secondsString = String.valueOf(seconds);
+			String header = Translator.getString("SCOREBOARD_MATCH_HEADER", 
+					new KeyValuePair("round_time", String.valueOf(minutes) + ":" + (seconds >= 10 ? secondsString : "0" + secondsString))); 
+			header = header.length() > 16 ? header.substring(0, 16) : header;
+			
+			for (Scoreboard scoreboard : scoreboards.values()) {
+				scoreboard.getObjective(DisplaySlot.SIDEBAR).setDisplayName(header);
+			}
 		}
 	}
 	
 	public void updateMatchScoreboard(String playerName) {
-		Scoreboard matchBoard = scoreboards.get(playerName);
-		if (matchBoard != null) {
-			Objective objective = matchBoard.getObjective(DisplaySlot.SIDEBAR);
-			TDMMatchStats stats = playerMatchStats.get(playerName);
-			for (TDMMatchStat stat : TDMMatchStat.values()) {
-				// skip airstrikes, grenades and teamattacks count:
-				if (stat == TDMMatchStat.AIRSTRIKES || stat == TDMMatchStat.GRENADES || stat == TDMMatchStat.TEAMATTACKS) continue;	
-				String scoreName = Translator.getString("SCOREBOARD_MATCH_" + stat.getPlayerStat().getKey().toUpperCase());
-				Score score = objective.getScore(Bukkit.getOfflinePlayer(scoreName.length() > 16 ? scoreName.substring(0, 16) : scoreName));
-				score.setScore(stats.getStat(stat));
+		if (plugin.scoreboards) {
+			Scoreboard matchBoard = scoreboards.get(playerName);
+			if (matchBoard != null) {
+				Objective objective = matchBoard.getObjective(DisplaySlot.SIDEBAR);
+				TDMMatchStats stats = playerMatchStats.get(playerName);
+				for (TDMMatchStat stat : TDMMatchStat.values()) {
+					// skip airstrikes, grenades and teamattacks count:
+					if (stat == TDMMatchStat.AIRSTRIKES || stat == TDMMatchStat.GRENADES || stat == TDMMatchStat.TEAMATTACKS) continue;	
+					String scoreName = Translator.getString("SCOREBOARD_MATCH_" + stat.getPlayerStat().getKey().toUpperCase());
+					Score score = objective.getScore(Bukkit.getOfflinePlayer(scoreName.length() > 16 ? scoreName.substring(0, 16) : scoreName));
+					score.setScore(stats.getStat(stat));
+				}
+				// add overall points and cash to scoreboard:
+				String overallPoints = Translator.getString("SCOREBOARD_MATCH_OVERALL_POINTS");
+				Score overallPointsScore = objective.getScore(Bukkit.getOfflinePlayer(overallPoints.length() > 16 ? overallPoints.substring(0, 16) : overallPoints));
+				overallPointsScore.setScore(stats.getPlayerStats().getStat(PlayerStat.POINTS));
+				
+				String overallCash = Translator.getString("SCOREBOARD_MATCH_OVERALL_MONEY");
+				Score overallCashScore = objective.getScore(Bukkit.getOfflinePlayer(overallCash.length() > 16 ? overallCash.substring(0, 16) : overallCash));
+				overallCashScore.setScore(stats.getPlayerStats().getStat(PlayerStat.MONEY));
 			}
-			// add overall points and cash to scoreboard:
-			String overallPoints = Translator.getString("SCOREBOARD_MATCH_OVERALL_POINTS");
-			Score overallPointsScore = objective.getScore(Bukkit.getOfflinePlayer(overallPoints.length() > 16 ? overallPoints.substring(0, 16) : overallPoints));
-			overallPointsScore.setScore(stats.getPlayerStats().getStat(PlayerStat.POINTS));
-			
-			String overallCash = Translator.getString("SCOREBOARD_MATCH_OVERALL_MONEY");
-			Score overallCashScore = objective.getScore(Bukkit.getOfflinePlayer(overallCash.length() > 16 ? overallCash.substring(0, 16) : overallCash));
-			overallCashScore.setScore(stats.getPlayerStats().getStat(PlayerStat.MONEY));
 		}
 	}
 	
@@ -792,7 +802,7 @@ public class Match {
 		TDMMatchStats matchStats = playerMatchStats.get(playerName);
 		matchStats.addStat(TDMMatchStat.SHOTS, 1);
 		matchStats.calculateQuotes();
-		if (plugin.scoreboards) updateMatchScoreboard(playerName);
+		updateMatchScoreboard(playerName);
 	}
 
 	public void onGrenade(Player player) {
@@ -845,7 +855,7 @@ public class Match {
 					matchStats.addStat(TDMMatchStat.POINTS, plugin.pointsPerHit);
 					matchStats.addStat(TDMMatchStat.MONEY, plugin.cashPerHit);
 					matchStats.calculateQuotes();
-					if (plugin.scoreboards) updateMatchScoreboard(shooterName);
+					updateMatchScoreboard(shooterName);
 					
 					// dead?->frag
 					// message:
@@ -902,12 +912,12 @@ public class Match {
 		killerStats.addStat(TDMMatchStat.POINTS, plugin.pointsPerKill);
 		killerStats.addStat(TDMMatchStat.MONEY, plugin.cashPerKill);
 		killerStats.calculateQuotes();
-		if (plugin.scoreboards) updateMatchScoreboard(killerName);
+		updateMatchScoreboard(killerName);
 		// TARGET:
 		TDMMatchStats targetStats = playerMatchStats.get(targetName);
 		targetStats.addStat(TDMMatchStat.DEATHS, 1);
 		targetStats.calculateQuotes();
-		if (plugin.scoreboards) updateMatchScoreboard(targetName);
+		updateMatchScoreboard(targetName);
 		
 		// 0 lives = -> out
 		livesLeft.put(target, 0);
@@ -984,7 +994,7 @@ public class Match {
 		TDMMatchStats targetStats = playerMatchStats.get(targetName);
 		targetStats.addStat(TDMMatchStat.DEATHS, 1);
 		targetStats.calculateQuotes();
-		if (plugin.scoreboards) updateMatchScoreboard(targetName);
+		updateMatchScoreboard(targetName);
 		
 		// FEED
 		target.sendMessage(Translator.getString("YOU_DIED"));

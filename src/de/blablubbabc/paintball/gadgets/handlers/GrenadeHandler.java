@@ -123,6 +123,7 @@ public class GrenadeHandler extends WeaponHandler implements Listener {
 	public class Grenade extends Gadget {
 		
 		private final Egg entity;
+		private boolean exploded = false;
 
 		private Grenade(GadgetManager gadgetHandler, Match match, Player player, Egg nade, Origin origin) {
 			super(gadgetHandler, match, player.getName(), origin);
@@ -130,7 +131,8 @@ public class GrenadeHandler extends WeaponHandler implements Listener {
 		}
 		
 		public void explode(Location location, Player shooter) {
-			if (entity.isValid()) {
+			if (!exploded) {
+				exploded = true;
 				location.getWorld().createExplosion(location, -1F);
 				for (Vector v : Utils.getDirections()) {
 					final Snowball snowball  = location.getWorld().spawn(location, Snowball.class);

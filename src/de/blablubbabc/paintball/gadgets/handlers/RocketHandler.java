@@ -116,6 +116,8 @@ public class RocketHandler extends WeaponHandler {
 		private int tickTask = -1;
 		private int lives;
 
+		private boolean exploded = false;
+		
 		private Rocket(GadgetManager gadgetManager, Match match, Player player, Entity rocket, Origin origin) {
 			super(gadgetManager, match, player.getName(), origin);
 			
@@ -152,7 +154,8 @@ public class RocketHandler extends WeaponHandler {
 		}
 
 		public void explode() {
-			if (entity.isValid()) {
+			if (!exploded) {
+				exploded = true;
 				Location loc = entity.getLocation();
 				loc.getWorld().createExplosion(loc, -1F, false);
 				for (Vector v : Utils.getDirections()) {
@@ -187,15 +190,13 @@ public class RocketHandler extends WeaponHandler {
 				Paintball.instance.getServer().getScheduler().cancelTask(tickTask);
 			}
 			
-			if (entity.isValid()) {
-				// some effect here:
-				if (Paintball.instance.effects) {
-					Location loc = entity.getLocation();
-					World world = entity.getWorld();
-					for (int i = 1; i <= 8; i++) {
-						world.playEffect(loc, Effect.SMOKE, i);
-						world.playEffect(loc, Effect.MOBSPAWNER_FLAMES, i);
-					}
+			// some effect here:
+			if (Paintball.instance.effects) {
+				Location loc = entity.getLocation();
+				World world = entity.getWorld();
+				for (int i = 1; i <= 8; i++) {
+					world.playEffect(loc, Effect.SMOKE, i);
+					world.playEffect(loc, Effect.MOBSPAWNER_FLAMES, i);
 				}
 			}
 			

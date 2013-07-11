@@ -71,7 +71,7 @@ public class TurretHandler extends WeaponHandler implements Listener {
 	public void onEntityDeath(EntityDeathEvent event) {
 		Gadget turret = gadgetManager.getGadget(event.getEntity());
 		if (turret != null) {
-			turret.dispose(false);
+			((Turret)turret).die();
 		}
 	}
 
@@ -381,6 +381,21 @@ public class TurretHandler extends WeaponHandler implements Listener {
 			}, 5L).getTaskId();
 		}
 		
+		public void die() {
+			// some effect here:
+			if (Paintball.instance.effects) {
+				Location loc = entity.getLocation().add(0, 1, 0);
+				World world = entity.getWorld();
+				world.playSound(loc, Sound.IRONGOLEM_DEATH, 3L, 2L);
+				for (int i = 1; i <= 8; i++) {
+					world.playEffect(loc, Effect.SMOKE, i);
+				}
+				world.playEffect(loc, Effect.MOBSPAWNER_FLAMES, 4);
+			}
+			
+			dispose(true);
+		}
+		
 		@Override
 		public void dispose(boolean removeFromGadgetHandlerTracking) {
 			if (tickTask != -1) {
@@ -391,19 +406,6 @@ public class TurretHandler extends WeaponHandler implements Listener {
 				Paintball.instance.getServer().getScheduler().cancelTask(salveTask);
 			}
 			
-			if (entity.isValid()) {
-				// some effect here:
-				if (Paintball.instance.effects) {
-					Location loc = entity.getLocation().add(0, 1, 0);
-					World world = entity.getWorld();
-					world.playSound(loc, Sound.IRONGOLEM_DEATH, 3L, 2L);
-					for (int i = 1; i <= 8; i++) {
-						world.playEffect(loc, Effect.SMOKE, i);
-					}
-					world.playEffect(loc, Effect.MOBSPAWNER_FLAMES, 4);
-				}
-			}
-			
 			entity.remove();
 			
 			super.dispose(removeFromGadgetHandlerTracking);
@@ -412,7 +414,7 @@ public class TurretHandler extends WeaponHandler implements Listener {
 		public void hit() {
 			this.lives--;
 			if (this.lives <= 0) {
-				this.dispose(true);
+				die();
 			} else {
 				entity.getWorld().playSound(entity.getEyeLocation(), Sound.IRONGOLEM_HIT, 3L, 2L);
 			}

@@ -187,7 +187,7 @@ public class Utils {
 	// ////////////////////////////
 
 	public static int calculateQuote(int top, int bottom) {
-		return (int) (top * 100) / (bottom > 0 ? bottom : 1);
+		return (int) ((top != 0 ? top : 0) * 100) / (bottom > 0 ? bottom : 1);
 	}
 
 	// ///////////////////////////

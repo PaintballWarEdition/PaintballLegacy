@@ -183,7 +183,7 @@ public class MineHandler extends WeaponHandler implements Listener {
 					location.getWorld().playEffect(location, Effect.MOBSPAWNER_FLAMES, 4);
 				}
 
-				location.getWorld().createExplosion(location, 0.0F);
+				location.getWorld().createExplosion(location, -1.0F);
 				for (Vector v : Utils.getUpVectors()) {
 					final Snowball snowball = location.getWorld().spawn(location, Snowball.class);
 					snowball.setShooter(player);
@@ -251,7 +251,7 @@ public class MineHandler extends WeaponHandler implements Listener {
 								}
 							}
 							if (nearEnemy()) {
-								dispose(true);
+								explode();
 							} else {
 								tick();
 							}
