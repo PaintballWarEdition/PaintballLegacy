@@ -13,8 +13,8 @@ import de.blablubbabc.paintball.Match;
 import de.blablubbabc.paintball.Paintball;
 import de.blablubbabc.paintball.Rank;
 import de.blablubbabc.paintball.statistics.general.GeneralStat;
-import de.blablubbabc.paintball.statistics.player.match.tdm.TDMMatchStat;
-import de.blablubbabc.paintball.statistics.player.match.tdm.TDMMatchStats;
+import de.blablubbabc.paintball.statistics.player.PlayerStat;
+import de.blablubbabc.paintball.statistics.player.PlayerStats;
 import de.blablubbabc.paintball.utils.Sounds;
 import de.blablubbabc.paintball.utils.Translator;
 
@@ -91,7 +91,7 @@ public class ShopManager {
 				return false;
 			}
 			
-			TDMMatchStats stats = match.getMatchStats(playerName);
+			PlayerStats stats = plugin.playerManager.getPlayerStats(playerName);
 			// stats even exist for this player ?
 			if (stats == null) {
 				Map<String, String> vars = new HashMap<String, String>();
@@ -105,23 +105,23 @@ public class ShopManager {
 			int price = good.getPrice();
 			int amount = item.getAmount();
 			if(!plugin.happyhour) {
-				int cash = stats.getStat(TDMMatchStat.MONEY);
+				int cash = stats.getStat(PlayerStat.MONEY);
 				if(cash < price) {
 					player.sendMessage(Translator.getString("NOT_ENOUGH_MONEY"));
 					return false;
 				}
 				
 				// reduce players money:
-				//TODO modulize this, so it is independent from match stats or can be adapted by gamemodes easily
-				stats.addStat(TDMMatchStat.MONEY, -price);
-				stats.addStat(TDMMatchStat.MONEY_SPENT, price);
-				stats.getPlayerStats().saveAsync();
+				stats.addStat(PlayerStat.MONEY, -price);
+				stats.addStat(PlayerStat.MONEY_SPENT, price);
+				stats.saveAsync();
+				
+				// let match stats know:
+				match.onBuying(playerName, price);
 				
 				Map<GeneralStat, Integer> gStats = new HashMap<GeneralStat, Integer>();
 				gStats.put(GeneralStat.MONEY_SPENT, price);
 				plugin.statsManager.addGeneralStats(gStats);
-				
-				match.updateMatchScoreboard(playerName);
 			}
 			
 			// give item

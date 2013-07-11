@@ -28,9 +28,9 @@ public class TDMMatchStats {
 		calculateQuotes();
 	}
 	
-	public void addStat(TDMMatchStat stat, int value) {
+	public void addStat(TDMMatchStat stat, int value, boolean mirrorOnPlayerStats) {
 		stats.put(stat, getStat(stat) + value);
-		if (playerStats != null && stat.getPlayerStat() != null) playerStats.addStat(stat.getPlayerStat(), value);
+		if (mirrorOnPlayerStats && playerStats != null && stat.getPlayerStat() != null) playerStats.addStat(stat.getPlayerStat(), value);
 	}
 	
 	public int getStat(TDMMatchStat stat) {

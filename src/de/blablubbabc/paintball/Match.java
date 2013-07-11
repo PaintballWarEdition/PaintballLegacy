@@ -800,7 +800,7 @@ public class Match {
 		String playerName = player.getName();
 		// STATS
 		TDMMatchStats matchStats = playerMatchStats.get(playerName);
-		matchStats.addStat(TDMMatchStat.SHOTS, 1);
+		matchStats.addStat(TDMMatchStat.SHOTS, 1, true);
 		matchStats.calculateQuotes();
 		updateMatchScoreboard(playerName);
 	}
@@ -809,14 +809,14 @@ public class Match {
 		String playerName = player.getName();
 		// STATS
 		TDMMatchStats matchStats = playerMatchStats.get(playerName);
-		matchStats.addStat(TDMMatchStat.GRENADES, 1);
+		matchStats.addStat(TDMMatchStat.GRENADES, 1, true);
 	}
 
 	public void onAirstrike(Player player) {
 		String playerName = player.getName();
 		// STATS
 		TDMMatchStats matchStats = playerMatchStats.get(playerName);
-		matchStats.addStat(TDMMatchStat.AIRSTRIKES, 1);
+		matchStats.addStat(TDMMatchStat.AIRSTRIKES, 1, true);
 	}
 
 	public synchronized void onHitByBall(Player target, Player shooter, Origin source) {
@@ -851,9 +851,9 @@ public class Match {
 					
 					// STATS
 					TDMMatchStats matchStats = playerMatchStats.get(shooterName);
-					matchStats.addStat(TDMMatchStat.HITS, 1);
-					matchStats.addStat(TDMMatchStat.POINTS, plugin.pointsPerHit);
-					matchStats.addStat(TDMMatchStat.MONEY, plugin.cashPerHit);
+					matchStats.addStat(TDMMatchStat.HITS, 1, true);
+					matchStats.addStat(TDMMatchStat.POINTS, plugin.pointsPerHit, true);
+					matchStats.addStat(TDMMatchStat.MONEY, plugin.cashPerHit, true);
 					matchStats.calculateQuotes();
 					updateMatchScoreboard(shooterName);
 					
@@ -880,8 +880,8 @@ public class Match {
 		} else if (friendly(target, shooter)) {
 			// STATS
 			TDMMatchStats matchStats = playerMatchStats.get(shooterName);
-			matchStats.addStat(TDMMatchStat.TEAMATTACKS, 1);
-			matchStats.addStat(TDMMatchStat.POINTS, plugin.pointsPerTeamattack);
+			matchStats.addStat(TDMMatchStat.TEAMATTACKS, 1, true);
+			matchStats.addStat(TDMMatchStat.POINTS, plugin.pointsPerTeamattack, true);
 			
 			// SOUND EFFECT
 			Sounds.playTeamattack(shooter);
@@ -908,14 +908,14 @@ public class Match {
 		// STATS
 		// KILLER:
 		TDMMatchStats killerStats = playerMatchStats.get(killerName);
-		killerStats.addStat(TDMMatchStat.KILLS, 1);
-		killerStats.addStat(TDMMatchStat.POINTS, plugin.pointsPerKill);
-		killerStats.addStat(TDMMatchStat.MONEY, plugin.cashPerKill);
+		killerStats.addStat(TDMMatchStat.KILLS, 1, true);
+		killerStats.addStat(TDMMatchStat.POINTS, plugin.pointsPerKill, true);
+		killerStats.addStat(TDMMatchStat.MONEY, plugin.cashPerKill, true);
 		killerStats.calculateQuotes();
 		updateMatchScoreboard(killerName);
 		// TARGET:
 		TDMMatchStats targetStats = playerMatchStats.get(targetName);
-		targetStats.addStat(TDMMatchStat.DEATHS, 1);
+		targetStats.addStat(TDMMatchStat.DEATHS, 1, true);
 		targetStats.calculateQuotes();
 		updateMatchScoreboard(targetName);
 		
@@ -981,6 +981,14 @@ public class Match {
 		}
 
 	}
+	
+	public synchronized void onBuying(String playerName, int moneySpent) {
+		TDMMatchStats matchStats = playerMatchStats.get(playerName);
+		if (matchStats != null) {
+			matchStats.addStat(TDMMatchStat.MONEY_SPENT, moneySpent, false);
+			updateMatchScoreboard(playerName);
+		}
+	}
 
 	public synchronized void death(final Player target) {
 		// math over already?
@@ -992,7 +1000,7 @@ public class Match {
 		// STATS
 		// TARGET:
 		TDMMatchStats targetStats = playerMatchStats.get(targetName);
-		targetStats.addStat(TDMMatchStat.DEATHS, 1);
+		targetStats.addStat(TDMMatchStat.DEATHS, 1, true);
 		targetStats.calculateQuotes();
 		updateMatchScoreboard(targetName);
 		
