@@ -296,13 +296,14 @@ public class EventListener implements Listener {
 				ItemStack item = event.getItem();
 				if (item != null && item.getType() != Material.POTION) {
 					event.setUseItemInHand(Result.DENY);
+					
+					// shop book:
+					if (plugin.shop && item.isSimilar(plugin.shopManager.item)) {
+						plugin.shopManager.getShopMenu().open(player);
+						return;
+					}
 				}
 				
-				// shop book:
-				if (plugin.shop && item.isSimilar(plugin.shopManager.item)) {
-					plugin.shopManager.getShopMenu().open(player);
-					return;
-				}
 				if (!match.hasStarted() || match.isJustRespawned(playerName)) return;
 				
 				// handle weapons and gadgets:
