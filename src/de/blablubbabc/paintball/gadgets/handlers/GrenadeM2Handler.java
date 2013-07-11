@@ -7,7 +7,11 @@ import org.bukkit.entity.Entity;
 import org.bukkit.entity.Item;
 import org.bukkit.entity.Player;
 import org.bukkit.entity.Snowball;
+import org.bukkit.event.EventHandler;
+import org.bukkit.event.EventPriority;
+import org.bukkit.event.Listener;
 import org.bukkit.event.block.Action;
+import org.bukkit.event.inventory.InventoryPickupItemEvent;
 import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
@@ -23,13 +27,14 @@ import de.blablubbabc.paintball.gadgets.handlers.BallHandler.Ball;
 import de.blablubbabc.paintball.utils.Translator;
 import de.blablubbabc.paintball.utils.Utils;
 
-public class GrenadeM2Handler extends WeaponHandler {
+public class GrenadeM2Handler extends WeaponHandler implements Listener {
 
 	private GadgetManager gadgetManager = new GadgetManager();
 	private int next = 0;
 	
 	public GrenadeM2Handler(int customItemTypeID, boolean useDefaultType) {
 		super(customItemTypeID, useDefaultType);
+		Paintball.instance.getServer().getPluginManager().registerEvents(this, Paintball.instance);
 	}
 	
 	public GrenadeM2 createGrenadeM2(Match match, Player player, Item nade, Origin origin) {
@@ -51,6 +56,13 @@ public class GrenadeM2Handler extends WeaponHandler {
 		meta.setDisplayName(Translator.getString("WEAPON_GRENADEM2"));
 		itemStack.setItemMeta(meta);
 		return itemStack;
+	}
+	
+	@EventHandler(priority = EventPriority.NORMAL, ignoreCancelled = true)
+	public void onHopperPickupItem(InventoryPickupItemEvent event) {
+		if (gadgetManager.isGadget(event.getItem())) {
+			event.setCancelled(true);
+		}
 	}
 	
 	@Override

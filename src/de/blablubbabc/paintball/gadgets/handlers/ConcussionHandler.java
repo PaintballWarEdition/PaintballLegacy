@@ -9,7 +9,11 @@ import org.bukkit.entity.Entity;
 import org.bukkit.entity.EntityType;
 import org.bukkit.entity.Item;
 import org.bukkit.entity.Player;
+import org.bukkit.event.EventHandler;
+import org.bukkit.event.EventPriority;
+import org.bukkit.event.Listener;
 import org.bukkit.event.block.Action;
+import org.bukkit.event.inventory.InventoryPickupItemEvent;
 import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.event.player.PlayerPickupItemEvent;
 import org.bukkit.inventory.ItemStack;
@@ -26,13 +30,14 @@ import de.blablubbabc.paintball.gadgets.WeaponHandler;
 import de.blablubbabc.paintball.utils.Translator;
 import de.blablubbabc.paintball.utils.Utils;
 
-public class ConcussionHandler extends WeaponHandler {
+public class ConcussionHandler extends WeaponHandler implements Listener {
 
 	private GadgetManager gadgetManager = new GadgetManager();
 	private int next = 0;
 	
 	public ConcussionHandler(int customItemTypeID, boolean useDefaultType) {
 		super(customItemTypeID, useDefaultType);
+		Paintball.instance.getServer().getPluginManager().registerEvents(this, Paintball.instance);
 	}
 	
 	public Concussion createConcussion(Match match, Player player, Item nade, Origin origin) {
@@ -41,6 +46,13 @@ public class ConcussionHandler extends WeaponHandler {
 	
 	private int getNext() {
 		return ++next;
+	}
+	
+	@EventHandler(priority = EventPriority.NORMAL, ignoreCancelled = true)
+	public void onHopperPickupItem(InventoryPickupItemEvent event) {
+		if (gadgetManager.isGadget(event.getItem())) {
+			event.setCancelled(true);
+		}
 	}
 	
 	@Override
