@@ -10,7 +10,7 @@ import org.bukkit.Material;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 
-import de.blablubbabc.paintball.extras.ItemManager;
+import de.blablubbabc.paintball.Paintball;
 import de.blablubbabc.paintball.utils.Translator;
 import de.blablubbabc.paintball.utils.Utils;
 
@@ -49,7 +49,7 @@ public class ShopGood {
 			if(amount <= 0 || id < 0 || subid < 0 || price < 0 || this.name == null || this.name.isEmpty()) {
 				this.empty = true;
 			} else {
-				this.itemstack = ItemManager.setMeta(new ItemStack(id, amount, subid));
+				this.itemstack = Paintball.instance.weaponManager.setMeta(new ItemStack(id, amount, subid));
 				
 				Map<String, String> vars = new HashMap<String, String>();
 				vars.put("amount", split[0]);

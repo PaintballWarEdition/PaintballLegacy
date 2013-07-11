@@ -12,7 +12,6 @@ import org.bukkit.inventory.ItemStack;
 import de.blablubbabc.paintball.Match;
 import de.blablubbabc.paintball.Paintball;
 import de.blablubbabc.paintball.Rank;
-import de.blablubbabc.paintball.extras.ItemManager;
 import de.blablubbabc.paintball.statistics.general.GeneralStat;
 import de.blablubbabc.paintball.statistics.player.PlayerStat;
 import de.blablubbabc.paintball.statistics.player.PlayerStats;
@@ -21,7 +20,7 @@ import de.blablubbabc.paintball.utils.Translator;
 
 public class ShopManager {
 	
-	public final ItemStack item = ItemManager.setMeta(new ItemStack(Material.BOOK));
+	public final ItemStack item = Paintball.instance.weaponManager.setMeta(new ItemStack(Material.BOOK));
 	
 	private Paintball plugin;
 	private ShopGood[] goods;

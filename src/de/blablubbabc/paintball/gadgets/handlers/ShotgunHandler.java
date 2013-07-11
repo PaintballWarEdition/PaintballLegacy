@@ -1,4 +1,4 @@
-package de.blablubbabc.paintball.extras.weapons.impl;
+package de.blablubbabc.paintball.gadgets.handlers;
 
 import org.bukkit.Location;
 import org.bukkit.Material;
@@ -15,7 +15,7 @@ import org.bukkit.util.Vector;
 import de.blablubbabc.paintball.Match;
 import de.blablubbabc.paintball.Origin;
 import de.blablubbabc.paintball.Paintball;
-import de.blablubbabc.paintball.extras.weapons.WeaponHandler;
+import de.blablubbabc.paintball.gadgets.WeaponHandler;
 import de.blablubbabc.paintball.utils.Translator;
 import de.blablubbabc.paintball.utils.Utils;
 
@@ -104,6 +104,16 @@ public class ShotgunHandler extends WeaponHandler {
 				player.playSound(player.getEyeLocation(), Sound.FIRE_IGNITE, 1F, 2F);
 			}
 		}
+	}
+	
+	@Override
+	public void cleanUp(Match match, String playerName) {
+		// nothing to do here
+	}
+
+	@Override
+	public void cleanUp(Match match) {
+		// nothing to do here
 	}
 	
 }

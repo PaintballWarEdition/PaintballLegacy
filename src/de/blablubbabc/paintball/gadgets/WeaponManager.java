@@ -1,14 +1,13 @@
-package de.blablubbabc.paintball.extras.weapons;
+package de.blablubbabc.paintball.gadgets;
 
 import java.util.ArrayList;
 import java.util.List;
 
 import org.bukkit.DyeColor;
 import org.bukkit.Material;
-import org.bukkit.block.Block;
-import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
 import org.bukkit.entity.Projectile;
+import org.bukkit.event.block.BlockPlaceEvent;
 import org.bukkit.event.entity.EntityDamageByEntityEvent;
 import org.bukkit.event.entity.ProjectileHitEvent;
 import org.bukkit.event.player.PlayerInteractEvent;
@@ -18,15 +17,15 @@ import org.bukkit.inventory.meta.ItemMeta;
 
 import de.blablubbabc.paintball.Match;
 import de.blablubbabc.paintball.Paintball;
-import de.blablubbabc.paintball.extras.weapons.impl.AirstrikeHandler;
-import de.blablubbabc.paintball.extras.weapons.impl.BallHandler;
-import de.blablubbabc.paintball.extras.weapons.impl.ConcussionHandler;
-import de.blablubbabc.paintball.extras.weapons.impl.FlashbangHandler;
-import de.blablubbabc.paintball.extras.weapons.impl.GiftHandler;
-import de.blablubbabc.paintball.extras.weapons.impl.GrenadeHandler;
-import de.blablubbabc.paintball.extras.weapons.impl.GrenadeM2Handler;
-import de.blablubbabc.paintball.extras.weapons.impl.MarkerHandler;
-import de.blablubbabc.paintball.extras.weapons.impl.TurretHandler;
+import de.blablubbabc.paintball.gadgets.handlers.AirstrikeHandler;
+import de.blablubbabc.paintball.gadgets.handlers.BallHandler;
+import de.blablubbabc.paintball.gadgets.handlers.ConcussionHandler;
+import de.blablubbabc.paintball.gadgets.handlers.FlashbangHandler;
+import de.blablubbabc.paintball.gadgets.handlers.GiftHandler;
+import de.blablubbabc.paintball.gadgets.handlers.GrenadeHandler;
+import de.blablubbabc.paintball.gadgets.handlers.GrenadeM2Handler;
+import de.blablubbabc.paintball.gadgets.handlers.MarkerHandler;
+import de.blablubbabc.paintball.gadgets.handlers.TurretHandler;
 import de.blablubbabc.paintball.utils.Translator;
 
 public class WeaponManager {
@@ -119,9 +118,9 @@ public class WeaponManager {
 		}
 	}
 	
-	public void onBlockPlace(Player player, Block block, Match match) {
+	public void onBlockPlace(BlockPlaceEvent event, Match match) {
 		for (WeaponHandler weaponHandler : weaponHandlers) {
-			weaponHandler.onBlockPlace(player, block, match);
+			weaponHandler.onBlockPlace(event, match);
 		}
 	}
 	
@@ -131,9 +130,9 @@ public class WeaponManager {
 		}
 	}
 	
-	public void onDamagedByEntity(EntityDamageByEntityEvent event, Entity damagedEntity, Match match, Player attacker) {
+	public void onDamagedByEntity(EntityDamageByEntityEvent event, Match match, Player attacker) {
 		for (WeaponHandler weaponHandler : weaponHandlers) {
-			weaponHandler.onDamagedByEntity(event, damagedEntity, match, attacker);
+			weaponHandler.onDamagedByEntity(event, match, attacker);
 		}
 	}
 	

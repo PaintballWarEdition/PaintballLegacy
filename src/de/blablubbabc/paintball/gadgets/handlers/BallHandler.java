@@ -1,5 +1,6 @@
-package de.blablubbabc.paintball.extras.weapons.impl;
+package de.blablubbabc.paintball.gadgets.handlers;
 
+import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
@@ -10,9 +11,10 @@ import org.bukkit.inventory.meta.ItemMeta;
 
 import de.blablubbabc.paintball.Match;
 import de.blablubbabc.paintball.Origin;
-import de.blablubbabc.paintball.extras.weapons.Gadget;
-import de.blablubbabc.paintball.extras.weapons.GadgetManager;
-import de.blablubbabc.paintball.extras.weapons.WeaponHandler;
+import de.blablubbabc.paintball.Paintball;
+import de.blablubbabc.paintball.gadgets.Gadget;
+import de.blablubbabc.paintball.gadgets.GadgetManager;
+import de.blablubbabc.paintball.gadgets.WeaponHandler;
 import de.blablubbabc.paintball.utils.Translator;
 
 public class BallHandler extends WeaponHandler {
@@ -39,16 +41,16 @@ public class BallHandler extends WeaponHandler {
 		return gadgetManager.isGadget(entity, match, playerName);
 	}
 	
-	public Gadget getBall(Entity entity, boolean removeWhenFound) {
-		return gadgetManager.getGadget(entity, removeWhenFound);
+	public Gadget getBall(Entity entity) {
+		return gadgetManager.getGadget(entity);
 	}
 	
-	public Gadget getBall(Entity entity, String playerName, boolean removeWhenFound) {
-		return gadgetManager.getGadget(entity, playerName, removeWhenFound);
+	public Gadget getBall(Entity entity, String playerName) {
+		return gadgetManager.getGadget(entity, playerName);
 	}
 	
-	public Gadget getBall(Entity entity, Match match, String playerName, boolean removeWhenFound) {
-		return gadgetManager.getGadget(entity, match, playerName, removeWhenFound);
+	public Gadget getBall(Entity entity, Match match, String playerName) {
+		return gadgetManager.getGadget(entity, match, playerName);
 	}
 
 	@Override
@@ -68,32 +70,40 @@ public class BallHandler extends WeaponHandler {
 	protected void onInteract(PlayerInteractEvent event, Match match) {
 		// Done by MarkerHandler
 	}
+	
+	@Override
+	public void cleanUp(Match match, String playerName) {
+		gadgetManager.cleanUp(match, playerName);
+	}
+
+	@Override
+	public void cleanUp(Match match) {
+		gadgetManager.cleanUp(match);
+	}
 
 	public class Ball extends Gadget {
 		
 		private final Snowball entity;
-		private final Origin origin;
 
 		private Ball(Match match, Player player, Snowball entity, Origin origin) {
-			super(gadgetManager, match, player.getName());
+			super(Paintball.instance.weaponManager.getBallHandler().gadgetManager, match, player.getName(), origin);
 			this.entity = entity;
-			this.origin = origin;
 		}
 		
 		@Override
-		public void dispose(boolean removeFromGadgetHandlerTracking, boolean cheapEffects) {
+		public void dispose(boolean removeFromGadgetHandlerTracking) {
 			entity.remove();
-			super.dispose(removeFromGadgetHandlerTracking, cheapEffects);
+			super.dispose(removeFromGadgetHandlerTracking);
 		}
 
 		@Override
-		protected boolean isSimiliar(Entity entity) {
+		public boolean isSimiliar(Entity entity) {
 			return entity.getEntityId() == this.entity.getEntityId();
 		}
 		
 		@Override
-		public Origin getOrigin() {
-			return origin;
+		public boolean isSimiliar(Location location) {
+			return false;
 		}
 		
 		public Snowball getSnowball() {

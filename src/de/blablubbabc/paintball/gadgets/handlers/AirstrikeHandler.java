@@ -1,4 +1,4 @@
-package de.blablubbabc.paintball.extras.weapons.impl;
+package de.blablubbabc.paintball.gadgets.handlers;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -9,7 +9,6 @@ import java.util.concurrent.ConcurrentHashMap;
 
 import org.bukkit.Location;
 import org.bukkit.Material;
-import org.bukkit.World;
 import org.bukkit.block.Block;
 import org.bukkit.block.BlockFace;
 import org.bukkit.entity.Egg;
@@ -25,15 +24,15 @@ import org.bukkit.util.Vector;
 import de.blablubbabc.paintball.Match;
 import de.blablubbabc.paintball.Origin;
 import de.blablubbabc.paintball.Paintball;
-import de.blablubbabc.paintball.extras.weapons.Gadget;
-import de.blablubbabc.paintball.extras.weapons.GadgetManager;
-import de.blablubbabc.paintball.extras.weapons.WeaponHandler;
+import de.blablubbabc.paintball.gadgets.Gadget;
+import de.blablubbabc.paintball.gadgets.GadgetManager;
+import de.blablubbabc.paintball.gadgets.WeaponHandler;
 import de.blablubbabc.paintball.utils.Translator;
 import de.blablubbabc.paintball.utils.Utils;
 
 public class AirstrikeHandler extends WeaponHandler {
 
-	private GadgetManager gadgetHandler = new GadgetManager();
+	private GadgetManager gadgetManager = new GadgetManager();
 	
 	private ConcurrentHashMap<String, Integer> taskIds = new ConcurrentHashMap<String, Integer>();;
 	private Map<String, Block> marks = new HashMap<String, Block>();
@@ -43,8 +42,8 @@ public class AirstrikeHandler extends WeaponHandler {
 		super(customItemTypeID, useDefaultType);
 	}
 
-	public AirstrikeCall callAirstrike(Match match, Player player, Location location) {
-		return new AirstrikeCall(gadgetHandler, match, player, location);
+	public Airstrike callAirstrike(Match match, Player player, Location location, Origin origin) {
+		return new Airstrike(gadgetManager, match, player, location, origin);
 	}
 	
 	@Override
@@ -68,16 +67,16 @@ public class AirstrikeHandler extends WeaponHandler {
 		String playerName = player.getName();
 		ItemStack itemInHand = player.getItemInHand();
 		
-		if (itemInHand.isSimilar(this.item)) {
+		if (itemInHand.isSimilar(getItem())) {
 			Block block = marks.get(playerName);
 			if (block != null) {
-				if (gadgetHandler.getMatchGadgetCount(match) < Paintball.instance.airstrikeMatchLimit) {
-					if (gadgetHandler.getPlayerGadgetCount(match, playerName) < Paintball.instance.airstrikePlayerLimit) {
+				if (gadgetManager.getMatchGadgetCount(match) < Paintball.instance.airstrikeMatchLimit) {
+					if (gadgetManager.getPlayerGadgetCount(match, playerName) < Paintball.instance.airstrikePlayerLimit) {
 						
 						demark(player);
 						addFinalMark(block, player);
 						
-						callAirstrike(match, player, block.getLocation());
+						callAirstrike(match, player, block.getLocation(), Origin.AIRSTRIKE);
 						
 						// INFORM MATCH
 						match.onAirstrike(player);
@@ -95,20 +94,20 @@ public class AirstrikeHandler extends WeaponHandler {
 					}
 
 				} else {
-					player.sendMessage(Translator.getString("AIRSTRIK_MATCH_LIMIT_REACHED"));
+					player.sendMessage(Translator.getString("AIRSTRIKE_MATCH_LIMIT_REACHED"));
 				}
 			}
 		}
 	}
 	
 	@Override
-	protected void cleanUp(Match match, String playerName) {
-		gadgetHandler.cleanUp(match, playerName);
+	public void cleanUp(Match match, String playerName) {
+		gadgetManager.cleanUp(match, playerName);
 	}
 
 	@Override
-	protected void cleanUp(Match match) {
-		gadgetHandler.cleanUp(match);
+	public void cleanUp(Match match) {
+		gadgetManager.cleanUp(match);
 	}
 	
 	
@@ -147,8 +146,8 @@ public class AirstrikeHandler extends WeaponHandler {
 	}
 	
 	private boolean isBlock(Block block, String name) {
-		Block b = marks.get(name);
-		return b == null ? false : b.equals(block);
+		Block markedBlock = marks.get(name);
+		return markedBlock == null ? false : markedBlock.equals(block);
 	}
 	
 	@Override
@@ -185,60 +184,16 @@ public class AirstrikeHandler extends WeaponHandler {
 		}
 	}
 	
-	private class FinalMark {
-		private final Block block;
-		
-		private FinalMark(Block block, final Player player) {
-			this.block = block;
-			
-			// mark:
-			Block last = block;
-			for (int i = 0; i < 10; i++) {
-				last = last.getRelative(BlockFace.UP);
-				player.sendBlockChange(last.getLocation(), Material.FENCE, (byte) 0);
-			}
-			last = last.getRelative(BlockFace.UP);
-			player.sendBlockChange(last.getLocation(), Material.TORCH, (byte) 0);
-			
-			// demark after a certain time:
-			Paintball.instance.getServer().getScheduler().runTaskLater(Paintball.instance, new Runnable() {
-				
-				@Override
-				public void run() {
-					demark(player);
-				}
-			}, Paintball.instance.airstrikeBombs * 5L);
-			
-		}
-		
-		private void demark(Player player) {
-			Block last = block;
-			World world = player.getWorld();
-			for (int i = 0; i < 11; i++) {
-				last = last.getRelative(BlockFace.UP);
-				Location loc = last.getLocation();
-				Block current = world.getBlockAt(loc);
-				player.sendBlockChange(loc, current.getType(), current.getData());
-			}
-			
-			// remove from map:
-			String playerName = player.getName();
-			List<FinalMark> playerFinalMarks = finalMarks.get(playerName);
-			playerFinalMarks.remove(this);
-			if (playerFinalMarks.size() == 0) finalMarks.remove(playerName);
-		}
-		
-	}
-	
-	public class AirstrikeCall extends Gadget {
+	public class Airstrike extends Gadget {
 		
 		private final Player player;
 		private Entity chick = null;
 		private int task = -1;
 
-		private AirstrikeCall(GadgetManager gadgetHandler, Match match, Player player, Location location) {
-			super(gadgetHandler, match, player.getName());
+		private Airstrike(GadgetManager gadgetHandler, Match match, Player player, Location location, Origin origin) {
+			super(gadgetHandler, match, player.getName(), origin);
 			this.player = player;
+			
 			call(location);
 		}
 		
@@ -275,30 +230,74 @@ public class AirstrikeHandler extends WeaponHandler {
 					egg.setShooter(player);
 					grenadeHandler.createGrenade(match, player, egg, Origin.AIRSTRIKE);
 					chick.setVelocity(chickVel);
+					
 					i++;
 					if(i > (bombs.size() - 1)) {
-						dispose(true, false);
+						dispose(true);
 					}
 				}
 			}, 0L, 5L);
 		}
 		
 		@Override
-		public void dispose(boolean removeFromGadgetHandlerTracking, boolean cheapEffects) {
+		public void dispose(boolean removeFromGadgetHandlerTracking) {
 			if (this.task != -1) Paintball.instance.getServer().getScheduler().cancelTask(task);
 			if (this.chick != null) chick.remove();
 			
-			super.dispose(removeFromGadgetHandlerTracking, cheapEffects);
+			super.dispose(removeFromGadgetHandlerTracking);
 		}
 
 		@Override
-		protected boolean isSimiliar(Entity entity) {
+		public boolean isSimiliar(Entity entity) {
+			return chick.getEntityId() == entity.getEntityId();
+		}
+
+		@Override
+		public boolean isSimiliar(Location location) {
 			return false;
 		}
-
-		@Override
-		public Origin getOrigin() {
-			return Origin.AIRSTRIKE;
+		
+	}
+	
+	private class FinalMark {
+		private final Block block;
+		
+		private FinalMark(Block block, final Player player) {
+			this.block = block;
+			
+			// mark:
+			Block last = block;
+			for (int i = 0; i < 10; i++) {
+				last = last.getRelative(BlockFace.UP);
+				player.sendBlockChange(last.getLocation(), Material.FENCE, (byte) 0);
+			}
+			last = last.getRelative(BlockFace.UP);
+			player.sendBlockChange(last.getLocation(), Material.TORCH, (byte) 0);
+			
+			// demark after a certain time:
+			Paintball.instance.getServer().getScheduler().runTaskLater(Paintball.instance, new Runnable() {
+				
+				@Override
+				public void run() {
+					demark(player);
+				}
+			}, Paintball.instance.airstrikeBombs * 5L);
+			
+		}
+		
+		private void demark(Player player) {
+			Block last = block;
+			for (int i = 0; i < 11; i++) {
+				last = last.getRelative(BlockFace.UP);
+				Location loc = last.getLocation();
+				player.sendBlockChange(loc, last.getType(), last.getData());
+			}
+			
+			// remove from map:
+			String playerName = player.getName();
+			List<FinalMark> playerFinalMarks = finalMarks.get(playerName);
+			playerFinalMarks.remove(this);
+			if (playerFinalMarks.size() == 0) finalMarks.remove(playerName);
 		}
 		
 	}

@@ -1,4 +1,4 @@
-package de.blablubbabc.paintball.extras.weapons.impl;
+package de.blablubbabc.paintball.gadgets.handlers;
 
 import org.bukkit.Location;
 import org.bukkit.Material;
@@ -24,16 +24,16 @@ import org.bukkit.util.Vector;
 import de.blablubbabc.paintball.Match;
 import de.blablubbabc.paintball.Origin;
 import de.blablubbabc.paintball.Paintball;
-import de.blablubbabc.paintball.extras.weapons.Gadget;
-import de.blablubbabc.paintball.extras.weapons.GadgetManager;
-import de.blablubbabc.paintball.extras.weapons.WeaponHandler;
-import de.blablubbabc.paintball.extras.weapons.impl.BallHandler.Ball;
+import de.blablubbabc.paintball.gadgets.Gadget;
+import de.blablubbabc.paintball.gadgets.GadgetManager;
+import de.blablubbabc.paintball.gadgets.WeaponHandler;
+import de.blablubbabc.paintball.gadgets.handlers.BallHandler.Ball;
 import de.blablubbabc.paintball.utils.Translator;
 import de.blablubbabc.paintball.utils.Utils;
 
 public class GrenadeHandler extends WeaponHandler implements Listener {
 
-	private GadgetManager gadgetHandler = new GadgetManager();
+	private GadgetManager gadgetManager = new GadgetManager();
 	
 	public GrenadeHandler(int customItemTypeID, boolean useDefaultType) {
 		super(customItemTypeID, useDefaultType);
@@ -41,7 +41,7 @@ public class GrenadeHandler extends WeaponHandler implements Listener {
 	}
 	
 	public Grenade createGrenade(Match match, Player player, Egg nade, Origin origin) {
-		return new Grenade(gadgetHandler, match, player, nade, Origin.GRENADE);
+		return new Grenade(gadgetManager, match, player, nade, Origin.GRENADE);
 	}
 	
 	@EventHandler(priority = EventPriority.NORMAL)
@@ -50,7 +50,7 @@ public class GrenadeHandler extends WeaponHandler implements Listener {
 		if (egg.getShooter() instanceof Player) {
 			Player player = (Player) egg.getShooter();
 			Match match = Paintball.instance.matchManager.getMatch(player);
-			if (match != null && gadgetHandler.isGadget(egg, match, player.getName())) {
+			if (match != null && gadgetManager.isGadget(egg, match, player.getName())) {
 				event.setHatching(false);
 			}
 		}
@@ -101,62 +101,74 @@ public class GrenadeHandler extends WeaponHandler implements Listener {
 	@Override
 	protected void onProjectileHit(ProjectileHitEvent event, Projectile projectile, Match match, Player shooter) {
 		if (Paintball.instance.grenade && projectile.getType() == EntityType.EGG) {
-			Gadget nadeGadget = gadgetHandler.getGadget(projectile, match, shooter.getName(), true);
+			Gadget nadeGadget = gadgetManager.getGadget(projectile, match, shooter.getName());
 			if (nadeGadget != null) {
 				Grenade grenade = (Grenade) nadeGadget;
 				grenade.explode(projectile.getLocation(), shooter);
 			}
 		}
 	}
+	
+	@Override
+	public void cleanUp(Match match, String playerName) {
+		gadgetManager.cleanUp(match, playerName);
+	}
+
+	@Override
+	public void cleanUp(Match match) {
+		gadgetManager.cleanUp(match);
+	}
 
 	
 	public class Grenade extends Gadget {
 		
 		private final Egg entity;
-		private final Origin origin;
 
 		private Grenade(GadgetManager gadgetHandler, Match match, Player player, Egg nade, Origin origin) {
-			super(gadgetHandler, match, player.getName());
+			super(gadgetHandler, match, player.getName(), origin);
 			this.entity = nade;
-			this.origin = origin;
 		}
 		
-		private void explode(Location location, Player shooter) {
-			location.getWorld().createExplosion(location, -1F);
-			for (Vector v : Utils.getDirections()) {
-				final Snowball snowball  = location.getWorld().spawn(location, Snowball.class);
-				snowball.setShooter(shooter);
-				final Ball ball = Paintball.instance.weaponManager.getBallHandler().createBall(match, shooter, snowball, origin);
-				Vector v2 = v.clone();
-				v2.setX(v.getX() + Math.random() - Math.random());
-				v2.setY(v.getY() + Math.random() - Math.random());
-				v2.setZ(v.getZ() + Math.random() - Math.random());
-				snowball.setVelocity(v2.normalize().multiply(Paintball.instance.grenadeShrapnelSpeed));
-				Paintball.instance.getServer().getScheduler().scheduleSyncDelayedTask(Paintball.instance, new Runnable() {
+		public void explode(Location location, Player shooter) {
+			if (entity.isValid()) {
+				location.getWorld().createExplosion(location, -1F);
+				for (Vector v : Utils.getDirections()) {
+					final Snowball snowball  = location.getWorld().spawn(location, Snowball.class);
+					snowball.setShooter(shooter);
+					final Ball ball = Paintball.instance.weaponManager.getBallHandler().createBall(match, shooter, snowball, getOrigin());
+					Vector v2 = v.clone();
+					v2.setX(v.getX() + Math.random() - Math.random());
+					v2.setY(v.getY() + Math.random() - Math.random());
+					v2.setZ(v.getZ() + Math.random() - Math.random());
+					snowball.setVelocity(v2.normalize().multiply(Paintball.instance.grenadeShrapnelSpeed));
+					Paintball.instance.getServer().getScheduler().scheduleSyncDelayedTask(Paintball.instance, new Runnable() {
 
-					@Override
-					public void run() {
-						ball.dispose(true, true);
-					}
-				}, (long) Paintball.instance.grenadeTime);
+						@Override
+						public void run() {
+							ball.dispose(true);
+						}
+					}, (long) Paintball.instance.grenadeTime);
+				}
 			}
-			dispose(true, false);
+			
+			// remove from tracking:
+			dispose(true);
 		}
 		
 		@Override
-		public void dispose(boolean removeFromGadgetHandlerTracking, boolean cheapEffects) {
+		public void dispose(boolean removeFromGadgetHandlerTracking) {
 			entity.remove();
-			super.dispose(removeFromGadgetHandlerTracking, cheapEffects);
+			super.dispose(removeFromGadgetHandlerTracking);
 		}
 
 		@Override
-		protected boolean isSimiliar(Entity entity) {
+		public boolean isSimiliar(Entity entity) {
 			return entity.getEntityId() == this.entity.getEntityId();
 		}
-
+		
 		@Override
-		public Origin getOrigin() {
-			return origin;
+		public boolean isSimiliar(Location location) {
+			return false;
 		}
 		
 	}

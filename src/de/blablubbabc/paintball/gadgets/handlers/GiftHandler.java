@@ -1,4 +1,4 @@
-package de.blablubbabc.paintball.extras.weapons.impl;
+package de.blablubbabc.paintball.gadgets.handlers;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -16,8 +16,8 @@ import org.bukkit.inventory.meta.ItemMeta;
 
 import de.blablubbabc.paintball.Match;
 import de.blablubbabc.paintball.Paintball;
-import de.blablubbabc.paintball.extras.weapons.Gift;
-import de.blablubbabc.paintball.extras.weapons.WeaponHandler;
+import de.blablubbabc.paintball.gadgets.Gift;
+import de.blablubbabc.paintball.gadgets.WeaponHandler;
 import de.blablubbabc.paintball.utils.Translator;
 import de.blablubbabc.paintball.utils.Utils;
 
@@ -145,6 +145,16 @@ public class GiftHandler extends WeaponHandler {
 			i.setAmount(i.getAmount() - 1);
 			goodGuy.setItemInHand(i);
 		}
+	}
+	
+	@Override
+	public void cleanUp(Match match, String playerName) {
+		// nothing to do here
+	}
+
+	@Override
+	public void cleanUp(Match match) {
+		// nothing to do here
 	}
 	
 }

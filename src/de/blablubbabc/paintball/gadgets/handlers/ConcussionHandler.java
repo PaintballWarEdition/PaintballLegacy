@@ -1,4 +1,4 @@
-package de.blablubbabc.paintball.extras.weapons.impl;
+package de.blablubbabc.paintball.gadgets.handlers;
 
 import java.util.List;
 
@@ -20,23 +20,23 @@ import org.bukkit.potion.PotionEffectType;
 import de.blablubbabc.paintball.Match;
 import de.blablubbabc.paintball.Origin;
 import de.blablubbabc.paintball.Paintball;
-import de.blablubbabc.paintball.extras.weapons.Gadget;
-import de.blablubbabc.paintball.extras.weapons.GadgetManager;
-import de.blablubbabc.paintball.extras.weapons.WeaponHandler;
+import de.blablubbabc.paintball.gadgets.Gadget;
+import de.blablubbabc.paintball.gadgets.GadgetManager;
+import de.blablubbabc.paintball.gadgets.WeaponHandler;
 import de.blablubbabc.paintball.utils.Translator;
 import de.blablubbabc.paintball.utils.Utils;
 
-public class FlashbangHandler extends WeaponHandler {
+public class ConcussionHandler extends WeaponHandler {
 
-	private GadgetManager gadgetHandler = new GadgetManager();
+	private GadgetManager gadgetManager = new GadgetManager();
 	private int next = 0;
 	
-	public FlashbangHandler(int customItemTypeID, boolean useDefaultType) {
+	public ConcussionHandler(int customItemTypeID, boolean useDefaultType) {
 		super(customItemTypeID, useDefaultType);
 	}
 	
-	public Flashbang createFlashbang(Match match, Player player, Item nade, Origin origin) {
-		return new Flashbang(gadgetHandler, match, player, nade, origin);
+	public Concussion createConcussion(Match match, Player player, Item nade, Origin origin) {
+		return new Concussion(gadgetManager, match, player, nade, origin);
 	}
 	
 	private int getNext() {
@@ -45,20 +45,20 @@ public class FlashbangHandler extends WeaponHandler {
 	
 	@Override
 	protected int getDefaultItemTypeID() {
-		return Material.GHAST_TEAR.getId();
+		return Material.SPIDER_EYE.getId();
 	}
 
 	@Override
 	protected ItemStack setItemMeta(ItemStack itemStack) {
 		ItemMeta meta = itemStack.getItemMeta();
-		meta.setDisplayName(Translator.getString("WEAPON_FLASHBANG"));
+		meta.setDisplayName(Translator.getString("WEAPON_CONCUSSION"));
 		itemStack.setItemMeta(meta);
 		return itemStack;
 	}
 
 	@Override
 	protected void onInteract(PlayerInteractEvent event, Match match) {
-		if (event.getAction() == Action.PHYSICAL || !Paintball.instance.flashbang) return;
+		if (event.getAction() == Action.PHYSICAL || !Paintball.instance.concussion) return;
 		Player player = event.getPlayer();
 		ItemStack itemInHand = player.getItemInHand();
 		
@@ -66,12 +66,12 @@ public class FlashbangHandler extends WeaponHandler {
 			player.getWorld().playSound(player.getLocation(), Sound.IRONGOLEM_THROW, 2.0F, 1F);
 			ItemStack nadeItem = getItem().clone();
 			ItemMeta meta = nadeItem.getItemMeta();
-			meta.setDisplayName("Flashbang " + getNext());
+			meta.setDisplayName("Concussion " + getNext());
 			nadeItem.setItemMeta(meta);
 			Item nade = player.getWorld().dropItem(player.getEyeLocation(), nadeItem);
-			nade.setVelocity(player.getLocation().getDirection().normalize().multiply(Paintball.instance.flashbangSpeed));
+			nade.setVelocity(player.getLocation().getDirection().normalize().multiply(Paintball.instance.concussionSpeed));
 			
-			createFlashbang(match, player, nade, Origin.FLASHBANG);
+			createConcussion(match, player, nade, Origin.CONCUSSION);
 			
 			if (itemInHand.getAmount() <= 1) {
 				player.setItemInHand(null);
@@ -85,31 +85,29 @@ public class FlashbangHandler extends WeaponHandler {
 	
 	@Override
 	protected void onItemPickup(PlayerPickupItemEvent event) {
-		if (gadgetHandler.isGadget(event.getItem())) {
+		if (gadgetManager.isGadget(event.getItem())) {
 			event.setCancelled(true);
 		}
 	}
 
 	@Override
-	protected void cleanUp(Match match, String playerName) {
-		gadgetHandler.cleanUp(match, playerName);
+	public void cleanUp(Match match, String playerName) {
+		gadgetManager.cleanUp(match, playerName);
 	}
 
 	@Override
-	protected void cleanUp(Match match) {
-		gadgetHandler.cleanUp(match);
+	public void cleanUp(Match match) {
+		gadgetManager.cleanUp(match);
 		next = 0;
 	}
 
-	public class Flashbang extends Gadget {
+	public class Concussion extends Gadget {
 		
 		private final Item entity;
-		private final Origin origin;
 
-		private Flashbang(GadgetManager gadgetHandler, Match match, Player player, Item nade, Origin origin) {
-			super(gadgetHandler, match, player.getName());
+		private Concussion(GadgetManager gadgetHandler, Match match, Player player, Item nade, Origin origin) {
+			super(gadgetHandler, match, player.getName(), origin);
 			this.entity = nade;
-			this.origin = origin;
 			
 			Paintball.instance.getServer().getScheduler().runTaskLater(Paintball.instance, new Runnable() {
 				
@@ -117,10 +115,10 @@ public class FlashbangHandler extends WeaponHandler {
 				public void run() {
 					explode();
 				}
-			}, 20L * Paintball.instance.flashbangTimeUntilExplosion);
+			}, 20L * Paintball.instance.concussionTimeUntilExplosion);
 		}
 		
-		private void explode() {
+		public void explode() {
 			if (entity.isValid()) {
 				Location location = entity.getLocation();
 				// EFFECTS
@@ -155,15 +153,15 @@ public class FlashbangHandler extends WeaponHandler {
 				if (player != null) {
 					Match match = Paintball.instance.matchManager.getMatch(player);
 					if (match != null) {
-						List<Entity> near = entity.getNearbyEntities(Paintball.instance.flashRange, Paintball.instance.flashRange, Paintball.instance.flashRange);
+						List<Entity> near = entity.getNearbyEntities(Paintball.instance.concussionRange, Paintball.instance.concussionRange, Paintball.instance.concussionRange);
 						for (Entity e : near) {
 							if (e.getType() == EntityType.PLAYER) {
 								Player p = (Player) e;
 								Match m = Paintball.instance.matchManager.getMatch(p);
 								if (match == m && match.enemys(player, p)) {
-									p.addPotionEffect(new PotionEffect(PotionEffectType.SLOW, 20 * Paintball.instance.flashSlownessDuration, 3), true);
-									p.addPotionEffect(new PotionEffect(PotionEffectType.CONFUSION, 20 * Paintball.instance.flashConfusionDuration, 3), true);
-									p.addPotionEffect(new PotionEffect(PotionEffectType.BLINDNESS, 20 * Paintball.instance.flashBlindnessDuration, 3), true);
+									p.addPotionEffect(new PotionEffect(PotionEffectType.SLOW, 20 * Paintball.instance.concussionSlownessDuration, 3), true);
+									p.addPotionEffect(new PotionEffect(PotionEffectType.CONFUSION, 20 * Paintball.instance.concussionConfusionDuration, 3), true);
+									p.addPotionEffect(new PotionEffect(PotionEffectType.BLINDNESS, 20 * Paintball.instance.concussionBlindnessDuration, 3), true);
 								}
 								
 							}
@@ -172,23 +170,24 @@ public class FlashbangHandler extends WeaponHandler {
 				}
 			}
 			
-			dispose(true, false);
+			// remove from tracking:
+			dispose(true);
 		}
 		
 		@Override
-		public void dispose(boolean removeFromGadgetHandlerTracking, boolean cheapEffects) {
+		public void dispose(boolean removeFromGadgetHandlerTracking) {
 			entity.remove();
-			super.dispose(removeFromGadgetHandlerTracking, cheapEffects);
+			super.dispose(removeFromGadgetHandlerTracking);
 		}
 
 		@Override
-		protected boolean isSimiliar(Entity entity) {
+		public boolean isSimiliar(Entity entity) {
 			return entity.getEntityId() == this.entity.getEntityId();
 		}
-
+		
 		@Override
-		public Origin getOrigin() {
-			return origin;
+		public boolean isSimiliar(Location location) {
+			return false;
 		}
 		
 	}

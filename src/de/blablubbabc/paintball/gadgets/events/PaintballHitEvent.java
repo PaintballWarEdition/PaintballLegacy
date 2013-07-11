@@ -1,4 +1,4 @@
-package de.blablubbabc.paintball.extras.weapons.events;
+package de.blablubbabc.paintball.gadgets.events;
 
 import org.bukkit.entity.Player;
 import org.bukkit.event.Event;
@@ -20,7 +20,7 @@ public class PaintballHitEvent extends Event {
 		this.shooter = shooter;
 	}
 	
-	public ProjectileHitEvent getEvent() {
+	public ProjectileHitEvent getProjectileHitEvent() {
 		return event;
 	}
 

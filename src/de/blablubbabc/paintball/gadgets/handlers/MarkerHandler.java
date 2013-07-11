@@ -1,4 +1,4 @@
-package de.blablubbabc.paintball.extras.weapons.impl;
+package de.blablubbabc.paintball.gadgets.handlers;
 
 import org.bukkit.Effect;
 import org.bukkit.Location;
@@ -19,9 +19,9 @@ import org.bukkit.inventory.meta.ItemMeta;
 import de.blablubbabc.paintball.Match;
 import de.blablubbabc.paintball.Origin;
 import de.blablubbabc.paintball.Paintball;
-import de.blablubbabc.paintball.extras.weapons.Gadget;
-import de.blablubbabc.paintball.extras.weapons.WeaponHandler;
-import de.blablubbabc.paintball.extras.weapons.events.PaintballHitEvent;
+import de.blablubbabc.paintball.gadgets.Gadget;
+import de.blablubbabc.paintball.gadgets.WeaponHandler;
+import de.blablubbabc.paintball.gadgets.events.PaintballHitEvent;
 import de.blablubbabc.paintball.statistics.player.PlayerStat;
 import de.blablubbabc.paintball.statistics.player.PlayerStats;
 import de.blablubbabc.paintball.utils.Translator;
@@ -92,7 +92,7 @@ public class MarkerHandler extends WeaponHandler {
 	protected void onProjectileHit(ProjectileHitEvent event, Projectile projectile, Match match, Player shooter) {
 		if (projectile.getType() == EntityType.SNOWBALL) {
 			String shooterName = shooter.getName();
-			Gadget ball = Paintball.instance.weaponManager.getBallHandler().getBall(projectile, match, shooterName, true);
+			Gadget ball = Paintball.instance.weaponManager.getBallHandler().getBall(projectile, match, shooterName);
 			// is paintball ?
 			if (ball != null) {
 				Location location = projectile.getLocation();
@@ -108,8 +108,21 @@ public class MarkerHandler extends WeaponHandler {
 				
 				// call event for others:
 				Paintball.instance.getServer().getPluginManager().callEvent(new PaintballHitEvent(event, match, shooter));
+				
+				// remove ball from tracking:
+				ball.dispose(true);
 			}
 		}
+	}
+	
+	@Override
+	public void cleanUp(Match match, String playerName) {
+		// nothing to do here
+	}
+
+	@Override
+	public void cleanUp(Match match) {
+		// nothing to do here
 	}
 	
 }

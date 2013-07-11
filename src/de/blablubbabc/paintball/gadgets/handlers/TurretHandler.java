@@ -1,6 +1,5 @@
-package de.blablubbabc.paintball.extras.weapons.impl;
+package de.blablubbabc.paintball.gadgets.handlers;
 
-import org.bukkit.Bukkit;
 import org.bukkit.Effect;
 import org.bukkit.Location;
 import org.bukkit.Material;
@@ -16,6 +15,7 @@ import org.bukkit.entity.Snowman;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
+import org.bukkit.event.block.BlockPlaceEvent;
 import org.bukkit.event.block.EntityBlockFormEvent;
 import org.bukkit.event.entity.CreatureSpawnEvent;
 import org.bukkit.event.entity.EntityDamageByEntityEvent;
@@ -28,14 +28,16 @@ import org.bukkit.util.Vector;
 import de.blablubbabc.paintball.Match;
 import de.blablubbabc.paintball.Origin;
 import de.blablubbabc.paintball.Paintball;
-import de.blablubbabc.paintball.extras.weapons.Gadget;
-import de.blablubbabc.paintball.extras.weapons.GadgetManager;
-import de.blablubbabc.paintball.extras.weapons.WeaponHandler;
+import de.blablubbabc.paintball.gadgets.Gadget;
+import de.blablubbabc.paintball.gadgets.GadgetManager;
+import de.blablubbabc.paintball.gadgets.WeaponHandler;
 import de.blablubbabc.paintball.utils.Translator;
+import de.blablubbabc.paintball.utils.Utils;
 
 public class TurretHandler extends WeaponHandler implements Listener {
 	
-	private GadgetManager gadgetHandler = new GadgetManager();
+	private GadgetManager gadgetManager = new GadgetManager();
+	
 	private static Double[][] table;
 	private static int ySize;
 	
@@ -47,8 +49,8 @@ public class TurretHandler extends WeaponHandler implements Listener {
 		Paintball.instance.getServer().getPluginManager().registerEvents(this, Paintball.instance);
 	}
 	
-	public Turret createTurret(Match match, Player player, LivingEntity entity) {
-		return new Turret(gadgetHandler, match, player, entity);
+	public Turret createTurret(Match match, Player player, LivingEntity entity, Origin origin) {
+		return new Turret(gadgetManager, match, player, entity, origin);
 	}
 	
 	@EventHandler(priority = EventPriority.HIGHEST, ignoreCancelled = false)
@@ -60,16 +62,16 @@ public class TurretHandler extends WeaponHandler implements Listener {
 	
 	@EventHandler(priority = EventPriority.NORMAL)
 	public void onSnowmanTrail(EntityBlockFormEvent event) {
-		if (gadgetHandler.isGadget(event.getEntity())) {
+		if (gadgetManager.isGadget(event.getEntity())) {
 			event.setCancelled(true);
 		}
 	}
 	
 	@EventHandler(priority = EventPriority.NORMAL)
 	public void onEntityDeath(EntityDeathEvent event) {
-		Gadget turret = gadgetHandler.getGadget(event.getEntity(), true);
+		Gadget turret = gadgetManager.getGadget(event.getEntity());
 		if (turret != null) {
-			turret.dispose(false, false);
+			turret.dispose(false);
 		}
 	}
 
@@ -87,13 +89,13 @@ public class TurretHandler extends WeaponHandler implements Listener {
 	}
 
 	@Override
-	protected void cleanUp(Match match, String playerName) {
-		gadgetHandler.cleanUp(match, playerName);
+	public void cleanUp(Match match, String playerName) {
+		gadgetManager.cleanUp(match, playerName);
 	}
 
 	@Override
-	protected void cleanUp(Match match) {
-		gadgetHandler.cleanUp(match);
+	public void cleanUp(Match match) {
+		gadgetManager.cleanUp(match);
 	}
 
 	@Override
@@ -102,24 +104,29 @@ public class TurretHandler extends WeaponHandler implements Listener {
 	}
 	
 	@Override
-	protected void onBlockPlace(Player player, Block block, Match match) {
+	protected void onBlockPlace(BlockPlaceEvent event, Match match) {
+		Block block = event.getBlockPlaced();
 		if (Paintball.instance.turret && block.getType() == Material.PUMPKIN) {
+			Player player = event.getPlayer();
 			ItemStack itemInHand = player.getItemInHand();
 			if (itemInHand.isSimilar(getItem())) {
 				String playerName = player.getName();
-				if (gadgetHandler.getMatchGadgetCount(match) < Paintball.instance.turretMatchLimit) {
-					if (gadgetHandler.getPlayerGadgetCount(match, playerName) < Paintball.instance.turretPlayerLimit) {
+				if (gadgetManager.getMatchGadgetCount(match) < Paintball.instance.turretMatchLimit) {
+					if (gadgetManager.getPlayerGadgetCount(match, playerName) < Paintball.instance.turretPlayerLimit) {
+						
 						Location spawnLoc = block.getLocation();
 						nextTurretSpawn = spawnLoc;
 						Snowman snowman = (Snowman) block.getLocation().getWorld().spawnEntity(spawnLoc, EntityType.SNOWMAN);
 						nextTurretSpawn = null;
-						new Turret(gadgetHandler, match, player, snowman);
+						new Turret(gadgetManager, match, player, snowman, Origin.TURRET);
+						
 						if (itemInHand.getAmount() <= 1) {
 							player.setItemInHand(null);
 						} else {
 							itemInHand.setAmount(itemInHand.getAmount() - 1);
 							player.setItemInHand(itemInHand);
 						}
+						Utils.updatePlayerInventoryLater(Paintball.instance, player);
 					} else {
 						player.sendMessage(Translator.getString("TURRET_PLAYER_LIMIT_REACHED"));
 					}
@@ -131,8 +138,8 @@ public class TurretHandler extends WeaponHandler implements Listener {
 	}
 	
 	@Override
-	protected void onDamagedByEntity(EntityDamageByEntityEvent event, Entity damagedEntity, Match match, Player attacker) {
-		Gadget turretGadget = gadgetHandler.getGadget(damagedEntity, false);
+	protected void onDamagedByEntity(EntityDamageByEntityEvent event, Match match, Player attacker) {
+		Gadget turretGadget = gadgetManager.getGadget(event.getEntity());
 		if (turretGadget != null && match == turretGadget.getMatch()) {
 			Turret turret = (Turret) turretGadget;
 			if (match.enemys(attacker, turret.getOwner())) {
@@ -220,6 +227,7 @@ public class TurretHandler extends WeaponHandler implements Listener {
 	public class Turret extends Gadget {
 
 		private final LivingEntity entity;
+		private final Player player;
 		
 		private int tickTask = -1;
 		private int salveTask = -1;
@@ -229,9 +237,11 @@ public class TurretHandler extends WeaponHandler implements Listener {
 		private int salve;
 		private int lives;
 		
-		private Turret(GadgetManager gadgetHandler, Match match, Player player, LivingEntity entity) {
-			super(gadgetHandler, match, player.getName());
+		private Turret(GadgetManager gadgetManager, Match match, Player player, LivingEntity entity, Origin origin) {
+			super(gadgetManager, match, player.getName(), origin);
+			
 			this.entity = entity;
+			this.player = player;
 			this.cooldown = Paintball.instance.turretCooldown;
 			this.salve = Paintball.instance.turretSalve;
 			this.lives = Paintball.instance.turretLives;
@@ -239,65 +249,61 @@ public class TurretHandler extends WeaponHandler implements Listener {
 		}
 
 		@Override
-		protected boolean isSimiliar(Entity entity) {
+		public boolean isSimiliar(Entity entity) {
 			return entity.getEntityId() == this.entity.getEntityId();
 		}
-
+		
 		@Override
-		public Origin getOrigin() {
-			return Origin.TURRET;
+		public boolean isSimiliar(Location location) {
+			return false;
 		}
 		
 		private void tick() {
-			tickTask = Paintball.instance.getServer().getScheduler()
-					.scheduleSyncDelayedTask(Paintball.instance, new Runnable() {
+			tickTask = Paintball.instance.getServer().getScheduler().runTaskLater(Paintball.instance, new Runnable() {
 
-						@Override
-						public void run() {
-							if (target == null) {
-								target = searchTarget(Paintball.instance.turretXSize, 15);
-							}
+				@Override
+				public void run() {
+					if (target == null) {
+						target = searchTarget(Paintball.instance.turretXSize, 15);
+					}
 
-							if (cooldown == 0) {
-								if (target != null) {
-									tickTask = -1;
-									shoot();
-								} else {
-									cooldown = Paintball.instance.turretCooldown;
-									tick();
-								}
-							} else {
-								cooldown--;
-								tick();
-							}
+					if (cooldown == 0) {
+						if (target != null) {
+							tickTask = -1;
+							shoot();
+						} else {
+							cooldown = Paintball.instance.turretCooldown;
+							tick();
 						}
-					}, 20L);
+					} else {
+						cooldown--;
+						tick();
+					}
+				}
+			}, 20L).getTaskId();
 		}
 		
 		/**
-		 * Returns the creator of this turret. Can return null, if the player can't be found by name.
+		 * Returns the creator of this turret.
 		 * 
 		 * @return the creator of the turret
 		 */
 		public Player getOwner() {
-			return Bukkit.getPlayerExact(playerName);
+			return player;
 		}
 
 		private Player searchTarget(int maxRadius, int instantRadius) {
 			Vector entVec = entity.getLocation().toVector();
 			Player nearest = null;
 			double distance = 0;
-			for (Player p : match.getEnemyTeam(getOwner())) {
+			for (Player p : match.getEnemyTeam(player)) {
 				if (match.isSurvivor(p)) {
 					Location ploc = p.getLocation();
 					if (ploc.getWorld().equals(entity.getWorld())) {
-						Vector targetVec = ploc.toVector()
-								.add(new Vector(0, 1, 0));
+						Vector targetVec = ploc.toVector().add(new Vector(0, 1, 0));
 						Vector dir = targetVec.clone().subtract(entVec).normalize();
 						Vector dir2 = new Vector(dir.getX(), 0, dir.getZ()).normalize();
-						if (entity.hasLineOfSight(p)
-								&& canBeShoot(entVec.clone().add(new Vector(0, 2, 0))
-										.add(dir2), targetVec.clone(), dir2.clone())) {
+						if (entity.hasLineOfSight(p) && canBeShoot(entVec.clone().add(new Vector(0, 2, 0)).add(dir2), targetVec.clone(), dir2.clone())) {
 							double dist2 = entity.getLocation().distance(
 									ploc);
 							if (dist2 <= instantRadius) {
@@ -323,94 +329,90 @@ public class TurretHandler extends WeaponHandler implements Listener {
 		}
 
 		private void shoot() {
-			salveTask = Paintball.instance.getServer().getScheduler()
-					.scheduleSyncDelayedTask(Paintball.instance, new Runnable() {
+			salveTask = Paintball.instance.getServer().getScheduler().runTaskLater(Paintball.instance, new Runnable() {
 
-						@Override
-						public void run() {
-							if (target != null && match.isSurvivor(target) ) {
-								Vector targetVec = target.getLocation().toVector().add(new Vector(0, 1, 0));
-								Vector entVec = entity.getLocation().toVector();
-								Vector dir = targetVec.clone().subtract(entVec).normalize();
-								Vector dir2 = new Vector(dir.getX(), 0, dir.getZ()).normalize();
-								if (salve > 0) {
+				@Override
+				public void run() {
+					if (target != null && match.isSurvivor(target)) {
+						Vector targetVec = target.getLocation().toVector().add(new Vector(0, 1, 0));
+						Vector entVec = entity.getLocation().toVector();
+						Vector dir = targetVec.clone().subtract(entVec).normalize();
+						Vector dir2 = new Vector(dir.getX(), 0, dir.getZ()).normalize();
+						if (salve > 0) {
 
-									double x = dir.getX();
-									double y = dir.getY();
-									double z = dir.getZ();
+							double x = dir.getX();
+							double y = dir.getY();
+							double z = dir.getZ();
 
-									// Now change the angle
-									Location changed = entity.getLocation().clone();
-									changed.setYaw(180 - (float) Math
-											.toDegrees(Math.atan2(x, z)));
-									changed.setPitch(90 - (float) Math
-											.toDegrees(Math.acos(y)));
-									entity.teleport(changed);
+							// Now change the angle
+							Location changed = entity.getLocation().clone();
+							changed.setYaw(180 - (float) Math.toDegrees(Math.atan2(x, z)));
+							changed.setPitch(90 - (float) Math.toDegrees(Math.acos(y)));
+							entity.teleport(changed);
 
-									entity.getWorld().playSound(entity.getEyeLocation(), Sound.IRONGOLEM_THROW, 2.0F, 1F);
-									entity.getWorld().playSound(entity.getEyeLocation(), Sound.CHICKEN_EGG_POP, 2.0F, 1F);
-									Snowball ball = entity.getLocation().getWorld().spawn(entity.getLocation().add(new Vector(0, 2, 0)).add(dir2), Snowball.class);
-									Player player = getOwner();
-									ball.setShooter(player);
-									
-									Paintball.instance.weaponManager.getBallHandler().createBall(match, player, ball, Origin.TURRET);
+							entity.getWorld().playSound(entity.getEyeLocation(), Sound.IRONGOLEM_THROW, 2.0F, 1F);
+							entity.getWorld().playSound(entity.getEyeLocation(), Sound.CHICKEN_EGG_POP, 2.0F, 1F);
+							Snowball ball = entity.getLocation().getWorld()
+									.spawn(entity.getLocation().add(new Vector(0, 2, 0)).add(dir2), Snowball.class);
+							Player player = getOwner();
+							ball.setShooter(player);
 
-									ball.setVelocity(getAimVector(entVec.clone().add(new Vector(0, 2, 0)).add(dir2), targetVec.clone(),dir2.clone()));
+							Paintball.instance.weaponManager.getBallHandler().createBall(match, player, ball, Origin.TURRET);
 
-									salve--;
-									shoot();
-								} else {
-									if (!entity.hasLineOfSight(target) || !canBeShoot(entVec.clone().add(new Vector(0, 2, 0)).add(dir2), targetVec.clone(), dir2.clone()))
-										target = null;
-									salve = Paintball.instance.turretSalve;
-									salveTask = -1;
-									tick();
-								}
-							} else {
+							ball.setVelocity(getAimVector(entVec.clone().add(new Vector(0, 2, 0)).add(dir2), targetVec.clone(), dir2.clone()));
+
+							salve--;
+							shoot();
+						} else {
+							if (!entity.hasLineOfSight(target)
+									|| !canBeShoot(entVec.clone().add(new Vector(0, 2, 0)).add(dir2), targetVec.clone(), dir2.clone()))
 								target = null;
-								salve = Paintball.instance.turretSalve;
-								salveTask = -1;
-								tick();
-							}
+							salve = Paintball.instance.turretSalve;
+							salveTask = -1;
+							tick();
 						}
-					}, 5L);
+					} else {
+						target = null;
+						salve = Paintball.instance.turretSalve;
+						salveTask = -1;
+						tick();
+					}
+				}
+			}, 5L).getTaskId();
 		}
-
+		
 		@Override
-		public void dispose(boolean removeFromGadgetHandlerTracking, boolean cheapEffects) {
+		public void dispose(boolean removeFromGadgetHandlerTracking) {
 			if (tickTask != -1) {
 				Paintball.instance.getServer().getScheduler().cancelTask(tickTask);
 			}
+			
 			if (salveTask != -1) {
 				Paintball.instance.getServer().getScheduler().cancelTask(salveTask);
 			}
-			gadgetHandler.removeGadget(match, playerName, this);
-			// some effects here:
-			if (!cheapEffects && Paintball.instance.effects) {
-				Location loc = entity.getLocation().add(0, 1, 0);
-				World world = entity.getWorld();
-				world.playSound(loc, Sound.IRONGOLEM_DEATH, 3L, 2L);
-				world.playEffect(loc, Effect.SMOKE, 1);
-				world.playEffect(loc, Effect.SMOKE, 2);
-				world.playEffect(loc, Effect.SMOKE, 3);
-				world.playEffect(loc, Effect.SMOKE, 5);
-				world.playEffect(loc, Effect.SMOKE, 6);
-				world.playEffect(loc, Effect.SMOKE, 7);
-				world.playEffect(loc, Effect.SMOKE, 8);
-				world.playEffect(loc, Effect.MOBSPAWNER_FLAMES, 4);
-			}
-
+			
 			if (entity.isValid()) {
-				entity.remove();
+				// some effect here:
+				if (Paintball.instance.effects) {
+					Location loc = entity.getLocation().add(0, 1, 0);
+					World world = entity.getWorld();
+					world.playSound(loc, Sound.IRONGOLEM_DEATH, 3L, 2L);
+					for (int i = 1; i <= 8; i++) {
+						world.playEffect(loc, Effect.SMOKE, i);
+					}
+					world.playEffect(loc, Effect.MOBSPAWNER_FLAMES, 4);
+				}
 			}
 			
-			super.dispose(removeFromGadgetHandlerTracking, cheapEffects);
+			entity.remove();
+			
+			super.dispose(removeFromGadgetHandlerTracking);
 		}
 		
 		public void hit() {
 			this.lives--;
 			if (this.lives <= 0) {
-				this.dispose(true, false);
+				this.dispose(true);
 			} else {
 				entity.getWorld().playSound(entity.getEyeLocation(), Sound.IRONGOLEM_HIT, 3L, 2L);
 			}
@@ -428,8 +430,7 @@ public class TurretHandler extends WeaponHandler implements Listener {
 
 		private Vector getAimVector(Vector pos, Vector target, Vector dir) {
 			Vector aim = dir.clone().normalize();
-			int x = ((Double) target.clone().setY(0).distance(pos.clone().setY(0)))
-					.intValue();
+			int x = ((Double) target.clone().setY(0).distance(pos.clone().setY(0))).intValue();
 			int y = ((Double) (target.getY() - pos.getY())).intValue();
 			Double tan = null;
 
@@ -472,7 +473,7 @@ public class TurretHandler extends WeaponHandler implements Listener {
 				// shoot with nearly nearest anlge:
 			}
 			if (tan == null) {
-				// default angle 45°; tan 45 = 1.619
+				// default angle 45ï¿½; tan 45 = 1.619
 				tan = 1.619D;
 			}
 			return aim.setY(tan).normalize().multiply(Paintball.instance.speedmulti);

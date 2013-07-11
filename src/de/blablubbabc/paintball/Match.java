@@ -22,12 +22,6 @@ import org.bukkit.scoreboard.Score;
 import org.bukkit.scoreboard.Scoreboard;
 import org.kitteh.tag.TagAPI;
 
-import de.blablubbabc.paintball.extras.Grenade;
-import de.blablubbabc.paintball.extras.GrenadeM2;
-import de.blablubbabc.paintball.extras.ItemManager;
-import de.blablubbabc.paintball.extras.Mine;
-import de.blablubbabc.paintball.extras.Orbitalstrike;
-import de.blablubbabc.paintball.extras.Sniper;
 import de.blablubbabc.paintball.statistics.arena.ArenaSetting;
 import de.blablubbabc.paintball.statistics.player.PlayerStat;
 import de.blablubbabc.paintball.statistics.player.match.tdm.TDMMatchStat;
@@ -53,13 +47,6 @@ public class Match {
 	private Set<String> justRespawned = new HashSet<String>();
 	// STATS
 	private Map<String, TDMMatchStats> playerMatchStats = new HashMap<String, TDMMatchStats>();
-	/*private Map<String, Integer> shots = new HashMap<String, Integer>();
-	private Map<String, Integer> hits = new HashMap<String, Integer>();
-	private Map<String, Integer> kills = new HashMap<String, Integer>();
-	private Map<String, Integer> deaths = new HashMap<String, Integer>();
-	private Map<String, Integer> teamattacks = new HashMap<String, Integer>();
-	private Map<String, Integer> grenades = new HashMap<String, Integer>();
-	private Map<String, Integer> airstrikes = new HashMap<String, Integer>();*/
 
 	private Random random;
 
@@ -86,7 +73,7 @@ public class Match {
 	public int setting_respawns;
 	public int setting_round_time;
 
-	public boolean started = false;
+	private boolean started = false;
 
 	public List<Player> winners = new ArrayList<Player>();
 	public List<Player> loosers = new ArrayList<Player>();
@@ -361,23 +348,23 @@ public class Match {
 		
 		// TEAM WOOL
 		if (red) {
-			player.getInventory().setItem(8, ItemManager.setMeta(new ItemStack(Material.WOOL, 1, (short)0, DyeColor.RED.getWoolData())));
+			player.getInventory().setItem(8, Paintball.instance.weaponManager.setMeta(new ItemStack(Material.WOOL, 1, DyeColor.RED.getWoolData())));
 		} else {
-			player.getInventory().setItem(8, ItemManager.setMeta(new ItemStack(Material.WOOL, 1, (short)0, DyeColor.BLUE.getWoolData())));
+			player.getInventory().setItem(8, Paintball.instance.weaponManager.setMeta(new ItemStack(Material.WOOL, 1, DyeColor.BLUE.getWoolData())));
 		}
 		
 		if (setting_balls > 0)
-			player.getInventory().addItem(ItemManager.setMeta(new ItemStack(Material.SNOW_BALL, setting_balls)));
+			player.getInventory().addItem(Paintball.instance.weaponManager.setMeta(new ItemStack(Material.SNOW_BALL, setting_balls)));
 		else if (setting_balls == -1)
-			player.getInventory().addItem(ItemManager.setMeta(new ItemStack(Material.SNOW_BALL, 10)));
+			player.getInventory().addItem(Paintball.instance.weaponManager.setMeta(new ItemStack(Material.SNOW_BALL, 10)));
 		if (setting_grenades > 0)
-			player.getInventory().addItem(ItemManager.setMeta(new ItemStack(Material.EGG, setting_grenades)));
+			player.getInventory().addItem(Paintball.instance.weaponManager.setMeta(new ItemStack(Material.EGG, setting_grenades)));
 		else if (setting_grenades == -1)
-			player.getInventory().addItem(ItemManager.setMeta(new ItemStack(Material.EGG, 10)));
+			player.getInventory().addItem(Paintball.instance.weaponManager.setMeta(new ItemStack(Material.EGG, 10)));
 		if (setting_airstrikes > 0)
-			player.getInventory().addItem(ItemManager.setMeta(new ItemStack(Material.STICK, setting_airstrikes)));
+			player.getInventory().addItem(Paintball.instance.weaponManager.setMeta(new ItemStack(Material.STICK, setting_airstrikes)));
 		else if (setting_airstrikes == -1)
-			player.getInventory().addItem(ItemManager.setMeta(new ItemStack(Material.STICK, 10)));
+			player.getInventory().addItem(Paintball.instance.weaponManager.setMeta(new ItemStack(Material.STICK, 10)));
 		// gifts
 		if (plugin.giftsEnabled) {
 			int r = random.nextInt(1000);
@@ -484,7 +471,7 @@ public class Match {
 		player.getInventory().setBoots(
 				Utils.setLeatherArmorColor(new ItemStack(Material.LEATHER_BOOTS, 1), Lobby.SPECTATE.colorA()));
 		
-		player.getInventory().setItem(8, ItemManager.setMeta(new ItemStack(Material.WOOL, 1, (short)0, DyeColor.YELLOW.getWoolData())));
+		player.getInventory().setItem(8, Paintball.instance.weaponManager.setMeta(new ItemStack(Material.WOOL, 1, DyeColor.YELLOW.getWoolData())));
 		
 		player.updateInventory();
 		// MESSAGE
@@ -591,6 +578,14 @@ public class Match {
 		}
 	}
 
+	public boolean hasStarted() {
+		return started;
+	}
+	
+	public boolean isOver() {
+		return matchOver;
+	}
+	
 	public int teamSizeRed() {
 		return redT.size();
 	}
@@ -1076,51 +1071,12 @@ public class Match {
 		}, 1L);
 	}
 
-	public void resetWeaponStuff(Player p) {
-		// remove turrets:
-		ArrayList<Turret> pturrets = new ArrayList<Turret>(Turret.getTurrets(p.getName()));
-		for (Turret t : pturrets) {
-			t.die(false);
-		}
-		// remove mines:
-		ArrayList<Mine> pmines = new ArrayList<Mine>(Mine.getMines(p.getName()));
-		for (Mine m : pmines) {
-			m.explode(false);
-		}
-		
-		// remove zooming
-		if (Sniper.isZooming(p))
-			Sniper.setNotZooming(p);
-		
+	public void resetWeaponStuff(Player player) {
+		plugin.weaponManager.cleanUp(this, player.getName());
 	}
 	
 	public void resetWeaponStuffEnd() {
-		plugin.weaponManager.
-		//remove airstrikes
-		AirstrikeCall.clear();
-		//remove orbitalstrikes
-		Orbitalstrike.clear();
-		//remove grenades
-		Grenade.clear();
-		GrenadeM2.clear();
-		FlashbangHandler.clear();
-		Ball.clear();
+		plugin.weaponManager.cleanUp(this);
 	}
-
-	/*public void resetWeaponStuffDeath(Player p) {
-		// remove turrets:
-		ArrayList<Turret> pturrets = new ArrayList<Turret>(Turret.getTurrets(p.getName()));
-		for (Turret t : pturrets) {
-			t.die(true);
-		}
-		// remove mines:
-		ArrayList<Mine> pmines = new ArrayList<Mine>(Mine.getMines(p.getName()));
-		for (Mine m : pmines) {
-			m.explode(false);
-		}
-		// remove zooming
-		if (Sniper.isZooming(p))
-			Sniper.setNotZooming(p);
-	}*/
 
 }

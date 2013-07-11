@@ -1,4 +1,4 @@
-package de.blablubbabc.paintball.extras.weapons.impl;
+package de.blablubbabc.paintball.gadgets.handlers;
 
 import org.bukkit.Location;
 import org.bukkit.Material;
@@ -16,16 +16,16 @@ import org.bukkit.util.Vector;
 import de.blablubbabc.paintball.Match;
 import de.blablubbabc.paintball.Origin;
 import de.blablubbabc.paintball.Paintball;
-import de.blablubbabc.paintball.extras.weapons.Gadget;
-import de.blablubbabc.paintball.extras.weapons.GadgetManager;
-import de.blablubbabc.paintball.extras.weapons.WeaponHandler;
-import de.blablubbabc.paintball.extras.weapons.impl.BallHandler.Ball;
+import de.blablubbabc.paintball.gadgets.Gadget;
+import de.blablubbabc.paintball.gadgets.GadgetManager;
+import de.blablubbabc.paintball.gadgets.WeaponHandler;
+import de.blablubbabc.paintball.gadgets.handlers.BallHandler.Ball;
 import de.blablubbabc.paintball.utils.Translator;
 import de.blablubbabc.paintball.utils.Utils;
 
 public class GrenadeM2Handler extends WeaponHandler {
 
-	private GadgetManager gadgetHandler = new GadgetManager();
+	private GadgetManager gadgetManager = new GadgetManager();
 	private int next = 0;
 	
 	public GrenadeM2Handler(int customItemTypeID, boolean useDefaultType) {
@@ -33,7 +33,7 @@ public class GrenadeM2Handler extends WeaponHandler {
 	}
 	
 	public GrenadeM2 createGrenadeM2(Match match, Player player, Item nade, Origin origin) {
-		return new GrenadeM2(gadgetHandler, match, player, nade, origin);
+		return new GrenadeM2(gadgetManager, match, player, nade, origin);
 	}
 	
 	private int getNext() {
@@ -80,17 +80,25 @@ public class GrenadeM2Handler extends WeaponHandler {
 			Utils.updatePlayerInventoryLater(Paintball.instance, player);
 		}
 	}
+	
+	@Override
+	public void cleanUp(Match match, String playerName) {
+		gadgetManager.cleanUp(match, playerName);
+	}
+
+	@Override
+	public void cleanUp(Match match) {
+		gadgetManager.cleanUp(match);
+	}
 
 	
 	public class GrenadeM2 extends Gadget {
 		
 		private final Item entity;
-		private final Origin origin;
 
 		private GrenadeM2(GadgetManager gadgetHandler, Match match, Player player, Item nade, Origin origin) {
-			super(gadgetHandler, match, player.getName());
+			super(gadgetHandler, match, player.getName(), origin);
 			this.entity = nade;
-			this.origin = origin;
 			
 			Paintball.instance.getServer().getScheduler().runTaskLater(Paintball.instance, new Runnable() {
 				
@@ -101,7 +109,7 @@ public class GrenadeM2Handler extends WeaponHandler {
 			}, 20L * Paintball.instance.grenade2TimeUntilExplosion);
 		}
 		
-		private void explode() {
+		public void explode() {
 			if (entity.isValid()) {
 				Location location = entity.getLocation();
 				location.getWorld().createExplosion(location, -1F);
@@ -110,7 +118,7 @@ public class GrenadeM2Handler extends WeaponHandler {
 					for (Vector v : Utils.getDirections()) {
 						final Snowball snowball = location.getWorld().spawn(location, Snowball.class);
 						snowball.setShooter(player);
-						final Ball ball = Paintball.instance.weaponManager.getBallHandler().createBall(match, player, snowball, origin);
+						final Ball ball = Paintball.instance.weaponManager.getBallHandler().createBall(match, player, snowball, getOrigin());
 						Vector v2 = v.clone();
 						v2.setX(v.getX() + Math.random() - Math.random());
 						v2.setY(v.getY() + Math.random() - Math.random());
@@ -120,29 +128,31 @@ public class GrenadeM2Handler extends WeaponHandler {
 
 							@Override
 							public void run() {
-								ball.dispose(true, true);
+								ball.dispose(true);
 							}
 						}, (long) Paintball.instance.grenade2Time);
 					}
 				}
 			}
-			dispose(true, false);
+			
+			// remove from tracking:
+			dispose(true);
 		}
 		
 		@Override
-		public void dispose(boolean removeFromGadgetHandlerTracking, boolean cheapEffects) {
+		public void dispose(boolean removeFromGadgetHandlerTracking) {
 			entity.remove();
-			super.dispose(removeFromGadgetHandlerTracking, cheapEffects);
+			super.dispose(removeFromGadgetHandlerTracking);
 		}
 
 		@Override
-		protected boolean isSimiliar(Entity entity) {
+		public boolean isSimiliar(Entity entity) {
 			return entity.getEntityId() == this.entity.getEntityId();
 		}
-
+		
 		@Override
-		public Origin getOrigin() {
-			return origin;
+		public boolean isSimiliar(Location location) {
+			return false;
 		}
 		
 	}

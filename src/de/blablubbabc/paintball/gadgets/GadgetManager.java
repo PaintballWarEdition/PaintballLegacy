@@ -1,4 +1,4 @@
-package de.blablubbabc.paintball.extras.weapons;
+package de.blablubbabc.paintball.gadgets;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -6,6 +6,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 
+import org.bukkit.Location;
 import org.bukkit.entity.Entity;
 
 import de.blablubbabc.paintball.Match;
@@ -38,7 +39,7 @@ public class GadgetManager {
 		if (match == null || playerName == null || gadget == null) throw new IllegalArgumentException();
 		MatchEntry matchEntry = gadgets.get(match);
 		if (matchEntry == null) {
-			matchEntry = new MatchEntry(match);
+			matchEntry = new MatchEntry();
 			gadgets.put(match, matchEntry);
 		}
 		matchEntry.addMatchGadget(playerName, gadget);
@@ -66,63 +67,126 @@ public class GadgetManager {
 		return matchEntry != null ? matchEntry.getMatchGadgets(playerName) : new ArrayList<Gadget>();
 	}
 	
+	// COMPARE TO ENTITY
+	
 	public boolean isGadget(Entity entity) {
-		return getGadget(entity, false) != null;
+		return getGadget(entity) != null;
 	}
 	
 	public boolean isGadget(Entity entity, String playerName) {
-		return getGadget(entity, playerName, false) != null;
+		return getGadget(entity, playerName) != null;
 	}
 	
 	public boolean isGadget(Entity entity, Match match, String playerName) {
-		return getGadget(entity, match, playerName, false) != null;
+		return getGadget(entity, match, playerName) != null;
 	}
 	
-	public Gadget getGadget(Entity entity, boolean removeWhenFound) {
+	public Gadget getGadget(Entity entity) {
 		if (entity == null) throw new IllegalArgumentException();
 		for (MatchEntry matchEntry : gadgets.values()) {
-			Gadget gadget = matchEntry.getGadget(entity, removeWhenFound);
+			Gadget gadget = matchEntry.getGadget(entity);
 			if (gadget != null) {
-				if (removeWhenFound) {
+				/*if (removeWhenFound) {
 					if (matchEntry.getMatchGadgetCount() == 0) gadgets.remove(matchEntry.match);
 					overallCounter--;
-				}
+				}*/
 				return gadget;
 			}
 		}
 		return null;
 	}
 	
-	public Gadget getGadget(Entity entity, String playerName, boolean removeWhenFound) {
+	public Gadget getGadget(Entity entity, String playerName) {
 		if (entity == null || playerName == null) throw new IllegalArgumentException();
 		for (MatchEntry matchEntry : gadgets.values()) {
-			Gadget gadget = matchEntry.getGadget(entity, playerName, removeWhenFound);
+			Gadget gadget = matchEntry.getGadget(entity, playerName);
 			if (gadget != null) {
-				if (removeWhenFound) {
+				/*if (removeWhenFound) {
 					if (matchEntry.getMatchGadgetCount() == 0) gadgets.remove(matchEntry.match);
 					overallCounter--;
-				}
+				}*/
 				return gadget;
 			}
 		}
 		return null;
 	}
 	
-	public Gadget getGadget(Entity entity, Match match, String playerName, boolean removeWhenFound) {
+	public Gadget getGadget(Entity entity, Match match, String playerName) {
 		if (entity == null || match == null || playerName == null) throw new IllegalArgumentException();
 		MatchEntry matchEntry = gadgets.get(match);
 		if (matchEntry != null) {
-			Gadget gadget = matchEntry.getGadget(entity, playerName, removeWhenFound);
+			Gadget gadget = matchEntry.getGadget(entity, playerName);
 			if (gadget != null) {
-				if (removeWhenFound) {
+				/*if (removeWhenFound) {
 					if (matchEntry.getMatchGadgetCount() == 0) gadgets.remove(matchEntry.match);
 					overallCounter--;
-				}
+				}*/
 				return gadget;
 			}
 		}
 		return null;
 	}
+	
+	// COMPARE TO LOCATION (BLOCK)
+	
+	public boolean isGadget(Location location) {
+		return getGadget(location) != null;
+	}
+	
+	public boolean isGadget(Location location, String playerName) {
+		return getGadget(location, playerName) != null;
+	}
+	
+	public boolean isGadget(Location location, Match match, String playerName) {
+		return getGadget(location, match, playerName) != null;
+	}
+	
+	public Gadget getGadget(Location location) {
+		if (location == null) throw new IllegalArgumentException();
+		for (MatchEntry matchEntry : gadgets.values()) {
+			Gadget gadget = matchEntry.getGadget(location);
+			if (gadget != null) {
+				/*if (removeWhenFound) {
+					if (matchEntry.getMatchGadgetCount() == 0) gadgets.remove(matchEntry.match);
+					overallCounter--;
+				}*/
+				return gadget;
+			}
+		}
+		return null;
+	}
+	
+	public Gadget getGadget(Location location, String playerName) {
+		if (location == null || playerName == null) throw new IllegalArgumentException();
+		for (MatchEntry matchEntry : gadgets.values()) {
+			Gadget gadget = matchEntry.getGadget(location, playerName);
+			if (gadget != null) {
+				/*if (removeWhenFound) {
+					if (matchEntry.getMatchGadgetCount() == 0) gadgets.remove(matchEntry.match);
+					overallCounter--;
+				}*/
+				return gadget;
+			}
+		}
+		return null;
+	}
+	
+	public Gadget getGadget(Location location, Match match, String playerName) {
+		if (location == null || match == null || playerName == null) throw new IllegalArgumentException();
+		MatchEntry matchEntry = gadgets.get(match);
+		if (matchEntry != null) {
+			Gadget gadget = matchEntry.getGadget(location, playerName);
+			if (gadget != null) {
+				/*if (removeWhenFound) {
+					if (matchEntry.getMatchGadgetCount() == 0) gadgets.remove(matchEntry.match);
+					overallCounter--;
+				}*/
+				return gadget;
+			}
+		}
+		return null;
+	}
+	
 	
 	public void cleanUp(Match match, String playerName) {
 		if (match == null || playerName == null) throw new IllegalArgumentException();
@@ -144,12 +208,16 @@ public class GadgetManager {
 	
 	
 	private class MatchEntry {
-		private final Match match;
+		//private final Match match;
 		private int overallMatchCounter = 0;
 		private Map<String, List<Gadget>> matchPlayerGadgets = new HashMap<String, List<Gadget>>();
 		
-		private MatchEntry(Match match) {
+		/*private MatchEntry(Match match) {
 			this.match = match;
+		}*/
+		
+		private MatchEntry() {
+			
 		}
 		
 		private void addMatchGadget(String playerName, Gadget gadget) {
@@ -183,44 +251,91 @@ public class GadgetManager {
 			return playerGadgets;
 		}
 		
-		private Gadget getGadget(Entity entity, boolean removeWhenFound) {
-			Gadget found = null;
+		// COMPARE TO ENTITY
+		
+		private Gadget getGadget(Entity entity) {
+			//Gadget found = null;
 			for (Entry<String, List<Gadget>> playerEntry : matchPlayerGadgets.entrySet()) {
 				List<Gadget> playerGadgets = playerEntry.getValue();
 				for (Gadget gadget : playerGadgets) {
 					if (gadget.isSimiliar(entity)) {
-						found = gadget;
-						break;
+						return gadget;
+						//found = gadget;
+						//break;
 					}
 				}
 				
-				if (found != null && removeWhenFound) {
+				/*if (found != null && removeWhenFound) {
 					if (playerGadgets.remove(found)) {
 						if (playerGadgets.size() == 0) matchPlayerGadgets.remove(playerEntry.getKey());
 						overallMatchCounter--;
 					}
 					break;
-				}
+				}*/
 			}
-			
-			return found;
+			return null;
+			//return found;
 		}
 		
-		private Gadget getGadget(Entity entity, String playerName, boolean removeWhenFound) {
+		private Gadget getGadget(Entity entity, String playerName) {
 			List<Gadget> playerGadgets = matchPlayerGadgets.get(playerName);
 			if (playerGadgets != null) {
 				for (Gadget gadget : playerGadgets) {
 					if (gadget.isSimiliar(entity)) {
-						if (removeWhenFound && playerGadgets.remove(gadget)) {
+						/*if (removeWhenFound && playerGadgets.remove(gadget)) {
 							if (playerGadgets.size() == 0) matchPlayerGadgets.remove(playerName);
 							overallMatchCounter--;
-						}
+						}*/
 						return gadget;
 					}
 				}
 			}
 			return null;
 		}
+		
+		// COMPARE TO LOCATION (BLOCK)
+		
+		private Gadget getGadget(Location location) {
+			//Gadget found = null;
+			for (Entry<String, List<Gadget>> playerEntry : matchPlayerGadgets.entrySet()) {
+				List<Gadget> playerGadgets = playerEntry.getValue();
+				for (Gadget gadget : playerGadgets) {
+					if (gadget.isSimiliar(location)) {
+						//found = gadget;
+						return gadget;
+						//break;
+					}
+				}
+				
+				/*if (found != null && removeWhenFound) {
+					if (playerGadgets.remove(found)) {
+						if (playerGadgets.size() == 0) matchPlayerGadgets.remove(playerEntry.getKey());
+						overallMatchCounter--;
+					}
+					break;
+				}*/
+			}
+			
+			return null;
+			//return found;
+		}
+		
+		private Gadget getGadget(Location location, String playerName) {
+			List<Gadget> playerGadgets = matchPlayerGadgets.get(playerName);
+			if (playerGadgets != null) {
+				for (Gadget gadget : playerGadgets) {
+					if (gadget.isSimiliar(location)) {
+						/*if (removeWhenFound && playerGadgets.remove(gadget)) {
+							if (playerGadgets.size() == 0) matchPlayerGadgets.remove(playerName);
+							overallMatchCounter--;
+						}*/
+						return gadget;
+					}
+				}
+			}
+			return null;
+		}
+		
 		
 		private int getMatchGadgetCount() {
 			return overallMatchCounter;
@@ -237,7 +352,7 @@ public class GadgetManager {
 			if (playerGadgets != null) {
 				gadgetsRemoved = playerGadgets.size();
 				for (Gadget gadget : playerGadgets) {
-					gadget.dispose(false, false);
+					gadget.dispose(false);
 				}
 			}
 			overallMatchCounter -= gadgetsRemoved;
@@ -248,7 +363,7 @@ public class GadgetManager {
 			for (String playerName : matchPlayerGadgets.keySet()) {
 				List<Gadget> playerGadgets = matchPlayerGadgets.get(playerName);
 				for (Gadget gadget : playerGadgets) {
-					gadget.dispose(false, true);
+					gadget.dispose(false);
 				}
 			}
 			matchPlayerGadgets = new HashMap<String, List<Gadget>>();

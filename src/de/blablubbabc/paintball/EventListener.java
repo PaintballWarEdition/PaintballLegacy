@@ -9,37 +9,25 @@ import java.util.regex.Pattern;
 
 
 import org.bukkit.ChatColor;
-import org.bukkit.Effect;
 import org.bukkit.GameMode;
-import org.bukkit.Location;
 import org.bukkit.Material;
-import org.bukkit.Sound;
-import org.bukkit.World;
 import org.bukkit.block.Block;
 import org.bukkit.block.BlockState;
 import org.bukkit.block.Sign;
-import org.bukkit.entity.Egg;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.EntityType;
-import org.bukkit.entity.Fireball;
-import org.bukkit.entity.Item;
 import org.bukkit.entity.Player;
 import org.bukkit.entity.Projectile;
 import org.bukkit.entity.Snowball;
-import org.bukkit.entity.Snowman;
 import org.bukkit.event.Event.Result;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
-import org.bukkit.event.block.Action;
 import org.bukkit.event.block.BlockBreakEvent;
 import org.bukkit.event.block.BlockPlaceEvent;
-import org.bukkit.event.block.EntityBlockFormEvent;
 import org.bukkit.event.block.SignChangeEvent;
-import org.bukkit.event.entity.CreatureSpawnEvent;
 import org.bukkit.event.entity.EntityDamageByEntityEvent;
 import org.bukkit.event.entity.EntityDamageEvent;
-import org.bukkit.event.entity.EntityDeathEvent;
 import org.bukkit.event.entity.FoodLevelChangeEvent;
 import org.bukkit.event.entity.PlayerDeathEvent;
 import org.bukkit.event.entity.ProjectileHitEvent;
@@ -51,7 +39,6 @@ import org.bukkit.event.player.AsyncPlayerChatEvent;
 import org.bukkit.event.player.PlayerChangedWorldEvent;
 import org.bukkit.event.player.PlayerCommandPreprocessEvent;
 import org.bukkit.event.player.PlayerDropItemEvent;
-import org.bukkit.event.player.PlayerEggThrowEvent;
 import org.bukkit.event.player.PlayerInteractEntityEvent;
 import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.event.player.PlayerItemHeldEvent;
@@ -61,23 +48,12 @@ import org.bukkit.event.player.PlayerPickupItemEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.PlayerInventory;
-import org.bukkit.inventory.meta.ItemMeta;
-import org.bukkit.util.BlockIterator;
 
-import de.blablubbabc.paintball.extras.Mine;
-import de.blablubbabc.paintball.extras.Orbitalstrike;
-import de.blablubbabc.paintball.extras.Pumpgun;
-import de.blablubbabc.paintball.extras.Rocket;
-import de.blablubbabc.paintball.extras.Shotgun;
-import de.blablubbabc.paintball.extras.Sniper;
-import de.blablubbabc.paintball.extras.weapons.Gadget;
-import de.blablubbabc.paintball.extras.weapons.WeaponManager;
-import de.blablubbabc.paintball.extras.weapons.impl.ConcussionHandler;
+import de.blablubbabc.paintball.gadgets.Gadget;
 import de.blablubbabc.paintball.statistics.player.PlayerStat;
 import de.blablubbabc.paintball.statistics.player.PlayerStats;
 import de.blablubbabc.paintball.utils.Log;
 import de.blablubbabc.paintball.utils.Translator;
-import de.blablubbabc.paintball.utils.Utils;
 
 public class EventListener implements Listener {
 	private Paintball plugin;
@@ -208,76 +184,53 @@ public class EventListener implements Listener {
 	
 	@EventHandler(priority = EventPriority.NORMAL, ignoreCancelled = false)
 	public void onPlayerHit(EntityDamageByEntityEvent event) {
-		if (event.getDamager() instanceof Projectile) {
-			Projectile shot = (Projectile) event.getDamager();
-			if (shot.getShooter() instanceof Player) {
-				Player shooter = (Player) shot.getShooter();
-				Match matchA = plugin.matchManager.getMatch(shooter);
-				if (matchA != null) {
-					if (event.getEntity() instanceof Player) {
-						Player target = (Player) event.getEntity();
-						if (shooter != target) {
-							Match matchB = plugin.matchManager.getMatch(target);
-							if (matchB != null ) {
-								if (matchA == matchB) {
-									if (!matchA.isSpec(shooter) && !matchA.isSpec(target) && matchA.isSurvivor(shooter) && matchA.isSurvivor(target)
-											&& matchA.started) {
-										// Geschoss?
-										if (shot instanceof Snowball) {
-											// match
-											
-											Gadget ball = plugin.weaponManager.getBallHandler().getBall(shot, matchA, shooter.getName(), false);
+		Player attacker = null;
+		
+		Entity damager = event.getDamager();
+		
+		if (damager instanceof Projectile) {
+			Projectile projectile = (Projectile) damager;
+			if (projectile.getShooter() instanceof Player) {
+				attacker = (Player) projectile.getShooter();
+			}
+		} else if (damager instanceof Player) {
+			attacker = (Player) damager;
+		}
+		
+		if (attacker != null) {
+			Match matchA = plugin.matchManager.getMatch(attacker);
+			if (matchA != null) {
+				plugin.weaponManager.onDamagedByEntity(event, matchA, attacker);
+				
+				if (event.getEntity() instanceof Player) {
+					Player target = (Player) event.getEntity();
+					if (attacker != target) {
+						Match matchB = plugin.matchManager.getMatch(target);
+						if (matchB != null ) {
+							if (matchA == matchB) {
+								if (!matchA.isSpec(attacker) && !matchA.isSpec(target) && matchA.isSurvivor(attacker) 
+										&& matchA.isSurvivor(target) && matchA.hasStarted()) {
+									// damage cause?
+									if (event.getCause() == DamageCause.PROJECTILE) {
+										// Paintball hit?
+										if (damager instanceof Snowball) {
+											Gadget ball = plugin.weaponManager.getBallHandler().getBall(event.getDamager(), matchA, attacker.getName());
 											if (ball != null) {
-												matchA.onHitByBall(target, shooter, ball.getOrigin());
+												matchA.onHitByBall(target, attacker, ball.getOrigin());
 											}
 										}
-									}
-								}
-							}
-						}
-					} else {
-						// turret hit on hit via snowball:
-						handleTurretHit(event, event.getEntity(), matchA, shooter);
-					}
-				}
-			}
-		} else if (plugin.allowMelee && event.getCause() == DamageCause.ENTITY_ATTACK) {
-			if (event.getDamager() instanceof Player) {
-				Player attacker = (Player) event.getDamager();
-				Match matchA = plugin.matchManager.getMatch(attacker);
-				if (matchA != null) {
-					if (event.getEntity() instanceof Player) {
-						Player target = (Player) event.getEntity();
-						if (attacker != target) {
-							Match matchT = plugin.matchManager.getMatch(target);
-							if (matchT != null) {
-								if (matchA == matchT) {
-									if (matchA.enemys(attacker, target) && matchA.isSurvivor(attacker) && matchA.isSurvivor(target) && matchA.started) {
+									} else if (plugin.allowMelee && event.getCause() == DamageCause.ENTITY_ATTACK) {
 										if (target.getHealth() > plugin.meleeDamage)
 											target.setHealth(target.getHealth() - plugin.meleeDamage);
 										else {
 											matchA.frag(target, attacker, Origin.MELEE);
 										}
 									}
-								}	
+								}
 							}
 						}
-					} else {
-						// turret hit on punch
-						handleTurretHit(event, event.getEntity(), matchA, attacker);
 					}
 				}
-			}
-		}
-	}
-	
-	private void handleTurretHit(EntityDamageByEntityEvent event, Entity entity, Match match, Player attacker) {
-		if (entity.getType() == EntityType.SNOWMAN) {
-			Snowman snowman = (Snowman) entity;
-			Turret turret = Turret.getIsTurret(snowman);
-			if (turret != null && match == turret.match && match.enemys(attacker, turret.player)) {
-				turret.hit();
-				event.setCancelled(true);
 			}
 		}
 	}
@@ -343,422 +296,31 @@ public class EventListener implements Listener {
 				ItemStack item = event.getItem();
 				if (item != null && item.getType() != Material.POTION)
 					event.setUseItemInHand(Result.DENY);
-				if (!match.started || match.isJustRespawned(playerName)) return;
+				if (!match.hasStarted() || match.isJustRespawned(playerName)) return;
+				
+				// handle weapons and gadgets:
 				plugin.weaponManager.onInteract(event, match);
 			}
 		}
 	}
-	
-	@EventHandler(priority = EventPriority.NORMAL)
-	public void onPlayerInteract(PlayerInteractEvent event) {
-		final Player player = event.getPlayer();
-		if (player.getGameMode() == GameMode.CREATIVE) return;
-		ItemStack item = player.getItemInHand();
-		if (item == null)
-			return;
-		Action action = event.getAction();
-		if (action == Action.PHYSICAL) return;
-	
-		
-		if (Lobby.LOBBY.isMember(player)) {
-			Match match = plugin.matchManager.getMatch(player);
-			if (match != null && Lobby.isPlaying(player) && match.isSurvivor(player)) {
-				Material type = item.getType();
-				if (type != Material.POTION) event.setUseItemInHand(Result.DENY);
-				if (!match.started || match.isJustRespawned(player.getName())) return;
-				String playerName = player.getName();
-				
-				switch (type) {
-				case SNOW_BALL:
-					//MARKER
-					if (item.isSimilar(Ball.item)) {
-						PlayerInventory inv = player.getInventory();
-						if (match.setting_balls == -1 || inv.contains(Material.SNOW_BALL, 1)) {
-							// SOUND EFFECT
-							Location eyeLoc = player.getEyeLocation();
-							World world = player.getWorld();
-							world.playSound(eyeLoc, Sound.WOOD_CLICK, 2.0F, 0F);
-							world.playSound(eyeLoc, Sound.CHICKEN_EGG_POP, 2.0F, 2F);
-							
-							// SHOOT SNOWBALL
-							Snowball ball = (Snowball) world.spawnEntity(eyeLoc, EntityType.SNOWBALL);
-							ball.setShooter(player);
-							// REGISTER:
-							Ball.registerBall(ball, playerName, Origin.MARKER);
-							// BOOST:
-							ball.setVelocity(player.getLocation().getDirection().normalize().multiply(plugin.speedmulti));
-							// STATS
-							// PLAYERSTATS
-							PlayerStats playerStats = plugin.playerManager.getPlayerStats(playerName);
-							playerStats.addStat(PlayerStat.SHOTS, 1);
-							// INFORM MATCH
-							match.onShot(player);
-							
-							if (match.setting_balls != -1) {
-								// -1 ball
-								Utils.removeInventoryItems(inv, Ball.item, 1);
-							}
-							
-						} else {
-							player.playSound(player.getEyeLocation(), Sound.FIRE_IGNITE, 1F, 2F);
-						}
-						updatePlayerInventoryLater(player);
-					}
-					break;
-					
-				case STICK:
-					// AIRSTRIKE
-					if (plugin.airstrike && item.isSimilar(AirstrikeCall.item)) {
-						if (AirstrikeCall.marked(player.getName())) {
-							if (AirstrikeCall.getAirstrikeCountMatch() < plugin.airstrikeMatchLimit) {
-								if (AirstrikeCall.getAirstrikeCountPlayer(playerName) < plugin.airstrikePlayerLimit) {
-									new AirstrikeCall(player);
-									// INFORM MATCH
-									match.onAirstrike(player);
-									// remove stick if not infinite
-									if (match.setting_airstrikes != -1) {
-										if (item.getAmount() <= 1)
-											player.setItemInHand(null);
-										else {
-											item.setAmount(item.getAmount() - 1);
-										}
-										updatePlayerInventoryLater(player);
-									}
-								} else {
-									player.sendMessage(Translator.getString("AIRSTRIKE_PLAYER_LIMIT_REACHED"));
-								}
-
-							} else {
-								player.sendMessage(Translator.getString("AIRSTRIK_MATCH_LIMIT_REACHED"));
-							}
-						}
-					}
-					break;
-
-				case BLAZE_ROD:
-					// ORBITALSTRIKE
-					if (plugin.orbitalstrike && item.isSimilar(Orbitalstrike.item)) {
-						if (Orbitalstrike.marked(player.getName())) {
-							if (Orbitalstrike.getOrbitalstrikeCountMatch() < plugin.orbitalstrikeMatchLimit) {
-								if (Orbitalstrike.getOrbitalstrikeCountPlayer(playerName) < plugin.orbitalstrikePlayerLimit) {
-									new Orbitalstrike(player, match);
-									// remove stick if not infinite
-									if (item.getAmount() <= 1)
-										player.setItemInHand(null);
-									else {
-										item.setAmount(item.getAmount() - 1);
-									}
-									updatePlayerInventoryLater(player);
-								} else {
-									player.sendMessage(Translator.getString("ORBITALSTRIKE_PLAYER_LIMIT_REACHED"));
-								}
-
-							} else {
-								player.sendMessage(Translator.getString("ORBITALSTRIKE_MATCH_LIMIT_REACHED"));
-							}
-						}
-					}
-					break;
-
-				case EGG:
-					// GRENADE
-					if (plugin.grenade && item.isSimilar(Grenade.item)) {
-						PlayerInventory inv = player.getInventory();
-						if (match.setting_grenades == -1 || inv.containsAtLeast(Grenade.item,  1)) {
-							player.sendMessage(Translator.getString("GRENADE_THROW"));
-							player.getWorld().playSound(player.getLocation(), Sound.SILVERFISH_IDLE, 2.0F, 1F);
-							Egg egg = (Egg) player.getWorld().spawnEntity(player.getEyeLocation(), EntityType.EGG);
-							egg.setShooter(player);
-							// boosting:
-							egg.setVelocity(player.getLocation().getDirection().multiply(plugin.grenadeSpeed));
-							Grenade.registerGrenade(egg, playerName, Origin.GRENADE);
-							// INFORM MATCH
-							match.onGrenade(player);
-							if (match.setting_grenades != -1) {
-								// -1 egg
-								Utils.removeInventoryItems(inv, Grenade.item, 1);
-							}
-						} else {
-							player.playSound(player.getEyeLocation(), Sound.FIRE_IGNITE, 1F, 2F);
-						}
-					}
-					updatePlayerInventoryLater(player);
-					break;
-					
-				case SLIME_BALL:
-					// GRENADE 2
-					if (plugin.grenade2 && item.isSimilar(GrenadeM2.item)) {
-						player.getWorld().playSound(player.getLocation(), Sound.IRONGOLEM_THROW, 2.0F, 1F);
-						player.sendMessage(Translator.getString("GRENADE_THROW"));
-						ItemStack nadeItem = GrenadeM2.item.clone();
-						ItemMeta meta = nadeItem.getItemMeta();
-						meta.setDisplayName("GrenadeM2 " + FlashbangHandler.getNext());
-						nadeItem.setItemMeta(meta);
-						Item nade = player.getWorld().dropItem(player.getEyeLocation(), nadeItem);
-						nade.setVelocity(player.getLocation().getDirection().normalize().multiply(plugin.grenade2Speed));
-						GrenadeM2.registerNade(nade, playerName, Origin.GRENADEM2);
-						if (item.getAmount() <= 1)
-							player.setItemInHand(null);
-						else {
-							item.setAmount(item.getAmount() - 1);
-							player.setItemInHand(item);
-						}
-						updatePlayerInventoryLater(player);
-					}
-					break;
-					
-				case GHAST_TEAR:
-					// FLASHBANG
-					if (plugin.flashbang && item.isSimilar(FlashbangHandler.item)) {
-						player.getWorld().playSound(player.getLocation(), Sound.IRONGOLEM_THROW, 2.0F, 1F);
-						ItemStack nadeItem = FlashbangHandler.item.clone();
-						ItemMeta meta = nadeItem.getItemMeta();
-						meta.setDisplayName("Flashbang " + FlashbangHandler.getNext());
-						nadeItem.setItemMeta(meta);
-						Item nade = player.getWorld().dropItem(player.getEyeLocation(), nadeItem);
-						nade.setVelocity(player.getLocation().getDirection().normalize().multiply(plugin.flashbangSpeed));
-						FlashbangHandler.registerNade(nade, playerName, Origin.FLASHBANG);
-						if (item.getAmount() <= 1)
-							player.setItemInHand(null);
-						else {
-							item.setAmount(item.getAmount() - 1);
-							player.setItemInHand(item);
-						}
-						updatePlayerInventoryLater(player);
-					}
-					break;
-					
-				case SPIDER_EYE:
-					// CONCUSSION
-					if (plugin.concussion && item.isSimilar(ConcussionHandler.item)) {
-						player.getWorld().playSound(player.getLocation(), Sound.IRONGOLEM_THROW, 2.0F, 1F);
-						ItemStack nadeItem = ConcussionHandler.item.clone();
-						ItemMeta meta = nadeItem.getItemMeta();
-						meta.setDisplayName("Concussion " + FlashbangHandler.getNext());
-						nadeItem.setItemMeta(meta);
-						Item nade = player.getWorld().dropItem(player.getEyeLocation(), nadeItem);
-						nade.setVelocity(player.getLocation().getDirection().normalize().multiply(plugin.concussionSpeed));
-						ConcussionHandler.registerNade(nade, playerName, Origin.CONCUSSION);
-						if (item.getAmount() <= 1)
-							player.setItemInHand(null);
-						else {
-							item.setAmount(item.getAmount() - 1);
-							player.setItemInHand(item);
-						}
-						updatePlayerInventoryLater(player);
-					}
-					break;
-
-				case SPECKLED_MELON:
-					// SHOTGUN
-					if (plugin.shotgun && item.isSimilar(Shotgun.item)) {
-						PlayerInventory inv = player.getInventory();
-						if ((match.setting_balls == -1 || inv.containsAtLeast(Ball.item, plugin.shotgunAmmo))) {
-							Utils.removeInventoryItems(inv, Ball.item, plugin.shotgunAmmo);
-							updatePlayerInventoryLater(player);
-							// INFORM MATCH
-							match.onShot(player);
-							Shotgun.shoot(player);
-						} else {
-							player.playSound(player.getEyeLocation(), Sound.FIRE_IGNITE, 1F, 2F);
-						}
-					}
-					break;
-					
-				case STONE_AXE:
-					// PUMPGUN
-					if (plugin.pumpgun && item.isSimilar(Pumpgun.item)) {
-						PlayerInventory inv = player.getInventory();
-						if ((match.setting_balls == -1 || inv.containsAtLeast(Ball.item, plugin.pumpgunAmmo))) {
-							Utils.removeInventoryItems(inv, Ball.item, plugin.pumpgunAmmo);
-							updatePlayerInventoryLater(player);
-							// INFORM MATCH
-							match.onShot(player);
-							Pumpgun.shoot(player);
-						} else {
-							player.playSound(player.getEyeLocation(), Sound.FIRE_IGNITE, 1F, 2F);
-						}
-					}
-					break;
-
-				case DIODE:
-					// ROCKET LAUNCHER
-					if (plugin.rocket && item.isSimilar(Rocket.item)) {
-						if (Rocket.getRocketCountMatch() < plugin.rocketMatchLimit) {
-							if (Rocket.getRocketCountPlayer(playerName) < plugin.rocketPlayerLimit) {
-								player.getWorld().playSound(player.getLocation(), Sound.SILVERFISH_IDLE, 2.0F, 1F);
-								Fireball rocket = (Fireball) player.getWorld().spawnEntity(player.getEyeLocation(), EntityType.FIREBALL);
-								rocket.setIsIncendiary(false);
-								rocket.setYield(0F);
-								rocket.setShooter(player);
-								rocket.setVelocity(player.getLocation().getDirection().normalize().multiply(plugin.rocketSpeedMulti));
-								new Rocket(player, rocket);
-								if (item.getAmount() <= 1)
-									player.setItemInHand(null);
-								else {
-									item.setAmount(item.getAmount() - 1);
-									player.setItemInHand(item);
-								}
-								updatePlayerInventoryLater(player);
-							} else {
-								player.sendMessage(Translator.getString("ROCKET_PLAYER_LIMIT_REACHED"));
-							}
-						} else {
-							player.sendMessage(Translator.getString("ROCKET_MATCH_LIMIT_REACHED"));
-						}
-					}
-					break;
-
-				case CARROT_STICK:
-					// SNIPER
-					if (plugin.sniper && item.isSimilar(Sniper.item)) {
-						if (action == Action.LEFT_CLICK_AIR) {
-							Sniper.toggleZoom(player);
-						} else if (action == Action.RIGHT_CLICK_AIR) {
-							PlayerInventory inv = player.getInventory();
-							if ((!plugin.sniperOnlyUseIfZooming || Sniper.isZooming(player))
-								&& (match.setting_balls == -1 || inv.contains(Material.SNOW_BALL, 1))) {
-								// INFORM MATCH
-								match.onShot(player);
-								Sniper.shoot(player);
-								
-								if (match.setting_balls != -1) {
-									// -1 ball
-									Utils.removeInventoryItems(inv, Ball.item, 1);
-									updatePlayerInventoryLater(player);
-								}
-							} else {
-								player.playSound(player.getEyeLocation(), Sound.FIRE_IGNITE, 1F, 2F);
-							}
-						}
-					}
-					break;
-
-				case CHEST:
-					// GIFT
-					if (plugin.giftsEnabled && item.isSimilar(Gifts.item)) {
-						plugin.getServer().getScheduler().runTask(plugin, new Runnable() {
-							
-							@Override
-							public void run() {
-								Gifts.unwrapGift(player);
-							}
-						});
-					}
-					break;
-					
-				case BOOK:
-					// SHOP
-					if (plugin.shop && item.isSimilar(plugin.shopManager.item)) {
-						// no book opening
-						event.setCancelled(true);
-						plugin.shopManager.getShopMenu().open(player);
-					}
-					break;
-
-				default:
-					// no special item in hand
-					break;
-				}
-			}
-		}
-	}
-	
-	private void updatePlayerInventoryLater(final Player player) {
-		plugin.getServer().getScheduler().runTask(plugin, new Runnable() {
-			
-			@SuppressWarnings("deprecation")
-			@Override
-			public void run() {
-				player.updateInventory();
-			}
-		});
-	}
-
-	/*private boolean isAirClick(Action action) {
-		return (action == Action.RIGHT_CLICK_AIR || action == Action.LEFT_CLICK_AIR);
-	}*/
-	
-	/*@EventHandler(priority = EventPriority.NORMAL)
-	public void onChunkUnload(ChunkUnloadEvent event) {
-		for (Entity e : event.getChunk().getEntities()) {
-			if (e.getType() == EntityType.SNOWBALL) {
-				Snowball s = (Snowball) e;
-				if (s.getShooter() instanceof Player) {
-					Ball.getBall(s.getEntityId(), ((Player)s.getShooter()).getName(), true);
-				}
-			} else if (e.getType() == EntityType.EGG) {
-				Egg egg = (Egg) e;
-				if (egg.getShooter() instanceof Player) {
-					Grenade.getGrenade(egg.getEntityId(), ((Player)egg.getShooter()).getName(), true);
-				}
-			}.
-		}
-	}*/
 
 	@EventHandler(priority = EventPriority.MONITOR)
 	public void onItemInHand(PlayerItemHeldEvent event) {
 		Player player = event.getPlayer();
 		if (Lobby.LOBBY.isMember(player)) {
-			// zooming?
-			if (Sniper.isZooming(player))
-				Sniper.setNotZooming(player);
-
-			//ItemStack item = player.getInventory().getItem(event.getNewSlot());
 			plugin.weaponManager.onItemHeld(player);
 		}
 	}
 
 	@EventHandler(priority = EventPriority.MONITOR)
 	public void onProjectileHit(ProjectileHitEvent event) {
-		Projectile shot = event.getEntity();
-		if (shot.getShooter() instanceof Player) {
-			Player shooter = (Player) shot.getShooter();
-			String shooterName = shooter.getName();
+		Projectile projectile = event.getEntity();
+		if (projectile.getShooter() instanceof Player) {
+			Player shooter = (Player) projectile.getShooter();
 			Match match = plugin.matchManager.getMatch(shooter);
 			
 			if (match != null) {
-				if (shot instanceof Snowball) {
-					Gadget ball = plugin.weaponManager.getBallHandler().getBall(shot, match, shooterName, true);
-					// is ball
-					if (ball != null) {
-						Location loc = shot.getLocation();
-						// mine
-						if (plugin.mine) {
-							Block block = loc.getBlock();
-							Mine mine = Mine.getIsMine(block);
-							if (mine != null && match == mine.match && (match.enemys(shooter, mine.player) || shooter.equals(mine.player))) {
-								mine.explode(true);
-							}
-
-							BlockIterator iterator = new BlockIterator(loc.getWorld(), loc.toVector(), shot.getVelocity().normalize(), 0, 2);
-							while (iterator.hasNext()) {
-								Mine m = Mine.getIsMine(iterator.next());
-								if (m != null) {
-									if (match == m.match && (match.enemys(shooter, m.player) || shooter.equals(m.player))) {
-										m.explode(true);
-									}
-								}
-							}
-						}
-						// effect
-						if (plugin.effects) {
-							if (match.isBlue(shooter)) {
-								loc.getWorld().playEffect(loc, Effect.POTION_BREAK, 0);
-							} else if (match.isRed(shooter)) {
-								loc.getWorld().playEffect(loc, Effect.POTION_BREAK, 5);
-							}
-						}
-					}
-				} else if (plugin.grenade && shot instanceof Egg) {
-					Grenade nade = Grenade.getGrenade(shot.getEntityId(), shooter.getName(), true);
-					if (nade != null) {
-						nade.explode(shot.getLocation(), shooter);	
-					}
-				} else if (plugin.rocket && shot instanceof Fireball) {
-					Rocket rocket = Rocket.getRocket(shot.getEntityId(), shooterName, true);
-					if (rocket != null) rocket.die();
-				}
+				plugin.weaponManager.onProjectileHit(event, projectile, match, shooter);
 			}
 		}
 	}
@@ -780,7 +342,7 @@ public class EventListener implements Listener {
 				event.setDamage(0);
 				event.setCancelled(true);
 				Match match = plugin.matchManager.getMatch(target);
-				if (match != null && team != Lobby.SPECTATE && match.isSurvivor(target) && match.started) {
+				if (match != null && team != Lobby.SPECTATE && match.isSurvivor(target) && match.hasStarted()) {
 					if ((plugin.falldamage && cause == DamageCause.FALL) || (plugin.otherDamage && cause != DamageCause.FALL && cause != DamageCause.ENTITY_ATTACK && cause != DamageCause.PROJECTILE)) {
 						if (target.getHealth() <= damage) {
 							match.death(target);
@@ -796,15 +358,14 @@ public class EventListener implements Listener {
 							PlayerInventory inventory = target.getInventory();
 							ItemStack[] armor = inventory.getArmorContents();
 
-							for(int i = 0; i < armor.length; i++)
-							{
-							    if(armor[i] != null)
+							for (int i = 0; i < armor.length; i++) {
+							    if(armor[i] != null) {
 							        armor[i].setDurability((short) 0);
+							    }
 							}
 
 							inventory.setArmorContents(armor);
 							target.updateInventory();
-							
 						}
 					}
 				}
@@ -816,8 +377,9 @@ public class EventListener implements Listener {
 	public void onPlayerBreak(BlockBreakEvent event) {
 		Player player = event.getPlayer();
 		if (Lobby.LOBBY.isMember(player)) {
-			if (player.getGameMode() != GameMode.CREATIVE)
+			if (player.getGameMode() != GameMode.CREATIVE) {
 				event.setCancelled(true);
+			}
 		}
 	}
 
@@ -827,63 +389,12 @@ public class EventListener implements Listener {
 		if (player.getGameMode() == GameMode.CREATIVE) return;
 		
 		if (Lobby.LOBBY.isMember(player)) {
-			// if (!player.isOp() && !player.hasPermission("paintball.admin")) {
 			event.setCancelled(true);
-			// }
-			final Block block = event.getBlockPlaced();
-			Match m = plugin.matchManager.getMatch(player);
-			if (m != null && m.started && m.isSurvivor(player)) {
-				ItemStack item = player.getItemInHand();
-				if (plugin.turret && block.getType() == Material.PUMPKIN && item.isSimilar(Turret.item)) {
-					// turret:
-					if (Turret.getTurretCountMatch() < plugin.turretMatchLimit) {
-						if (Turret.getTurrets(player.getName()).size() < plugin.turretPlayerLimit) {
-							Location spawnLoc = block.getLocation();
-							nextTurretSpawn = spawnLoc;
-							Snowman snowman = (Snowman) block.getLocation().getWorld().spawnEntity(spawnLoc, EntityType.SNOWMAN);
-							nextTurretSpawn = null;
-							new Turret(player, snowman, plugin.matchManager.getMatch(player));
-							if (item.getAmount() <= 1) {
-								player.setItemInHand(null);
-							} else {
-								item.setAmount(item.getAmount() - 1);
-								player.setItemInHand(item);
-							}
-						} else {
-							player.sendMessage(Translator.getString("TURRET_PLAYER_LIMIT_REACHED"));
-						}
-					} else {
-						player.sendMessage(Translator.getString("TURRET_MATCH_LIMIT_REACHED"));
-					}
-
-				} else if (plugin.mine && block.getType() == Material.FLOWER_POT && item.hasItemMeta() && item.getItemMeta().getDisplayName().equals(Translator.getString("WEAPON_MINE"))) {
-					// mine:
-					if (Mine.getMineCountMatch() < plugin.mineMatchLimit) {
-						if (Mine.getMines(player.getName()).size() < plugin.minePlayerLimit) {
-							plugin.getServer().getScheduler().scheduleSyncDelayedTask(this.plugin, new Runnable() {
-
-								@Override
-								public void run() {
-									
-									block.setType(Material.FLOWER_POT);
-									block.setData((byte) 0);
-								}
-							}, 1L);
-							new Mine(player, block, event.getBlockReplacedState(), plugin.matchManager.getMatch(player));
-							if (item.getAmount() <= 1)
-								player.setItemInHand(null);
-							else {
-								item.setAmount(item.getAmount() - 1);
-								player.setItemInHand(item);
-							}
-						} else {
-							player.sendMessage(Translator.getString("MINE_PLAYER_LIMIT_REACHED"));
-						}
-					} else {
-						player.sendMessage(Translator.getString("MINE_MATCH_LIMIT_REACHED"));
-					}
-
-				}
+			Match match = plugin.matchManager.getMatch(player);
+			if (match != null && match.hasStarted() && match.isSurvivor(player)) {
+				
+				// handle weapons and gadgets:
+				plugin.weaponManager.onBlockPlace(event, match);
 			}
 		}
 	}
@@ -905,7 +416,6 @@ public class EventListener implements Listener {
 		
 		Player player = event.getPlayer();
 		if (Lobby.LOBBY.isMember(player)) {
-			// if (!player.isOp() && !player.hasPermission("paintball.admin"))
 			event.setCancelled(true);
 		}
 	}
@@ -914,12 +424,11 @@ public class EventListener implements Listener {
 	public void onPlayerItemsII(PlayerDropItemEvent event) {
 		Player player = event.getPlayer();
 		if (Lobby.LOBBY.isMember(player)) {
-			// if (!player.isOp() && !player.hasPermission("paintball.admin"))
 			event.setCancelled(true);
 		}
 	}
 
-	@EventHandler(priority = EventPriority.HIGHEST, ignoreCancelled = false)
+	@EventHandler(priority = EventPriority.HIGHEST, ignoreCancelled = true)
 	public void onPlayerCommand(PlayerCommandPreprocessEvent event) {
 		// always allow pb commands:
 		if (event.getMessage().startsWith("/pb")) {
@@ -968,16 +477,6 @@ public class EventListener implements Listener {
 		}
 		return false;
 	}
-
-	/*
-	 * @EventHandler(priority = EventPriority.HIGHEST) public void
-	 * onPbCommands(PlayerCommandPreprocessEvent event) { Player player =
-	 * event.getPlayer(); String[] m = event.getMessage().split(" "); // basic
-	 * commands if (m[0].equalsIgnoreCase("/pb")) { if (m.length == 1) {
-	 * plugin.cm.pbhelp(player); } else if (m[1].equalsIgnoreCase("help") ||
-	 * m[1].equalsIgnoreCase("?")) { plugin.cm.pbhelp(player); } else if
-	 * (m[1].equalsIgnoreCase("info")) { plugin.cm.pbinfo(player); } } }
-	 */
 	
 	@EventHandler(priority = EventPriority.LOWEST)
 	public void onPlayerChatEarly(AsyncPlayerChatEvent event) {
@@ -1046,7 +545,7 @@ public class EventListener implements Listener {
 			event.setDroppedExp(0);
 			event.setKeepLevel(false);
 			event.getDrops().clear();
-			Log.severe("WARNING: IllegalState! A player died while playing paintball. Report this to blablubbabc", false);
+			Log.severe("WARNING: IllegalState! A player died while playing paintball. Report this to blablubbabc !", false);
 		}
 	}
 
@@ -1072,7 +571,15 @@ public class EventListener implements Listener {
 			player.sendMessage(ChatColor.AQUA + "http://dev.bukkit.org/bukkit-mods/paintball_pure_war/");
 		}
 		
-	}
+	}	/*
+	 * @EventHandler(priority = EventPriority.HIGHEST) public void
+	 * onPbCommands(PlayerCommandPreprocessEvent event) { Player player =
+	 * event.getPlayer(); String[] m = event.getMessage().split(" "); // basic
+	 * commands if (m[0].equalsIgnoreCase("/pb")) { if (m.length == 1) {
+	 * plugin.cm.pbhelp(player); } else if (m[1].equalsIgnoreCase("help") ||
+	 * m[1].equalsIgnoreCase("?")) { plugin.cm.pbhelp(player); } else if
+	 * (m[1].equalsIgnoreCase("info")) { plugin.cm.pbinfo(player); } } }
+	 */
 
 	@EventHandler(priority = EventPriority.NORMAL)
 	public void onPlayerQuit(PlayerQuitEvent event) {
@@ -1086,7 +593,6 @@ public class EventListener implements Listener {
 
 	private void onPlayerDisconnect(Player player) {
 		plugin.leaveLobby(player, true);
-
 	}
 
 }

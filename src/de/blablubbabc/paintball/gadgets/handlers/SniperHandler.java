@@ -1,8 +1,10 @@
-package de.blablubbabc.paintball.extras.weapons.impl;
+package de.blablubbabc.paintball.gadgets.handlers;
 
 import java.util.ArrayList;
+import java.util.List;
 
 
+import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.Sound;
@@ -19,14 +21,13 @@ import org.bukkit.util.Vector;
 import de.blablubbabc.paintball.Match;
 import de.blablubbabc.paintball.Origin;
 import de.blablubbabc.paintball.Paintball;
-import de.blablubbabc.paintball.extras.Sniper;
-import de.blablubbabc.paintball.extras.weapons.WeaponHandler;
+import de.blablubbabc.paintball.gadgets.WeaponHandler;
 import de.blablubbabc.paintball.utils.Translator;
 import de.blablubbabc.paintball.utils.Utils;
 
 public class SniperHandler extends WeaponHandler {
 	
-	private ArrayList<Player> zooming = new ArrayList<Player>();
+	private List<String> zooming = new ArrayList<String>();
 	
 	public SniperHandler(int customItemTypeID, boolean useDefaultType) {
 		super(customItemTypeID, useDefaultType);
@@ -38,11 +39,11 @@ public class SniperHandler extends WeaponHandler {
 		
 		Snowball snowball = location.getWorld().spawn(location, Snowball.class);
 		snowball.setShooter(player);
-		Ball.registerBall(s, player.getName(), Origin.SNIPER);
+		Paintball.instance.weaponManager.getBallHandler().createBall(match, player, snowball, Origin.SNIPER);
 		if (Paintball.instance.sniperNoGravity) {
-			NoGravityHandler.addEntity(s, v.multiply(Paintball.instance.sniperSpeedmulti), Paintball.instance.sniperNoGravityDuration * 20);
+			Paintball.instance.weaponManager.getNoGravityHandler().addEntity(snowball, direction.multiply(speed), Paintball.instance.sniperNoGravityDuration * 20);
 		} else {
-			snowball.setVelocity(direction.multiply(Paintball.instance.sniperSpeedmulti));
+			snowball.setVelocity(direction.multiply(speed));
 		}
 
 	}
@@ -72,7 +73,7 @@ public class SniperHandler extends WeaponHandler {
 				toggleZoom(player);
 			} else if (action == Action.RIGHT_CLICK_AIR) {
 				PlayerInventory inv = player.getInventory();
-				if ((!Paintball.instance.sniperOnlyUseIfZooming || Sniper.isZooming(player))
+				if ((!Paintball.instance.sniperOnlyUseIfZooming || isZooming(player))
 					&& (match.setting_balls == -1 || inv.contains(Paintball.instance.weaponManager.getBallHandler().getItem(), 1))) {
 					// INFORM MATCH
 					match.onShot(player);
@@ -91,6 +92,13 @@ public class SniperHandler extends WeaponHandler {
 		}
 	}
 	
+	@Override
+	protected void onItemHeld(Player player) {
+		if (isZooming(player)) {
+			setNotZooming(player);
+		}
+	}
+	
 	private void setZoom(Player player) {
 		player.setWalkSpeed(-0.15F);
 		if(Paintball.instance.sniperRemoveSpeed) player.removePotionEffect(PotionEffectType.SPEED);
@@ -102,27 +110,44 @@ public class SniperHandler extends WeaponHandler {
 	
 	public void toggleZoom(Player player) {
 		if (isZooming(player)) {
-			zooming.remove(player);
+			zooming.remove(player.getName());
 			setNoZoom(player);
 		} else {
-			zooming.add(player);
+			zooming.add(player.getName());
 			setZoom(player);
 		}
 	}
 
 	public boolean isZooming(Player player) {
-		return zooming.contains(player);
+		return zooming.contains(player.getName());
 	}
 
 	public void setZooming(Player player) {
-		if (!isZooming(player))
-			zooming.add(player);
+		if (!isZooming(player)) {
+			zooming.add(player.getName());
+		}
+		
 		setZoom(player);
 	}
 
 	public void setNotZooming(Player player) {
-		if (isZooming(player))
-			zooming.remove(player);
+		if (isZooming(player)) {
+			zooming.remove(player.getName());
+		}
+		
 		setNoZoom(player);
+	}
+	
+	@Override
+	public void cleanUp(Match match, String playerName) {
+		Player player = Bukkit.getPlayerExact(playerName);
+		if (player != null && isZooming(player)) {
+			setNotZooming(player);
+		}
+	}
+
+	@Override
+	public void cleanUp(Match match) {
+		// nothing to do here
 	}
 }

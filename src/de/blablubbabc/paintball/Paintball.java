@@ -28,23 +28,11 @@ import org.bukkit.scoreboard.Scoreboard;
 import de.blablubbabc.BlaDB.BlaSQLite;
 import de.blablubbabc.commandsigns.CommandSignsListener;
 import de.blablubbabc.paintball.commands.CommandManager;
-import de.blablubbabc.paintball.extras.Grenade;
-import de.blablubbabc.paintball.extras.GrenadeM2;
-import de.blablubbabc.paintball.extras.ItemManager;
-import de.blablubbabc.paintball.extras.Mine;
-import de.blablubbabc.paintball.extras.NoGravity;
-import de.blablubbabc.paintball.extras.Orbitalstrike;
-import de.blablubbabc.paintball.extras.Pumpgun;
-import de.blablubbabc.paintball.extras.Rocket;
-import de.blablubbabc.paintball.extras.Shotgun;
-import de.blablubbabc.paintball.extras.Sniper;
-import de.blablubbabc.paintball.extras.Turret;
-import de.blablubbabc.paintball.extras.weapons.Gift;
-import de.blablubbabc.paintball.extras.weapons.WeaponManager;
-import de.blablubbabc.paintball.extras.weapons.impl.ConcussionHandler;
 import de.blablubbabc.paintball.features.InSignsFeature;
 import de.blablubbabc.paintball.features.TagAPIListener;
 import de.blablubbabc.paintball.features.VoteListener;
+import de.blablubbabc.paintball.gadgets.Gift;
+import de.blablubbabc.paintball.gadgets.WeaponManager;
 import de.blablubbabc.paintball.joindelay.JoinWaitRunnable;
 import de.blablubbabc.paintball.joindelay.WaitTimer;
 import de.blablubbabc.paintball.melodies.Instrus;
@@ -890,22 +878,6 @@ public class Paintball extends JavaPlugin{
 		weaponManager = new WeaponManager(this);
 		
 		// INIT STATICS
-		ItemManager.init();
-
-		Ball.init();
-		FlashbangHandler.init();
-		ConcussionHandler.init();
-		Gifts.init();
-		Grenade.init();
-		GrenadeM2.init();
-		Mine.init();
-		NoGravity.init();
-		Orbitalstrike.init();
-		Pumpgun.init();
-		Rocket.init();
-		Shotgun.init();
-		Sniper.init();
-		Turret.init();
 		Utils.init();
 		// Log is already init above
 		// Translator will be init below
@@ -963,9 +935,6 @@ public class Paintball extends JavaPlugin{
 				}
 			}
 		}
-		
-		//start no gravity task
-		if (sniperNoGravity) NoGravity.run();
 
 		//METRICS
 		try {
@@ -1073,26 +1042,6 @@ public class Paintball extends JavaPlugin{
 				new Poster(plugin);
 			}
 		}, 1L);
-		
-		if (debug) {
-			getServer().getScheduler().runTaskTimer(this, new Runnable() {
-				
-				@Override
-				public void run() {
-					
-					Log.info("Balls: "+ Ball.count + " ; Rockets: " + Rocket.getRocketCountMatch());
-					for (String playerName : Ball.balls.keySet()) {
-						ArrayList<Ball> pballs = Ball.balls.get(playerName);
-						Log.info("Balls " + playerName +": " + pballs.size());
-						String ids = "";
-						for (Ball b : pballs) {
-							ids += b.getId() + ", ";
-						}
-						Log.info("IDs: " + ids);
-					}
-				}
-			}, 100L, 60L);
-		}
 		
 		Log.info("By blablubbabc enabled.");
 
