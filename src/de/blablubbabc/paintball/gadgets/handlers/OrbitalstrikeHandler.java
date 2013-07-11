@@ -120,10 +120,12 @@ public class OrbitalstrikeHandler extends WeaponHandler {
 	
 	@Override
 	protected void onItemHeld(final Player player, ItemStack newItem) {
+		if (newItem == null) return;
+		
 		final String name = player.getName();
 		if (getItem().isSimilar(newItem)) {
 			if (!taskIds.containsKey(name)) {
-				int taskId = Paintball.instance.getServer().getScheduler().scheduleSyncRepeatingTask(Paintball.instance, new Runnable() {
+				int taskId = Paintball.instance.getServer().getScheduler().runTaskTimer(Paintball.instance, new Runnable() {
 
 					@Override
 					public void run() {
@@ -139,7 +141,7 @@ public class OrbitalstrikeHandler extends WeaponHandler {
 							demark(player);
 						}
 					}
-				}, 0L, 1L);
+				}, 0L, 1L).getTaskId();
 				taskIds.put(name, taskId);
 			}
 		} else {
@@ -343,17 +345,6 @@ public class OrbitalstrikeHandler extends WeaponHandler {
 			}
 			last = last.getRelative(BlockFace.UP);
 			player.sendBlockChange(last.getLocation(), Material.REDSTONE_BLOCK, (byte) 0);
-			
-			final String playerName = player.getName();
-			// demark after a certain time:
-			Paintball.instance.getServer().getScheduler().runTaskLater(Paintball.instance, new Runnable() {
-				
-				@Override
-				public void run() {
-					demark(playerName, match);
-				}
-			}, Paintball.instance.airstrikeBombs * 5L);
-			
 		}
 		
 		private void demark(String playerName, Match match) {

@@ -15,6 +15,7 @@ import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.PlayerInventory;
 import org.bukkit.inventory.meta.ItemMeta;
+import org.bukkit.util.Vector;
 
 import de.blablubbabc.paintball.Match;
 import de.blablubbabc.paintball.Origin;
@@ -57,19 +58,22 @@ public class MarkerHandler extends WeaponHandler {
 		if (itemInHand.isSimilar(getItem())) {
 			PlayerInventory inv = player.getInventory();
 			if (match.setting_balls == -1 || inv.contains(Material.SNOW_BALL, 1)) {
+				Vector direction = player.getLocation().getDirection().normalize();
 				// SOUND EFFECT
 				Location eyeLoc = player.getEyeLocation();
+				Location spawnLoc = eyeLoc.clone().add(new Vector(-direction.getZ(), 0.0, direction.getX()).normalize().multiply(0.2));
+				
 				World world = player.getWorld();
 				world.playSound(eyeLoc, Sound.WOOD_CLICK, 2.0F, 0F);
 				world.playSound(eyeLoc, Sound.CHICKEN_EGG_POP, 2.0F, 2F);
 				
 				// SHOOT SNOWBALL
-				Snowball snowball = (Snowball) world.spawnEntity(eyeLoc, EntityType.SNOWBALL);
+				Snowball snowball = (Snowball) world.spawnEntity(spawnLoc, EntityType.SNOWBALL);
 				snowball.setShooter(player);
 				// REGISTER:
 				Paintball.instance.weaponManager.getBallHandler().createBall(match, player, snowball, Origin.MARKER);
 				// BOOST:
-				snowball.setVelocity(player.getLocation().getDirection().normalize().multiply(Paintball.instance.speedmulti));
+				snowball.setVelocity(direction.multiply(Paintball.instance.speedmulti));
 				// STATS
 				// PLAYERSTATS
 				PlayerStats playerStats = Paintball.instance.playerManager.getPlayerStats(playerName);

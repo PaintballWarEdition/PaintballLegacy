@@ -4,6 +4,7 @@ import org.bukkit.Effect;
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.Sound;
+import org.bukkit.World;
 import org.bukkit.block.Block;
 import org.bukkit.block.BlockState;
 import org.bukkit.entity.Entity;
@@ -171,23 +172,20 @@ public class MineHandler extends WeaponHandler implements Listener {
 			if (!exploded) {
 				exploded = true;
 
+				World world = location.getWorld();
 				// some effect here:
 				if (Paintball.instance.effects) {
 					// effect
-					location.getWorld().playEffect(location, Effect.SMOKE, 1);
-					location.getWorld().playEffect(location, Effect.SMOKE, 2);
-					location.getWorld().playEffect(location, Effect.SMOKE, 3);
-					location.getWorld().playEffect(location, Effect.SMOKE, 4);
-					location.getWorld().playEffect(location, Effect.SMOKE, 5);
-					location.getWorld().playEffect(location, Effect.SMOKE, 6);
-					location.getWorld().playEffect(location, Effect.SMOKE, 7);
-					location.getWorld().playEffect(location, Effect.SMOKE, 8);
-					location.getWorld().playEffect(location, Effect.MOBSPAWNER_FLAMES, 4);
+					for (int i = 1; i <= 8; i++) {
+						world.playEffect(location, Effect.SMOKE, i);
+					}
+					world.playEffect(location, Effect.MOBSPAWNER_FLAMES, 4);
 				}
 
-				location.getWorld().createExplosion(location, -1.0F);
+				world.createExplosion(location, -1.0F);
+				Location spawnLoc = location.clone().add(0, 1, 0);
 				for (Vector v : Utils.getUpVectors()) {
-					final Snowball snowball = location.getWorld().spawn(location, Snowball.class);
+					final Snowball snowball = world.spawn(spawnLoc, Snowball.class);
 					snowball.setShooter(player);
 					final Ball ball = Paintball.instance.weaponManager.getBallHandler().createBall(match, player, snowball, Origin.MINE);
 					
@@ -216,7 +214,9 @@ public class MineHandler extends WeaponHandler implements Listener {
 				Paintball.instance.getServer().getScheduler().cancelTask(tickTask);
 			}
 			// reset to old block:
-			if (oldState != null) oldState.update(true);
+			if (oldState != null) {
+				oldState.update(true);
+			}
 			
 			super.dispose(removeFromGadgetHandlerTracking);
 		}
