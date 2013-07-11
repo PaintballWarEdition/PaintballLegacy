@@ -50,7 +50,7 @@ public abstract class WeaponHandler {
 		
 	}
 	
-	protected void onItemHeld(Player player) {
+	protected void onItemHeld(Player player, ItemStack newItem) {
 		
 	}
 	

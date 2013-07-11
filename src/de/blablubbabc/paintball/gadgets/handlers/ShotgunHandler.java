@@ -88,6 +88,7 @@ public class ShotgunHandler extends WeaponHandler {
 		if (event.getAction() == Action.PHYSICAL || !Paintball.instance.shotgun) return;
 		Player player = event.getPlayer();
 		ItemStack itemInHand = player.getItemInHand();
+		if (itemInHand == null) return;
 		
 		if (itemInHand.isSimilar(getItem())) {
 			PlayerInventory inv = player.getInventory();

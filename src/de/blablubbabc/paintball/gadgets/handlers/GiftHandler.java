@@ -48,6 +48,7 @@ public class GiftHandler extends WeaponHandler {
 	protected void onInteract(PlayerInteractEvent event, Match match) {
 		final Player player = event.getPlayer();
 		ItemStack itemInHand = player.getItemInHand();
+		if (itemInHand == null) return;
 		
 		if (Paintball.instance.giftsEnabled && itemInHand.isSimilar(getItem())) {
 			Paintball.instance.getServer().getScheduler().runTask(Paintball.instance, new Runnable() {
@@ -114,7 +115,7 @@ public class GiftHandler extends WeaponHandler {
 					player.getInventory().addItem(item);
 					
 					// item in hand update
-					Paintball.instance.weaponManager.onItemHeld(player);
+					Paintball.instance.weaponManager.onItemHeld(player, item);
 					
 					player.updateInventory();
 					break;

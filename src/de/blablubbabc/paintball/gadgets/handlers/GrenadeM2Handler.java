@@ -70,6 +70,7 @@ public class GrenadeM2Handler extends WeaponHandler implements Listener {
 		if (event.getAction() == Action.PHYSICAL || !Paintball.instance.grenade2) return;
 		Player player = event.getPlayer();
 		ItemStack itemInHand = player.getItemInHand();
+		if (itemInHand == null) return;
 		
 		if (itemInHand.isSimilar(getItem())) {
 			player.getWorld().playSound(player.getLocation(), Sound.IRONGOLEM_THROW, 2.0F, 1F);

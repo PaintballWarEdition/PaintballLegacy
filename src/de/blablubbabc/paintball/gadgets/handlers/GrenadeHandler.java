@@ -74,6 +74,7 @@ public class GrenadeHandler extends WeaponHandler implements Listener {
 		if (event.getAction() == Action.PHYSICAL || !Paintball.instance.grenade) return;
 		Player player = event.getPlayer();
 		ItemStack itemInHand = player.getItemInHand();
+		if (itemInHand == null) return;
 		
 		if (itemInHand.isSimilar(getItem())) {
 			PlayerInventory inv = player.getInventory();

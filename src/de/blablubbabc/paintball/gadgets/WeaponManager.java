@@ -185,9 +185,9 @@ public class WeaponManager {
 		}
 	}
 	
-	public void onItemHeld(Player player) {
+	public void onItemHeld(Player player, ItemStack newItem) {
 		for (WeaponHandler weaponHandler : weaponHandlers) {
-			weaponHandler.onItemHeld(player);
+			weaponHandler.onItemHeld(player, newItem);
 		}
 	}
 	

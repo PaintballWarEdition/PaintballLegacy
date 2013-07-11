@@ -109,6 +109,8 @@ public class TurretHandler extends WeaponHandler implements Listener {
 		if (Paintball.instance.turret && block.getType() == Material.PUMPKIN) {
 			Player player = event.getPlayer();
 			ItemStack itemInHand = player.getItemInHand();
+			if (itemInHand == null) return;
+			
 			if (itemInHand.isSimilar(getItem())) {
 				String playerName = player.getName();
 				if (gadgetManager.getMatchGadgetCount(match) < Paintball.instance.turretMatchLimit) {

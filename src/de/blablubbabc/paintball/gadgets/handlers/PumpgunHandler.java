@@ -60,6 +60,7 @@ public class PumpgunHandler extends WeaponHandler {
 		if (event.getAction() == Action.PHYSICAL || !Paintball.instance.pumpgun) return;
 		Player player = event.getPlayer();
 		ItemStack itemInHand = player.getItemInHand();
+		if (itemInHand == null) return;
 		
 		if (itemInHand.isSimilar(getItem())) {
 			PlayerInventory inv = player.getInventory();

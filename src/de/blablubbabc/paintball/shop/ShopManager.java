@@ -136,13 +136,9 @@ public class ShopManager {
 			else vars.put("price", Translator.getString("FOR_FREE"));
 			player.sendMessage(Translator.getString("YOU_BOUGHT", vars));
 			
-			//airstrike item in hand update
-			if (plugin.airstrike) {
-				plugin.weaponManager.onItemHeld(player);
-			}
-			
-			if (plugin.orbitalstrike) {
-				plugin.weaponManager.onItemHeld(player);
+			// hand update
+			if (plugin.airstrike || plugin.orbitalstrike) {
+				plugin.weaponManager.onItemHeld(player, item);
 			}
 			
 			return true;

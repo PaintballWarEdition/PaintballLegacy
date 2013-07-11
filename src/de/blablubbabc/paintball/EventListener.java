@@ -312,11 +312,11 @@ public class EventListener implements Listener {
 		}
 	}
 
-	@EventHandler(priority = EventPriority.MONITOR)
+	@EventHandler(priority = EventPriority.NORMAL, ignoreCancelled = true)
 	public void onItemInHand(PlayerItemHeldEvent event) {
 		Player player = event.getPlayer();
 		if (Lobby.LOBBY.isMember(player)) {
-			plugin.weaponManager.onItemHeld(player);
+			plugin.weaponManager.onItemHeld(player, player.getInventory().getItem(event.getNewSlot()));
 		}
 	}
 

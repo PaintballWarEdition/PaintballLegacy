@@ -87,6 +87,7 @@ public class OrbitalstrikeHandler extends WeaponHandler {
 		final Player player = event.getPlayer();
 		String playerName = player.getName();
 		ItemStack itemInHand = player.getItemInHand();
+		if (itemInHand == null) return;
 		
 		if (itemInHand.isSimilar(getItem())) {
 			Block block = marks.get(playerName);
@@ -118,15 +119,15 @@ public class OrbitalstrikeHandler extends WeaponHandler {
 	}
 	
 	@Override
-	protected void onItemHeld(final Player player) {
+	protected void onItemHeld(final Player player, ItemStack newItem) {
 		final String name = player.getName();
-		if (player.getItemInHand().isSimilar(getItem())) {
+		if (getItem().isSimilar(newItem)) {
 			if (!taskIds.containsKey(name)) {
 				int taskId = Paintball.instance.getServer().getScheduler().scheduleSyncRepeatingTask(Paintball.instance, new Runnable() {
 
 					@Override
 					public void run() {
-						if (player.getItemInHand().isSimilar(getItem())) {
+						if (getItem().isSimilar(player.getItemInHand())) {
 							Block block = player.getTargetBlock(Utils.getTransparentBlocks(), 1000);
 							if (!isBlock(block, name)) {
 								demark(player);

@@ -99,6 +99,8 @@ public class MineHandler extends WeaponHandler implements Listener {
 		if (Paintball.instance.mine && block.getType() == Material.FLOWER_POT) {
 			Player player = event.getPlayer();
 			ItemStack itemInHand = player.getItemInHand();
+			if (itemInHand == null) return;
+			
 			if (itemInHand.isSimilar(getItem())) {
 				String playerName = player.getName();
 				if (gadgetManager.getMatchGadgetCount(match) < Paintball.instance.mineMatchLimit) {

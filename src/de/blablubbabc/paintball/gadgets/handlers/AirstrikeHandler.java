@@ -34,7 +34,7 @@ public class AirstrikeHandler extends WeaponHandler {
 
 	private GadgetManager gadgetManager = new GadgetManager();
 	
-	private ConcurrentHashMap<String, Integer> taskIds = new ConcurrentHashMap<String, Integer>();;
+	private ConcurrentHashMap<String, Integer> taskIds = new ConcurrentHashMap<String, Integer>();
 	private Map<String, Block> marks = new HashMap<String, Block>();
 	private Map<String, List<FinalMark>> finalMarks = new HashMap<String, List<FinalMark>>();
 	
@@ -66,6 +66,7 @@ public class AirstrikeHandler extends WeaponHandler {
 		final Player player = event.getPlayer();
 		String playerName = player.getName();
 		ItemStack itemInHand = player.getItemInHand();
+		if (itemInHand == null) return;
 		
 		if (itemInHand.isSimilar(getItem())) {
 			Block block = marks.get(playerName);
@@ -151,15 +152,16 @@ public class AirstrikeHandler extends WeaponHandler {
 	}
 	
 	@Override
-	protected void onItemHeld(final Player player) {
+	protected void onItemHeld(final Player player, ItemStack newItem) {
 		final String name = player.getName();
-		if (player.getItemInHand().isSimilar(getItem())) {
+		
+		if (getItem().isSimilar(newItem)) {
 			if (!taskIds.containsKey(name)) {
-				int taskId = Paintball.instance.getServer().getScheduler().scheduleSyncRepeatingTask(Paintball.instance, new Runnable() {
+				int taskId = Paintball.instance.getServer().getScheduler().runTaskTimer(Paintball.instance, new Runnable() {
 
 					@Override
 					public void run() {
-						if (player.getItemInHand().isSimilar(getItem())) {
+						if (getItem().isSimilar(player.getItemInHand())) {
 							Block block = player.getTargetBlock(Utils.getTransparentBlocks(), 1000);
 							if (!isBlock(block, name)) {
 								demark(player);
@@ -171,7 +173,7 @@ public class AirstrikeHandler extends WeaponHandler {
 							demark(player);
 						}
 					}
-				}, 0L, 1L);
+				}, 0L, 1L).getTaskId();
 				taskIds.put(name, taskId);
 			}
 		} else {

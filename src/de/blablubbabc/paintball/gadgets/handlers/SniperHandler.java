@@ -66,6 +66,7 @@ public class SniperHandler extends WeaponHandler {
 		if (event.getAction() == Action.PHYSICAL || !Paintball.instance.sniper) return;
 		Player player = event.getPlayer();
 		ItemStack itemInHand = player.getItemInHand();
+		if (itemInHand == null) return;
 		
 		if (itemInHand.isSimilar(getItem())) {
 			Action action = event.getAction();
@@ -93,7 +94,7 @@ public class SniperHandler extends WeaponHandler {
 	}
 	
 	@Override
-	protected void onItemHeld(Player player) {
+	protected void onItemHeld(Player player, ItemStack newItem) {
 		if (isZooming(player)) {
 			setNotZooming(player);
 		}

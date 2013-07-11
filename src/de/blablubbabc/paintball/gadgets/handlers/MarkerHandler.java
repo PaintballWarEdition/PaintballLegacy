@@ -52,6 +52,7 @@ public class MarkerHandler extends WeaponHandler {
 		Player player = event.getPlayer();
 		String playerName = player.getName();
 		ItemStack itemInHand = player.getItemInHand();
+		if (itemInHand == null) return;
 		
 		if (itemInHand.isSimilar(getItem())) {
 			PlayerInventory inv = player.getInventory();

@@ -59,6 +59,7 @@ public class RocketHandler extends WeaponHandler {
 		Player player = event.getPlayer();
 		String playerName = player.getName();
 		ItemStack itemInHand = player.getItemInHand();
+		if (itemInHand == null) return;
 		
 		if (itemInHand.isSimilar(getItem())) {
 			if (gadgetManager.getMatchGadgetCount(match) < Paintball.instance.rocketMatchLimit) {
