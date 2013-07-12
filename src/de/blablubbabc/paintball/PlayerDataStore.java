@@ -35,15 +35,15 @@ public class PlayerDataStore {
 	private float exhaustion;
 	private float saturation;
 	private int foodlevel;
-	private int health;
-	private int maxHealth;
+	private double health;
+	private double maxHealth;
 	private int fireTicks;
 	private int remainingAir;
 	private int ticksLived;
 	private int noDamageTicks;
 	private float fallDistance;
 	private GameMode gamemode;
-	private int lastDamage;
+	private double lastDamage;
 	private EntityDamageEvent lastDamageCause;
 	// Level / exp
 	private int level;
