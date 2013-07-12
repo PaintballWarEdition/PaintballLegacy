@@ -5,6 +5,7 @@ import java.util.List;
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.Sound;
+import org.bukkit.World;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.EntityType;
 import org.bukkit.entity.Item;
@@ -20,6 +21,7 @@ import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.potion.PotionEffect;
 import org.bukkit.potion.PotionEffectType;
+import org.bukkit.util.Vector;
 
 import de.blablubbabc.paintball.Match;
 import de.blablubbabc.paintball.Origin;
@@ -76,13 +78,18 @@ public class ConcussionHandler extends WeaponHandler implements Listener {
 		if (itemInHand == null) return;
 		
 		if (itemInHand.isSimilar(getItem())) {
-			player.getWorld().playSound(player.getLocation(), Sound.IRONGOLEM_THROW, 2.0F, 1F);
+			World world = player.getWorld();
+			Vector direction = player.getLocation().getDirection().normalize();
+			Location spawnLoc = Utils.getRightHeadLocation(direction, player.getEyeLocation());
+			
+			world.playSound(player.getLocation(), Sound.IRONGOLEM_THROW, 2.0F, 1F);
+			
 			ItemStack nadeItem = getItem().clone();
 			ItemMeta meta = nadeItem.getItemMeta();
 			meta.setDisplayName("Concussion " + getNext());
 			nadeItem.setItemMeta(meta);
-			Item nade = player.getWorld().dropItem(player.getEyeLocation(), nadeItem);
-			nade.setVelocity(player.getLocation().getDirection().normalize().multiply(Paintball.instance.concussionSpeed));
+			Item nade = player.getWorld().dropItem(spawnLoc, nadeItem);
+			nade.setVelocity(direction.normalize().multiply(Paintball.instance.concussionSpeed));
 			
 			createConcussion(match, player, nade, Origin.CONCUSSION);
 			

@@ -86,6 +86,10 @@ public class Utils {
 		}
 		return new String(b);
 	}
+	
+	public static Location getRightHeadLocation(Vector viewDirection, Location eyeLocation) {
+		return eyeLocation.add(new Vector(-viewDirection.getZ(), 0.0, viewDirection.getX()).normalize().multiply(0.2));
+	}
 
 	// /////////////////////////////////////////////////////////////
 

@@ -3,6 +3,7 @@ package de.blablubbabc.paintball.gadgets.handlers;
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.Sound;
+import org.bukkit.World;
 import org.bukkit.entity.Egg;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.EntityType;
@@ -80,11 +81,16 @@ public class GrenadeHandler extends WeaponHandler implements Listener {
 			PlayerInventory inv = player.getInventory();
 			if (match.setting_grenades == -1 || inv.containsAtLeast(getItem(),  1)) {
 				player.sendMessage(Translator.getString("GRENADE_THROW"));
-				player.getWorld().playSound(player.getLocation(), Sound.SILVERFISH_IDLE, 2.0F, 1F);
-				Egg egg = (Egg) player.getWorld().spawnEntity(player.getEyeLocation(), EntityType.EGG);
+				World world = player.getWorld();
+				Vector direction = player.getLocation().getDirection().normalize();
+				Location spawnLoc = player.getEyeLocation().add(new Vector(-direction.getZ(), 0.0, direction.getX()).normalize().multiply(0.2));
+				
+				world.playSound(spawnLoc, Sound.SILVERFISH_IDLE, 2.0F, 1F);
+				
+				Egg egg = (Egg) player.getWorld().spawnEntity(spawnLoc, EntityType.EGG);
 				egg.setShooter(player);
 				// boosting:
-				egg.setVelocity(player.getLocation().getDirection().multiply(Paintball.instance.grenadeSpeed));
+				egg.setVelocity(direction.multiply(Paintball.instance.grenadeSpeed));
 				createGrenade(match, player, egg, Origin.GRENADE);
 				// INFORM MATCH
 				match.onGrenade(player);

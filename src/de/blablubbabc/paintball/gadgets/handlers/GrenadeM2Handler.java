@@ -3,6 +3,7 @@ package de.blablubbabc.paintball.gadgets.handlers;
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.Sound;
+import org.bukkit.World;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.Item;
 import org.bukkit.entity.Player;
@@ -73,20 +74,25 @@ public class GrenadeM2Handler extends WeaponHandler implements Listener {
 		if (itemInHand == null) return;
 		
 		if (itemInHand.isSimilar(getItem())) {
-			player.getWorld().playSound(player.getLocation(), Sound.IRONGOLEM_THROW, 2.0F, 1F);
+			World world = player.getWorld();
+			Vector direction = player.getLocation().getDirection().normalize();
+			Location spawnLoc = Utils.getRightHeadLocation(direction, player.getEyeLocation());
+			
+			world.playSound(player.getLocation(), Sound.IRONGOLEM_THROW, 2.0F, 1F);
 			player.sendMessage(Translator.getString("GRENADE_THROW"));
+			
 			ItemStack nadeItem = getItem().clone();
 			ItemMeta meta = nadeItem.getItemMeta();
 			meta.setDisplayName("GrenadeM2 " + getNext());
 			nadeItem.setItemMeta(meta);
-			Item nade = player.getWorld().dropItem(player.getEyeLocation(), nadeItem);
-			nade.setVelocity(player.getLocation().getDirection().normalize().multiply(Paintball.instance.grenade2Speed));
+			Item nade = world.dropItem(spawnLoc, nadeItem);
+			nade.setVelocity(direction.multiply(Paintball.instance.grenade2Speed));
 			
 			createGrenadeM2(match, player, nade, Origin.GRENADEM2);
 			
-			if (itemInHand.getAmount() <= 1)
+			if (itemInHand.getAmount() <= 1) {
 				player.setItemInHand(null);
-			else {
+			} else {
 				itemInHand.setAmount(itemInHand.getAmount() - 1);
 				player.setItemInHand(itemInHand);
 			}

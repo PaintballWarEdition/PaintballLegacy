@@ -75,11 +75,13 @@ public class SniperHandler extends WeaponHandler {
 			} else if (action == Action.RIGHT_CLICK_AIR) {
 				PlayerInventory inv = player.getInventory();
 				if ((!Paintball.instance.sniperOnlyUseIfZooming || isZooming(player))
-					&& (match.setting_balls == -1 || inv.contains(Paintball.instance.weaponManager.getBallHandler().getItem(), 1))) {
+					&& (match.setting_balls == -1 || inv.containsAtLeast(Paintball.instance.weaponManager.getBallHandler().getItem(), 1))) {
 					// INFORM MATCH
 					match.onShot(player);
-					Location location = player.getEyeLocation();
-					shoot(player, match, location, location.getDirection(), Paintball.instance.sniperSpeedmulti);
+					
+					Vector direction = player.getLocation().getDirection();
+					Location spawnLoc = Utils.getRightHeadLocation(direction, player.getEyeLocation());
+					shoot(player, match, spawnLoc, direction, Paintball.instance.sniperSpeedmulti);
 					
 					if (match.setting_balls != -1) {
 						// -1 ball

@@ -58,14 +58,13 @@ public class MarkerHandler extends WeaponHandler {
 		if (itemInHand.isSimilar(getItem())) {
 			PlayerInventory inv = player.getInventory();
 			if (match.setting_balls == -1 || inv.contains(Material.SNOW_BALL, 1)) {
-				Vector direction = player.getLocation().getDirection().normalize();
-				// SOUND EFFECT
-				Location eyeLoc = player.getEyeLocation();
-				Location spawnLoc = eyeLoc.clone().add(new Vector(-direction.getZ(), 0.0, direction.getX()).normalize().multiply(0.2));
-				
 				World world = player.getWorld();
-				world.playSound(eyeLoc, Sound.WOOD_CLICK, 2.0F, 0F);
-				world.playSound(eyeLoc, Sound.CHICKEN_EGG_POP, 2.0F, 2F);
+				Vector direction = player.getLocation().getDirection().normalize();
+				Location spawnLoc = Utils.getRightHeadLocation(direction, player.getEyeLocation());
+				
+				// SOUND EFFECT
+				world.playSound(spawnLoc, Sound.WOOD_CLICK, 2.0F, 0F);
+				world.playSound(spawnLoc, Sound.CHICKEN_EGG_POP, 2.0F, 2F);
 				
 				// SHOOT SNOWBALL
 				Snowball snowball = (Snowball) world.spawnEntity(spawnLoc, EntityType.SNOWBALL);
