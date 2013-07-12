@@ -65,12 +65,16 @@ public class RocketHandler extends WeaponHandler {
 			if (gadgetManager.getMatchGadgetCount(match) < Paintball.instance.rocketMatchLimit) {
 				if (gadgetManager.getPlayerGadgetCount(match, playerName) < Paintball.instance.rocketPlayerLimit) {
 					
-					player.getWorld().playSound(player.getLocation(), Sound.SILVERFISH_IDLE, 2.0F, 1F);
-					Fireball rocket = (Fireball) player.getWorld().spawnEntity(player.getEyeLocation(), EntityType.FIREBALL);
+					World world = player.getWorld();
+					Vector direction = player.getLocation().getDirection().normalize();
+					Location spawnLoc = Utils.getRightHeadLocation(direction, player.getEyeLocation());
+					
+					world.playSound(spawnLoc, Sound.SILVERFISH_IDLE, 2.0F, 1F);
+					Fireball rocket = (Fireball) world.spawnEntity(spawnLoc, EntityType.FIREBALL);
 					rocket.setIsIncendiary(false);
 					rocket.setYield(0F);
 					rocket.setShooter(player);
-					rocket.setVelocity(player.getLocation().getDirection().normalize().multiply(Paintball.instance.rocketSpeedMulti));
+					rocket.setVelocity(direction.multiply(Paintball.instance.rocketSpeedMulti));
 					
 					createRocket(match, player, rocket, Origin.ROCKET);
 					

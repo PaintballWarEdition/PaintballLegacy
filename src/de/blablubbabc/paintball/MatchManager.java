@@ -151,6 +151,7 @@ public class MatchManager{
 				if (Lobby.isPlaying(player)) {
 					//afk detection update on match end
 					if (plugin.afkDetection && !match.isSpec(player)) {
+						// TODO radius square
 						if (player.getLocation().getWorld().equals(playersLoc.get(playerName).getWorld()) 
 								&& player.getLocation().distance(playersLoc.get(playerName)) <= plugin.afkRadius 
 								&& stats.getStat(PlayerStat.SHOTS) == 0 && stats.getStat(PlayerStat.KILLS) == 0) {

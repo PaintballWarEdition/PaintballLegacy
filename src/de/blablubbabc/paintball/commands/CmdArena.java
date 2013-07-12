@@ -12,12 +12,15 @@ import de.blablubbabc.paintball.Lobby;
 import de.blablubbabc.paintball.Paintball;
 import de.blablubbabc.paintball.statistics.arena.ArenaSetting;
 import de.blablubbabc.paintball.statistics.arena.ArenaStat;
+import de.blablubbabc.paintball.utils.KeyValuePair;
 import de.blablubbabc.paintball.utils.Log;
 import de.blablubbabc.paintball.utils.Translator;
 
 public class CmdArena {
 	private Paintball plugin;
 	private ArenaManager am;
+	
+	private int entriesPerPage = 15;
 
 	public CmdArena(Paintball pl, ArenaManager a) {
 		plugin = pl;
@@ -26,11 +29,6 @@ public class CmdArena {
 
 	public boolean command(CommandSender sender, String[] args) {
 		if (sender instanceof Player) {
-			//PERMISSION CHECK
-			/*if(!sender.isOp() && !sender.hasPermission("paintball.arena")) {
-				sender.sendMessage(plugin.t.getString("NO_PERMISSION"));
-				return true;
-			}*/
 			Player player = (Player) sender;
 			if (args[1].equalsIgnoreCase("list")) {
 				int page = 1;
@@ -48,17 +46,20 @@ public class CmdArena {
 				vars.put("arenas", String.valueOf(arenas.size()));
 				player.sendMessage(Translator.getString("ARENA_LIST_HEADER", vars));
 				
-				int entriesPerPage = 10;
 				int start = (page - 1) * entriesPerPage;
+				int max_page = (int) Math.ceil((double) arenas.size() / entriesPerPage);
 				// selected page to high ?
 				if (start >= arenas.size()) {
-					if (arenas.size() > 0) page = (int) Math.ceil((double) arenas.size() / entriesPerPage);
+					if (arenas.size() > 0) page = max_page;
 					else page = 1;
 					
 					// recalculate start
 					start = (page - 1) * entriesPerPage;
 				}
 				int end = Math.min(start + entriesPerPage, arenas.size());
+				
+				// page header
+				player.sendMessage(Translator.getString("ARENA_LIST_PAGE_HEADER", new KeyValuePair("current_page", String.valueOf(page)), new KeyValuePair("max_page", String.valueOf(max_page))));
 				
 				Map<String, String> vars2 = new HashMap<String, String>();
 				for (int i = start; i < end; i++) {
