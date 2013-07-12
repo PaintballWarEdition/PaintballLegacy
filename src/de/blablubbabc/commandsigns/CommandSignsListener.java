@@ -32,7 +32,7 @@ public class CommandSignsListener implements Listener {
 				String line1 = ChatColor.stripColor(sign.getLine(0));
 				if (line1.equalsIgnoreCase(plugin.commandSignIdentifier)) {
 					for (int i = 1; i < 4; i++) {
-						String command = sign.getLine(i);
+						String command = ChatColor.stripColor(sign.getLine(i));
 						if (!command.isEmpty()) {
 							if (command.startsWith("/")) command = command.substring(1);
 							event.setCancelled(true);
