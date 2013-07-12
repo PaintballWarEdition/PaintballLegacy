@@ -69,6 +69,8 @@ import de.blablubbabc.paintball.utils.Metrics.Graph;
 public class Paintball extends JavaPlugin{
 	public static Paintball instance;
 	
+	public boolean currentlyDisableing = false;
+	
 	public PlayerManager playerManager;
 	public CommandManager commandManager;
 	public MatchManager matchManager;
@@ -1059,11 +1061,13 @@ public class Paintball extends JavaPlugin{
 	}
 	
 	public void onDisable(){
-		if(matchManager != null) matchManager.forceReload();
+		currentlyDisableing = true;
+		matchManager.forceReload();
 		sql.closeConnection();
 		getServer().getScheduler().cancelTasks(this);
 		instance = null;
 		Log.info("Disabled!");
+		currentlyDisableing = false;
 	}
 
 	public void reload(CommandSender sender) {

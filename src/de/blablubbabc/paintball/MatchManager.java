@@ -250,10 +250,11 @@ public class MatchManager{
 							plugin.feeder.status(ready());
 						}
 						//TIME
-						long time2 = System.nanoTime();
-						Double delta = (time2 - time1)/10E6;
-						DecimalFormat dec = new DecimalFormat("#.###");
-						if(plugin.debug) plugin.feeder.text("+Async Stats Saving: Took " + dec.format(delta) + " ms");
+						if(plugin.debug) {
+							double delta = (System.nanoTime() - time1) / 10E6;
+							DecimalFormat dec = new DecimalFormat("#.###");
+							plugin.feeder.text("+Async Stats Saving: Took " + dec.format(delta) + " ms");
+						}
 					}
 				});
 			}

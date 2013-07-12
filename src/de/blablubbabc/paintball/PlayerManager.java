@@ -41,10 +41,12 @@ public class PlayerManager {
 		}
 	}
 	
+	// is done sync if Paintball is currently disableing, else async
 	public void unloadPlayerStats(String playerName) {
 		PlayerStats stats = playerStats.remove(playerName);
 		if (stats != null) {
-			stats.saveAsync();
+			if (!Paintball.instance.currentlyDisableing) stats.saveAsync();
+			else stats.save();
 		}
 	}
 	
@@ -63,27 +65,25 @@ public class PlayerManager {
 	// METHODS
 	// SETTER
 	public void addAllOnlinePlayers() {
-		Paintball.instance.getServer().getScheduler()
-				.runTaskAsynchronously(Paintball.instance, new Runnable() {
+		Paintball.instance.getServer().getScheduler().runTaskAsynchronously(Paintball.instance, new Runnable() {
 
-					@Override
-					public void run() {
-						for (Player p : Paintball.instance.getServer().getOnlinePlayers()) {
-							addPlayer(p.getName());
-						}
-					}
-				});
+			@Override
+			public void run() {
+				for (Player p : Paintball.instance.getServer().getOnlinePlayers()) {
+					addPlayer(p.getName());
+				}
+			}
+		});
 	}
 	
 	public void addPlayerAsync(final String name) {
-		Paintball.instance.getServer().getScheduler()
-				.runTaskAsynchronously(Paintball.instance, new Runnable() {
+		Paintball.instance.getServer().getScheduler().runTaskAsynchronously(Paintball.instance, new Runnable() {
 
-					@Override
-					public void run() {
-						addPlayer(name);
-					}
-				});
+			@Override
+			public void run() {
+				addPlayer(name);
+			}
+		});
 	}
 	
 	private void addPlayer(final String name) {
@@ -94,14 +94,13 @@ public class PlayerManager {
 	}
 
 	public void resetAllDataAsync() {
-		Paintball.instance.getServer().getScheduler()
-				.runTaskAsynchronously(Paintball.instance, new Runnable() {
+		Paintball.instance.getServer().getScheduler().runTaskAsynchronously(Paintball.instance, new Runnable() {
 
-					@Override
-					public void run() {
-						resetAllData();
-					}
-				});
+			@Override
+			public void run() {
+				resetAllData();
+			}
+		});
 	}
 
 	public void resetAllData() {
