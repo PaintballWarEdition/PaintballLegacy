@@ -46,9 +46,9 @@ public enum GeneralStat {
 	public static String getKeysAsString() {
 		String string = "";
 		for(String key : getKeys()) {
-			string += key + ",";
+			string += key + ", ";
 		}
-		if(string.length() > 1) string = string.substring(0, (string.length() - 1));
+		if(string.length() > 1) string = string.substring(0, (string.length() - 2));
 		return string;
 	}
 }

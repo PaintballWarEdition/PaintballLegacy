@@ -12,7 +12,9 @@ import org.bukkit.entity.Player;
 
 import de.blablubbabc.paintball.Lobby;
 import de.blablubbabc.paintball.Paintball;
+import de.blablubbabc.paintball.Rank;
 import de.blablubbabc.paintball.statistics.player.PlayerStat;
+import de.blablubbabc.paintball.utils.KeyValuePair;
 import de.blablubbabc.paintball.utils.Translator;
 import de.blablubbabc.paintball.utils.Utils;
 
@@ -172,8 +174,24 @@ public class CommandManager implements CommandExecutor{
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 					} else if (args[0].equalsIgnoreCase("rank")) {
+						player.sendMessage(Translator.getString("RANK_HEADER"));
+						// send next rank information:
+						Rank rank = plugin.rankManager.getRank(player.getName());
+						int next_index = rank.getRankIndex() + 1;
+						
+						if (next_index >= plugin.rankManager.getRankCount()) {
+							player.sendMessage(Translator.getString("RANK_NEXT_RANK", new KeyValuePair("next_rank", Translator.getString("RANK_MAX_RANK_REACHED"))));
+						} else {
+							Rank next_rank = plugin.rankManager.getRankByIndex(next_index);
+							player.sendMessage(Translator.getString("RANK_NEXT_RANK", new KeyValuePair("next_rank", next_rank.getName())));
+							player.sendMessage(Translator.getString("RANK_NEXT_RANK_NEEDED_POINTS", new KeyValuePair("needed_points", String.valueOf(next_rank.getNeededPoints()))));
+						}
+						
+						player.sendMessage(" ");
+						
 						if (args.length == 1) plugin.statsManager.sendRank(player, player.getName(), PlayerStat.POINTS);
 						else plugin.statsManager.sendRank(player, player.getName(), args[1]);
+						
 						return true;
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 					} else if (args[0].equalsIgnoreCase("stats")) {

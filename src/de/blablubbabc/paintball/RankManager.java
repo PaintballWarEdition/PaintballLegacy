@@ -187,6 +187,10 @@ public class RankManager {
 		return highest;
 	}
 	
+	public int getRankCount() {
+		return ranks.size();
+	}
+	
 	public Rank getRankByName(String rankName) {
 		for (Rank rank : ranks) {
 			if (rank.getName().equals(rankName)) return rank;
