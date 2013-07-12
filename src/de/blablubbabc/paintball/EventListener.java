@@ -7,7 +7,6 @@ import java.util.Map;
 import java.util.Set;
 import java.util.regex.Pattern;
 
-
 import org.bukkit.ChatColor;
 import org.bukkit.GameMode;
 import org.bukkit.Material;
@@ -34,7 +33,6 @@ import org.bukkit.event.entity.ProjectileHitEvent;
 import org.bukkit.event.entity.ProjectileLaunchEvent;
 import org.bukkit.event.entity.EntityDamageEvent.DamageCause;
 import org.bukkit.event.hanging.HangingBreakByEntityEvent;
-import org.bukkit.event.hanging.HangingBreakEvent.RemoveCause;
 import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.event.inventory.InventoryType.SlotType;
 import org.bukkit.event.player.AsyncPlayerChatEvent;
@@ -97,15 +95,17 @@ public class EventListener implements Listener {
 
 	@EventHandler(priority = EventPriority.NORMAL, ignoreCancelled = true)
 	public void onHangingEntityBreak(HangingBreakByEntityEvent event) {
-		if (event.getCause() == RemoveCause.ENTITY) {
-			if (event.getRemover() instanceof Projectile) {
-				Projectile projectile = (Projectile) event.getRemover();
-				if (projectile.getShooter() instanceof Player) {
-					Player player = (Player) projectile.getShooter();
-					if (Lobby.LOBBY.isMember(player)) {
-						event.setCancelled(true);
-					}
-				}
+		Entity remover = event.getRemover();
+		if (remover instanceof Projectile) {
+			Projectile projectile = (Projectile) remover;
+			if (projectile.getShooter() instanceof Player) {
+				remover = (Player) projectile.getShooter();
+			}
+		}
+		
+		if (remover instanceof Player) {
+			if (Lobby.LOBBY.isMember((Player) remover)) {
+				event.setCancelled(true);
 			}
 		}
 	}
