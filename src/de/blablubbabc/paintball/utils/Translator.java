@@ -12,24 +12,21 @@ import java.util.Scanner;
 import org.bukkit.ChatColor;
 import org.bukkit.plugin.Plugin;
 
-
-
 public class Translator {
 	public static boolean success = false;
-
+	
 	private static Map<String, String> translation;
-	private static Map<String, String> def_language;
-	private static boolean use_def = false;
 
 	public Translator(Plugin plugin, String filename) {
+		Translator.success = false;
+		Translator.translation = new HashMap<String, String>();
+		
 		File path;
 		File localisationFile;
 		File def_file;
 		
-		Translator.use_def = false;
-		Translator.success = false;
-		Translator.translation = new HashMap<String, String>();
-		Translator.def_language = new HashMap<String, String>();
+		boolean use_def = false;
+		Map<String, String> def_language = new HashMap<String, String>();
 
 		path = new File(plugin.getDataFolder().toString() + "/languages/");
 		if (!path.exists())
@@ -128,6 +125,13 @@ public class Translator {
 			}
 		}
 		Translator.success = true;
+		
+		// remove the not needed map:
+		if (use_def) {
+			translation = def_language;
+		}
+		
+		def_language = null;
 	}
 
 	// GETTER:
@@ -152,11 +156,9 @@ public class Translator {
 		if (!success) {
 			return "ERROR:couldn't load language!";
 		}
-		String value;
-		if (use_def)
-			value = def_language.get(key.toUpperCase());
-		else
-			value = translation.get(key.toUpperCase());
+		
+		String value = translation.get(key.toUpperCase());
+		
 		if (value == null) {
 			return "ERROR:translation_is_missing!";
 		} else {
@@ -176,10 +178,7 @@ public class Translator {
 
 	public static Map<String, String> getTranslation() {
 		if (!success) return null;
-		if (use_def)
-			return def_language;
-		else
-			return translation;
+		return translation;
 	}
 
 	private Map<String, String> loadLanguage(File file) {
