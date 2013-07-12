@@ -158,63 +158,72 @@ public class Match {
 		// WAITING TIMER:
 		this.started = false;
 		
-		startTimer = new Timer(Paintball.instance, 0L, 20L, plugin.countdownStart, new Runnable() {
-			
-			@Override
-			public void run() {
-				for (Player p : getAllPlayer()) {
-					// player left (= dead) ?
-					if (!isSurvivor(p)) continue;
-					Location ploc = p.getLocation();
-					Location loc = playersLoc.get(p.getName());
-					if (ploc.getBlockX() != loc.getBlockX() || ploc.getBlockY() != loc.getBlockY() || ploc.getBlockZ() != loc.getBlockZ()) {
-						loc.setPitch(ploc.getPitch());
-						loc.setYaw(ploc.getYaw());
-						p.teleport(loc);
-					}	
-				}
+		if (plugin.countdownStart > 0) {
+			startTimer = new Timer(Paintball.instance, 0L, 20L, plugin.countdownStart, new Runnable() {
 				
-				// scoreboard:
-				updateAllMatchScoreboardTimers(startTimer.getTime());
-			}
-		}, new Runnable() {
-			
-			@Override
-			public void run() {
-				Map<String, String> vars = new HashMap<String, String>();
-				vars.put("seconds", String.valueOf(startTimer.getTime()));
-				String msg = Translator.getString("COUNTDOWN_START", vars);
-				for (Player player : getAll()) {
-					if (!isSurvivor(player)) continue;
-					if (plugin.useXPBar) player.setLevel(startTimer.getTime());
-					player.sendMessage(msg);
+				@Override
+				public void run() {
+					for (Player p : getAllPlayer()) {
+						// player left (= dead) ?
+						if (!isSurvivor(p)) continue;
+						Location ploc = p.getLocation();
+						Location loc = playersLoc.get(p.getName());
+						if (ploc.getBlockX() != loc.getBlockX() || ploc.getBlockY() != loc.getBlockY() || ploc.getBlockZ() != loc.getBlockZ()) {
+							loc.setPitch(ploc.getPitch());
+							loc.setYaw(ploc.getYaw());
+							p.teleport(loc);
+						}	
+					}
+					
+					// scoreboard:
+					updateAllMatchScoreboardTimers(startTimer.getTime());
 				}
-			}
-		}, new Runnable() {
-			
-			@Override
-			public void run() {
-				startTimer = null;
-				// START:
-				started = true;
-				// lives + start!:
-				Map<String, String> vars = new HashMap<String, String>();
-				vars.put("lives", String.valueOf(setting_lives));
-				if (setting_respawns == -1) {
-					vars.put("respawns", Translator.getString("INFINITE"));
-				} else {
-					vars.put("respawns", String.valueOf(setting_respawns));
+			}, new Runnable() {
+				
+				@Override
+				public void run() {
+					Map<String, String> vars = new HashMap<String, String>();
+					vars.put("seconds", String.valueOf(startTimer.getTime()));
+					String msg = Translator.getString("COUNTDOWN_START", vars);
+					for (Player player : getAll()) {
+						if (!isSurvivor(player)) continue;
+						if (plugin.useXPBar) player.setLevel(startTimer.getTime());
+						player.sendMessage(msg);
+					}
 				}
-				vars.put("round_time", String.valueOf(setting_round_time));
-
-				plugin.feeder.status(Translator.getString("MATCH_SETTINGS_INFO", vars));
-				plugin.feeder.status(Translator.getString("MATCH_START"));
-
-				makeAllVisible();
-				startRoundTimer();
-			}
-		});
+			}, new Runnable() {
+				
+				@Override
+				public void run() {
+					startTimer = null;
+					// START:
+					startMatch();
+				}
+			});
+		} else {
+			startMatch();
+		}
 		
+	}
+	
+	private void startMatch() {
+		// START:
+		started = true;
+		// lives + start!:
+		Map<String, String> vars = new HashMap<String, String>();
+		vars.put("lives", String.valueOf(setting_lives));
+		if (setting_respawns == -1) {
+			vars.put("respawns", Translator.getString("INFINITE"));
+		} else {
+			vars.put("respawns", String.valueOf(setting_respawns));
+		}
+		vars.put("round_time", String.valueOf(setting_round_time));
+
+		plugin.feeder.status(Translator.getString("MATCH_SETTINGS_INFO", vars));
+		plugin.feeder.status(Translator.getString("MATCH_START"));
+
+		makeAllVisible();
+		startRoundTimer();
 	}
 
 	public TDMMatchStats getMatchStats(String playerName) {
