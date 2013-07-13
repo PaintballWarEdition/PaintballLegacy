@@ -4,6 +4,7 @@ import java.util.Map;
 import java.util.Map.Entry;
 
 import org.bukkit.Bukkit;
+import org.bukkit.Sound;
 import org.bukkit.entity.Player;
 
 import de.blablubbabc.paintball.Paintball;
@@ -67,6 +68,8 @@ public class PlayerStats {
 				if (new_rank.getNeededPoints() <= newPoints) {
 					Player player = Bukkit.getPlayerExact(playerName);
 					if (player != null && player.isOnline()) {
+						
+						player.playSound(player.getEyeLocation(), Sound.LEVEL_UP, 1F, 2F);
 						// highest Rank now?
 						KeyValuePair pluginString = new KeyValuePair("plugin", Translator.getString("PLUGIN"));
 						KeyValuePair newRankName = new KeyValuePair("new_rank", new_rank.getName());

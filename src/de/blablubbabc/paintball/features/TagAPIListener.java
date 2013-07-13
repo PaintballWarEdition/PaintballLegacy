@@ -27,7 +27,7 @@ public class TagAPIListener implements Listener {
 			if(Lobby.isPlaying(player)) {
 				if(plugin.tagsInvis) {
 					// invisible tags:
-					event.setTag("Â§Â§Â§Â§");
+					event.setTag("§§§§");
 					
 				} else if(plugin.tagsColor) {
 					// colored tags:
@@ -45,7 +45,7 @@ public class TagAPIListener implements Listener {
 					} else {
 						if(plugin.tagsRemainingInvis) {
 							// invisible tags:
-							event.setTag("Â§Â§Â§Â§");
+							event.setTag("§§§§");
 						} else {
 							event.setTag(ChatColor.WHITE+target.getDisplayName());
 						}

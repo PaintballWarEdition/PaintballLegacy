@@ -63,7 +63,7 @@ public class MarkerHandler extends WeaponHandler {
 				Location spawnLoc = Utils.getRightHeadLocation(direction, player.getEyeLocation());
 				
 				// SOUND EFFECT
-				player.playSound(spawnLoc, Sound.CLICK, 2.0F, 0F);
+				player.playSound(spawnLoc, Sound.CLICK, 1.0F, 2F);
 				world.playSound(spawnLoc, Sound.CHICKEN_EGG_POP, 2.0F, 2F);
 				
 				// SHOOT SNOWBALL
