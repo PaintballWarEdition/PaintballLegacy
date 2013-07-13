@@ -24,49 +24,49 @@ public class TagAPIListener implements Listener {
 		Match match = plugin.matchManager.getMatch(player);
 		if (match != null && match.isSurvivor(player)) {
 			Player target = event.getNamedPlayer();
-			if(Lobby.isPlaying(player)) {
-				if(plugin.tagsInvis) {
+			if (Lobby.isPlaying(player)) {
+				if (plugin.tagsInvis) {
 					// invisible tags:
 					event.setTag("§§§§");
 					
-				} else if(plugin.tagsColor) {
+				} else if (plugin.tagsColor) {
 					// colored tags:
 					Match matchTar = plugin.matchManager.getMatch(target);
-					if(match == matchTar && match.isSurvivor(target)) {
+					if (match == matchTar && match.isSurvivor(target)) {
 						//change colors according to team
 						//target is red, blue or spec ?
 						if(match.isRed(target)) {
-							event.setTag(Lobby.RED.color()+target.getDisplayName());
+							event.setTag(Lobby.RED.color() + target.getDisplayName());
 						} else if(match.isBlue(target)) {
-							event.setTag(Lobby.BLUE.color()+target.getDisplayName());
+							event.setTag(Lobby.BLUE.color() + target.getDisplayName());
 						} else if(match.isSpec(target)) {
-							event.setTag(Lobby.SPECTATE.color()+target.getDisplayName());
+							event.setTag(Lobby.SPECTATE.color() + target.getDisplayName());
 						}
 					} else {
 						if(plugin.tagsRemainingInvis) {
 							// invisible tags:
 							event.setTag("§§§§");
 						} else {
-							event.setTag(ChatColor.WHITE+target.getDisplayName());
+							event.setTag(ChatColor.WHITE + target.getDisplayName());
 						}
 					}
 				}
-			} else if(Lobby.isSpectating(player)) {
-				if(plugin.tagsColor) {
+			} else if (Lobby.isSpectating(player)) {
+				if (plugin.tagsColor) {
 					// colored tags for spectators, else normal tags/no changes:
 					Match matchTar = plugin.matchManager.getMatch(target);
-					if(match == matchTar && match.isSurvivor(target)) {
+					if (match == matchTar && match.isSurvivor(target)) {
 						//change colors according to team
 						//target is red, blue or spec ?
-						if(match.isRed(target)) {
-							event.setTag(Lobby.RED.color()+target.getDisplayName());
-						} else if(match.isBlue(target)) {
-							event.setTag(Lobby.BLUE.color()+target.getDisplayName());
-						} else if(match.isSpec(target)) {
-							event.setTag(Lobby.SPECTATE.color()+target.getDisplayName());
+						if (match.isRed(target)) {
+							event.setTag(Lobby.RED.color() + target.getDisplayName());
+						} else if (match.isBlue(target)) {
+							event.setTag(Lobby.BLUE.color() + target.getDisplayName());
+						} else if (match.isSpec(target)) {
+							event.setTag(Lobby.SPECTATE.color() + target.getDisplayName());
 						}
 					} else {
-						event.setTag(ChatColor.WHITE+target.getDisplayName());
+						event.setTag(ChatColor.WHITE + target.getDisplayName());
 					}
 				}
 			}
