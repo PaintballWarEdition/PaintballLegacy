@@ -878,9 +878,6 @@ public class Paintball extends JavaPlugin{
 			getServer().getPluginManager().disablePlugin(this);
 			return;
 		}
-		// WEAPON MANAGER
-		weaponManager = new WeaponManager(this);
-		weaponManager.initWeaponHandlers();
 		
 		// INIT STATICS
 		Utils.init();
@@ -898,6 +895,10 @@ public class Paintball extends JavaPlugin{
 		TDMMatchStat.values();
 		PlayerStat.values();
 		
+		// WEAPON MANAGER
+		weaponManager = new WeaponManager();
+		// INIT WEAPONS
+		weaponManager.initWeaponHandlers();
 		// RANKMANAGER
 		rankManager = new RankManager(new File(this.getDataFolder().getPath() + File.separator + "ranks.yml"));
 		// SERVERLISTER CONFIG:

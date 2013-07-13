@@ -67,7 +67,7 @@ public class RocketHandler extends WeaponHandler {
 					
 					World world = player.getWorld();
 					Vector direction = player.getLocation().getDirection().normalize();
-					Location spawnLoc = player.getEyeLocation().add(new Vector(-direction.getZ(), 0.0, direction.getX()).normalize().multiply(0.4));
+					Location spawnLoc = player.getEyeLocation();
 					
 					world.playSound(spawnLoc, Sound.SILVERFISH_IDLE, 2.0F, 1F);
 					Fireball rocket = (Fireball) world.spawnEntity(spawnLoc, EntityType.FIREBALL);

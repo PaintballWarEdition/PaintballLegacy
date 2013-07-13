@@ -63,6 +63,7 @@ public class TurretHandler extends WeaponHandler implements Listener {
 	@EventHandler(priority = EventPriority.NORMAL)
 	public void onSnowmanTrail(EntityBlockFormEvent event) {
 		if (gadgetManager.isGadget(event.getEntity())) {
+			// client might still show snow..
 			event.setCancelled(true);
 		}
 	}
@@ -142,11 +143,13 @@ public class TurretHandler extends WeaponHandler implements Listener {
 	@Override
 	protected void onDamagedByEntity(EntityDamageByEntityEvent event, Match match, Player attacker) {
 		Gadget turretGadget = gadgetManager.getGadget(event.getEntity());
-		if (turretGadget != null && match == turretGadget.getMatch()) {
-			Turret turret = (Turret) turretGadget;
-			if (match.enemys(attacker, turret.getOwner())) {
-				turret.hit();
-				event.setCancelled(true);
+		if (turretGadget != null) {
+			event.setCancelled(true);
+			if (match == turretGadget.getMatch()) {
+				Turret turret = (Turret) turretGadget;
+				if (match.enemys(attacker, turret.getOwner())) {
+					turret.hit();
+				}
 			}
 		}
 	}
@@ -294,6 +297,7 @@ public class TurretHandler extends WeaponHandler implements Listener {
 			return player;
 		}
 
+		//TODO using no square root
 		private Player searchTarget(int maxRadius, int instantRadius) {
 			Vector entVec = entity.getLocation().toVector();
 			Player nearest = null;
@@ -306,8 +310,7 @@ public class TurretHandler extends WeaponHandler implements Listener {
 						Vector dir = targetVec.clone().subtract(entVec).normalize();
 						Vector dir2 = new Vector(dir.getX(), 0, dir.getZ()).normalize();
 						if (entity.hasLineOfSight(p) && canBeShoot(entVec.clone().add(new Vector(0, 2, 0)).add(dir2), targetVec.clone(), dir2.clone())) {
-							double dist2 = entity.getLocation().distance(
-									ploc);
+							double dist2 = entity.getLocation().distance(ploc);
 							if (dist2 <= instantRadius) {
 								nearest = p;
 								distance = dist2;

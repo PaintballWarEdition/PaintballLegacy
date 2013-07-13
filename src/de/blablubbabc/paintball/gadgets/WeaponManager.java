@@ -16,7 +16,6 @@ import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 
 import de.blablubbabc.paintball.Match;
-import de.blablubbabc.paintball.Paintball;
 import de.blablubbabc.paintball.gadgets.handlers.AirstrikeHandler;
 import de.blablubbabc.paintball.gadgets.handlers.BallHandler;
 import de.blablubbabc.paintball.gadgets.handlers.ConcussionHandler;
@@ -56,7 +55,7 @@ public class WeaponManager {
 	private ShotgunHandler shotgunHandler;
 	private SniperHandler sniperHandler;
 	
-	public WeaponManager(Paintball plugin) {
+	public WeaponManager() {
 		
 	}
 	
