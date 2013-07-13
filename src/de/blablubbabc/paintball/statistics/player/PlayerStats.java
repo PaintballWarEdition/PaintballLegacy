@@ -59,44 +59,35 @@ public class PlayerStats {
 	
 	private void rankupNotification(int oldPoints, int newPoints) {
 		Rank rank = Paintball.instance.rankManager.getRank(playerName);
+		Rank new_rank = Paintball.instance.rankManager.getRank(newPoints);
 		
-		if (newPoints > oldPoints) {
-			Rank new_rank = Paintball.instance.rankManager.getNextRank(rank);
-			// highest rank not already reached:
-			if (rank != new_rank) {
+		if (rank != new_rank) {
+			if (newPoints > oldPoints) {
 				// will this rank be reached?
-				if (new_rank.getNeededPoints() <= newPoints) {
-					Player player = Bukkit.getPlayerExact(playerName);
-					if (player != null && player.isOnline()) {
-						
-						player.playSound(player.getEyeLocation(), Sound.LEVEL_UP, 1F, 2F);
-						// highest Rank now?
-						KeyValuePair pluginString = new KeyValuePair("plugin", Translator.getString("PLUGIN"));
-						KeyValuePair newRankName = new KeyValuePair("new_rank", new_rank.getName());
-						
-						Rank next_rank = Paintball.instance.rankManager.getNextRank(new_rank);
-						if (next_rank == new_rank) {
-							player.sendMessage(Translator.getString("RANK_UP_NOTIFICATION_MAX", pluginString, newRankName));
-						} else {
-							int needed_points = next_rank.getNeededPoints() - newPoints;
-							player.sendMessage(Translator.getString("RANK_UP_NOTIFICATION", pluginString, newRankName, new KeyValuePair("needed_points", String.valueOf(needed_points)), new KeyValuePair("next_rank", next_rank.getName())));
-						}
+				Player player = Bukkit.getPlayerExact(playerName);
+				if (player != null && player.isOnline()) {
+					
+					player.playSound(player.getEyeLocation(), Sound.LEVEL_UP, 1F, 2F);
+					// highest Rank now?
+					KeyValuePair pluginString = new KeyValuePair("plugin", Translator.getString("PLUGIN"));
+					KeyValuePair newRankName = new KeyValuePair("new_rank", new_rank.getName());
+					
+					Rank next_rank = Paintball.instance.rankManager.getNextRank(new_rank);
+					// max rank
+					if (next_rank == new_rank) {
+						player.sendMessage(Translator.getString("RANK_UP_NOTIFICATION_MAX", pluginString, newRankName));
+					} else {
+						int needed_points = next_rank.getNeededPoints() - newPoints;
+						player.sendMessage(Translator.getString("RANK_UP_NOTIFICATION", pluginString, newRankName, new KeyValuePair("needed_points", String.valueOf(needed_points)), new KeyValuePair("next_rank", next_rank.getName())));
 					}
 				}
-			}
-		} else if (newPoints < oldPoints) {
-			Rank new_rank = Paintball.instance.rankManager.getPreviousRank(rank);
-			// lowest rank not already reached:
-			if (rank != new_rank) {
-				// will this rank be reached?
-				if (new_rank.getNeededPoints() >= newPoints) {
-					Player player = Bukkit.getPlayerExact(playerName);
-					if (player != null && player.isOnline()) {
-						KeyValuePair pluginString = new KeyValuePair("plugin", Translator.getString("PLUGIN"));
-						KeyValuePair newRankName = new KeyValuePair("new_rank", new_rank.getName());
-						
-						player.sendMessage(Translator.getString("RANK_DOWN_NOTIFICATION", pluginString, newRankName));
-					}
+			} else if (newPoints < oldPoints) {
+				Player player = Bukkit.getPlayerExact(playerName);
+				if (player != null && player.isOnline()) {
+					KeyValuePair pluginString = new KeyValuePair("plugin", Translator.getString("PLUGIN"));
+					KeyValuePair newRankName = new KeyValuePair("new_rank", new_rank.getName());
+					
+					player.sendMessage(Translator.getString("RANK_DOWN_NOTIFICATION", pluginString, newRankName));
 				}
 			}
 		}
