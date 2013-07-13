@@ -51,6 +51,14 @@ public class RankManager {
 				}
 				int neededPoints = rankSection.getInt("Needed Points");
 				
+				// rank with same needed points value already existent?
+				for (Rank rank : ranks) {
+					if (rank.getNeededPoints() == neededPoints) {
+						Log.warning("'Needed Points' value is the same for another rank already: " + name, true);
+						continue;
+					}
+				}
+				
 				// PREFIX
 				String prefix = rankSection.getString("Prefix");
 				if (prefix != null) ChatColor.translateAlternateColorCodes('&', prefix);
@@ -165,21 +173,27 @@ public class RankManager {
 	}
 	
 	public Rank getRank(String playerName) {
+		PlayerStats stats = Paintball.instance.playerManager.getPlayerStats(playerName);
+		// stats even exist for this player ? -> else return lowest rank
+		if (stats == null) return ranks.get(0);
+		
+		return getRank(stats.getStat(PlayerStat.POINTS));
+	}
+	
+	public Rank getRank(int points) {
 		// init with lowest rank:
 		Rank highest = ranks.get(0);
 		
-		PlayerStats stats = Paintball.instance.playerManager.getPlayerStats(playerName);
-		// stats even exist for this player ?
-		if (stats != null) {
-			int points = stats.getStat(PlayerStat.POINTS);
-			//get highest rank:
-			for (Rank rank : ranks) {
-				int needed = rank.getNeededPoints();
-				if (needed <= points) {
-					if (highest == null || needed > highest.getNeededPoints()) {
-						highest = rank;
-					}
+		//get highest rank:
+		for (Rank rank : ranks) {
+			int needed = rank.getNeededPoints();
+			if (needed <= points) {
+				if (highest == null || needed > highest.getNeededPoints()) {
+					highest = rank;
 				}
+			} else {
+				// no need to search further, because ranks-list is sorted
+				break;
 			}
 		}
 
@@ -187,15 +201,24 @@ public class RankManager {
 		return highest;
 	}
 	
-	public int getRankCount() {
-		return ranks.size();
+	public Rank getNextRank(Rank rank) {
+		int next_index = rank.getRankIndex() + 1;
+		if (next_index < ranks.size()) {
+			rank = ranks.get(next_index);
+		}
+		
+		// return same (if already highest rank) or next rank:
+		return rank;
 	}
 	
-	public Rank getRankByName(String rankName) {
-		for (Rank rank : ranks) {
-			if (rank.getName().equals(rankName)) return rank;
+	public Rank getPreviousRank(Rank rank) {
+		int prev_index = rank.getRankIndex() - 1;
+		if (prev_index >= 0) {
+			rank = ranks.get(prev_index);
 		}
-		return null;
+		
+		// return same (if already lowest rank) or previous rank:
+		return rank;
 	}
 	
 	public Rank getRankByIndex(int index) {

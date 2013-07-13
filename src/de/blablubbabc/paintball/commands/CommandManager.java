@@ -174,17 +174,18 @@ public class CommandManager implements CommandExecutor{
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 					} else if (args[0].equalsIgnoreCase("rank")) {
+						String playerName = player.getName();
 						player.sendMessage(Translator.getString("RANK_HEADER"));
 						// send next rank information:
-						Rank rank = plugin.rankManager.getRank(player.getName());
-						int next_index = rank.getRankIndex() + 1;
+						Rank rank = plugin.rankManager.getRank(playerName);
+						Rank next_rank = plugin.rankManager.getNextRank(rank);
 						
-						if (next_index >= plugin.rankManager.getRankCount()) {
+						if (rank == next_rank) {
 							player.sendMessage(Translator.getString("RANK_NEXT_RANK", new KeyValuePair("next_rank", Translator.getString("RANK_MAX_RANK_REACHED"))));
 						} else {
-							Rank next_rank = plugin.rankManager.getRankByIndex(next_index);
+							int needed_points = next_rank.getNeededPoints() - plugin.playerManager.getPlayerStats(playerName).getStat(PlayerStat.POINTS);
 							player.sendMessage(Translator.getString("RANK_NEXT_RANK", new KeyValuePair("next_rank", next_rank.getName())));
-							player.sendMessage(Translator.getString("RANK_NEXT_RANK_NEEDED_POINTS", new KeyValuePair("needed_points", String.valueOf(next_rank.getNeededPoints()))));
+							player.sendMessage(Translator.getString("RANK_NEXT_RANK_NEEDED_POINTS", new KeyValuePair("needed_points", String.valueOf(needed_points))));
 						}
 						
 						player.sendMessage(" ");
