@@ -150,11 +150,11 @@ public class MatchManager{
 				// AFK DETECTION
 				if (Lobby.isPlaying(player)) {
 					//afk detection update on match end
+					TDMMatchStats playerMatchStats = matchStats.get(playerName);
 					if (plugin.afkDetection && !match.isSpec(player)) {
-						// TODO radius square
 						if (player.getLocation().getWorld().equals(playersLoc.get(playerName).getWorld()) 
-								&& player.getLocation().distance(playersLoc.get(playerName)) <= plugin.afkRadius 
-								&& stats.getStat(PlayerStat.SHOTS) == 0 && stats.getStat(PlayerStat.KILLS) == 0) {
+								&& player.getLocation().distanceSquared(playersLoc.get(playerName)) <= plugin.afkRadius2
+								&& playerMatchStats.getStat(TDMMatchStat.SHOTS) == 0 && playerMatchStats.getStat(TDMMatchStat.KILLS) == 0) {
 							plugin.afkSet(playerName, plugin.afkGet(playerName) + 1);
 						} else {
 							plugin.afkRemove(playerName);
@@ -180,7 +180,7 @@ public class MatchManager{
 			List<String> entries = plugin.afkGetEntries();
 			
 			for (String afkP : entries) {
-				Player player = plugin.getServer().getPlayer(afkP);
+				Player player = plugin.getServer().getPlayerExact(afkP);
 				if (player != null) {
 					if (!playersLoc.containsKey(afkP)) {
 						plugin.afkRemove(afkP);

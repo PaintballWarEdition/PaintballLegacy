@@ -145,6 +145,7 @@ public class Paintball extends JavaPlugin{
 	public List<String> worldModeWorlds;
 	public boolean afkDetection;
 	public int afkRadius;
+	public int afkRadius2;
 	public int afkMatchAmount;
 	public boolean autoSpecLobby;
 	public boolean effects;
@@ -626,6 +627,7 @@ public class Paintball extends JavaPlugin{
 		if(afkMatchAmount < 1) afkMatchAmount = 1;
 		afkRadius = getConfig().getInt("Paintball.AFK Detection.Movement Radius around Spawn (keep in mind: knockbacks, pushing, waterflows, falling, etc)", 5);
 		if(afkRadius < 1) afkRadius = 1;
+		afkRadius2 = afkRadius * afkRadius;
 
 		lives = getConfig().getInt("Paintball.Match.Lives", 1);
 		if(lives < 1) lives = 1;
@@ -1101,7 +1103,7 @@ public class Paintball extends JavaPlugin{
 
 	public Location getNextLobbySpawn() {
 		lobbyspawn++;
-		if(lobbyspawn > (lobbyspawns.size()-1)) lobbyspawn = 0;
+		if(lobbyspawn > (lobbyspawns.size() - 1)) lobbyspawn = 0;
 		return (lobbyspawns.size() > 0 ? lobbyspawns.get(lobbyspawn) : null);
 	}
 
@@ -1123,13 +1125,8 @@ public class Paintball extends JavaPlugin{
 		afkMatchCount.put(player, amount);
 	}
 	
-	public synchronized ArrayList<String> afkGetEntries() {
-		ArrayList<String> entries = new ArrayList<String>();
-		
-		for(String s : afkMatchCount.keySet()) {
-			entries.add(s);
-		}
-		
+	public synchronized List<String> afkGetEntries() {
+		List<String> entries = new ArrayList<String>(afkMatchCount.keySet());	
 		return entries;
 	}
 

@@ -288,8 +288,7 @@ public class Match {
 				}
 				roundTimer = null;
 				// END:
-				if (matchOver)
-					return;
+				if (matchOver) return;
 				// winner?
 				Set<Player> winnerTeam = getWinner();
 				if (winnerTeam == null) {
@@ -297,8 +296,7 @@ public class Match {
 					gameEnd(true, null, null, null, null);
 				} else {
 					Player p = winnerTeam.iterator().next();
-					gameEnd(false, winnerTeam, getEnemyTeam(p), getTeamName(p),
-							getEnemyTeamName(p));
+					gameEnd(false, winnerTeam, getEnemyTeam(p), getTeamName(p), getEnemyTeamName(p));
 				}
 			}
 		});
@@ -906,8 +904,7 @@ public class Match {
 
 	public synchronized void frag(final Player target, Player killer, Origin source) {
 		// math over already?
-		if (matchOver)
-			return;
+		if (matchOver) return;
 		
 		String targetName = target.getName();
 		String killerName = killer.getName();
@@ -946,7 +943,7 @@ public class Match {
 		// afk detection on frag
 		if (plugin.afkDetection) {
 			if (target.getLocation().getWorld().equals(playersLoc.get(targetName).getWorld())
-					&& target.getLocation().distance(playersLoc.get(targetName)) <= plugin.afkRadius
+					&& target.getLocation().distanceSquared(playersLoc.get(targetName)) <= plugin.afkRadius2
 					&& targetStats.getStat(TDMMatchStat.SHOTS) == 0 && targetStats.getStat(TDMMatchStat.KILLS) == 0) {
 				plugin.afkSet(targetName, plugin.afkGet(targetName) + 1);
 			} else {
@@ -971,8 +968,9 @@ public class Match {
 				Lobby.getTeam(target).removeMember(target);
 				plugin.feeder.afkLeave(target, this);
 				target.sendMessage(Translator.getString("YOU_LEFT_TEAM"));
-			} else
+			} else {
 				respawn(target);
+			}
 		} else {
 			resetWeaponStuff(target);
 			plugin.getServer().getScheduler().runTask(plugin, new Runnable() {
@@ -1025,7 +1023,7 @@ public class Match {
 		// afk detection on death
 		if (plugin.afkDetection) {
 			if (target.getLocation().getWorld().equals(playersLoc.get(targetName).getWorld())
-					&& target.getLocation().distance(playersLoc.get(targetName)) <= plugin.afkRadius
+					&& target.getLocation().distanceSquared(playersLoc.get(targetName)) <= plugin.afkRadius2
 					&& targetStats.getStat(TDMMatchStat.SHOTS) == 0 && targetStats.getStat(TDMMatchStat.KILLS) == 0) {
 				plugin.afkSet(targetName, plugin.afkGet(targetName) + 1);
 			} else {
@@ -1050,8 +1048,9 @@ public class Match {
 				Lobby.getTeam(target).removeMember(target);
 				plugin.feeder.afkLeave(target, this);
 				target.sendMessage(Translator.getString("YOU_LEFT_TEAM"));
-			} else
+			} else {
 				respawn(target);
+			}
 		} else {
 			resetWeaponStuff(target);
 			plugin.getServer().getScheduler().runTask(plugin, new Runnable() {
@@ -1069,15 +1068,13 @@ public class Match {
 		}
 	}
 
-	private synchronized void gameEnd(final boolean draw, Set<Player> winnerS,
-			Set<Player> looserS, String winS, String looseS) {
+	private synchronized void gameEnd(final boolean draw, Set<Player> winnerS, Set<Player> looserS, String winS, String looseS) {
 		matchOver = true;
 		endTimers();
 		undoAllColors();
-		for (Player p : getAllPlayer()) {
-			resetWeaponStuff(p);
-		}
+		
 		resetWeaponStuffEnd();
+		
 		if (!draw) {
 			for (Player p : winnerS) {
 				this.winners.add(p);
