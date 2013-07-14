@@ -53,6 +53,7 @@ import de.blablubbabc.paintball.gadgets.Gadget;
 import de.blablubbabc.paintball.statistics.player.PlayerStat;
 import de.blablubbabc.paintball.statistics.player.PlayerStats;
 import de.blablubbabc.paintball.utils.Log;
+import de.blablubbabc.paintball.utils.Sounds;
 import de.blablubbabc.paintball.utils.Translator;
 
 public class EventListener implements Listener {
@@ -239,7 +240,7 @@ public class EventListener implements Listener {
 									} else if (plugin.allowMelee && event.getCause() == DamageCause.ENTITY_ATTACK) {
 										if (target.getHealth() > plugin.meleeDamage) {
 											target.setHealth(target.getHealth() - plugin.meleeDamage);
-											//TODO sound
+											Sounds.playMeleeHit(attacker, target);
 										} else {
 											matchA.frag(target, attacker, Origin.MELEE);
 										}

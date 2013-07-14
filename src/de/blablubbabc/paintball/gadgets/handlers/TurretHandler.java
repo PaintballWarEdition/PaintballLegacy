@@ -297,11 +297,13 @@ public class TurretHandler extends WeaponHandler implements Listener {
 			return player;
 		}
 
-		//TODO using no square root
+		//TODO less square roots
 		private Player searchTarget(int maxRadius, int instantRadius) {
 			Vector entVec = entity.getLocation().toVector();
 			Player nearest = null;
 			double distance = 0;
+			int instantRadius2 = instantRadius * instantRadius;
+			int maxRadius2 = maxRadius * maxRadius;
 			for (Player p : match.getEnemyTeam(player)) {
 				if (match.isSurvivor(p)) {
 					Location ploc = p.getLocation();
@@ -310,12 +312,12 @@ public class TurretHandler extends WeaponHandler implements Listener {
 						Vector dir = targetVec.clone().subtract(entVec).normalize();
 						Vector dir2 = new Vector(dir.getX(), 0, dir.getZ()).normalize();
 						if (entity.hasLineOfSight(p) && canBeShoot(entVec.clone().add(new Vector(0, 2, 0)).add(dir2), targetVec.clone(), dir2.clone())) {
-							double dist2 = entity.getLocation().distance(ploc);
-							if (dist2 <= instantRadius) {
+							double dist2 = entity.getLocation().distanceSquared(ploc);
+							if (dist2 <= instantRadius2) {
 								nearest = p;
 								distance = dist2;
 								break;
-							} else if (dist2 <= maxRadius) {
+							} else if (dist2 <= maxRadius2) {
 								if (nearest != null) {
 									if (dist2 < distance) {
 										nearest = p;
@@ -426,13 +428,13 @@ public class TurretHandler extends WeaponHandler implements Listener {
 		}
 
 		private boolean canBeShoot(Vector pos, Vector target, Vector dir) {
-			int x = ((Double) target.clone().setY(0).distance(pos.clone().setY(0)))
-					.intValue();
+			int x = ((Double) target.clone().setY(0).distance(pos.clone().setY(0))).intValue();
 			int y = ((Double) (target.getY() - pos.getY())).intValue();
 			if (x < table.length && (y + ySize) < 2 * ySize && (y + ySize) >= 0) {
 				return (table[x][y + ySize] != null);
-			} else
+			} else {
 				return false;
+			}
 		}
 
 		private Vector getAimVector(Vector pos, Vector target, Vector dir) {

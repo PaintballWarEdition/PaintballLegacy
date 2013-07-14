@@ -19,6 +19,11 @@ public class Sounds {
 		target.playSound(shooter.getEyeLocation(), Sound.HURT_FLESH, 1F, 1F);
 	}
 	
+	public static void playMeleeHit(Player shooter, Player target) {
+		shooter.playSound(shooter.getEyeLocation(), Sound.HURT_FLESH, 1F, 1F);
+		target.playSound(shooter.getEyeLocation(), Sound.HURT_FLESH, 1F, 1F);
+	}
+	
 	public static void playTeamattack(Player shooter) {
 		shooter.playSound(shooter.getEyeLocation(), Sound.ANVIL_LAND, 0.7F, 1F);
 	}
