@@ -1221,7 +1221,7 @@ public class Paintball extends JavaPlugin{
 				// skip airstrikes and grenades count:
 				if (stat == PlayerStat.AIRSTRIKES || stat == PlayerStat.GRENADES) continue;	
 				String scoreName = Translator.getString("SCOREBOARD_LOBBY_" + stat.getKey().toUpperCase());
-				Score score = objective.getScore(Bukkit.getOfflinePlayer(scoreName));
+				Score score = objective.getScore(Bukkit.getOfflinePlayer(scoreName.length() > 16 ? scoreName.substring(0, 16) : scoreName));
 				score.setScore(stats.getStat(stat));
 			}
 		}
