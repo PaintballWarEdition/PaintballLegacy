@@ -11,6 +11,7 @@ import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 
 import de.blablubbabc.paintball.Paintball;
+import de.blablubbabc.paintball.utils.KeyValuePair;
 import de.blablubbabc.paintball.utils.Translator;
 import de.blablubbabc.paintball.utils.Utils;
 
@@ -62,7 +63,6 @@ public class ShopGood {
 		}
 		
 		// ICON:
-		// TOD translation support
 		if(this.empty) {
 			this.slot = Translator.getString("SHOP_EMPTY");
 			this.icon = new ItemStack(Material.SIGN_POST);
@@ -71,20 +71,26 @@ public class ShopGood {
 			
 			this.icon = Utils.setItemMeta(this.icon, name, desc);
 			
-		} else {
+		} else {		
 			this.icon = itemstack.clone();
 			if (itemstack.getAmount() > 64) this.icon.setAmount(1);
 			
 			List<String> desc = new ArrayList<String>();
-			desc.add(ChatColor.RED + "__Price: " + ChatColor.GREEN + price + "$");
-			desc.add(ChatColor.RED + "__Item:");
+			desc.add(Translator.getString("SHOP_MENU_PRICE", new KeyValuePair("price", String.valueOf(price))));
+			desc.add(Translator.getString("SHOP_MENU_ITEM"));
 			
 			ItemMeta meta = itemstack.getItemMeta();
+			
+			KeyValuePair item_amount = new KeyValuePair("item_amount", String.valueOf(itemstack.getAmount()));
+			
 			if (meta.hasDisplayName()) {
-				desc.add(ChatColor.GREEN + "- " + ChatColor.WHITE + itemstack.getAmount() + "x " + ChatColor.AQUA + meta.getDisplayName());
+				KeyValuePair item_name = new KeyValuePair("item_name", meta.getDisplayName());
+				desc.add(Translator.getString("SHOP_MENU_ITEM_PAINTBALL", item_amount, item_name));
 			} else {
-				desc.add(ChatColor.GREEN + "- " + ChatColor.WHITE + itemstack.getAmount() + "x " 
-						+ ChatColor.AQUA + itemstack.getType().toString() + " (" + itemstack.getTypeId() + ":" + itemstack.getDurability() + ")");
+				KeyValuePair item_name = new KeyValuePair("item_name", itemstack.getType().toString());
+				desc.add(Translator.getString("SHOP_MENU_ITEM_OTHER", item_amount, item_name, 
+						new KeyValuePair("item_id", String.valueOf(itemstack.getTypeId())), 
+						new KeyValuePair("item_subid", String.valueOf(itemstack.getDurability()))));
 			}
 			
 			this.icon = Utils.setItemMeta(this.icon, name, desc);
