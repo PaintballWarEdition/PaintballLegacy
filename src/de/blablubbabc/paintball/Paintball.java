@@ -724,7 +724,7 @@ public class Paintball extends JavaPlugin{
 		
 		//shop:
 		shop = getConfig().getBoolean("Paintball.Shop.enabled", true);
-		shopGoods = (ArrayList<String>) getConfig().getList("Paintball.Shop.Goods (amount-name-id-subid-price)", goodsDef);
+		shopGoods = (ArrayList<String>) getConfig().getList("Paintball.Shop.Goods (amount-name-id-subid-price-rank)", goodsDef);
 
 		//disabled arenas
 		disabledArenas = (List<String>) getConfig().getList("Paintball.Arena.Disabled Arenas", new ArrayList<String>());
