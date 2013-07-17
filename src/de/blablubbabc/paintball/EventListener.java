@@ -581,7 +581,7 @@ public class EventListener implements Listener {
 		final Player player = (Player) event.getPlayer();
 		plugin.playerManager.addPlayerAsync(player.getName());
 
-		plugin.getServer().getScheduler().scheduleSyncDelayedTask(plugin, new Runnable() {
+		plugin.getServer().getScheduler().runTaskLater(plugin, new Runnable() {
 
 			@Override
 			public void run() {
