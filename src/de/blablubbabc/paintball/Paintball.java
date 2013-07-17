@@ -117,11 +117,15 @@ public class Paintball extends JavaPlugin{
 	public int balls;
 	public double speedmulti;
 	public boolean listnames;
+	
+	// chat
 	public boolean chatMessageColor;
 	public boolean chatNameColor;
 	
+	// ranks
 	public boolean ranksLobbyArmor;
 	public boolean ranksChatPrefix;
+	public boolean ranksChatPrefixOnlyForPaintballers;
 	public boolean ranksAdminBypassShop;
 	
 	public boolean shop;
@@ -392,7 +396,8 @@ public class Paintball extends JavaPlugin{
 		if(getConfig().get("Paintball.Chat.Colored Name") == null)getConfig().set("Paintball.Chat.Colored Name", false);
 		
 		// ranks
-		if(getConfig().get("Paintball.Ranks.Chat Prefix") == null)getConfig().set("Paintball.Ranks.Chat Prefix", true);
+		if(getConfig().get("Paintball.Ranks.Chat Prefix.enabled") == null)getConfig().set("Paintball.Ranks.Chat Prefix.enabled", true);
+		if(getConfig().get("Paintball.Ranks.Chat Prefix.Only visible for Paintballers") == null)getConfig().set("Paintball.Ranks.Chat Prefix.Only visible for Paintballers", true);
 		if(getConfig().get("Paintball.Ranks.Lobby Armor") == null)getConfig().set("Paintball.Ranks.Lobby Armor", true);
 		
 		// scoreboards
@@ -662,7 +667,8 @@ public class Paintball extends JavaPlugin{
 		chatNameColor = getConfig().getBoolean("Paintball.Chat.Colored Name By Displayname Replacing", false);
 		
 		// ranks
-		ranksChatPrefix = getConfig().getBoolean("Paintball.Ranks.Chat Prefix", true);
+		ranksChatPrefix = getConfig().getBoolean("Paintball.Ranks.Chat Prefix.enabled", true);
+		ranksChatPrefixOnlyForPaintballers = getConfig().getBoolean("Paintball.Ranks.Chat Prefix.Only visible for Paintballers", true);
 		ranksLobbyArmor = getConfig().getBoolean("Paintball.Ranks.Lobby Armor", true);
 		
 		// scoreboards

@@ -532,14 +532,6 @@ public class EventListener implements Listener {
 			Player player = event.getPlayer();
 			String playerName = player.getName();
 			if (Lobby.LOBBY.isMember(player)) {
-				// rank prefix:
-				if (plugin.ranksChatPrefix ) {
-					Rank rank = plugin.rankManager.getRank(playerName);
-					String prefix = rank.getPrefix();
-					if (prefix != null && !prefix.isEmpty()) {
-						event.setFormat(prefix + event.getFormat());
-					}
-				}
 				//chat name color:
 				if (plugin.chatNameColor) {
 					if (Lobby.isPlaying(player) || Lobby.isSpectating(player)) {
@@ -558,6 +550,25 @@ public class EventListener implements Listener {
 						String displayName = ChatColor.stripColor(player.getDisplayName());
 						format = format.replaceFirst(displayName, color + displayName);
 						event.setFormat(format);
+					}
+				}
+				
+				// rank prefix:
+				if (plugin.ranksChatPrefix ) {
+					Rank rank = plugin.rankManager.getRank(playerName);
+					String prefix = rank.getPrefix();
+					if (prefix != null && !prefix.isEmpty()) {
+						if (plugin.ranksChatPrefixOnlyForPaintballers) {
+							// remove paintballers from resipients:
+							event.getRecipients().removeAll(Lobby.LOBBY.getMembers());
+							// send chat message with prefix to paintballers manually:
+							String messageToSend = prefix + String.format(event.getFormat(), player.getDisplayName(), event.getMessage());
+							for (Player member : Lobby.LOBBY.getMembers()) {
+								member.sendMessage(messageToSend);
+							}
+						} else {
+							event.setFormat(prefix + event.getFormat());
+						}
 					}
 				}
 			}
