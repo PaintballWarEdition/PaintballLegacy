@@ -463,7 +463,7 @@ public class Paintball extends JavaPlugin{
 		if(getConfig().get("Paintball.Match.Allow Melee") == null)getConfig().set("Paintball.Match.Allow Melee", true);
 		if(getConfig().get("Paintball.Match.Melee Damage") == null)getConfig().set("Paintball.Match.Melee Damage", 1);
 		if(getConfig().get("Paintball.Match.Lives") == null)getConfig().set("Paintball.Match.Lives", 1);
-		if(getConfig().get("Paintball.Match.Respawns") == null)getConfig().set("Paintball.Match.Respawns", 0);
+		if(getConfig().get("Paintball.Match.Respawns") == null)getConfig().set("Paintball.Match.Respawns", 3);
 		if(getConfig().get("Paintball.Match.Balls") == null)getConfig().set("Paintball.Match.Balls", 50);
 		if(getConfig().get("Paintball.Match.Minimum players") == null)getConfig().set("Paintball.Match.Minimum players", 2);
 		if(getConfig().get("Paintball.Match.Maximum players") == null)getConfig().set("Paintball.Match.Maximum players", 1000);
@@ -633,7 +633,7 @@ public class Paintball extends JavaPlugin{
 
 		lives = getConfig().getInt("Paintball.Match.Lives", 1);
 		if(lives < 1) lives = 1;
-		respawns = getConfig().getInt("Paintball.Match.Respawns", 0);
+		respawns = getConfig().getInt("Paintball.Match.Respawns", 3);
 		if(respawns < -1) respawns = -1;
 		balls = getConfig().getInt("Paintball.Match.Balls", 50);
 		if(balls < -1) balls = -1;
