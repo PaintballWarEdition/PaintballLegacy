@@ -445,6 +445,13 @@ public class CommandManager implements CommandExecutor{
 			return false;
 		}
 		
+		
+		// check, if player-adding is yet finished:
+		if (plugin.playerManager.isPlayerStillLocked(player.getName())) {
+			player.sendMessage(Translator.getString("NEED_BE_ADDED_TO_DATABASE_FIRST"));
+			return false;
+		}
+		
 		return true;
 	}
 	

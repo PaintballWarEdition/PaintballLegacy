@@ -130,6 +130,7 @@ NEED_STOP_FALLING_BURNING_DROWNING = "&7You can't join the lobby while falling, 
 NEED_FULL_HEALTH = "&7You need full health to enter the lobby!"
 NEED_FULL_FOOD = "&7You need a full food bar to enter the lobby!"
 NEED_NO_EFFECTS = "&7You can't enter the lobby with active potion effects!"
+NEED_BE_ADDED_TO_DATABASE_FIRST = "&7You are still being added to the database! Wait for a short time and then try again!";
 INVENTORY_SAVED = "&7Inventory saved."
 COMMAND_GENERAL_HELP = "&a/pb [help|?] &b- Shows this help page."
 COMMAND_GENERAL_ARENA = "&e/pb arena &b- Arena commands."
