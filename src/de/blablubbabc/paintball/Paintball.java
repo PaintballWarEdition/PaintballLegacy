@@ -931,8 +931,8 @@ public class Paintball extends JavaPlugin{
 		lobbyspawn = 0;
 		afkMatchCount = new HashMap<String, Integer>();
 
-		//autoLobby
-		if(autoLobby) {
+		//autoLobby -> now done by PlayerManager during addAllOnlinePlayers
+		/*if(autoLobby) {
 			for(Player player : getServer().getOnlinePlayers()) {
 				if(autoTeam) {
 					commandManager.joinTeam(player, false, Lobby.RANDOM);
@@ -940,7 +940,7 @@ public class Paintball extends JavaPlugin{
 					commandManager.joinLobbyPre(player, false, null);
 				}
 			}
-		}
+		}*/
 
 		//METRICS
 		try {

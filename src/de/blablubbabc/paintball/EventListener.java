@@ -581,7 +581,8 @@ public class EventListener implements Listener {
 		final Player player = (Player) event.getPlayer();
 		plugin.playerManager.addPlayerAsync(player.getName());
 
-		plugin.getServer().getScheduler().runTaskLater(plugin, new Runnable() {
+		// now done by playerManager directly after player wass added to database..
+		/*plugin.getServer().getScheduler().runTaskLater(plugin, new Runnable() {
 
 			@Override
 			public void run() {
@@ -590,7 +591,7 @@ public class EventListener implements Listener {
 				else if (plugin.autoLobby)
 					plugin.commandManager.joinLobbyPre(player, false, null);
 			}
-		}, 1L);
+		}, 1L);*/
 
 		// notify admins on update:
 		if (plugin.needsUpdate && player.hasPermission("paintball.admin")) {
