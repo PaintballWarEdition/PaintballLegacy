@@ -199,7 +199,8 @@ public class Paintball extends JavaPlugin{
 	public int joinDelaySeconds;
 	
 	// scoreboards
-	public boolean scoreboards;
+	public boolean scoreboardLobby;
+	public boolean scoreboardMatch;
 
 	//points und cash
 	public int pointsPerKill;
@@ -395,7 +396,8 @@ public class Paintball extends JavaPlugin{
 		if(getConfig().get("Paintball.Ranks.Lobby Armor") == null)getConfig().set("Paintball.Ranks.Lobby Armor", true);
 		
 		// scoreboards
-		if(getConfig().get("Paintball.Scoreboards.enabled") == null)getConfig().set("Paintball.Scoreboards.enabled", true);
+		if(getConfig().get("Paintball.Scoreboards.Lobby") == null)getConfig().set("Paintball.Scoreboards.Lobby", true);
+		if(getConfig().get("Paintball.Scoreboards.Match") == null)getConfig().set("Paintball.Scoreboards.Match", true);
 		
 		if(getConfig().get("Paintball.Arena Rotation.Random Rotation") == null)getConfig().set("Paintball.Arena Rotation.Random Rotation", true);
 		
@@ -664,7 +666,8 @@ public class Paintball extends JavaPlugin{
 		ranksLobbyArmor = getConfig().getBoolean("Paintball.Ranks.Lobby Armor", true);
 		
 		// scoreboards
-		scoreboards = getConfig().getBoolean("Paintball.Scoreboards.enabled", true);
+		scoreboardLobby = getConfig().getBoolean("Paintball.Scoreboards.Lobby", true);
+		scoreboardMatch = getConfig().getBoolean("Paintball.Scoreboards.Match", true);
 		
 		// arena rotation
 		arenaRotationRandom = getConfig().getBoolean("Paintball.Arena Rotation.Random Rotation", true);
@@ -1184,7 +1187,7 @@ public class Paintball extends JavaPlugin{
 					// ASSIGN RANK
 					if (ranksLobbyArmor) rankManager.getRank(playerName).assignArmorToPlayer(player);
 					// ASSIGN SCOREBOARD
-					if (scoreboards) {
+					if (scoreboardLobby) {
 						initLobbyScoreboard(player);
 					}
 					
@@ -1253,7 +1256,7 @@ public class Paintball extends JavaPlugin{
 		// ASSIGN RANK
 		if (ranksLobbyArmor) rankManager.getRank(playerName).assignArmorToPlayer(player);
 		// ASSIGN SCOREBOARD
-		if (scoreboards) {
+		if (scoreboardLobby) {
 			initLobbyScoreboard(player);
 		}
 	}
@@ -1271,7 +1274,7 @@ public class Paintball extends JavaPlugin{
 			// if player not in lobby and not in match -> stats no longer needed:
 			if (!Lobby.LOBBY.isMember(player) && matchManager.getMatch(player) == null) playerManager.unloadPlayerStats(playerName);
 			// remove scoreboard for this player
-			if (scoreboards) {
+			if (scoreboardLobby) {
 				lobbyScoreboards.remove(playerName);
 			}
 			//messages:

@@ -153,7 +153,7 @@ public class PlayerDataStore {
 		player.setLevel(level);
 		player.setExp(exp);
 		// scoreboard
-		if (Paintball.instance.scoreboards) {
+		if (Paintball.instance.scoreboardLobby) {
 			player.setScoreboard(scoreboard != null ? scoreboard : Bukkit.getScoreboardManager().getMainScoreboard());
 		}
 		

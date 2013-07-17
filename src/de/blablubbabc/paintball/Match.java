@@ -410,8 +410,9 @@ public class Match {
 		}, 12L);
 	}
 	
+	//TODO
 	private void initMatchScoreboard(Player player) {
-		if (plugin.scoreboards) {
+		if (plugin.scoreboardMatch) {
 			String playerName = player.getName();
 			Scoreboard matchBoard = scoreboards.get(playerName);
 			if (matchBoard == null) {
@@ -424,11 +425,14 @@ public class Match {
 			objective.setDisplaySlot(DisplaySlot.SIDEBAR);
 			updateMatchScoreboard(playerName);
 			player.setScoreboard(matchBoard);
+		} else {
+			// assign default server scoreboard instead then:
+			player.setScoreboard(Bukkit.getScoreboardManager().getMainScoreboard());
 		}
 	}
 	
 	private void updateAllMatchScoreboardTimers(int timeInSeconds) {
-		if (plugin.scoreboards) {
+		if (plugin.scoreboardMatch) {
 			int minutes = (int) (timeInSeconds / 60);
 			int seconds = timeInSeconds % 60;
 			
@@ -444,7 +448,7 @@ public class Match {
 	}
 	
 	public void updateMatchScoreboard(String playerName) {
-		if (plugin.scoreboards) {
+		if (plugin.scoreboardMatch) {
 			Scoreboard matchBoard = scoreboards.get(playerName);
 			if (matchBoard != null) {
 				Objective objective = matchBoard.getObjective(DisplaySlot.SIDEBAR);
