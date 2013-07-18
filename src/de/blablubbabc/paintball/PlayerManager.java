@@ -1,9 +1,7 @@
 package de.blablubbabc.paintball;
 
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
-import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
@@ -74,50 +72,23 @@ public class PlayerManager {
 	
 	// METHODS
 	// SETTER
+	// adding all players on plugin start is done sync, because it reduces possible problems and it's a one-time-thing on plugin start only:
 	private void addAllOnlinePlayers() {
-		// lock paintball for all online players first:
-		final List<String> toAdd = new ArrayList<String>();
+		// locking is not needed, because it's done sync:
 		for (Player player : Paintball.instance.getServer().getOnlinePlayers()) {
 			String playerName = player.getName();
-			playersToAdd.add(playerName);
-			toAdd.add(playerName);
-		}
-		
-		Paintball.instance.getServer().getScheduler().runTaskAsynchronously(Paintball.instance, new Runnable() {
-
-			@Override
-			public void run() {
-				for (String playerName : toAdd) {
-					addPlayer(playerName);
+			// add player to database
+			addPlayer(playerName);
+			
+			// autoLobby and worldMode
+			if (Paintball.instance.autoLobby || (Paintball.instance.worldMode && Paintball.instance.worldModeWorlds.contains(player.getWorld().getName()))) {
+				if(Paintball.instance.autoTeam) {
+					Paintball.instance.commandManager.joinTeam(player, false, Lobby.RANDOM);
+				} else {
+					Paintball.instance.commandManager.joinLobbyPre(player, false, null);
 				}
-				
-				Paintball.instance.getServer().getScheduler().runTaskLater(Paintball.instance, new Runnable() {
-					
-					@Override
-					public void run() {
-						// Remove player lock in sync environment:
-						for (String playerName : toAdd) {
-							playersToAdd.remove(playerName);
-						}
-						
-						//autoLobby
-						if(Paintball.instance.autoLobby) {
-							for (String playerName : toAdd) {
-								Player player = Paintball.instance.getServer().getPlayerExact(playerName);
-								// player still online?
-								if (player != null) {
-									if(Paintball.instance.autoTeam) {
-										Paintball.instance.commandManager.joinTeam(player, false, Lobby.RANDOM);
-									} else {
-										Paintball.instance.commandManager.joinLobbyPre(player, false, null);
-									}
-								}
-							}
-						}
-					}
-				}, 1L);
 			}
-		});
+		}
 	}
 	
 	public void addPlayerAsync(final String name) {
@@ -144,7 +115,7 @@ public class PlayerManager {
 							public void run() {
 								Player player = Paintball.instance.getServer().getPlayerExact(name);
 								if (player != null) {
-									if (Paintball.instance.autoLobby) {
+									if (Paintball.instance.autoLobby || (Paintball.instance.worldMode && Paintball.instance.worldModeWorlds.contains(player.getWorld().getName()))) {
 										if (Paintball.instance.autoTeam) {
 											Paintball.instance.commandManager.joinTeam(player, false, Lobby.RANDOM);
 										} else {
