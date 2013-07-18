@@ -7,7 +7,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
-import org.bukkit.ChatColor;
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.block.Block;
@@ -22,6 +21,7 @@ import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.util.Vector;
 
+import de.blablubbabc.paintball.FragInformations;
 import de.blablubbabc.paintball.Match;
 import de.blablubbabc.paintball.Origin;
 import de.blablubbabc.paintball.Paintball;
@@ -43,15 +43,8 @@ public class AirstrikeHandler extends WeaponHandler {
 		super(customItemTypeID, useDefaultType, new Origin() {
 			
 			@Override
-			public String getKillMessage(String killerName, String victimName, ChatColor killerColor, ChatColor victimColor, String feedColorCode) {
-				Map<String, String> vars = new HashMap<String, String>();
-				vars.put("killer", killerName);
-				vars.put("killer_color", killerColor.toString());
-				vars.put("target", victimName);
-				vars.put("target_color", victimColor.toString());
-				vars.put("feed_color", Paintball.instance.feeder.getFeedColor());
-				
-				return Translator.getString("WEAPON_FEED_AIRSTRIKE", vars);
+			public String getKillMessage(FragInformations fragInfo) {
+				return Translator.getString("WEAPON_FEED_AIRSTRIKE", getDefaultVariablesMap(fragInfo));
 			}
 		});
 	}

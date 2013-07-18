@@ -3,8 +3,6 @@ package de.blablubbabc.paintball;
 import java.util.HashMap;
 import java.util.Map;
 
-import org.bukkit.ChatColor;
-
 import de.blablubbabc.paintball.utils.Translator;
 
 public class Origin {
@@ -13,16 +11,24 @@ public class Origin {
 		
 	}
 	
-	public String getKillMessage(String killerName, String victimName, ChatColor killerColor, ChatColor victimColor, String feedColorCode) {
-		// return default frag message:
+	protected Map<String, String> getDefaultVariablesMap(FragInformations fragInfo) {
 		Map<String, String> vars = new HashMap<String, String>();
-		vars.put("killer", killerName);
-		vars.put("killer_color", killerColor.toString());
-		vars.put("target", victimName);
-		vars.put("target_color", victimColor.toString());
+		vars.put("killer", fragInfo.getKiller().getDisplayName());
+		vars.put("killer_color", fragInfo.getKillerColor().toString());
+		vars.put("pre_killer", fragInfo.getPreKiller());
+		vars.put("after_killer", fragInfo.getAfterKiller());
+		vars.put("target", fragInfo.getTarget().getDisplayName());
+		vars.put("target_color", fragInfo.getTargetColor().toString());
+		vars.put("pre_target", fragInfo.getPreTarget());
+		vars.put("after_target", fragInfo.getAfterTarget());
 		vars.put("feed_color", Paintball.instance.feeder.getFeedColor());
 		
-		return Translator.getString("WEAPON_FEED_DEFAULT", vars);
+		return vars;
+	}
+	
+	public String getKillMessage(FragInformations fragInfo) {
+		// return default frag message:
+		return Translator.getString("WEAPON_FEED_DEFAULT", getDefaultVariablesMap(fragInfo));
 	}
 	
 }

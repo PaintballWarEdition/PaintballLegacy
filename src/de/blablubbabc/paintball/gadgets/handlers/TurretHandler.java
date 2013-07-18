@@ -1,9 +1,5 @@
 package de.blablubbabc.paintball.gadgets.handlers;
 
-import java.util.HashMap;
-import java.util.Map;
-
-import org.bukkit.ChatColor;
 import org.bukkit.Effect;
 import org.bukkit.Location;
 import org.bukkit.Material;
@@ -29,6 +25,7 @@ import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.util.Vector;
 
+import de.blablubbabc.paintball.FragInformations;
 import de.blablubbabc.paintball.Match;
 import de.blablubbabc.paintball.Origin;
 import de.blablubbabc.paintball.Paintball;
@@ -51,15 +48,8 @@ public class TurretHandler extends WeaponHandler implements Listener {
 		super(customItemTypeID, useDefaultType, new Origin() {
 			
 			@Override
-			public String getKillMessage(String killerName, String victimName, ChatColor killerColor, ChatColor victimColor, String feedColorCode) {
-				Map<String, String> vars = new HashMap<String, String>();
-				vars.put("killer", killerName);
-				vars.put("killer_color", killerColor.toString());
-				vars.put("target", victimName);
-				vars.put("target_color", victimColor.toString());
-				vars.put("feed_color", Paintball.instance.feeder.getFeedColor());
-				
-				return Translator.getString("WEAPON_FEED_TURRET", vars);
+			public String getKillMessage(FragInformations fragInfo) {
+				return Translator.getString("WEAPON_FEED_TURRET", getDefaultVariablesMap(fragInfo));
 			}
 		});
 		

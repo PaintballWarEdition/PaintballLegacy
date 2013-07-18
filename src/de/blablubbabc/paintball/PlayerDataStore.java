@@ -144,7 +144,8 @@ public class PlayerDataStore {
 		player.setHealth(health);
 		player.setFireTicks(fireTicks);
 		player.setRemainingAir(remainingAir);
-		player.setTicksLived(ticksLived);
+		// don't know for sure, if this is still needed..
+		player.setTicksLived(ticksLived >= 1 ? ticksLived : 1);
 		player.setNoDamageTicks(noDamageTicks);
 		player.setFallDistance(fallDistance);
 		player.setLastDamage(lastDamage);

@@ -999,31 +999,21 @@ public class Match {
 	}
 	
 	private void feed(Player target, Player killer, Match match, Origin origin) {
-		KeyValuePair pluginPair = new KeyValuePair("plugin", plugin.feeder.getPluginName());
-		/*vars.put("killer_color", Lobby.getTeam(match.getTeamName(killer)).color().toString());
-		vars.put("killer", killer.getName());
-		vars.put("target_color", Lobby.getTeam(match.getTeamName(target)).color().toString());
-		vars.put("target", target.getName());*/
-		
-		String killMessage = origin.getKillMessage(killer.getName(), target.getName(), Lobby.getTeam(match.getTeamName(killer)).color(), Lobby.getTeam(match.getTeamName(target)).color(), plugin.feeder.getFeedColor());
-		KeyValuePair killMessagePair = new KeyValuePair("kill_message", killMessage);
+		FragInformations fragInfo = new FragInformations(killer, target, origin,  Lobby.getTeam(match.getTeamName(killer)).color(), Lobby.getTeam(match.getTeamName(target)).color());
 		
 		if (match.setting_respawns != -1 && match.setting_respawns != 0) {
 			KeyValuePair livesPair = new KeyValuePair("lives", String.valueOf(match.setting_respawns + 1));
-			KeyValuePair livesLeftPair = new KeyValuePair("lives_left", String.valueOf(match.respawnsLeft(target)));
-			plugin.feeder.text(Translator.getString("KILL_FEED_LIVES", pluginPair, killMessagePair, livesPair, livesLeftPair));
-			//vars.put("lives", String.valueOf(match.setting_respawns + 1));
-			//vars.put("lives_left", String.valueOf(match.respawnsLeft(target)));
-			/*for(Player player : Lobby.LOBBY.getMembers()) {
-				if(!Lobby.toggledFeed(player)) player.sendMessage(Translator.getString("KILL_FEED_LIVES", vars));
-			}*/
-		} else {
-			plugin.feeder.text(Translator.getString("KILL_FEED", pluginPair, killMessagePair));
+			KeyValuePair livesLeftPairKiller = new KeyValuePair("lives_left", String.valueOf(match.respawnsLeft(killer)));
+			KeyValuePair livesLeftPairTarget = new KeyValuePair("lives_left", String.valueOf(match.respawnsLeft(target)));
 			
-			/*for(Player player : Lobby.LOBBY.getMembers()) {
-				if(!Lobby.toggledFeed(player)) player.sendMessage(Translator.getString("KILL_FEED", vars));
-			}*/
+			fragInfo.setAfterKiller(Translator.getString("REMAINING_LIVES", livesPair, livesLeftPairKiller));
+			fragInfo.setAfterTarget(Translator.getString("REMAINING_LIVES", livesPair, livesLeftPairTarget));
 		}
+		
+		KeyValuePair pluginPair = new KeyValuePair("plugin", plugin.feeder.getPluginName());
+		KeyValuePair killMessagePair = new KeyValuePair("kill_message", origin.getKillMessage(fragInfo));
+		
+		plugin.feeder.text(Translator.getString("KILL_FEED", pluginPair, killMessagePair));
 	}
 	
 	public synchronized void onBuying(String playerName, int moneySpent) {

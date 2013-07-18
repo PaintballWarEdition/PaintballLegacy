@@ -61,15 +61,8 @@ public class EventListener implements Listener {
 	private Origin meleeOrigin = new Origin() {
 		
 		@Override
-		public String getKillMessage(String killerName, String victimName, ChatColor killerColor, ChatColor victimColor, String feedColorCode) {
-			Map<String, String> vars = new HashMap<String, String>();
-			vars.put("killer", killerName);
-			vars.put("killer_color", killerColor.toString());
-			vars.put("target", victimName);
-			vars.put("target_color", victimColor.toString());
-			vars.put("feed_color", Paintball.instance.feeder.getFeedColor());
-			
-			return Translator.getString("WEAPON_FEED_MELEE", vars);
+		public String getKillMessage(FragInformations fragInfo) {
+			return Translator.getString("WEAPON_FEED_MELEE", getDefaultVariablesMap(fragInfo));
 		}
 	};
 	
