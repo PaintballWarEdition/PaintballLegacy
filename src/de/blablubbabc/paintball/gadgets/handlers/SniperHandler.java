@@ -1,10 +1,13 @@
 package de.blablubbabc.paintball.gadgets.handlers;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 
 import org.bukkit.Bukkit;
+import org.bukkit.ChatColor;
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.Sound;
@@ -30,16 +33,29 @@ public class SniperHandler extends WeaponHandler {
 	private List<String> zooming = new ArrayList<String>();
 	
 	public SniperHandler(int customItemTypeID, boolean useDefaultType) {
-		super(customItemTypeID, useDefaultType);
+		super(customItemTypeID, useDefaultType, new Origin() {
+			
+			@Override
+			public String getKillMessage(String killerName, String victimName, ChatColor killerColor, ChatColor victimColor, String feedColorCode) {
+				Map<String, String> vars = new HashMap<String, String>();
+				vars.put("killer", killerName);
+				vars.put("killer_color", killerColor.toString());
+				vars.put("target", victimName);
+				vars.put("target_color", victimColor.toString());
+				vars.put("feed_color", Paintball.instance.feeder.getFeedColor());
+				
+				return Translator.getString("WEAPON_FEED_SNIPER", vars);
+			}
+		});
 	}
 
-	public void shoot(Player player, Match match, Location location, Vector direction, double speed) {
+	public void shoot(Player player, Match match, Location location, Vector direction, double speed, Origin origin) {
 		player.getWorld().playSound(location, Sound.FIRE_IGNITE, 2.0F, 0F);
 		direction.normalize();
 		
 		Snowball snowball = location.getWorld().spawn(location, Snowball.class);
 		snowball.setShooter(player);
-		Paintball.instance.weaponManager.getBallHandler().createBall(match, player, snowball, Origin.SNIPER);
+		Paintball.instance.weaponManager.getBallHandler().createBall(match, player, snowball, origin);
 		if (Paintball.instance.sniperNoGravity) {
 			Paintball.instance.weaponManager.getNoGravityHandler().addEntity(snowball, direction.multiply(speed), Paintball.instance.sniperNoGravityDuration * 20);
 		} else {
@@ -81,7 +97,7 @@ public class SniperHandler extends WeaponHandler {
 					
 					Vector direction = player.getLocation().getDirection();
 					Location spawnLoc = Utils.getRightHeadLocation(direction, player.getEyeLocation());
-					shoot(player, match, spawnLoc, direction, Paintball.instance.sniperSpeedmulti);
+					shoot(player, match, spawnLoc, direction, Paintball.instance.sniperSpeedmulti, this.getWeaponOrigin());
 					
 					if (match.setting_balls != -1) {
 						// -1 ball

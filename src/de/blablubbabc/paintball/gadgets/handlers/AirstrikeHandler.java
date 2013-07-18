@@ -7,6 +7,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
+import org.bukkit.ChatColor;
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.block.Block;
@@ -39,7 +40,20 @@ public class AirstrikeHandler extends WeaponHandler {
 	private Map<String, List<FinalMark>> finalMarks = new HashMap<String, List<FinalMark>>();
 	
 	public AirstrikeHandler(int customItemTypeID, boolean useDefaultType) {
-		super(customItemTypeID, useDefaultType);
+		super(customItemTypeID, useDefaultType, new Origin() {
+			
+			@Override
+			public String getKillMessage(String killerName, String victimName, ChatColor killerColor, ChatColor victimColor, String feedColorCode) {
+				Map<String, String> vars = new HashMap<String, String>();
+				vars.put("killer", killerName);
+				vars.put("killer_color", killerColor.toString());
+				vars.put("target", victimName);
+				vars.put("target_color", victimColor.toString());
+				vars.put("feed_color", Paintball.instance.feeder.getFeedColor());
+				
+				return Translator.getString("WEAPON_FEED_AIRSTRIKE", vars);
+			}
+		});
 	}
 
 	public Airstrike callAirstrike(Match match, Player player, Location location, Origin origin) {
@@ -77,7 +91,7 @@ public class AirstrikeHandler extends WeaponHandler {
 						demark(player);
 						addFinalMark(block, player);
 						
-						callAirstrike(match, player, block.getLocation(), Origin.AIRSTRIKE);
+						callAirstrike(match, player, block.getLocation(), this.getWeaponOrigin());
 						
 						// INFORM MATCH
 						match.onAirstrike(player);
@@ -230,7 +244,7 @@ public class AirstrikeHandler extends WeaponHandler {
 					Location l = bombs.get(i);
 					Egg egg = player.getWorld().spawn(l, Egg.class);
 					egg.setShooter(player);
-					grenadeHandler.createGrenade(match, player, egg, Origin.AIRSTRIKE);
+					grenadeHandler.createGrenade(match, player, egg, getGadgetOrigin());
 					chick.setVelocity(chickVel);
 					
 					i++;

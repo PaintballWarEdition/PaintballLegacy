@@ -1,29 +1,36 @@
 package de.blablubbabc.paintball;
 
 import java.util.HashMap;
+import java.util.Map;
 
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
+import de.blablubbabc.paintball.utils.KeyValuePair;
 import de.blablubbabc.paintball.utils.Translator;
-
-
 
 public class Newsfeeder {
 	private Paintball plugin;
-	
-	public String pluginName;
+	private String pluginName;
+	private String feedColor;
 	
 	public Newsfeeder(Paintball pl) {
 		plugin = pl;
 		pluginName = Translator.getString("PLUGIN");
+		feedColor = Translator.getString("FEED_COLOR");
 	}
 	
+	public String getPluginName() {
+		return pluginName;
+	}
 	
+	public String getFeedColor() {
+		return feedColor;
+	}
 	
 	//METHODS
 	public void join(String name) {
-		HashMap<String, String> vars = new HashMap<String, String>();
+		Map<String, String> vars = new HashMap<String, String>();
 		vars.put("plugin", pluginName);
 		vars.put("player", name);
 		for(Player player : Lobby.LOBBY.getMembers()) {
@@ -31,7 +38,7 @@ public class Newsfeeder {
 		}
 	}
 	public void leave(String name) {
-		HashMap<String, String> vars = new HashMap<String, String>();
+		Map<String, String> vars = new HashMap<String, String>();
 		vars.put("plugin", pluginName);
 		vars.put("player", name);
 		for(Player player : Lobby.LOBBY.getMembers()) {
@@ -40,7 +47,7 @@ public class Newsfeeder {
 	}
 	
 	public void tip(String message) {
-		HashMap<String, String> vars = new HashMap<String, String>();
+		Map<String, String> vars = new HashMap<String, String>();
 		vars.put("plugin", pluginName);
 		vars.put("message", message);
 		for(Player player : Lobby.LOBBY.getMembers()) {
@@ -49,7 +56,7 @@ public class Newsfeeder {
 	}
 	
 	public void counter(int counter) {
-		HashMap<String, String> vars = new HashMap<String, String>();
+		Map<String, String> vars = new HashMap<String, String>();
 		vars.put("plugin", pluginName);
 		vars.put("seconds", String.valueOf(counter));
 		for(Player player : Lobby.LOBBY.getMembers()) {
@@ -58,7 +65,7 @@ public class Newsfeeder {
 	}
 	
 	public void roundTime(int time) {
-		HashMap<String, String> vars = new HashMap<String, String>();
+		Map<String, String> vars = new HashMap<String, String>();
 		vars.put("plugin", pluginName);
 		vars.put("seconds", String.valueOf(time));
 		for (Player player : Lobby.LOBBY.getMembers()) {
@@ -67,22 +74,47 @@ public class Newsfeeder {
 	}
 	
 	public void text(String message) {
-		for(Player player : Lobby.LOBBY.getMembers()) {
-			if(!Lobby.toggledFeed(player)) text(player, message);
-		}
+		text(false, message);
 	}
 	
 	public void textUntoggled(String message) {
-		for(Player player : Lobby.LOBBY.getMembers()) {
-			text(player, message);
-		}
+		textUntoggled(false, message);
 	}
 	
 	public void text(CommandSender sender, String message) {
-		HashMap<String, String> vars = new HashMap<String, String>();
-		vars.put("plugin", pluginName);
-		vars.put("message", message);
-		sender.sendMessage(Translator.getString("TEXT", vars));
+		text(sender, false, message);
+	}
+	
+	public void textPrefixed(String message) {
+		text(true, message);
+	}
+	
+	public void textUntoggledPrefixed(String message) {
+		textUntoggled(true, message);
+	}
+	
+	public void textPrefixed(CommandSender sender, String message) {
+		text(sender, true, message);
+	}
+	
+	private void text(boolean withPaintballPrefix, String message) {
+		for(Player player : Lobby.LOBBY.getMembers()) {
+			if(!Lobby.toggledFeed(player)) text(player, withPaintballPrefix, message);
+		}
+	}
+	
+	private void textUntoggled(boolean withPaintballPrefix, String message) {
+		for(Player player : Lobby.LOBBY.getMembers()) {
+			text(player, withPaintballPrefix, message);
+		}
+	}
+	
+	private void text(CommandSender sender, boolean withPaintballPrefix, String message) {
+		if (withPaintballPrefix) {
+			sender.sendMessage(pluginName + " " + Translator.getString("TEXT", new KeyValuePair("plugin", pluginName), new KeyValuePair("message", message)));
+		} else {
+			sender.sendMessage(Translator.getString("TEXT", new KeyValuePair("plugin", pluginName), new KeyValuePair("message", message)));
+		}
 	}
 	
 	public void status(String message) {
@@ -92,14 +124,14 @@ public class Newsfeeder {
 	}
 	
 	public String happyhour(int seconds) {
-		HashMap<String, String> vars = new HashMap<String, String>();
+		Map<String, String> vars = new HashMap<String, String>();
 		vars.put("plugin", pluginName);
 		vars.put("time", String.valueOf(seconds));
 		return Translator.getString("HAPPYHOUR_TIME", vars);
 	}
 	
 	public void status(CommandSender sender, String message) {
-		HashMap<String, String> vars = new HashMap<String, String>();
+		Map<String, String> vars = new HashMap<String, String>();
 		vars.put("plugin", pluginName);
 		vars.put("message", String.valueOf(message));
 		sender.sendMessage(Translator.getString("MATCH_STATUS", vars));
@@ -111,12 +143,12 @@ public class Newsfeeder {
 		}
 	}
 	public void players(CommandSender sender) {
-		HashMap<String, String> vars = new HashMap<String, String>();
+		Map<String, String> vars = new HashMap<String, String>();
 		vars.put("needed_players_overview", getNeededPlayers());
 		sender.sendMessage(Translator.getString("WAITING_PLAYERS_OVERVIEW", vars));
 	}
 	public String getPlayersOverview() {
-		HashMap<String, String> vars = new HashMap<String, String>();
+		Map<String, String> vars = new HashMap<String, String>();
 		vars.put("color_red", Lobby.RED.color().toString());
 		vars.put("red", String.valueOf(Lobby.RED.numberWaiting()));
 		vars.put("color_blue", Lobby.BLUE.color().toString());
@@ -130,7 +162,7 @@ public class Newsfeeder {
 	}
 	public String getNeededPlayers() {
 		int players = Lobby.RED.numberWaiting() + Lobby.BLUE.numberWaiting() + Lobby.RANDOM.numberWaiting();
-		HashMap<String, String> vars = new HashMap<String, String>();
+		Map<String, String> vars = new HashMap<String, String>();
 		vars.put("players", String.valueOf(players));
 		vars.put("needed_players", String.valueOf(plugin.minPlayers));
 		vars.put("players_overview", getPlayersOverview());
@@ -138,28 +170,8 @@ public class Newsfeeder {
 		return info;
 	}
 	
-	public void feed(Player target, Player killer, Match match) {
-		HashMap<String, String> vars = new HashMap<String, String>();
-		vars.put("plugin", pluginName);
-		vars.put("killer_color", Lobby.getTeam(match.getTeamName(killer)).color().toString());
-		vars.put("killer", killer.getName());
-		vars.put("target_color", Lobby.getTeam(match.getTeamName(target)).color().toString());
-		vars.put("target", target.getName());
-		if (match.setting_respawns != -1 && match.setting_respawns != 0) {
-			vars.put("lives", String.valueOf(match.setting_respawns + 1));
-			vars.put("lives_left", String.valueOf(match.respawnsLeft(target)));
-			for(Player player : Lobby.LOBBY.getMembers()) {
-				if(!Lobby.toggledFeed(player)) player.sendMessage(Translator.getString("KILL_FEED_LIVES", vars));
-			}
-		} else {
-			for(Player player : Lobby.LOBBY.getMembers()) {
-				if(!Lobby.toggledFeed(player)) player.sendMessage(Translator.getString("KILL_FEED", vars));
-			}	
-		}
-	}
-	
 	public void death(Player target, Match match) {
-		HashMap<String, String> vars = new HashMap<String, String>();
+		Map<String, String> vars = new HashMap<String, String>();
 		vars.put("plugin", pluginName);
 		vars.put("target_color", Lobby.getTeam(match.getTeamName(target)).color().toString());
 		vars.put("target", target.getName());
@@ -169,7 +181,7 @@ public class Newsfeeder {
 	}
 	
 	public void afkLeave(Player target, Match match) {
-		HashMap<String, String> vars = new HashMap<String, String>();
+		Map<String, String> vars = new HashMap<String, String>();
 		vars.put("plugin", pluginName);
 		vars.put("player_color", Lobby.getTeam(match.getTeamName(target)).color().toString());
 		vars.put("player", target.getName());

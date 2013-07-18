@@ -1,5 +1,9 @@
 package de.blablubbabc.paintball.gadgets.handlers;
 
+import java.util.HashMap;
+import java.util.Map;
+
+import org.bukkit.ChatColor;
 import org.bukkit.Effect;
 import org.bukkit.Location;
 import org.bukkit.Material;
@@ -44,7 +48,21 @@ public class TurretHandler extends WeaponHandler implements Listener {
 	private Location nextTurretSpawn = null;
 	
 	public TurretHandler(int customItemTypeID, boolean useDefaultType) {
-		super(customItemTypeID, useDefaultType);
+		super(customItemTypeID, useDefaultType, new Origin() {
+			
+			@Override
+			public String getKillMessage(String killerName, String victimName, ChatColor killerColor, ChatColor victimColor, String feedColorCode) {
+				Map<String, String> vars = new HashMap<String, String>();
+				vars.put("killer", killerName);
+				vars.put("killer_color", killerColor.toString());
+				vars.put("target", victimName);
+				vars.put("target_color", victimColor.toString());
+				vars.put("feed_color", Paintball.instance.feeder.getFeedColor());
+				
+				return Translator.getString("WEAPON_FEED_TURRET", vars);
+			}
+		});
+		
 		calculateTable(Paintball.instance.turretAngleMin, Paintball.instance.turretAngleMax, Paintball.instance.turretTicks, Paintball.instance.turretXSize, Paintball.instance.turretYSize, Paintball.instance.speedmulti);
 		Paintball.instance.getServer().getPluginManager().registerEvents(this, Paintball.instance);
 	}
@@ -121,7 +139,7 @@ public class TurretHandler extends WeaponHandler implements Listener {
 						nextTurretSpawn = spawnLoc;
 						Snowman snowman = (Snowman) block.getLocation().getWorld().spawnEntity(spawnLoc, EntityType.SNOWMAN);
 						nextTurretSpawn = null;
-						new Turret(gadgetManager, match, player, snowman, Origin.TURRET);
+						new Turret(gadgetManager, match, player, snowman, this.getWeaponOrigin());
 						
 						if (itemInHand.getAmount() <= 1) {
 							player.setItemInHand(null);
@@ -364,7 +382,7 @@ public class TurretHandler extends WeaponHandler implements Listener {
 							Player player = getOwner();
 							ball.setShooter(player);
 
-							Paintball.instance.weaponManager.getBallHandler().createBall(match, player, ball, Origin.TURRET);
+							Paintball.instance.weaponManager.getBallHandler().createBall(match, player, ball, getGadgetOrigin());
 
 							ball.setVelocity(getAimVector(entVec.clone().add(new Vector(0, 2, 0)).add(dir2), targetVec.clone(), dir2.clone()));
 

@@ -38,7 +38,7 @@ public class ConcussionHandler extends WeaponHandler implements Listener {
 	private int next = 0;
 	
 	public ConcussionHandler(int customItemTypeID, boolean useDefaultType) {
-		super(customItemTypeID, useDefaultType);
+		super(customItemTypeID, useDefaultType, null);
 		Paintball.instance.getServer().getPluginManager().registerEvents(this, Paintball.instance);
 	}
 	
@@ -91,7 +91,7 @@ public class ConcussionHandler extends WeaponHandler implements Listener {
 			Item nade = player.getWorld().dropItem(spawnLoc, nadeItem);
 			nade.setVelocity(direction.normalize().multiply(Paintball.instance.concussionSpeed));
 			
-			createConcussion(match, player, nade, Origin.CONCUSSION);
+			createConcussion(match, player, nade, this.getWeaponOrigin());
 			
 			if (itemInHand.getAmount() <= 1) {
 				player.setItemInHand(null);

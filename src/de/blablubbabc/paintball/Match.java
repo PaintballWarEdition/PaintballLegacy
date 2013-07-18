@@ -830,7 +830,11 @@ public class Match {
 		matchStats.addStat(TDMMatchStat.AIRSTRIKES, 1, true);
 	}
 
-	public synchronized void onHitByBall(Player target, Player shooter, Origin source) {
+	public synchronized void onHitByBall(Player target, Player shooter, Origin origin) {
+		if (target == null || shooter == null || origin == null) {
+			throw new IllegalArgumentException("Something is null. That's not good.");
+		}
+		
 		// math over already?
 		if (matchOver)
 			return;
@@ -871,7 +875,7 @@ public class Match {
 					// dead?->frag
 					// message:
 					if (healthLeft <= 0) {
-						frag(target, shooter, source);
+						frag(target, shooter, origin);
 					} else {
 						// xp bar
 						if (plugin.useXPBar) {
@@ -906,7 +910,7 @@ public class Match {
 		}
 	}
 
-	public synchronized void frag(final Player target, Player killer, Origin source) {
+	public synchronized void frag(final Player target, Player killer, Origin origin) {
 		// math over already?
 		if (matchOver) return;
 		
@@ -942,7 +946,8 @@ public class Match {
 		vars.put("money", String.valueOf(plugin.cashPerKill));
 		killer.sendMessage(Translator.getString("YOU_KILLED", vars));
 		target.sendMessage(Translator.getString("YOU_WERE_KILLED", vars));
-		plugin.feeder.feed(target, killer, this);
+		// killfeed
+		feed(target, killer, this, origin);
 
 		// afk detection on frag
 		if (plugin.afkDetection) {
@@ -991,6 +996,34 @@ public class Match {
 					getTeamName(target));
 		}
 
+	}
+	
+	private void feed(Player target, Player killer, Match match, Origin origin) {
+		KeyValuePair pluginPair = new KeyValuePair("plugin", plugin.feeder.getPluginName());
+		/*vars.put("killer_color", Lobby.getTeam(match.getTeamName(killer)).color().toString());
+		vars.put("killer", killer.getName());
+		vars.put("target_color", Lobby.getTeam(match.getTeamName(target)).color().toString());
+		vars.put("target", target.getName());*/
+		
+		String killMessage = origin.getKillMessage(killer.getName(), target.getName(), Lobby.getTeam(match.getTeamName(killer)).color(), Lobby.getTeam(match.getTeamName(target)).color(), plugin.feeder.getFeedColor());
+		KeyValuePair killMessagePair = new KeyValuePair("kill_message", killMessage);
+		
+		if (match.setting_respawns != -1 && match.setting_respawns != 0) {
+			KeyValuePair livesPair = new KeyValuePair("lives", String.valueOf(match.setting_respawns + 1));
+			KeyValuePair livesLeftPair = new KeyValuePair("lives_left", String.valueOf(match.respawnsLeft(target)));
+			plugin.feeder.text(Translator.getString("KILL_FEED_LIVES", pluginPair, killMessagePair, livesPair, livesLeftPair));
+			//vars.put("lives", String.valueOf(match.setting_respawns + 1));
+			//vars.put("lives_left", String.valueOf(match.respawnsLeft(target)));
+			/*for(Player player : Lobby.LOBBY.getMembers()) {
+				if(!Lobby.toggledFeed(player)) player.sendMessage(Translator.getString("KILL_FEED_LIVES", vars));
+			}*/
+		} else {
+			plugin.feeder.text(Translator.getString("KILL_FEED", pluginPair, killMessagePair));
+			
+			/*for(Player player : Lobby.LOBBY.getMembers()) {
+				if(!Lobby.toggledFeed(player)) player.sendMessage(Translator.getString("KILL_FEED", vars));
+			}*/
+		}
 	}
 	
 	public synchronized void onBuying(String playerName, int moneySpent) {

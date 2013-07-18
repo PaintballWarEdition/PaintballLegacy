@@ -42,7 +42,7 @@ public abstract class Gadget {
 	public abstract boolean isSimiliar(Entity entity);
 	public abstract boolean isSimiliar(Location location);
 	
-	public Origin getOrigin() {
+	public Origin getGadgetOrigin() {
 		return origin;
 	}
 	

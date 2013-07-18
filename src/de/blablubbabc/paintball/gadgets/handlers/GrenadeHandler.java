@@ -1,5 +1,9 @@
 package de.blablubbabc.paintball.gadgets.handlers;
 
+import java.util.HashMap;
+import java.util.Map;
+
+import org.bukkit.ChatColor;
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.Sound;
@@ -37,12 +41,26 @@ public class GrenadeHandler extends WeaponHandler implements Listener {
 	private GadgetManager gadgetManager = new GadgetManager();
 	
 	public GrenadeHandler(int customItemTypeID, boolean useDefaultType) {
-		super(customItemTypeID, useDefaultType);
+		super(customItemTypeID, useDefaultType, new Origin() {
+			
+			@Override
+			public String getKillMessage(String killerName, String victimName, ChatColor killerColor, ChatColor victimColor, String feedColorCode) {
+				Map<String, String> vars = new HashMap<String, String>();
+				vars.put("killer", killerName);
+				vars.put("killer_color", killerColor.toString());
+				vars.put("target", victimName);
+				vars.put("target_color", victimColor.toString());
+				vars.put("feed_color", Paintball.instance.feeder.getFeedColor());
+				
+				return Translator.getString("WEAPON_FEED_GRENADE", vars);
+			}
+		});
+
 		Paintball.instance.getServer().getPluginManager().registerEvents(this, Paintball.instance);
 	}
 	
 	public Grenade createGrenade(Match match, Player player, Egg nade, Origin origin) {
-		return new Grenade(gadgetManager, match, player, nade, Origin.GRENADE);
+		return new Grenade(gadgetManager, match, player, nade, origin);
 	}
 	
 	@EventHandler(priority = EventPriority.NORMAL)
@@ -91,7 +109,7 @@ public class GrenadeHandler extends WeaponHandler implements Listener {
 				egg.setShooter(player);
 				// boosting:
 				egg.setVelocity(direction.multiply(Paintball.instance.grenadeSpeed));
-				createGrenade(match, player, egg, Origin.GRENADE);
+				createGrenade(match, player, egg, this.getWeaponOrigin());
 				// INFORM MATCH
 				match.onGrenade(player);
 				if (match.setting_grenades != -1) {
@@ -144,7 +162,7 @@ public class GrenadeHandler extends WeaponHandler implements Listener {
 				for (Vector v : Utils.getDirections()) {
 					final Snowball snowball  = location.getWorld().spawn(location, Snowball.class);
 					snowball.setShooter(shooter);
-					final Ball ball = Paintball.instance.weaponManager.getBallHandler().createBall(match, shooter, snowball, getOrigin());
+					final Ball ball = Paintball.instance.weaponManager.getBallHandler().createBall(match, shooter, snowball, getGadgetOrigin());
 					Vector v2 = v.clone();
 					v2.setX(v.getX() + Math.random() - Math.random());
 					v2.setY(v.getY() + Math.random() - Math.random());

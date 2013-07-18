@@ -1,7 +1,4 @@
 1.2.0
-* Making Origin a class instead of an enum
-* frag messages depending on origin
-
 * arena voting: having a configuravle amount of options + (configurable) a "random other map" option (if there are any other arenas)
 voting like so:
 /pb vote [x]

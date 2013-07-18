@@ -1,5 +1,9 @@
 package de.blablubbabc.paintball.gadgets.handlers;
 
+import java.util.HashMap;
+import java.util.Map;
+
+import org.bukkit.ChatColor;
 import org.bukkit.Effect;
 import org.bukkit.Location;
 import org.bukkit.Material;
@@ -33,7 +37,20 @@ public class RocketHandler extends WeaponHandler {
 	private GadgetManager gadgetManager = new GadgetManager();
 	
 	public RocketHandler(int customItemTypeID, boolean useDefaultType) {
-		super(customItemTypeID, useDefaultType);
+		super(customItemTypeID, useDefaultType, new Origin() {
+			
+			@Override
+			public String getKillMessage(String killerName, String victimName, ChatColor killerColor, ChatColor victimColor, String feedColorCode) {
+				Map<String, String> vars = new HashMap<String, String>();
+				vars.put("killer", killerName);
+				vars.put("killer_color", killerColor.toString());
+				vars.put("target", victimName);
+				vars.put("target_color", victimColor.toString());
+				vars.put("feed_color", Paintball.instance.feeder.getFeedColor());
+				
+				return Translator.getString("WEAPON_FEED_ROCKET", vars);
+			}
+		});
 	}
 	
 	public Rocket createRocket(Match match, Player player, Entity rocket, Origin origin) {
@@ -76,7 +93,7 @@ public class RocketHandler extends WeaponHandler {
 					rocket.setShooter(player);
 					rocket.setVelocity(direction.multiply(Paintball.instance.rocketSpeedMulti));
 					
-					createRocket(match, player, rocket, Origin.ROCKET);
+					createRocket(match, player, rocket, this.getWeaponOrigin());
 					
 					if (itemInHand.getAmount() <= 1) {
 						player.setItemInHand(null);
@@ -167,7 +184,7 @@ public class RocketHandler extends WeaponHandler {
 					final Snowball snowball = loc.getWorld().spawn(loc, Snowball.class);
 					snowball.setShooter(player);
 
-					final Ball ball = Paintball.instance.weaponManager.getBallHandler().createBall(match, player, snowball, getOrigin());
+					final Ball ball = Paintball.instance.weaponManager.getBallHandler().createBall(match, player, snowball, getGadgetOrigin());
 					
 					Vector v2 = v.clone();
 					v2.setX(v.getX() + Utils.random.nextDouble() - Utils.random.nextDouble());
@@ -218,11 +235,6 @@ public class RocketHandler extends WeaponHandler {
 		@Override
 		public boolean isSimiliar(Location location) {
 			return false;
-		}
-
-		@Override
-		public Origin getOrigin() {
-			return Origin.ROCKET;
 		}
 	}
 

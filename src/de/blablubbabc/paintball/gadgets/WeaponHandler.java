@@ -10,14 +10,17 @@ import org.bukkit.event.player.PlayerPickupItemEvent;
 import org.bukkit.inventory.ItemStack;
 
 import de.blablubbabc.paintball.Match;
+import de.blablubbabc.paintball.Origin;
 import de.blablubbabc.paintball.Paintball;
 
 public abstract class WeaponHandler {
 	protected final ItemStack item;
+	protected final Origin origin;
 	
-	public WeaponHandler(int customItemTypeID, boolean useDefaultType) {
+	public WeaponHandler(int customItemTypeID, boolean useDefaultType, Origin origin) {
 		Paintball.instance.weaponManager.registerWeaponHandler(this);
 		item = setItemMeta(new ItemStack(useDefaultType ? getDefaultItemTypeID() : customItemTypeID));
+		this.origin = origin != null ? origin : new Origin();
 	}
 	
 	protected abstract int getDefaultItemTypeID();
@@ -29,6 +32,10 @@ public abstract class WeaponHandler {
 	
 	public ItemStack getItem() {
 		return item;
+	}
+	
+	public Origin getWeaponOrigin() {
+		return origin;
 	}
 	
 	public abstract void cleanUp(Match match, String playerName);

@@ -1,5 +1,9 @@
 package de.blablubbabc.paintball.gadgets.handlers;
 
+import java.util.HashMap;
+import java.util.Map;
+
+import org.bukkit.ChatColor;
 import org.bukkit.Effect;
 import org.bukkit.Location;
 import org.bukkit.Material;
@@ -36,7 +40,21 @@ public class MineHandler extends WeaponHandler implements Listener {
 	private GadgetManager gadgetManager = new GadgetManager();
 	
 	public MineHandler(int customItemTypeID, boolean useDefaultType) {
-		super(customItemTypeID, useDefaultType);
+		super(customItemTypeID, useDefaultType, new Origin() {
+			
+			@Override
+			public String getKillMessage(String killerName, String victimName, ChatColor killerColor, ChatColor victimColor, String feedColorCode) {
+				Map<String, String> vars = new HashMap<String, String>();
+				vars.put("killer", killerName);
+				vars.put("killer_color", killerColor.toString());
+				vars.put("target", victimName);
+				vars.put("target_color", victimColor.toString());
+				vars.put("feed_color", Paintball.instance.feeder.getFeedColor());
+				
+				return Translator.getString("WEAPON_FEED_MINE", vars);
+			}
+		});
+		
 		Paintball.instance.getServer().getPluginManager().registerEvents(this, Paintball.instance);
 	}
 	
@@ -117,7 +135,7 @@ public class MineHandler extends WeaponHandler implements Listener {
 							}
 						}, 1L);
 						
-						plantMine(match, player, block, Material.FLOWER_POT, event.getBlockReplacedState(), Origin.MINE);
+						plantMine(match, player, block, Material.FLOWER_POT, event.getBlockReplacedState(), this.getWeaponOrigin());
 						
 						if (itemInHand.getAmount() <= 1) {
 							player.setItemInHand(null);
@@ -187,7 +205,7 @@ public class MineHandler extends WeaponHandler implements Listener {
 				for (Vector v : Utils.getUpVectors()) {
 					final Snowball snowball = world.spawn(spawnLoc, Snowball.class);
 					snowball.setShooter(player);
-					final Ball ball = Paintball.instance.weaponManager.getBallHandler().createBall(match, player, snowball, Origin.MINE);
+					final Ball ball = Paintball.instance.weaponManager.getBallHandler().createBall(match, player, snowball, getGadgetOrigin());
 					
 					Vector v2 = v.clone();
 					v2.setX(v.getX() + Utils.random.nextDouble() - Utils.random.nextDouble());

@@ -1,5 +1,9 @@
 package de.blablubbabc.paintball.gadgets.handlers;
 
+import java.util.HashMap;
+import java.util.Map;
+
+import org.bukkit.ChatColor;
 import org.bukkit.Effect;
 import org.bukkit.Location;
 import org.bukkit.Material;
@@ -31,7 +35,20 @@ import de.blablubbabc.paintball.utils.Utils;
 public class MarkerHandler extends WeaponHandler {
 	
 	public MarkerHandler(int customItemTypeID, boolean useDefaultType) {
-		super(customItemTypeID, useDefaultType);
+		super(customItemTypeID, useDefaultType, new Origin() {
+			
+			@Override
+			public String getKillMessage(String killerName, String victimName, ChatColor killerColor, ChatColor victimColor, String feedColorCode) {
+				Map<String, String> vars = new HashMap<String, String>();
+				vars.put("killer", killerName);
+				vars.put("killer_color", killerColor.toString());
+				vars.put("target", victimName);
+				vars.put("target_color", victimColor.toString());
+				vars.put("feed_color", Paintball.instance.feeder.getFeedColor());
+				
+				return Translator.getString("WEAPON_FEED_MARKER", vars);
+			}
+		});
 	}
 
 	@Override
@@ -70,7 +87,7 @@ public class MarkerHandler extends WeaponHandler {
 				Snowball snowball = (Snowball) world.spawnEntity(spawnLoc, EntityType.SNOWBALL);
 				snowball.setShooter(player);
 				// REGISTER:
-				Paintball.instance.weaponManager.getBallHandler().createBall(match, player, snowball, Origin.MARKER);
+				Paintball.instance.weaponManager.getBallHandler().createBall(match, player, snowball, this.getWeaponOrigin());
 				// BOOST:
 				snowball.setVelocity(direction.multiply(Paintball.instance.speedmulti));
 				// STATS

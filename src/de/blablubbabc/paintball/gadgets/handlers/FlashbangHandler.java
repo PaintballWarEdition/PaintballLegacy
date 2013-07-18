@@ -38,7 +38,7 @@ public class FlashbangHandler extends WeaponHandler implements Listener {
 	private int next = 0;
 	
 	public FlashbangHandler(int customItemTypeID, boolean useDefaultType) {
-		super(customItemTypeID, useDefaultType);
+		super(customItemTypeID, useDefaultType, null);
 		Paintball.instance.getServer().getPluginManager().registerEvents(this, Paintball.instance);
 	}
 	
@@ -92,7 +92,7 @@ public class FlashbangHandler extends WeaponHandler implements Listener {
 			Item nade = world.dropItem(spawnLoc, nadeItem);
 			nade.setVelocity(direction.multiply(Paintball.instance.flashbangSpeed));
 			
-			createFlashbang(match, player, nade, Origin.FLASHBANG);
+			createFlashbang(match, player, nade, this.getWeaponOrigin());
 			
 			if (itemInHand.getAmount() <= 1) {
 				player.setItemInHand(null);

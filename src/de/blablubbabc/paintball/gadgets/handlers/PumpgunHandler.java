@@ -1,6 +1,9 @@
 package de.blablubbabc.paintball.gadgets.handlers;
 
+import java.util.HashMap;
+import java.util.Map;
 
+import org.bukkit.ChatColor;
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.Sound;
@@ -23,17 +26,30 @@ import de.blablubbabc.paintball.utils.Utils;
 public class PumpgunHandler extends WeaponHandler {	
 	
 	public PumpgunHandler(int customItemTypeID, boolean useDefaultType) {
-		super(customItemTypeID, useDefaultType);
+		super(customItemTypeID, useDefaultType, new Origin() {
+			
+			@Override
+			public String getKillMessage(String killerName, String victimName, ChatColor killerColor, ChatColor victimColor, String feedColorCode) {
+				Map<String, String> vars = new HashMap<String, String>();
+				vars.put("killer", killerName);
+				vars.put("killer_color", killerColor.toString());
+				vars.put("target", victimName);
+				vars.put("target_color", victimColor.toString());
+				vars.put("feed_color", Paintball.instance.feeder.getFeedColor());
+				
+				return Translator.getString("WEAPON_FEED_PUMPGUN", vars);
+			}
+		});
 	}
 	
-	public void shoot(Player player, Match match, Location location, Vector direction, double speed) {
+	public void shoot(Player player, Match match, Location location, Vector direction, double speed, Origin origin) {
 		player.getWorld().playSound(location, Sound.FIRE_IGNITE, 2.0F, 0F);
 		direction.normalize();
 		
 		for (int i = 0; i < Paintball.instance.pumpgunBullets ; i++) {
 			Snowball snowball = location.getWorld().spawn(location, Snowball.class);
 			snowball.setShooter(player);
-			Paintball.instance.weaponManager.getBallHandler().createBall(match, player, snowball, Origin.PUMPGUN);
+			Paintball.instance.weaponManager.getBallHandler().createBall(match, player, snowball, origin);
 			Vector vel = new Vector(direction.getX() + (Utils.random.nextDouble() - 0.45) / Paintball.instance.pumpgunSpray, 
 					direction.getY() + (Utils.random.nextDouble() - 0.45) / Paintball.instance.pumpgunSpray, 
 					direction.getZ() + (Utils.random.nextDouble() - 0.45) / Paintball.instance.pumpgunSpray).normalize();
@@ -71,7 +87,7 @@ public class PumpgunHandler extends WeaponHandler {
 				match.onShot(player);
 				
 				Location location = player.getEyeLocation();
-				shoot(player, match, location, location.getDirection(), Paintball.instance.pumpgunSpeedmulti);
+				shoot(player, match, location, location.getDirection(), Paintball.instance.pumpgunSpeedmulti, this.getWeaponOrigin());
 				
 			} else {
 				player.playSound(player.getEyeLocation(), Sound.FIRE_IGNITE, 1F, 2F);

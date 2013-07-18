@@ -1,5 +1,9 @@
 package de.blablubbabc.paintball.gadgets.handlers;
 
+import java.util.HashMap;
+import java.util.Map;
+
+import org.bukkit.ChatColor;
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.Sound;
@@ -24,7 +28,21 @@ public class ShotgunHandler extends WeaponHandler {
 	private int[] angles = new int[5];
 	
 	public ShotgunHandler(int customItemTypeID, boolean useDefaultType) {
-		super(customItemTypeID, useDefaultType);
+		super(customItemTypeID, useDefaultType, new Origin() {
+			
+			@Override
+			public String getKillMessage(String killerName, String victimName, ChatColor killerColor, ChatColor victimColor, String feedColorCode) {
+				Map<String, String> vars = new HashMap<String, String>();
+				vars.put("killer", killerName);
+				vars.put("killer_color", killerColor.toString());
+				vars.put("target", victimName);
+				vars.put("target_color", victimColor.toString());
+				vars.put("feed_color", Paintball.instance.feeder.getFeedColor());
+				
+				return Translator.getString("WEAPON_FEED_SHOTGUN", vars);
+			}
+		});
+		
 		angles[0] = Paintball.instance.shotgunAngle2;
 		angles[1] = Paintball.instance.shotgunAngle1;
 		angles[2] = 0;
@@ -32,7 +50,7 @@ public class ShotgunHandler extends WeaponHandler {
 		angles[4] = -Paintball.instance.shotgunAngle2;
 	}
 
-	public void shoot(Player player, Match match, Location location, Vector direction, double speed) {
+	public void shoot(Player player, Match match, Location location, Vector direction, double speed, Origin origin) {
 		player.getWorld().playSound(location, Sound.FIRE_IGNITE, 2.0F, 0F);
 		direction.normalize();
 		
@@ -57,13 +75,13 @@ public class ShotgunHandler extends WeaponHandler {
 			if (Paintball.instance.shotgunAngleVert == 0) {
 				Snowball snowball = location.getWorld().spawn(location, Snowball.class);
 				snowball.setShooter(player);
-				Paintball.instance.weaponManager.getBallHandler().createBall(match, player, snowball, Origin.SHOTGUN);
+				Paintball.instance.weaponManager.getBallHandler().createBall(match, player, snowball, origin);
 				snowball.setVelocity(vec.clone().multiply(speed));
 			} else {
 				for (int i = -Paintball.instance.shotgunAngleVert; i <= Paintball.instance.shotgunAngleVert; i += Paintball.instance.shotgunAngleVert) {
 					Snowball snowball = location.getWorld().spawn(location, Snowball.class);
 					snowball.setShooter(player);
-					Paintball.instance.weaponManager.getBallHandler().createBall(match, player, snowball, Origin.SHOTGUN);
+					Paintball.instance.weaponManager.getBallHandler().createBall(match, player, snowball, origin);
 					snowball.setVelocity(Utils.rotateAxis(vec, n, i).multiply(speed));
 				}
 			}
@@ -99,7 +117,7 @@ public class ShotgunHandler extends WeaponHandler {
 				match.onShot(player);
 				
 				Location location = player.getEyeLocation();
-				shoot(player, match, location, location.getDirection(), Paintball.instance.shotgunSpeedmulti);
+				shoot(player, match, location, location.getDirection(), Paintball.instance.shotgunSpeedmulti, this.getWeaponOrigin());
 				
 			} else {
 				player.playSound(player.getEyeLocation(), Sound.FIRE_IGNITE, 1F, 2F);

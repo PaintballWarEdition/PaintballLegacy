@@ -13,6 +13,7 @@ import de.blablubbabc.paintball.Lobby;
 import de.blablubbabc.paintball.Paintball;
 import de.blablubbabc.paintball.statistics.player.PlayerStat;
 import de.blablubbabc.paintball.statistics.player.PlayerStats;
+import de.blablubbabc.paintball.utils.KeyValuePair;
 import de.blablubbabc.paintball.utils.Translator;
 
 
@@ -285,10 +286,7 @@ public class CmdAdmin {
 					return true;
 				}
 				plugin.arenaManager.setNext(arena);
-				Map<String, String> vars = new HashMap<String, String>();
-				vars.put("plugin", plugin.feeder.pluginName);
-				vars.put("arena", arena);
-				plugin.feeder.text(sender, Translator.getString("NEXT_ARENA_SET", vars));
+				plugin.feeder.text(sender, Translator.getString("NEXT_ARENA_SET", new KeyValuePair("arena", arena)));
 				return true;
 			}
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////

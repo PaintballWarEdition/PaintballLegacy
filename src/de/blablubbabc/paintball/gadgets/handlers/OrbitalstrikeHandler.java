@@ -7,6 +7,7 @@ import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
 
+import org.bukkit.ChatColor;
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.block.Block;
@@ -40,7 +41,20 @@ public class OrbitalstrikeHandler extends WeaponHandler {
 	private final Vector[] directions = new Vector[36];
 	
 	public OrbitalstrikeHandler(int customItemTypeID, boolean useDefaultType) {
-		super(customItemTypeID, useDefaultType);
+		super(customItemTypeID, useDefaultType, new Origin() {
+			
+			@Override
+			public String getKillMessage(String killerName, String victimName, ChatColor killerColor, ChatColor victimColor, String feedColorCode) {
+				Map<String, String> vars = new HashMap<String, String>();
+				vars.put("killer", killerName);
+				vars.put("killer_color", killerColor.toString());
+				vars.put("target", victimName);
+				vars.put("target_color", victimColor.toString());
+				vars.put("feed_color", Paintball.instance.feeder.getFeedColor());
+				
+				return Translator.getString("WEAPON_FEED_ORBITALSTRIKE", vars);
+			}
+		});
 		
 		for (int j = 0; j < 36; j += 1) {
 			double x = Math.cos(j * 10.0D * 0.01856444444444445D) * 3.0;
@@ -98,7 +112,7 @@ public class OrbitalstrikeHandler extends WeaponHandler {
 						demark(player);
 						FinalMark finalMark = addFinalMark(block, player, match);
 						
-						orderOrbitalstrike(match, player, block.getLocation(), Origin.ORBITALSTRIKE, finalMark);
+						orderOrbitalstrike(match, player, block.getLocation(), this.getWeaponOrigin(), finalMark);
 						
 						// remove item
 						if (itemInHand.getAmount() <= 1) {
@@ -307,7 +321,7 @@ public class OrbitalstrikeHandler extends WeaponHandler {
 				if (yValue == 0) snowball.setVelocity(direction);
 				else snowball.setVelocity(direction.clone().setY(yValue));
 				
-				Paintball.instance.weaponManager.getBallHandler().createBall(match, player, snowball, Origin.ORBITALSTRIKE);
+				Paintball.instance.weaponManager.getBallHandler().createBall(match, player, snowball, getGadgetOrigin());
 			}
 		}
 		

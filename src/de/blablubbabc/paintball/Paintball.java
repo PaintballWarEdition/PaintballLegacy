@@ -893,7 +893,6 @@ public class Paintball extends JavaPlugin{
 		// Log is already init above
 		// Translator will be init below
 		Sounds.init();
-		Origin.values();
 
 		// init enums:
 		Instrus.values();

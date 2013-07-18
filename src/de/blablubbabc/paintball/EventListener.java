@@ -58,6 +58,20 @@ import de.blablubbabc.paintball.utils.Translator;
 
 public class EventListener implements Listener {
 	private Paintball plugin;
+	private Origin meleeOrigin = new Origin() {
+		
+		@Override
+		public String getKillMessage(String killerName, String victimName, ChatColor killerColor, ChatColor victimColor, String feedColorCode) {
+			Map<String, String> vars = new HashMap<String, String>();
+			vars.put("killer", killerName);
+			vars.put("killer_color", killerColor.toString());
+			vars.put("target", victimName);
+			vars.put("target_color", victimColor.toString());
+			vars.put("feed_color", Paintball.instance.feeder.getFeedColor());
+			
+			return Translator.getString("WEAPON_FEED_MELEE", vars);
+		}
+	};
 	
 	private long lastSignUpdate = 0;
 
@@ -234,7 +248,7 @@ public class EventListener implements Listener {
 										if (damager instanceof Snowball) {
 											Gadget ball = plugin.weaponManager.getBallHandler().getBall(event.getDamager(), matchA, attacker.getName());
 											if (ball != null) {
-												matchA.onHitByBall(target, attacker, ball.getOrigin());
+												matchA.onHitByBall(target, attacker, ball.getGadgetOrigin());
 											}
 										}
 									} else if (plugin.allowMelee && event.getCause() == DamageCause.ENTITY_ATTACK) {
@@ -242,7 +256,7 @@ public class EventListener implements Listener {
 											target.setHealth(target.getHealth() - plugin.meleeDamage);
 											Sounds.playMeleeHit(attacker, target);
 										} else {
-											matchA.frag(target, attacker, Origin.MELEE);
+											matchA.frag(target, attacker, meleeOrigin);
 										}
 									}
 								}

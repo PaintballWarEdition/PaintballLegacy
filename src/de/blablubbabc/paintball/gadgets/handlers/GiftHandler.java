@@ -27,7 +27,7 @@ public class GiftHandler extends WeaponHandler {
 	private long time;
 	
 	public GiftHandler(int customItemTypeID, boolean useDefaultType) {
-		super(customItemTypeID, useDefaultType);
+		super(customItemTypeID, useDefaultType, null);
 		time = 1000 * 60 * Paintball.instance.wishesDelay;
 	}
 	
@@ -39,7 +39,7 @@ public class GiftHandler extends WeaponHandler {
 	@Override
 	protected ItemStack setItemMeta(ItemStack itemStack) {
 		ItemMeta meta = itemStack.getItemMeta();
-		meta.setDisplayName(Translator.getString("WEAPON_GIFT"));
+		meta.setDisplayName(Translator.getString("GIFT_ITEM"));
 		itemStack.setItemMeta(meta);
 		return itemStack;
 	}
