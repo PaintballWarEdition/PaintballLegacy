@@ -5,6 +5,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
 import java.util.Set;
 
 import org.bukkit.Location;
@@ -17,9 +18,9 @@ import de.blablubbabc.paintball.statistics.player.PlayerStat;
 import de.blablubbabc.paintball.statistics.player.PlayerStats;
 import de.blablubbabc.paintball.statistics.player.match.tdm.TDMMatchStat;
 import de.blablubbabc.paintball.statistics.player.match.tdm.TDMMatchStats;
+import de.blablubbabc.paintball.utils.KeyValuePair;
 import de.blablubbabc.paintball.utils.Timer;
 import de.blablubbabc.paintball.utils.Translator;
-
 
 public class MatchManager{
 
@@ -103,6 +104,7 @@ public class MatchManager{
 		for (Player player : Lobby.SPECTATE.getMembers()) {
 			Lobby.SPECTATE.setPlaying(player);
 		}
+		
 		//Arena:
 		String arena = plugin.arenaManager.getNextArena();
 		plugin.arenaManager.resetNext();
@@ -123,17 +125,26 @@ public class MatchManager{
 		final long time1 = System.nanoTime();
 
 		// STATS and TELEPORT TO LOBBY for the players:
+		Map<Player, String> vaultRewards = new HashMap<Player, String>();
+		
 		for (Player player : match.getAll()) {
 			String playerName = player.getName();
 			
 			// player ?
 			if (match.getAllPlayer().contains(player)) {
-				// STATS
+				// STATS and vault rewards
 				PlayerStats stats = plugin.playerManager.getPlayerStats(playerName);
 				stats.addStat(PlayerStat.POINTS, plugin.pointsPerRound);
 				stats.addStat(PlayerStat.MONEY, plugin.cashPerRound);
 
 				stats.addStat(PlayerStat.ROUNDS, 1);
+				
+				double vaultReward = plugin.vaultRewardRound;
+				
+				TDMMatchStats mStats = matchStats.get(playerName);
+				vaultReward += mStats.getStat(TDMMatchStat.HITS) * plugin.vaultRewardHit;
+				vaultReward += mStats.getStat(TDMMatchStat.KILLS) * plugin.vaultRewardKill;
+				
 				if (draw) {
 					stats.addStat(PlayerStat.DRAWS, 1);
 				} else {
@@ -141,11 +152,16 @@ public class MatchManager{
 						stats.addStat(PlayerStat.WINS, 1);
 						stats.addStat(PlayerStat.POINTS, plugin.pointsPerWin);
 						stats.addStat(PlayerStat.MONEY, plugin.cashPerWin);
+						
+						vaultReward += plugin.vaultRewardWin;
 					} else {
 						stats.addStat(PlayerStat.DEFEATS, 1);
 					}
-
 				}
+				
+				// vault reward
+				plugin.givePlayerVaultMoneyAfterSession(playerName, vaultReward);
+				vaultRewards.put(player, String.valueOf(vaultReward));
 				
 				// AFK DETECTION
 				if (Lobby.isPlaying(player)) {
@@ -362,6 +378,13 @@ public class MatchManager{
 						
 					}
 				}
+			}
+		}
+		
+		// print vault reward:
+		if (plugin.vaultRewardsEnabled) {
+			for (Entry<Player, String> reward : vaultRewards.entrySet()) {
+				plugin.feeder.status(reward.getKey(), Translator.getString("YOU_RECEIVED_MATCH_VAULT_REWARD", new KeyValuePair("money", reward.getValue())));
 			}
 		}
 		

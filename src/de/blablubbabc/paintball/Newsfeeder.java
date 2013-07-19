@@ -131,10 +131,7 @@ public class Newsfeeder {
 	}
 	
 	public void status(CommandSender sender, String message) {
-		Map<String, String> vars = new HashMap<String, String>();
-		vars.put("plugin", pluginName);
-		vars.put("message", String.valueOf(message));
-		sender.sendMessage(Translator.getString("MATCH_STATUS", vars));
+		sender.sendMessage(Translator.getString("MATCH_STATUS", new KeyValuePair("plugin", pluginName), new KeyValuePair("message", message)));
 	}
 	
 	public void players() {

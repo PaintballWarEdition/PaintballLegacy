@@ -141,20 +141,28 @@ public class Translator {
 		return getString(key, (KeyValuePair[]) null);
 	}
 
+	@SuppressWarnings("unchecked")
 	public static String getString(String key, Map<String, String> vars) {
 		if (vars == null) return getString(key);
 		
-		KeyValuePair[] values = new KeyValuePair[vars.size()];
+		/*KeyValuePair[] values = new KeyValuePair[vars.size()];
 		// vars
 		int i = 0;
 		for (Entry<String, String> entry : vars.entrySet()) {
 			values[i++] = new KeyValuePair(entry.getKey(), entry.getValue());
 		}
 		
-		return getString(key, values);
+		return getString(key, values);*/
+		
+		
+		return getString(key, (Entry<String, String>[]) vars.entrySet().toArray());
 	}
 	
 	public static String getString(String key, KeyValuePair... values) {
+		return getString(key, (Entry<String, String>[]) values);
+	}
+	
+	private static String getString(String key, Entry<String, String>... values) {
 		if (!success) {
 			return "ERROR:couldn't load language!";
 		}
@@ -166,14 +174,14 @@ public class Translator {
 		} else {
 			if (values != null && values.length > 0) {
 				// key-value-pair replacements
-				for (KeyValuePair v : values) {
-					if (v != null) {
-						value = value.replace("{" + v.getKey() + "}", v.getValue());
+				for (Entry<String, String> entry : values) {
+					if (entry != null) {
+						value = value.replace("{" + entry.getKey() + "}", entry.getValue());
 					}
 				}
 			}
-			// colors
-			value = ChatColor.translateAlternateColorCodes('&', value);
+			// colors should already be done, when loading the langauge file:
+			//value = ChatColor.translateAlternateColorCodes('&', value);
 			return value;
 		}
 	}
@@ -215,8 +223,7 @@ public class Translator {
 					Log.warning("No '=' found in line " + line);
 					return null;
 				}
-				String key = text.substring(0, delimeter).replaceAll(" ", "")
-						.toUpperCase();
+				String key = text.substring(0, delimeter).replaceAll(" ", "").toUpperCase();
 				String value = text.substring(delimeter);
 				// get correct value
 				int start = value.indexOf('"');
@@ -253,8 +260,8 @@ public class Translator {
 				if (language.containsKey(key)) {
 					Log.warning("Duplicate key: " + key);
 				}
-				// Add to translation map:
-				language.put(key, value);
+				// Add colored value to translation map:
+				language.put(key, ChatColor.translateAlternateColorCodes('&', value));
 			}
 			
 			Log.info("Scanned lines: " + line + " | Skipped lines: " + line_skipped);

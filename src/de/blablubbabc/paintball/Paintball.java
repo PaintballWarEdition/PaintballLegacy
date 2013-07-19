@@ -1174,11 +1174,11 @@ public class Paintball extends JavaPlugin{
 	
 	// vault reward feature:
 	public void givePlayerVaultMoney(Player player, double moneyToAdd) {
-		if (player != null) givePlayerVaultMoney(player.getName(), moneyToAdd);
+		if (player != null) givePlayerVaultMoneyAfterSession(player.getName(), moneyToAdd);
 	}
 	
-	public void givePlayerVaultMoney(String playerName, double moneyToAdd) {
-		if (vaultRewardsEnabled && vaultRewardsFeature != null) vaultRewardsFeature.givePlayerMoney(playerName, moneyToAdd);
+	public void givePlayerVaultMoneyAfterSession(String playerName, double moneyToAdd) {
+		if (vaultRewardsEnabled && vaultRewardsFeature != null) vaultRewardsFeature.givePlayerMoneyAfterSession(playerName, moneyToAdd);
 	}
 	
 	
@@ -1344,11 +1344,19 @@ public class Paintball extends JavaPlugin{
 			if (scoreboardLobby) {
 				lobbyScoreboards.remove(playerName);
 			}
+			
 			//messages:
-			if(messages) {
-				player.sendMessage(Translator.getString("YOU_LEFT_LOBBY"));
+			if (messages) {
 				feeder.leave(playerName);
+				player.sendMessage(Translator.getString("YOU_LEFT_LOBBY"));
 			}
+			
+			// vault rewards after session:
+			if (vaultRewardsEnabled && vaultRewardsFeature != null) {
+				double reward = vaultRewardsFeature.getSessionMoney(playerName);
+				if (vaultRewardsFeature.transferCurrentSession(playerName)) player.sendMessage(Translator.getString("YOU_RECEIVED_SESSION_VAULT_REWARD", new KeyValuePair("money", String.valueOf(reward))));
+			}
+			
 			return true;
 		} else return false;
 	}
