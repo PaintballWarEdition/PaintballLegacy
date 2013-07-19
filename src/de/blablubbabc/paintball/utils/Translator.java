@@ -93,7 +93,7 @@ public class Translator {
 				translation = loadLanguage(localisationFile, Paintball.instance.languageFileEncoding);
 				if (translation == null) {
 					Log.warning("Couldn't load the specified language file!", true);
-					Log.warning("Do you use the right translation?", false);
+					Log.warning("Do you use the right translation?");
 					Log.warning("Using the default language now: " + def_file.getName(), true);
 					use_def = true;
 				} else {
@@ -103,19 +103,19 @@ public class Translator {
 								+ translation.size()
 								+ "-"
 								+ def_language.size() + " )", true);
-						Log.warning("Do you use the right translation?", false);
+						Log.warning("Do you use the right translation?");
 					}
 					// keys missing?
 					boolean key_missing = false;
 					for (String s : def_language.keySet()) {
 						if (!translation.containsKey(s)) {
-							Log.warning("Key missing: " + s, false);
+							Log.warning("Key missing: " + s);
 							key_missing = true;
 						}
 					}
 					if (key_missing) {
 						Log.warning("There are keys missing in the loaded language-file!", true);
-						Log.warning("Do you use the right translation-version?", false);
+						Log.warning("Do you use the right translation-version?");
 						Log.warning("Using the default language now: "
 								+ def_file.getName(), true);
 						use_def = true;
@@ -212,7 +212,7 @@ public class Translator {
 				// get key and value
 				int delimeter = text.indexOf('=');
 				if (delimeter == -1) {
-					Log.warning("No '=' found in line " + line, false);
+					Log.warning("No '=' found in line " + line);
 					return null;
 				}
 				String key = text.substring(0, delimeter).replaceAll(" ", "")
@@ -221,12 +221,12 @@ public class Translator {
 				// get correct value
 				int start = value.indexOf('"');
 				if (start == -1) {
-					Log.warning("No '\"' found in line " + line, false);
+					Log.warning("No '\"' found in line " + line);
 					return null;
 				}
 				int end = value.lastIndexOf('"');
 				if (end == start) {
-					Log.warning("No second '\"' found in line " + line, false);
+					Log.warning("No second '\"' found in line " + line);
 					return null;
 				}
 				// too many '"'?
@@ -236,22 +236,22 @@ public class Translator {
 						gaense++;
 				}
 				if (gaense > 2) {
-					Log.warning("Too many '\"' found in line " + line, false);
+					Log.warning("Too many '\"' found in line " + line);
 					return null;
 				}
 				value = value.substring(start + 1, end);
 				// checks
 				if (key.isEmpty()) {
-					Log.warning("No key found in line " + line, false);
+					Log.warning("No key found in line " + line);
 					break;
 				}
 				if (value.isEmpty()) {
-					Log.warning("No value found in line " + line, false);
+					Log.warning("No value found in line " + line);
 					return null;
 				}
 				// already existing?
 				if (language.containsKey(key)) {
-					Log.warning("Duplicate key: " + key, false);
+					Log.warning("Duplicate key: " + key);
 				}
 				// Add to translation map:
 				language.put(key, value);
@@ -260,7 +260,7 @@ public class Translator {
 			Log.info("Scanned lines: " + line + " | Skipped lines: " + line_skipped);
 			return language;
 		} catch (Exception e) {
-			Log.severe("Couldn't load the specified language file.", false);
+			Log.severe("Couldn't load the specified language file.");
 			e.printStackTrace();
 			return null;
 		} finally {

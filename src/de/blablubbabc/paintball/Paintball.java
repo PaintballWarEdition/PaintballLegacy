@@ -30,6 +30,7 @@ import de.blablubbabc.commandsigns.CommandSignsListener;
 import de.blablubbabc.paintball.commands.CommandManager;
 import de.blablubbabc.paintball.features.InSignsFeature;
 import de.blablubbabc.paintball.features.TagAPIListener;
+import de.blablubbabc.paintball.features.VaultRewardsFeature;
 import de.blablubbabc.paintball.features.VoteListener;
 import de.blablubbabc.paintball.gadgets.Gift;
 import de.blablubbabc.paintball.gadgets.WeaponManager;
@@ -88,6 +89,9 @@ public class Paintball extends JavaPlugin{
 	public WeaponManager weaponManager;
 	public Serverlister serverList;
 	public InSignsFeature insignsFeature;
+	
+	private VaultRewardsFeature vaultRewardsFeature;
+	
 	public boolean active;
 	public boolean happyhour;
 	public boolean softreload;
@@ -164,6 +168,13 @@ public class Paintball extends JavaPlugin{
 	
 	public boolean vote;
 	public int voteCash;
+	
+	// vault rewards
+	public boolean vaultRewardsEnabled;
+	public double vaultRewardKill;
+	public double vaultRewardHit;
+	public double vaultRewardWin;
+	public double vaultRewardRound;
 	
 	public boolean teleportFix;
 	public boolean useXPBar;
@@ -396,6 +407,13 @@ public class Paintball extends JavaPlugin{
 		if(getConfig().get("Paintball.Cash per Win") == null)getConfig().set("Paintball.Cash per Win", 10);
 		if(getConfig().get("Paintball.Cash per Round") == null)getConfig().set("Paintball.Cash per Round", 0);
 		
+		// vault rewards:
+		if(getConfig().get("Paintball.Vault Rewards.enabled") == null)getConfig().set("Paintball.Vault Rewards.enabled", false);
+		if(getConfig().get("Paintball.Vault Rewards.Money per Kill") == null)getConfig().set("Paintball.Vault Rewards.Money per Kill", 5.0);
+		if(getConfig().get("Paintball.Vault Rewards.Money per Hit") == null)getConfig().set("Paintball.Vault Rewards.Money per Hit", 1.0);
+		if(getConfig().get("Paintball.Vault Rewards.Money per Win") == null)getConfig().set("Paintball.Vault Rewards.Money per Win", 20.0);
+		if(getConfig().get("Paintball.Vault Rewards.Money per Round") == null)getConfig().set("Paintball.Vault Rewards.Money per Round", 0.0);
+		
 		if(getConfig().get("Paintball.Ball speed multi") == null)getConfig().set("Paintball.Ball speed multi", 2.5);
 		if(getConfig().get("Paintball.Colored listnames") == null)getConfig().set("Paintball.Colored listnames", true);
 		// chat colors
@@ -608,6 +626,13 @@ public class Paintball extends JavaPlugin{
 		
 		vote = getConfig().getBoolean("Paintball.VoteListener.enabled", true);
 		voteCash = getConfig().getInt("Paintball.VoteListener.Cash", 100);
+		
+		// vault rewards:
+		vaultRewardsEnabled = getConfig().getBoolean("Paintball.Vault Rewards.enabled", false);
+		vaultRewardKill = getConfig().getDouble("Paintball.Vault Rewards.Money per Kill", 5.0);
+		vaultRewardHit = getConfig().getDouble("Paintball.Vault Rewards.Money per Hit", 1.0);
+		vaultRewardWin = getConfig().getDouble("Paintball.Vault Rewards.Money per Win", 20.0);
+		vaultRewardRound = getConfig().getDouble("Paintball.Vault Rewards.Money per Round", 0.0);
 		
 		commandSignEnabled = getConfig().getBoolean("Paintball.Command Signs.enabled", true);
 		commandSignIdentifier = getConfig().getString("Paintball.Command Signs.Command Sign Identifier", "[Paintball]");
@@ -1026,7 +1051,7 @@ public class Paintball extends JavaPlugin{
 			// Failed to submit the stats :-(
 		}
 
-		//InSigns sign changer:
+		// InSigns sign changer:
 		Plugin insignsPlugin = getServer().getPluginManager().getPlugin("InSigns");
 		if((insignsPlugin != null) && insignsPlugin.isEnabled()) {
 			insignsFeature = new InSignsFeature(insignsPlugin, this);
@@ -1034,7 +1059,7 @@ public class Paintball extends JavaPlugin{
 		} else {
 			Log.info("Plugin 'InSigns' not found. Additional sign features disabled.");
 		}
-		//TagAPI:
+		// TagAPI:
 		if (tags) {
 			Plugin tagAPIPlugin = getServer().getPluginManager().getPlugin("TagAPI");
 			if((tagAPIPlugin != null) && tagAPIPlugin.isEnabled()) {
@@ -1045,7 +1070,7 @@ public class Paintball extends JavaPlugin{
 				Log.info("Plugin 'TagAPI' not found. Additional tag features disabled.");
 			}
 		}
-		//VoteListener:
+		// Votifier VoteListener:
 		if (vote) {
 			Plugin votifierPlugin = getServer().getPluginManager().getPlugin("Votifier");
 			if ((votifierPlugin != null) && votifierPlugin.isEnabled()) {
@@ -1056,6 +1081,22 @@ public class Paintball extends JavaPlugin{
 				Log.info("Plugin 'Votifier' not found. Additional vote features disabled.");
 			}
 		}
+		// Vault:
+		if (vaultRewardsEnabled) {
+			Plugin vaultPlugin = getServer().getPluginManager().getPlugin("Vault");
+			if (vaultPlugin != null && vaultPlugin.isEnabled()) {
+				vaultRewardsFeature = new VaultRewardsFeature(vaultPlugin);
+				if (vaultRewardsFeature.isEconomyDetected()) {
+					Log.info("Plugin 'Vault' found and economy detected. Using it now.");
+				} else {
+					vaultRewardsFeature = null;
+					Log.info("Plugin 'Vault' found but now economy detected. Additional vault-economy-reward features disabled.");
+				}
+			} else {
+				Log.info("Plugin 'Vault' not found. Additional vault-economy-reward features disabled.");
+			}
+		}
+		
 		
 		
 		final Paintball plugin = this;
@@ -1130,6 +1171,16 @@ public class Paintball extends JavaPlugin{
 	////////////////////////////////////
 	//UTILS
 	////////////////////////////////////
+	
+	// vault reward feature:
+	public void givePlayerVaultMoney(Player player, double moneyToAdd) {
+		if (player != null) givePlayerVaultMoney(player.getName(), moneyToAdd);
+	}
+	
+	public void givePlayerVaultMoney(String playerName, double moneyToAdd) {
+		if (vaultRewardsEnabled && vaultRewardsFeature != null) vaultRewardsFeature.givePlayerMoney(playerName, moneyToAdd);
+	}
+	
 	
 	public synchronized void afkRemove(String player) {
 		afkMatchCount.remove(player);

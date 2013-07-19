@@ -590,7 +590,7 @@ public class EventListener implements Listener {
 			event.setDroppedExp(0);
 			event.setKeepLevel(false);
 			event.getDrops().clear();
-			Log.severe("WARNING: IllegalState! A player died while playing paintball. Report this to blablubbabc !", false);
+			Log.severe("WARNING: IllegalState! A player died while playing paintball. Report this to blablubbabc !");
 		}
 	}
 

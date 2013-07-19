@@ -462,7 +462,7 @@ public class TurretHandler extends WeaponHandler implements Listener {
 				} else if ((y + ySize) < 0) {
 					yTarget = 0;
 				} else {
-					yTarget = (y+ySize);
+					yTarget = (y + ySize);
 				}
 				// find nearest x (x is always positiv because of direction change)
 				if (x > table.length) {
@@ -490,7 +490,7 @@ public class TurretHandler extends WeaponHandler implements Listener {
 				// shoot with nearly nearest anlge:
 			}
 			if (tan == null) {
-				// default angle 45�; tan 45 = 1.619
+				// default angle 45; tan 45 = 1.619
 				tan = 1.619D;
 			}
 			return aim.setY(tan).normalize().multiply(Paintball.instance.speedmulti);

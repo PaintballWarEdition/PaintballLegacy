@@ -23,33 +23,41 @@ public class Log {
 	}
 	
 	public static void info(String message) {
-		logger.info(message);
+		info(message, false);
 	}
 	
-	public static void infoWarn(String message) {
+	public static void info(String message, boolean addWarning) {
 		logger.info(message);
-		addWarning(message);
+		if (addWarning) addWarning(message);
 	}
 
 	public static void logColored(String message) {
 		consoleSender.sendMessage(message);
 	}
 	
+	public static void severe(String message) {
+		severe(message, false);
+	}
+	
+	public static void warning(String message) {
+		warning(message, false);
+	}
+	
 	public static void severe(String message, boolean warn) {
 		logger.severe(message);
-		if (warn) warnings.add(message);
+		if (warn) addWarning(message);
 	}
 	
 	public static void warning(String message, boolean warn) {
 		logger.warning(message);
-		if (warn) warnings.add(message);
+		if (warn) addWarning(message);
 	}
 	
 	public static void addWarning(String message) {
 		warnings.add(message);
 	}
 	
-	private static void printWarnings() {
+	public static void printCurrentWarnings() {
 		if (warnings.size() > 0) {
 			for (String warning : warnings) {
 				Log.logColored(ChatColor.RED+" - " + warning);
@@ -85,7 +93,7 @@ public class Log {
 		Log.logColored(" ");
 		Log.logColored(ChatColor.YELLOW+" ---------------- Detected Problems ---------------");
 		Log.logColored(" ");
-		printWarnings();
+		printCurrentWarnings();
 		Log.logColored(" ");
 		Log.logColored(ChatColor.YELLOW+" **************************************************");
 		Log.logColored(" ");
