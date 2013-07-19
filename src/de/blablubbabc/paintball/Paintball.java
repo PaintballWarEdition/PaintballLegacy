@@ -104,7 +104,10 @@ public class Paintball extends JavaPlugin{
 	//CONFIG:
 	//general:
 	public boolean versioncheck;
+	// Language
 	public String local;
+	public String languageFileEncoding;
+	
 	public int countdown;
 	public int countdownInit;
 	public int countdownStart;
@@ -371,7 +374,11 @@ public class Paintball extends JavaPlugin{
 		if(getConfig().get("Paintball.AFK Detection.enabled") == null)getConfig().set("Paintball.AFK Detection.enabled", true);
 		if(getConfig().get("Paintball.AFK Detection.Movement Radius around Spawn (keep in mind: knockbacks, pushing, waterflows, falling, etc)") == null)getConfig().set("Paintball.AFK Detection.Movement Radius around Spawn (keep in mind: knockbacks, pushing, waterflows, falling, etc)", 5);
 		if(getConfig().get("Paintball.AFK Detection.Amount of Matches") == null)getConfig().set("Paintball.AFK Detection.Amount of Matches", 3);
-		if(getConfig().get("Paintball.Language") == null)getConfig().set("Paintball.Language", "enUS");
+		
+		// language
+		if(getConfig().get("Paintball.Language.File Name") == null)getConfig().set("Paintball.Language.File Name", "enUS");
+		if(getConfig().get("Paintball.Language.File Encoding") == null)getConfig().set("Paintball.Language.File Encoding", "utf-8");
+		
 		if(getConfig().get("Paintball.No Permissions") == null)getConfig().set("Paintball.No Permissions", false);
 		if(getConfig().get("Paintball.Debug") == null)getConfig().set("Paintball.Debug", false);
 		if(getConfig().get("Paintball.VoteListener.enabled") == null)getConfig().set("Paintball.VoteListener.enabled", true);
@@ -591,7 +598,11 @@ public class Paintball extends JavaPlugin{
 		allowMelee = getConfig().getBoolean("Paintball.Match.Allow Melee", true);
 		meleeDamage = getConfig().getInt("Paintball.Match.Melee Damage", 1);
 		if(meleeDamage < 1) meleeDamage = 1;
-		local = getConfig().getString("Paintball.Language", "enUS");
+		
+		// language
+		local = getConfig().getString("Paintball.Language.File Name", "enUS");
+		languageFileEncoding = getConfig().getString("Paintball.Language.File Encoding", "utf-8");
+		
 		noPerms = getConfig().getBoolean("Paintball.No Permissions", false);
 		debug = getConfig().getBoolean("Paintball.Debug", false);
 		

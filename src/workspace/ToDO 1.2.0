@@ -1,20 +1,21 @@
 1.2.0
-* arena voting: having a configuravle amount of options + (configurable) a "random other map" option (if there are any other arenas)
+* arena voting: having a configurable amount of options + (configurable) a "random other map" option (if there are any other arenas)
 voting like so:
 /pb vote [x]
 
+* making some weapons configurable
+
 * vault rewards
+
+
+
+afterwards:
 * splitting Gifts in seperate config
 * splitting weapons in eigene config
 
 * saving arenas in yml files -> converting arenas found in database to yml files, if they do not exist there yet on startup
 
-
-afterwards:
-
-* translation file encoding setting
 * making sounds configureable
-* making some wepaons configurable
 
 * shop kits
 * splitting shop goods in seperate config

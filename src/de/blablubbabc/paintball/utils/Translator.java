@@ -12,6 +12,8 @@ import java.util.Scanner;
 import org.bukkit.ChatColor;
 import org.bukkit.plugin.Plugin;
 
+import de.blablubbabc.paintball.Paintball;
+
 public class Translator {
 	public static boolean success = false;
 	
@@ -73,7 +75,7 @@ public class Translator {
 		}
 		// get default language:
 		Log.info("Loading the default language: " + def_file.getName());
-		def_language = loadLanguage(def_file);
+		def_language = loadLanguage(def_file, "utf-8");
 		if (def_language == null) {
 			return;
 		}
@@ -88,7 +90,7 @@ public class Translator {
 			if (!localisationFile.equals(def_file)) {
 				Log.info("Loading the specified language now: "
 						+ localisationFile.getName());
-				translation = loadLanguage(localisationFile);
+				translation = loadLanguage(localisationFile, Paintball.instance.languageFileEncoding);
 				if (translation == null) {
 					Log.warning("Couldn't load the specified language file!", true);
 					Log.warning("Do you use the right translation?", false);
@@ -181,11 +183,11 @@ public class Translator {
 		return translation;
 	}
 
-	private Map<String, String> loadLanguage(File file) {
+	private Map<String, String> loadLanguage(File file, String encoding) {
 		Map<String, String> language = new HashMap<String, String>();
 		Scanner scanner = null;
 		try {
-			scanner = new Scanner(file, "utf-8");
+			scanner = new Scanner(file, encoding);
 			// TEST
 			int line_skipped = 0;
 			int line = 0;
