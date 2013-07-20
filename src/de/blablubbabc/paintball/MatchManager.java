@@ -160,8 +160,14 @@ public class MatchManager{
 				}
 				
 				// vault reward
-				plugin.givePlayerVaultMoneyAfterSession(playerName, vaultReward);
-				vaultRewards.put(player, String.valueOf(vaultReward));
+				// if left lobby already -> directly give reward:
+				if (Lobby.LOBBY.isMember(player)) {
+					plugin.givePlayerVaultMoneyAfterSession(playerName, vaultReward);
+					// inform player later:
+					vaultRewards.put(player, String.valueOf(vaultReward));
+				} else {
+					plugin.givePlayerVaultMoneyInstant(playerName, vaultReward);
+				}
 				
 				// AFK DETECTION
 				if (Lobby.isPlaying(player)) {
@@ -333,7 +339,7 @@ public class MatchManager{
 		plugin.feeder.text("-------------------------------------------------");
 		if (!draw) {
 			for (final Player p : match.winners) {
-				if (Lobby.getTeam(p) != null) {
+				if (Lobby.LOBBY.isMember(p)) {
 					plugin.feeder.status(p, Translator.getString("YOU_WON"));
 					if (plugin.melody) {
 						plugin.getServer().getScheduler().scheduleSyncDelayedTask(plugin, new Runnable() {
@@ -349,7 +355,7 @@ public class MatchManager{
 
 			}
 			for (final Player p :  match.loosers) {
-				if (Lobby.getTeam(p) != null) {
+				if (Lobby.LOBBY.isMember(p)) {
 					plugin.feeder.status(p, Translator.getString("YOU_LOST"));
 					if (plugin.melody) {
 						plugin.getServer().getScheduler().scheduleSyncDelayedTask(plugin, new Runnable() {
@@ -365,7 +371,7 @@ public class MatchManager{
 			}
 		} else {
 			for (final Player p : match.getAllPlayer()) {
-				if (Lobby.getTeam(p) != null) {
+				if (Lobby.LOBBY.isMember(p)) {
 					plugin.feeder.status(p, Translator.getString("YOU_DRAW"));
 					if (plugin.melody) {
 						plugin.getServer().getScheduler().scheduleSyncDelayedTask(plugin, new Runnable() {

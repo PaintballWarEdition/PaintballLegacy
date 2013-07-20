@@ -1173,8 +1173,8 @@ public class Paintball extends JavaPlugin{
 	////////////////////////////////////
 	
 	// vault reward feature:
-	public void givePlayerVaultMoney(Player player, double moneyToAdd) {
-		if (player != null) givePlayerVaultMoneyAfterSession(player.getName(), moneyToAdd);
+	public void givePlayerVaultMoneyInstant(String playerName, double moneyToAdd) {
+		if (vaultRewardsEnabled && vaultRewardsFeature != null) vaultRewardsFeature.givePlayerMoneyInstant(playerName, moneyToAdd);
 	}
 	
 	public void givePlayerVaultMoneyAfterSession(String playerName, double moneyToAdd) {
