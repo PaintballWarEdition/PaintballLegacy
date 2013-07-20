@@ -138,6 +138,35 @@ public class WeaponManager {
 	
 	//////////////////////////////////////////////
 	
+	public void giveWeapon(Player player, WeaponHandler weapon) {
+		giveWeapon(player, weapon, 1);
+	}
+	
+	public void giveWeapon(Player player, WeaponHandler weapon, int amount) {
+		giveWeapon(player, weapon, amount, false);
+	}
+	
+	@SuppressWarnings("deprecation")
+	public void giveWeapon(Player player, WeaponHandler weapon, int amount, boolean updateInventory) {
+		if (player != null && weapon != null) {
+			while (amount > 0) {
+				ItemStack item = weapon.getItem().clone();
+				if (amount > 64) {
+					item.setAmount(64);
+					amount -= 64;
+				} else {
+					item.setAmount(amount);
+					amount = 0;
+				}
+				player.getInventory().addItem(item);
+			}
+			
+			if (updateInventory) player.updateInventory();
+		}
+	}
+	
+	//////////////////////////////////////////////
+	
 	public void registerWeaponHandler(WeaponHandler weaponHandler) {
 		weaponHandlers.add(weaponHandler);
 	}

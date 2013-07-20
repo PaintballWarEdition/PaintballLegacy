@@ -3,9 +3,11 @@
 voting like so:
 /pb vote [x]
 
-* making some weapons configurable
+* making marker item configurable
 
 afterwards:
+* making some weapons configurable
+
 * splitting Gifts in seperate config
 * splitting weapons in eigene config
 

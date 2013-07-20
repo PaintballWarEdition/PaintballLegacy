@@ -364,18 +364,35 @@ public class Match {
 			player.getInventory().setItem(8, Paintball.instance.weaponManager.setMeta(new ItemStack(Material.WOOL, 1, DyeColor.BLUE.getWoolData())));
 		}
 		
-		if (setting_balls > 0)
-			player.getInventory().addItem(Paintball.instance.weaponManager.setMeta(new ItemStack(Material.SNOW_BALL, setting_balls)));
-		else if (setting_balls == -1)
-			player.getInventory().addItem(Paintball.instance.weaponManager.setMeta(new ItemStack(Material.SNOW_BALL, 10)));
-		if (setting_grenades > 0)
-			player.getInventory().addItem(Paintball.instance.weaponManager.setMeta(new ItemStack(Material.EGG, setting_grenades)));
-		else if (setting_grenades == -1)
-			player.getInventory().addItem(Paintball.instance.weaponManager.setMeta(new ItemStack(Material.EGG, 10)));
-		if (setting_airstrikes > 0)
-			player.getInventory().addItem(Paintball.instance.weaponManager.setMeta(new ItemStack(Material.STICK, setting_airstrikes)));
-		else if (setting_airstrikes == -1)
-			player.getInventory().addItem(Paintball.instance.weaponManager.setMeta(new ItemStack(Material.STICK, 10)));
+		// if marker is not paintball item:
+		if (plugin.weaponManager.getBallHandler().getItemTypeID() != plugin.weaponManager.getMarkerHandler().getItemTypeID()) {
+			plugin.weaponManager.giveWeapon(player, plugin.weaponManager.getMarkerHandler());
+		}
+		
+		if (setting_balls > 0) {
+			plugin.weaponManager.giveWeapon(player, plugin.weaponManager.getBallHandler(), setting_balls);
+			//player.getInventory().addItem(Paintball.instance.weaponManager.setMeta(new ItemStack(Material.SNOW_BALL, setting_balls)));
+		} else if (setting_balls == -1) {
+			plugin.weaponManager.giveWeapon(player, plugin.weaponManager.getBallHandler(), 10);
+			//player.getInventory().addItem(Paintball.instance.weaponManager.setMeta(new ItemStack(Material.SNOW_BALL, 10)));
+		}
+		
+		if (setting_grenades > 0) {
+			plugin.weaponManager.giveWeapon(player, plugin.weaponManager.getGrenadeHandler(), setting_grenades);
+			//player.getInventory().addItem(Paintball.instance.weaponManager.setMeta(new ItemStack(Material.EGG, setting_grenades)));
+		} else if (setting_grenades == -1) {
+			plugin.weaponManager.giveWeapon(player, plugin.weaponManager.getGrenadeHandler(), 10);
+			//player.getInventory().addItem(Paintball.instance.weaponManager.setMeta(new ItemStack(Material.EGG, 10)));
+		}
+		
+		if (setting_airstrikes > 0) {
+			plugin.weaponManager.giveWeapon(player, plugin.weaponManager.getAirstrikeHandler(), setting_airstrikes);
+			//player.getInventory().addItem(Paintball.instance.weaponManager.setMeta(new ItemStack(Material.STICK, setting_airstrikes)));
+		} else if (setting_airstrikes == -1) {
+			plugin.weaponManager.giveWeapon(player, plugin.weaponManager.getAirstrikeHandler(), 10);
+			//player.getInventory().addItem(Paintball.instance.weaponManager.setMeta(new ItemStack(Material.STICK, 10)));
+		}
+		
 		// gifts
 		if (plugin.giftsEnabled) {
 			int r = random.nextInt(1000);
@@ -383,7 +400,9 @@ public class Match {
 				plugin.weaponManager.getGiftManager().giveGift(player, 1, false);
 			}
 		}
+		
 		player.updateInventory();
+		
 		// MESSAGE
 		Map<String, String> vars = new HashMap<String, String>();
 		vars.put("team_color", Lobby.getTeam(getTeamName(player)).color().toString());
@@ -410,7 +429,6 @@ public class Match {
 		}, 12L);
 	}
 	
-	//TODO
 	private void initMatchScoreboard(Player player) {
 		if (plugin.scoreboardMatch) {
 			String playerName = player.getName();
