@@ -165,10 +165,14 @@ public class WeaponManager {
 		}
 	}
 	
+	public List<WeaponHandler> getRegisteredWeaponHandlers() {
+		return weaponHandlers;
+	}
+	
 	//////////////////////////////////////////////
 	
 	public void registerWeaponHandler(WeaponHandler weaponHandler) {
-		weaponHandlers.add(weaponHandler);
+		if (!weaponHandlers.contains(weaponHandler)) weaponHandlers.add(weaponHandler);
 	}
 	
 	public GiftHandler getGiftManager() {
