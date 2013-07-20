@@ -84,7 +84,7 @@ public class ArenaManager {
 		return true;
 	}*/
 
-	private List<String> readyArenas() {
+	public List<String> getReadyArenas() {
 		List<String> arenas = new ArrayList<String>();
 		for(String arena : getAllArenaNames()) {
 			if(!inUse(arena) && isReady(arena)) arenas.add(arena);
@@ -124,7 +124,7 @@ public class ArenaManager {
 	//GETTING ARENAS
 	public String getNextArena() {
 		// ready arenas:
-		List<String> ready = readyArenas();
+		List<String> ready = getReadyArenas();
 		//force map:
 		String next = null;
 		if(!nextArenaForce.equalsIgnoreCase("") && ready.contains(nextArenaForce)) {

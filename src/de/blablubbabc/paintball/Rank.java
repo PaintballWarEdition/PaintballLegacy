@@ -69,7 +69,7 @@ public class Rank implements Comparable<Rank> {
 	@Override
 	public int compareTo(Rank other) {
 		if (other == null) {
-			throw new NullPointerException();
+			throw new IllegalArgumentException();
 		}
 		return this.getNeededPoints() - other.getNeededPoints();
 		
