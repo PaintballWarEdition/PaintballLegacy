@@ -49,17 +49,20 @@ public class VoteManager {
 	public void sendVoteOptions(Player player) {
 		Paintball.instance.feeder.text(player, Translator.getString("GAME_VOTE_HEADER"));
 		
-		int id = 1;
+		int id = 0;
 		KeyValuePair idPair = new KeyValuePair("id", String.valueOf(id));
+		KeyValuePair votesPair = new KeyValuePair("votes", "0");
+		
+		// ranom option if needed:
+		String randomOption = Translator.getString("GAME_VOTE_OPTION_RANDOM");
 		
 		for (VoteOption option : voteOptions) {
-			String arenaName = option.getArena();
-			if (arenaName != null) {
-				Paintball.instance.feeder.text(player, Translator.getString("GAME_VOTE_OPTION", idPair, new KeyValuePair("arena", arenaName)));
-			} else {
-				Paintball.instance.feeder.text(player, Translator.getString("GAME_VOTE_OPTION_RANDOM", idPair));	
-			}
 			idPair.setValue(String.valueOf(++id));
+			votesPair.setValue(String.valueOf(option.getVotes()));
+			String arenaName = option.getArena();
+			
+			Paintball.instance.feeder.text(player, Translator.getString("GAME_VOTE_OPTION", idPair, votesPair, new KeyValuePair("arena", arenaName != null ? arenaName : randomOption)));
+			
 		}
 	}
 	
@@ -74,6 +77,11 @@ public class VoteManager {
 		
 		VoteOption vote = voteOptions.get(voteID - 1);
 		vote.addVote();
+		String arenaName = vote.getArena();
+		
+		playerVotes.put(playerName, vote);
+		
+		player.sendMessage(Translator.getString("GAME_VOTE_VOTED", new KeyValuePair("arena", arenaName != null ? arenaName : Translator.getString("GAME_VOTE_OPTION_RANDOM"))));
 	}
 	
 	public void handleVoteUndo(String playerName) {
