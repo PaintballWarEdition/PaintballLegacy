@@ -367,8 +367,7 @@ public class TurretHandler extends WeaponHandler implements Listener {
 
 							entity.getWorld().playSound(entity.getEyeLocation(), Sound.IRONGOLEM_THROW, 2.0F, 1F);
 							entity.getWorld().playSound(entity.getEyeLocation(), Sound.CHICKEN_EGG_POP, 2.0F, 1F);
-							Snowball ball = entity.getLocation().getWorld()
-									.spawn(entity.getLocation().add(new Vector(0, 2, 0)).add(dir2), Snowball.class);
+							Snowball ball = (Snowball) entity.getLocation().getWorld().spawnEntity(entity.getLocation().add(new Vector(0, 2, 0)).add(dir2), EntityType.SNOWBALL);
 							Player player = getOwner();
 							ball.setShooter(player);
 

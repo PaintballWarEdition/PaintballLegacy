@@ -22,18 +22,55 @@ import de.blablubbabc.paintball.utils.KeyValuePair;
 import de.blablubbabc.paintball.utils.Timer;
 import de.blablubbabc.paintball.utils.Translator;
 
-public class MatchManager{
+public class MatchManager {
 
-	private Paintball plugin;
-
-	private List<Match> matches;
+	private final Paintball plugin;
+	private final List<Match> matches;
+	
 	private Timer countdown;
+	private VoteManager voteManager;
 
 	public MatchManager(Paintball pl) {
 		plugin = pl;
 		matches = new ArrayList<Match>();
+		if (plugin.arenaVoting) voteManager = new VoteManager(plugin.arenaVotingOptions, plugin.arenaVotingRandomOption);
 	}
 
+	//TODO call this on command /pb vote [id]
+	public void handleArenaVote(Player player, int voteID) {
+		if (handleVoteCommandPre(player, true)) {
+			voteManager.handleVote(player, voteID);
+		}
+	}
+	
+	// TODO call this on /pb vote (without id)
+	public void handleArenaVoteBroadcastRequest(Player player, boolean messageOnDisabled) {
+		if (handleVoteCommandPre(player, messageOnDisabled)) {
+			voteManager.sendVoteOptions(player);
+		}
+	}
+	
+	private boolean handleVoteCommandPre(Player player, boolean messageOnDisabled) {
+		if (player == null) return false;
+		
+		if (!plugin.arenaVoting) {
+			if (messageOnDisabled) player.sendMessage(Translator.getString("GAME_VOTE_DISABLED"));
+			return false;
+		}
+		
+		if (!Lobby.LOBBY.isMember(player)) {
+			player.sendMessage(Translator.getString("NOT_IN_LOBBY"));
+			return false;
+		}
+		
+		return true;
+	}
+	
+	//TODO call this on lobby leave
+	public void onLobbyLeave(Player player) {
+		if (plugin.arenaVoting) voteManager.handleVoteUndo(player.getName());
+	}
+	
 	public synchronized void forceReload() {
 		//closing all matches and kicking all players from lobby:
 		List<Match> mlist = new ArrayList<Match>(matches);
@@ -67,15 +104,17 @@ public class MatchManager{
 		plugin.feeder.status(Translator.getString("ALL_KICKED_FROM_LOBBY"));
 		plugin.feeder.status(Translator.getString("RELOADING_PAINTBALL"));
 		List<Player> list = new ArrayList<Player>();
+		
 		for (Player p : Lobby.LOBBY.getMembers()) {
 			list.add(p);
 		}
+		
 		for (Player p : list) {
 			plugin.leaveLobby(p, false);
 		}
 	}
 
-	public synchronized void gameStart() {
+	public synchronized void gameStart(String arena) {
 		//auto spec lobby
 		if (plugin.autoSpecLobby) {
 			for (Player player : Lobby.LOBBY.getMembers()) {
@@ -105,10 +144,13 @@ public class MatchManager{
 			Lobby.SPECTATE.setPlaying(player);
 		}
 		
-		//Arena:
-		String arena = plugin.arenaManager.getNextArena();
+		//Arena: assume the given arena is ready
 		plugin.arenaManager.resetNext();
 		plugin.arenaManager.setActive(arena);
+		
+		// reset arena voteManager:
+		if (plugin.arenaVoting) voteManager = new VoteManager(plugin.arenaVotingOptions, plugin.arenaVotingRandomOption);
+		
 		Map<String, String> vars = new HashMap<String, String>();
 		vars.put("arena", arena);
 		plugin.feeder.status(Translator.getString("MATCH_START_ARENA", vars));
@@ -444,16 +486,30 @@ public class MatchManager{
 		} else return Translator.getString("NOT_ENOUGH_PLAYERS");
 	}
 
-	public void countdown(int number, int initial) {
+	public void countdown(int time, int initial) {
 		if (countdown == null && plugin.active) {
 			plugin.feeder.status(Translator.getString("NEW_MATCH_STARTS_SOON"));
-			countdown = new Timer(plugin, 20 * initial, 20L, number, new Runnable() {
+			
+			if (plugin.arenaVoting) {
+				// broadcast options:
+				voteManager.broadcastVoteOptions();
+			}
+			
+			countdown = new Timer(plugin, 20 * initial, 20L, time, new Runnable() {
 				
+				boolean broadcastedVoteOptions = false;
 				@Override
 				public void run() {
 					if (plugin.useXPBar) {
 						for (Player player : Lobby.LOBBY.getMembers()) {
 							player.setLevel(countdown.getTime());	
+						}
+					}
+					
+					if (countdown.getTime() == 10 && plugin.countdown >= 20) {
+						if (broadcastedVoteOptions && plugin.arenaVoting) {
+							// broadcast options again 10 seconds before the countdown ends if countdown is long:
+							voteManager.broadcastVoteOptions();
 						}
 					}
 					
@@ -483,10 +539,17 @@ public class MatchManager{
 					for (Player player : Lobby.LOBBY.getMembers()) {
 						player.playSound(player.getLocation(), Sound.ORB_PICKUP, 100L, 2L);	
 					}
+					
 					String status = ready();
 					if(status.equalsIgnoreCase(Translator.getString("READY"))) {
+						String selectedArena = null;
+						if (plugin.arenaVoting && voteManager.didSomebodyVote()) {
+							selectedArena = voteManager.getVotedArena();
+						} else {
+							selectedArena = plugin.arenaManager.getNextArena();
+						}
 						//start match
-						gameStart();
+						gameStart(selectedArena);
 					} else {
 						plugin.feeder.status(status);
 					}

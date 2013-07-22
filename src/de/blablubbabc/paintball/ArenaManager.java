@@ -20,7 +20,7 @@ public class ArenaManager {
 
 	public ArenaManager(Paintball pl) {
 		plugin = pl;
-		nextArenaForce = "";
+		nextArenaForce = null;
 	}
 	//METHODS
 
@@ -33,8 +33,8 @@ public class ArenaManager {
 	}
 	
 	public boolean isReady() {
-		for(String arena : getAllArenaNames()) {
-			if(isReady(arena)) return true;
+		for (String arena : getAllArenaNames()) {
+			if (isReady(arena)) return true;
 		}
 		return false;
 	}
@@ -46,15 +46,15 @@ public class ArenaManager {
 	
 	public String getArenaStatus(String name) {
 		String ready = "";
-		if(isReady(name)) ready = Translator.getString("ARENA_STATUS_READY");
+		if (isReady(name)) ready = Translator.getString("ARENA_STATUS_READY");
 		else ready = Translator.getString("ARENA_STATUS_NOT_READY");
 		return ready;
 	}
 	
 	public boolean isReady(String arena) {
-		if(!isDisabled(arena) && !inUse(arena)) {
+		if (!isDisabled(arena) && !inUse(arena)) {
 			//spawns?
-			if(hasAllSpawns(arena)) {
+			if (hasAllSpawns(arena)) {
 				return true;
 				//worlds pvp on?
 				//if(pvpEnabled(arena)) return true;
@@ -86,8 +86,8 @@ public class ArenaManager {
 
 	public List<String> getReadyArenas() {
 		List<String> arenas = new ArrayList<String>();
-		for(String arena : getAllArenaNames()) {
-			if(!inUse(arena) && isReady(arena)) arenas.add(arena);
+		for (String arena : getAllArenaNames()) {
+			if (!inUse(arena) && isReady(arena)) arenas.add(arena);
 		}
 		return arenas;
 	}
@@ -125,9 +125,12 @@ public class ArenaManager {
 	public String getNextArena() {
 		// ready arenas:
 		List<String> ready = getReadyArenas();
+		// is there even a ready arena?
+		if (ready.isEmpty()) return null;
+		
 		//force map:
 		String next = null;
-		if(!nextArenaForce.equalsIgnoreCase("") && ready.contains(nextArenaForce)) {
+		if(nextArenaForce != null && ready.contains(nextArenaForce)) {
 			next = nextArenaForce;
 		} else {
 			if (plugin.arenaRotationRandom) {
@@ -148,13 +151,14 @@ public class ArenaManager {
 				}
 			} else {
 				// rotation:
-				if(current > (ready.size() - 1)) current = 0;
+				if (current >= ready.size()) current = 0;
 				String arena = ready.get(current);
 				current++;
 				return arena;
 			}
 			
 		}
+		
 		last = next;
 		return next;
 	}
@@ -203,7 +207,7 @@ public class ArenaManager {
 		nextArenaForce = arena;
 	}
 	public void resetNext() {
-		nextArenaForce = "";
+		nextArenaForce = null;
 	}
 
 	//STATS

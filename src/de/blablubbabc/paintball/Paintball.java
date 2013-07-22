@@ -162,6 +162,13 @@ public class Paintball extends JavaPlugin{
 	public boolean effects;
 	public boolean debug;
 	
+	// arena voting
+	// TODO config nodes
+	public boolean arenaVoting;
+	// between 2 and 8:
+	public int arenaVotingOptions;
+	public boolean arenaVotingRandomOption;
+	
 	public boolean commandSignEnabled;
 	public String commandSignIdentifier;
 	public boolean commandSignIgnoreShopDisabled;

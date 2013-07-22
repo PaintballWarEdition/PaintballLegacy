@@ -17,7 +17,7 @@ public class VoteManager {
 	private final List<VoteOption> voteOptions = new ArrayList<VoteOption>();
 	private final Map<String, VoteOption> playerVotes = new HashMap<String, VoteOption>();
 	
-	
+	// numberOfOptions between 2 and 8 !
 	public VoteManager(int numberOfOptions, boolean addRandomOption) {
 		// init vote options:
 		List<String> readyArenas = Paintball.instance.arenaManager.getReadyArenas();
@@ -40,31 +40,69 @@ public class VoteManager {
 		
 	}
 	
-	public void handleVote(Player player, int voteID) {
-		if (player == null) return;
-		if (!Lobby.LOBBY.isMember(player)) {
-			player.sendMessage(Translator.getString("NOT_IN_LOBBY"));
-			return;
+	public void broadcastVoteOptions() {
+		for (Player player : Lobby.LOBBY.getMembers()) {
+			sendVoteOptions(player);
 		}
+		Paintball.instance.feeder.textUntoggled(Translator.getString("GAME_VOTE_HEADER"));
+		
+		int id = 1;
+		KeyValuePair idPair = new KeyValuePair("id", String.valueOf(id));
+		
+		for (VoteOption option : voteOptions) {
+			String arenaName = option.getArena();
+			if (arenaName != null) {
+				Paintball.instance.feeder.textUntoggled(Translator.getString("GAME_VOTE_OPTION", idPair, new KeyValuePair("arena", arenaName)));
+			} else {
+				Paintball.instance.feeder.textUntoggled(Translator.getString("GAME_VOTE_OPTION_RANDOM", idPair));	
+			}
+			idPair.setValue(String.valueOf(++id));
+		}
+	}
+	
+	public void sendVoteOptions(Player player) {
+		Paintball.instance.feeder.text(player, Translator.getString("GAME_VOTE_HEADER"));
+		
+		int id = 1;
+		KeyValuePair idPair = new KeyValuePair("id", String.valueOf(id));
+		
+		for (VoteOption option : voteOptions) {
+			String arenaName = option.getArena();
+			if (arenaName != null) {
+				Paintball.instance.feeder.text(player, Translator.getString("GAME_VOTE_OPTION", idPair, new KeyValuePair("arena", arenaName)));
+			} else {
+				Paintball.instance.feeder.text(player, Translator.getString("GAME_VOTE_OPTION_RANDOM", idPair));	
+			}
+			idPair.setValue(String.valueOf(++id));
+		}
+	}
+	
+	public void handleVote(Player player, int voteID) {
 		if (!(voteID >= 1 && voteID <= voteOptions.size())) {
 			player.sendMessage(Translator.getString("GAME_VOTE_NOT_VALID_ID", new KeyValuePair("max", String.valueOf(voteOptions.size()))));
 			return;
 		}
 		
-		VoteOption vote = voteOptions.get(voteID);
-		
 		String playerName = player.getName();
-		VoteOption oldVote = playerVotes.get(playerName);
+		handleVoteUndo(playerName);
 		
-		if (oldVote != null) {
-			oldVote.removeVote();
-		}
-		
+		VoteOption vote = voteOptions.get(voteID - 1);
 		vote.addVote();
 	}
 	
+	public void handleVoteUndo(String playerName) {
+		VoteOption oldVote = playerVotes.get(playerName);
+		if (oldVote != null) {
+			oldVote.removeVote();
+		}
+	}
+	
+	public boolean didSomebodyVote() {
+		return !playerVotes.isEmpty();
+	}
+	
 	// returns the highest voted AND currently ready arena. If no arena is ready -> return null
-	public String getArena() {
+	public String getVotedArena() {
 		List<VoteOption> copy = new ArrayList<VoteOption>(voteOptions);
 		Collections.sort(copy);
 		

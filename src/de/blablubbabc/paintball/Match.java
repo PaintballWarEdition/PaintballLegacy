@@ -320,13 +320,11 @@ public class Match {
 		Location loc;
 		if (redT.contains(player)) {
 			red = true;
-			if (spawnRed > (redspawns.size() - 1))
-				spawnRed = 0;
+			if (spawnRed >= redspawns.size()) spawnRed = 0;
 			loc = redspawns.get(spawnRed);
 			spawnRed++;
 		} else if (blueT.contains(player)) {
-			if (spawnBlue > (bluespawns.size() - 1))
-				spawnBlue = 0;
+			if (spawnBlue >= bluespawns.size()) spawnBlue = 0;
 			loc = bluespawns.get(spawnBlue);
 			spawnBlue++;
 		} else {
