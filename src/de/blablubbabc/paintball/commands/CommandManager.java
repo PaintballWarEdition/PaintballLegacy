@@ -301,6 +301,7 @@ public class CommandManager implements CommandExecutor{
 		sender.sendMessage(Translator.getString("COMMAND_GENERAL_SPEC"));
 		sender.sendMessage(Translator.getString("COMMAND_GENERAL_LEAVE"));
 		sender.sendMessage(Translator.getString("COMMAND_GENERAL_TOGGLE"));
+		sender.sendMessage(Translator.getString("COMMAND_GENERAL_VOTE"));
 		sender.sendMessage(Translator.getString("COMMAND_GENERAL_SHOP"));
 		sender.sendMessage(Translator.getString("COMMAND_GENERAL_STATS"));
 		sender.sendMessage(Translator.getString("COMMAND_GENERAL_RANK"));
