@@ -972,11 +972,12 @@ public class Paintball extends JavaPlugin{
 		playerManager = new PlayerManager();
 		//Newsfeeder
 		feeder = new Newsfeeder(this);
-		//MATCHMANAGER|LISTENER
-		matchManager = new MatchManager(this);
+		// Listener
 		listener = new EventListener(this);
 		//ARENAMANAGER
 		arenaManager = new ArenaManager(this);
+		//MATCHMANAGER
+		matchManager = new MatchManager(this);
 		//STATS
 		statsManager = new Stats(this);
 		getServer().getPluginManager().registerEvents(listener, this);

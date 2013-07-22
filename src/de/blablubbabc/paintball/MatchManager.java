@@ -474,7 +474,6 @@ public class MatchManager {
 			
 			countdown = new Timer(plugin, 20 * initial, 20L, time, new Runnable() {
 				
-				boolean broadcastedVoteOptions = false;
 				@Override
 				public void run() {
 					if (plugin.useXPBar) {
@@ -484,7 +483,7 @@ public class MatchManager {
 					}
 					
 					if (countdown.getTime() == 10 && plugin.countdown >= 20) {
-						if (broadcastedVoteOptions && plugin.arenaVoting) {
+						if (plugin.arenaVoting) {
 							// broadcast options again 10 seconds before the countdown ends if countdown is long:
 							voteManager.broadcastVoteOptions();
 						}
