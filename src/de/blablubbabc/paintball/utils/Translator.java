@@ -141,28 +141,20 @@ public class Translator {
 		return getString(key, (KeyValuePair[]) null);
 	}
 
-	@SuppressWarnings("unchecked")
 	public static String getString(String key, Map<String, String> vars) {
 		if (vars == null) return getString(key);
 		
-		/*KeyValuePair[] values = new KeyValuePair[vars.size()];
+		KeyValuePair[] values = new KeyValuePair[vars.size()];
 		// vars
 		int i = 0;
 		for (Entry<String, String> entry : vars.entrySet()) {
 			values[i++] = new KeyValuePair(entry.getKey(), entry.getValue());
 		}
 		
-		return getString(key, values);*/
-		
-		
-		return getString(key, (Entry<String, String>[]) vars.entrySet().toArray());
+		return getString(key, values);
 	}
 	
 	public static String getString(String key, KeyValuePair... values) {
-		return getString(key, (Entry<String, String>[]) values);
-	}
-	
-	private static String getString(String key, Entry<String, String>... values) {
 		if (!success) {
 			return "ERROR:couldn't load language!";
 		}
@@ -174,7 +166,7 @@ public class Translator {
 		} else {
 			if (values != null && values.length > 0) {
 				// key-value-pair replacements
-				for (Entry<String, String> entry : values) {
+				for (KeyValuePair entry : values) {
 					if (entry != null) {
 						value = value.replace("{" + entry.getKey() + "}", entry.getValue());
 					}
