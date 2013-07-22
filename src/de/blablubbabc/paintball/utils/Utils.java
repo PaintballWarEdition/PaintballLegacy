@@ -90,6 +90,14 @@ public class Utils {
 	public static Location getRightHeadLocation(Vector viewDirection, Location eyeLocation) {
 		return eyeLocation.add(new Vector(-viewDirection.getZ(), 0.0, viewDirection.getX()).normalize().multiply(0.2));
 	}
+	
+	public static Integer getNumber(String s) {
+		try {
+			return Integer.parseInt(s);
+		} catch(Exception e) {
+			return null;
+		}
+	}
 
 	// /////////////////////////////////////////////////////////////
 

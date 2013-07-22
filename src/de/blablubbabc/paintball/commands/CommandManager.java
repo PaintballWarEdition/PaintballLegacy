@@ -173,6 +173,31 @@ public class CommandManager implements CommandExecutor{
 						return true;
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+					} else if (args[0].equalsIgnoreCase("vote")) {
+						if (!Lobby.LOBBY.isMember(player)) {
+							player.sendMessage(Translator.getString("NOT_IN_LOBBY"));
+							return false;
+						}
+						
+						if (!plugin.arenaVoting) {
+							player.sendMessage(Translator.getString("GAME_VOTE_DISABLED"));
+							return false;
+						}
+						
+						if (args.length == 1) plugin.matchManager.sendVoteOptions(player);
+						else {
+							Integer voteID = Utils.getNumber(args[1]);
+							
+							if (voteID != null) {
+								plugin.matchManager.handleArenaVote(player, voteID);
+								return true;
+							} else {
+								player.sendMessage(Translator.getString("INVALID_ID"));
+							}
+						}
+						return true;
+
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 					} else if (args[0].equalsIgnoreCase("rank")) {
 						String playerName = player.getName();
 						player.sendMessage(Translator.getString("RANK_HEADER"));

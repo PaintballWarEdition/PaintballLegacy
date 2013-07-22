@@ -13,6 +13,7 @@ import de.blablubbabc.paintball.shop.ShopGood;
 import de.blablubbabc.paintball.utils.KeyValuePair;
 import de.blablubbabc.paintball.utils.Log;
 import de.blablubbabc.paintball.utils.Translator;
+import de.blablubbabc.paintball.utils.Utils;
 
 
 public class CmdShop {
@@ -69,7 +70,7 @@ public class CmdShop {
 				//Kaufen in der lobby während match aber tot:
 				Match match = plugin.matchManager.getMatch(player);
 				if(match != null && match.isSurvivor(player)) {
-					Integer id = isNumber(args[1]);
+					Integer id = Utils.getNumber(args[1]);
 					ShopGood[] goods = plugin.shopManager.getGoods();
 					if(id != null && id > 0 && id <= goods.length) {
 						ShopGood good = goods[id - 1];
@@ -93,13 +94,4 @@ public class CmdShop {
 	}
 	
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-	
-	private Integer isNumber(String s) {
-		try {
-			int a = Integer.parseInt(s);
-			return a;
-		}catch(Exception e) {
-			return null;
-		}
-	}
 }

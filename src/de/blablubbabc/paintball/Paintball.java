@@ -163,7 +163,6 @@ public class Paintball extends JavaPlugin{
 	public boolean debug;
 	
 	// arena voting
-	// TODO config nodes
 	public boolean arenaVoting;
 	// between 2 and 8:
 	public int arenaVotingOptions;
@@ -436,7 +435,13 @@ public class Paintball extends JavaPlugin{
 		if(getConfig().get("Paintball.Scoreboards.Lobby") == null)getConfig().set("Paintball.Scoreboards.Lobby", true);
 		if(getConfig().get("Paintball.Scoreboards.Match") == null)getConfig().set("Paintball.Scoreboards.Match", true);
 		
+		// arena selection:
 		if(getConfig().get("Paintball.Arena Rotation.Random Rotation") == null)getConfig().set("Paintball.Arena Rotation.Random Rotation", true);
+		// arena voting:
+		if(getConfig().get("Paintball.Arena Rotation.Arena Voting.enabled") == null)getConfig().set("Paintball.Arena Rotation.Arena Voting.enabled", true);
+		// between 2 and 8:
+		if(getConfig().get("Paintball.Arena Rotation.Arena Voting.Number of Vote Options (between 2 and 8)") == null)getConfig().set("Paintball.Arena Rotation.Arena Voting.Number of Vote Options (between 2 and 8)", 4);
+		if(getConfig().get("Paintball.Arena Rotation.Arena Voting.Random Arena Option") == null)getConfig().set("Paintball.Arena Rotation.Arena Voting.Random Arena Option", true);
 		
 		if(getConfig().get("Paintball.Only Random") == null)getConfig().set("Paintball.Only Random", false);
 		if(getConfig().get("Paintball.Auto Random") == null)getConfig().set("Paintball.Auto Random", true);
@@ -718,8 +723,13 @@ public class Paintball extends JavaPlugin{
 		scoreboardLobby = getConfig().getBoolean("Paintball.Scoreboards.Lobby", true);
 		scoreboardMatch = getConfig().getBoolean("Paintball.Scoreboards.Match", true);
 		
-		// arena rotation
+		// arena selection
 		arenaRotationRandom = getConfig().getBoolean("Paintball.Arena Rotation.Random Rotation", true);
+		// arena voting:
+		arenaVoting = getConfig().getBoolean("Paintball.Arena Rotation.Arena Voting.enabled", true);
+		// between 2 and 8:
+		arenaVotingOptions = getConfig().getInt("Paintball.Arena Rotation.Arena Voting.Number of Vote Options (between 2 and 8)", 4);
+		arenaVotingRandomOption = getConfig().getBoolean("Paintball.Arena Rotation.Arena Voting.Random Arena Option", true);
 		
 		onlyRandom = getConfig().getBoolean("Paintball.Only Random", false);
 		autoRandom = getConfig().getBoolean("Paintball.Auto Random", true);
@@ -1337,16 +1347,24 @@ public class Paintball extends JavaPlugin{
 	
 	public synchronized boolean leaveLobby(Player player, boolean messages) {
 		String playerName = player.getName();
+		
 		if (Lobby.LOBBY.isMember(player)) {
 			if (Lobby.isPlaying(player) || Lobby.isSpectating(player)) {
 				matchManager.getMatch(player).left(player);
 			}
+			
 			//lobby remove:
 			Lobby.remove(player);
+			
+			// undo arena voting:
+			if (arenaVoting) matchManager.onLobbyLeave(player);
+			
 			// restore and teleport back:
 			playerManager.clearRestoreTeleportPlayer(player);
+			
 			// if player not in lobby and not in match -> stats no longer needed:
 			if (!Lobby.LOBBY.isMember(player) && matchManager.getMatch(player) == null) playerManager.unloadPlayerStats(playerName);
+			
 			// remove scoreboard for this player
 			if (scoreboardLobby) {
 				lobbyScoreboards.remove(playerName);
@@ -1365,7 +1383,9 @@ public class Paintball extends JavaPlugin{
 			}
 			
 			return true;
-		} else return false;
+		}
+		
+		return false;
 	}
 	
 }

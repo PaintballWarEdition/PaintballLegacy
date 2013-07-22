@@ -36,39 +36,16 @@ public class MatchManager {
 		if (plugin.arenaVoting) voteManager = new VoteManager(plugin.arenaVotingOptions, plugin.arenaVotingRandomOption);
 	}
 
-	//TODO call this on command /pb vote [id]
 	public void handleArenaVote(Player player, int voteID) {
-		if (handleVoteCommandPre(player, true)) {
-			voteManager.handleVote(player, voteID);
-		}
+		voteManager.handleVote(player, voteID);
 	}
 	
-	// TODO call this on /pb vote (without id)
-	public void handleArenaVoteBroadcastRequest(Player player, boolean messageOnDisabled) {
-		if (handleVoteCommandPre(player, messageOnDisabled)) {
-			voteManager.sendVoteOptions(player);
-		}
+	public void sendVoteOptions(Player player) {
+		voteManager.sendVoteOptions(player);
 	}
 	
-	private boolean handleVoteCommandPre(Player player, boolean messageOnDisabled) {
-		if (player == null) return false;
-		
-		if (!plugin.arenaVoting) {
-			if (messageOnDisabled) player.sendMessage(Translator.getString("GAME_VOTE_DISABLED"));
-			return false;
-		}
-		
-		if (!Lobby.LOBBY.isMember(player)) {
-			player.sendMessage(Translator.getString("NOT_IN_LOBBY"));
-			return false;
-		}
-		
-		return true;
-	}
-	
-	//TODO call this on lobby leave
 	public void onLobbyLeave(Player player) {
-		if (plugin.arenaVoting) voteManager.handleVoteUndo(player.getName());
+		voteManager.handleVoteUndo(player.getName());
 	}
 	
 	public synchronized void forceReload() {
