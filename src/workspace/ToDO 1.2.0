@@ -1,7 +1,6 @@
 1.2.0
-* arena voting: having a configurable amount of options + (configurable) a "random other map" option (if there are any other arenas)
-voting like so:
-/pb vote [x]
+* votes are ingored..
+* missing feedback when player has voted
 
 * making marker item configurable
 
