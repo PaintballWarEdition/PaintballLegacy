@@ -44,20 +44,6 @@ public class VoteManager {
 		for (Player player : Lobby.LOBBY.getMembers()) {
 			sendVoteOptions(player);
 		}
-		Paintball.instance.feeder.textUntoggled(Translator.getString("GAME_VOTE_HEADER"));
-		
-		int id = 1;
-		KeyValuePair idPair = new KeyValuePair("id", String.valueOf(id));
-		
-		for (VoteOption option : voteOptions) {
-			String arenaName = option.getArena();
-			if (arenaName != null) {
-				Paintball.instance.feeder.textUntoggled(Translator.getString("GAME_VOTE_OPTION", idPair, new KeyValuePair("arena", arenaName)));
-			} else {
-				Paintball.instance.feeder.textUntoggled(Translator.getString("GAME_VOTE_OPTION_RANDOM", idPair));	
-			}
-			idPair.setValue(String.valueOf(++id));
-		}
 	}
 	
 	public void sendVoteOptions(Player player) {
