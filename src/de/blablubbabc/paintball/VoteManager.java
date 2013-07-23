@@ -17,6 +17,8 @@ public class VoteManager {
 	private final List<VoteOption> voteOptions = new ArrayList<VoteOption>();
 	private final Map<String, VoteOption> playerVotes = new HashMap<String, VoteOption>();
 	
+	private boolean isOver = false;
+	
 	// numberOfOptions between 2 and 8 !
 	public VoteManager(int numberOfOptions, boolean addRandomOption) {
 		// init vote options:
@@ -38,6 +40,15 @@ public class VoteManager {
 			}
 		}
 		
+	}
+	
+	public void endVoting() {
+		isOver = true;
+		Collections.sort(voteOptions);
+	}
+	
+	public boolean isOver() {
+		return isOver;
 	}
 	
 	public void broadcastVoteOptions() {
@@ -95,17 +106,33 @@ public class VoteManager {
 		return !playerVotes.isEmpty();
 	}
 	
+	public String getHighestVotedArena() {
+		List<VoteOption> sorted = voteOptions;
+		if (!isOver) {
+			sorted = new ArrayList<VoteManager.VoteOption>(voteOptions);
+			Collections.sort(sorted);
+		}
+		
+		VoteOption highestVoted = sorted.get(sorted.size() - 1);
+		String arenaName = highestVoted.getArena();
+		
+		return arenaName != null ? arenaName : Translator.getString("GAME_VOTE_OPTION_RANDOM");
+	}
+	
 	// returns the highest voted AND currently ready arena. If no arena is ready -> return null
-	public String getVotedArena() {
-		List<VoteOption> copy = new ArrayList<VoteOption>(voteOptions);
-		Collections.sort(copy);
+	public String getVotedAndReadyArena() {
+		if (!isOver) {
+			endVoting();
+		}
+		
+		Collections.sort(voteOptions);
 		
 		// get the currently ready arenas:
 		List<String> allReady = Paintball.instance.arenaManager.getReadyArenas();
 		
 		// start at highest voted option:
-		for (int i = copy.size() - 1; i >= 0; i--) {
-			VoteOption vote = copy.get(i);
+		for (int i = voteOptions.size() - 1; i >= 0; i--) {
+			VoteOption vote = voteOptions.get(i);
 			String arenaName = vote.getArena();
 			// random vote option:
 			if (arenaName == null) {

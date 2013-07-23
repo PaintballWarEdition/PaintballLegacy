@@ -37,15 +37,23 @@ public class MatchManager {
 	}
 
 	public void handleArenaVote(Player player, int voteID) {
-		voteManager.handleVote(player, voteID);
+		if (voteManager.isOver()) {
+			player.sendMessage(Translator.getString("GAME_VOTE_IS_OVER"));
+		} else {
+			voteManager.handleVote(player, voteID);
+		}
 	}
 	
 	public void sendVoteOptions(Player player) {
-		voteManager.sendVoteOptions(player);
+		if (!voteManager.isOver()) voteManager.sendVoteOptions(player);
 	}
 	
 	public void onLobbyLeave(Player player) {
-		voteManager.handleVoteUndo(player.getName());
+		if (!voteManager.isOver()) voteManager.handleVoteUndo(player.getName());
+	}
+	
+	public boolean isVotingOver() {
+		return voteManager.isOver();
 	}
 	
 	public synchronized void forceReload() {
@@ -486,16 +494,24 @@ public class MatchManager {
 						}
 					}
 					
-					if (countdown.getTime() == 10 && plugin.countdown >= 20) {
+					// broadcast options again
+					if (countdown.getTime() == plugin.arenaVotingBroadcastOptionsAtCountdownTime) {
 						if (plugin.arenaVoting) {
-							// broadcast options again 10 seconds before the countdown ends if countdown is long:
 							voteManager.broadcastVoteOptions();
+						}
+					}
+					
+					// end voting
+					if (countdown.getTime() == plugin.arenaVotingEndAtCountdownTime) {
+						if (plugin.arenaVoting) {
+							voteManager.endVoting();
+							plugin.feeder.textUntoggled(Translator.getString("GAME_VOTE_MOST_VOTES", new KeyValuePair("arena", voteManager.getHighestVotedArena())));
 						}
 					}
 					
 					if (countdown.getTime() <= 5) {
 						for (Player player : Lobby.LOBBY.getMembers()) {
-							player.playSound(player.getLocation(), Sound.ORB_PICKUP, 80L, 1L);	
+							player.playSound(player.getLocation(), Sound.ORB_PICKUP, 0.5F, 0.0F);	
 						}
 					}
 				}
@@ -517,14 +533,14 @@ public class MatchManager {
 					countdown = null;
 					
 					for (Player player : Lobby.LOBBY.getMembers()) {
-						player.playSound(player.getLocation(), Sound.ORB_PICKUP, 100L, 2L);	
+						player.playSound(player.getLocation(), Sound.ORB_PICKUP, 1.0F, 2.0F);	
 					}
 					
 					String status = ready();
 					if(status.equalsIgnoreCase(Translator.getString("READY"))) {
 						String selectedArena = null;
 						if (plugin.arenaVoting && voteManager.didSomebodyVote()) {
-							selectedArena = voteManager.getVotedArena();
+							selectedArena = voteManager.getVotedAndReadyArena();
 						} else {
 							selectedArena = plugin.arenaManager.getNextArena();
 						}

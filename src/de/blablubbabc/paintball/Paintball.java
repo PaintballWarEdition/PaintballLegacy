@@ -169,6 +169,8 @@ public class Paintball extends JavaPlugin{
 	// between 2 and 8:
 	public int arenaVotingOptions;
 	public boolean arenaVotingRandomOption;
+	public int arenaVotingBroadcastOptionsAtCountdownTime;
+	public int arenaVotingEndAtCountdownTime;
 	
 	public boolean commandSignEnabled;
 	public String commandSignIdentifier;
@@ -444,6 +446,8 @@ public class Paintball extends JavaPlugin{
 		// between 2 and 8:
 		if(getConfig().get("Paintball.Arena Rotation.Arena Voting.Number of Vote Options (between 2 and 8)") == null)getConfig().set("Paintball.Arena Rotation.Arena Voting.Number of Vote Options (between 2 and 8)", 4);
 		if(getConfig().get("Paintball.Arena Rotation.Arena Voting.Random Arena Option") == null)getConfig().set("Paintball.Arena Rotation.Arena Voting.Random Arena Option", true);
+		if(getConfig().get("Paintball.Arena Rotation.Arena Voting.Broadcast Options again at Countdown Time") == null)getConfig().set("Paintball.Arena Rotation.Arena Voting.Broadcast Options again at Countdown Time", 15);
+		if(getConfig().get("Paintball.Arena Rotation.Arena Voting.End Voting at Countdown Time") == null)getConfig().set("Paintball.Arena Rotation.Arena Voting.End Voting at Countdown Time", 5);
 		
 		if(getConfig().get("Paintball.Only Random") == null)getConfig().set("Paintball.Only Random", false);
 		if(getConfig().get("Paintball.Auto Random") == null)getConfig().set("Paintball.Auto Random", true);
@@ -697,13 +701,16 @@ public class Paintball extends JavaPlugin{
 		if(minPlayers < 2) minPlayers = 2;
 		maxPlayers = getConfig().getInt("Paintball.Match.Maximum players", 1000);
 		if(maxPlayers < 2) maxPlayers = 2;
+		
 		//countdown:
 		countdown = getConfig().getInt("Paintball.Match.Countdown.Time", 20);
 		if(countdown < 0) countdown = 0;
 		countdownInit = getConfig().getInt("Paintball.Match.Countdown.Delay", 10);
 		if(countdownInit < 0) countdownInit = 0;
+		
 		countdownStart = getConfig().getInt("Paintball.Match.Countdown Round Start.Time", 5);
 		if(countdownStart < 0) countdownStart = 0;
+		
 		roundTimer = getConfig().getInt("Paintball.Match.Round Timer.Time (at least 30)", 180);
 		if(roundTimer < 30) roundTimer = 30;
 		//spawn protection
@@ -733,6 +740,8 @@ public class Paintball extends JavaPlugin{
 		// between 2 and 8:
 		arenaVotingOptions = getConfig().getInt("Paintball.Arena Rotation.Arena Voting.Number of Vote Options (between 2 and 8)", 4);
 		arenaVotingRandomOption = getConfig().getBoolean("Paintball.Arena Rotation.Arena Voting.Random Arena Option", true);
+		arenaVotingBroadcastOptionsAtCountdownTime = getConfig().getInt("Paintball.Arena Rotation.Arena Voting.Broadcast Options again at Countdown Time", 15);
+		arenaVotingEndAtCountdownTime = getConfig().getInt("Paintball.Arena Rotation.Arena Voting.End Voting at Countdown Time", 5);
 		
 		onlyRandom = getConfig().getBoolean("Paintball.Only Random", false);
 		autoRandom = getConfig().getBoolean("Paintball.Auto Random", true);
