@@ -1,8 +1,5 @@
 1.2.0
-* votes are ingored..
-* missing feedback when player has voted
-
-* making marker item configurable
+* drops: everything or everything besides snowballs, + config amount of snowballs
 
 afterwards:
 * making some weapons configurable

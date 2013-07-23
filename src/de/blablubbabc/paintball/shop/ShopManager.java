@@ -124,6 +124,9 @@ public class ShopManager {
 				plugin.statsManager.addGeneralStats(gStats);
 			}
 			
+			// close item menu
+			if (plugin.shopCloseMenuOnPurchase) player.closeInventory();
+			
 			// give item
 			player.getInventory().addItem(item);
 			Sounds.playEquipLoadout(player);
