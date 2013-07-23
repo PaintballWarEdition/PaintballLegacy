@@ -45,7 +45,11 @@ public class MatchManager {
 	}
 	
 	public void sendVoteOptions(Player player) {
-		if (!voteManager.isOver()) voteManager.sendVoteOptions(player);
+		if (voteManager.isOver()) {
+			player.sendMessage(Translator.getString("GAME_VOTE_IS_OVER"));
+		} else {
+			voteManager.sendVoteOptions(player);
+		}
 	}
 	
 	public void onLobbyLeave(Player player) {
@@ -494,19 +498,18 @@ public class MatchManager {
 						}
 					}
 					
-					// broadcast options again
-					if (countdown.getTime() == plugin.arenaVotingBroadcastOptionsAtCountdownTime) {
-						if (plugin.arenaVoting) {
+					if (plugin.arenaVoting && !voteManager.isOver()) {
+						// broadcast options again
+						if (countdown.getTime() == plugin.arenaVotingBroadcastOptionsAtCountdownTime) {
 							voteManager.broadcastVoteOptions();
 						}
-					}
-					
-					// end voting
-					if (countdown.getTime() == plugin.arenaVotingEndAtCountdownTime) {
-						if (plugin.arenaVoting) {
+						
+						// end voting
+						if (countdown.getTime() == plugin.arenaVotingEndAtCountdownTime) {
 							voteManager.endVoting();
 							plugin.feeder.textUntoggled(Translator.getString("GAME_VOTE_MOST_VOTES", new KeyValuePair("arena", voteManager.getHighestVotedArena())));
 						}
+						
 					}
 					
 					if (countdown.getTime() <= 5) {
