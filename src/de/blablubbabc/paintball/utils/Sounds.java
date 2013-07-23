@@ -10,8 +10,8 @@ public class Sounds {
 	}
 	
 	public static void playProtected(Player shooter, Player target) {
-		shooter.playSound(shooter.getEyeLocation(), Sound.ANVIL_LAND, 0.7F, 2F);
-		target.playSound(shooter.getEyeLocation(), Sound.ANVIL_LAND, 0.6F, 0F);
+		shooter.playSound(shooter.getEyeLocation(), Sound.ANVIL_LAND, 0.3F, 2F);
+		target.playSound(shooter.getEyeLocation(), Sound.ANVIL_LAND, 0.1F, 0F);
 	}
 	
 	public static void playHit(Player shooter, Player target) {
@@ -25,7 +25,7 @@ public class Sounds {
 	}
 	
 	public static void playTeamattack(Player shooter) {
-		shooter.playSound(shooter.getEyeLocation(), Sound.ANVIL_LAND, 0.7F, 1F);
+		shooter.playSound(shooter.getEyeLocation(), Sound.ANVIL_LAND, 0.3F, 1F);
 	}
 	
 	public static void playFrag(Player killer, Player target) {
