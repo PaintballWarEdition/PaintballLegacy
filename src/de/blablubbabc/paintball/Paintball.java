@@ -633,7 +633,7 @@ public class Paintball extends JavaPlugin{
 		falldamage = getConfig().getBoolean("Paintball.Match.Damage.FallDamage", false);
 		otherDamage = getConfig().getBoolean("Paintball.Match.Damage.Other Damage", true);
 		allowMelee = getConfig().getBoolean("Paintball.Match.Allow Melee", true);
-		meleeDamage = getConfig().getInt("Paintball.Match.Melee Damage", 1);
+		meleeDamage = getConfig().getInt("Paintball.Match.Melee Damage", 5);
 		if(meleeDamage < 1) meleeDamage = 1;
 		
 		// language
