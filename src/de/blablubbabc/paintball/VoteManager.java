@@ -43,6 +43,8 @@ public class VoteManager {
 	}
 	
 	public void endVoting() {
+		if (isOver) throw new IllegalStateException("Voting is already over, but it's tried to end it again.");
+		
 		isOver = true;
 		Collections.sort(voteOptions);
 	}
@@ -52,12 +54,16 @@ public class VoteManager {
 	}
 	
 	public void broadcastVoteOptions() {
+		if (isOver) throw new IllegalStateException("Voting is already over, but options shall be braodcasted.");
+		
 		for (Player player : Lobby.LOBBY.getMembers()) {
 			sendVoteOptions(player);
 		}
 	}
 	
 	public void sendVoteOptions(Player player) {
+		if (isOver) throw new IllegalStateException("Voting is already over, but optiosn shall be send to a player.");
+		
 		Paintball.instance.feeder.text(player, Translator.getString("GAME_VOTE_HEADER"));
 		
 		int id = 0;
@@ -78,6 +84,8 @@ public class VoteManager {
 	}
 	
 	public void handleVote(Player player, int voteID) {
+		if (isOver) throw new IllegalStateException("Voting is already over, but a vote shall be handled.");
+		
 		if (!(voteID >= 1 && voteID <= voteOptions.size())) {
 			player.sendMessage(Translator.getString("GAME_VOTE_NOT_VALID_ID", new KeyValuePair("max", String.valueOf(voteOptions.size()))));
 			return;
@@ -96,6 +104,8 @@ public class VoteManager {
 	}
 	
 	public void handleVoteUndo(String playerName) {
+		if (isOver) throw new IllegalStateException("Voting is already over, but a vote shall be a undone.");
+		
 		VoteOption oldVote = playerVotes.get(playerName);
 		if (oldVote != null) {
 			oldVote.removeVote();
