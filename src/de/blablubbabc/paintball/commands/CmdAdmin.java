@@ -64,6 +64,7 @@ public class CmdAdmin {
 						return true;
 					}
 				}
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 			} else if(args[1].equalsIgnoreCase("check")) {
 				List<Entity> entities = player.getWorld().getEntities();
 				player.sendMessage("Entities: " + entities.size());
@@ -75,6 +76,7 @@ public class CmdAdmin {
 				}
 				player.sendMessage("Snowballs: "+snowballs);
 				return true;
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 			} else if (args[1].equalsIgnoreCase("play")) {
 				if(args.length == 3) {
 					Player p = (Player) sender;
