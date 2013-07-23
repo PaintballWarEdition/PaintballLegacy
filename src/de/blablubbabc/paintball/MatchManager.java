@@ -179,14 +179,18 @@ public class MatchManager {
 				}
 				
 				// vault reward
-				// if left lobby already -> directly give reward:
-				if (Lobby.LOBBY.isMember(player)) {
+				// if left lobby already -> directly give reward: -> now given directly
+				/*if (Lobby.LOBBY.isMember(player)) {
 					plugin.givePlayerVaultMoneyAfterSession(playerName, vaultReward);
 					// inform player later:
 					vaultRewards.put(player, String.valueOf(vaultReward));
 				} else {
 					plugin.givePlayerVaultMoneyInstant(playerName, vaultReward);
-				}
+				}*/
+				
+				plugin.givePlayerVaultMoneyInstant(playerName, vaultReward);
+				// inform player later:
+				vaultRewards.put(player, String.valueOf(vaultReward));
 				
 				// AFK DETECTION
 				if (Lobby.isPlaying(player)) {

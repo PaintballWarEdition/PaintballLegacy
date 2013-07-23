@@ -1199,9 +1199,9 @@ public class Paintball extends JavaPlugin{
 		if (vaultRewardsEnabled && vaultRewardsFeature != null) vaultRewardsFeature.givePlayerMoneyInstant(playerName, moneyToAdd);
 	}
 	
-	public void givePlayerVaultMoneyAfterSession(String playerName, double moneyToAdd) {
+	/*public void givePlayerVaultMoneyAfterSession(String playerName, double moneyToAdd) {
 		if (vaultRewardsEnabled && vaultRewardsFeature != null) vaultRewardsFeature.givePlayerMoneyAfterSession(playerName, moneyToAdd);
-	}
+	}*/
 	
 	
 	public synchronized void afkRemove(String player) {
@@ -1381,11 +1381,11 @@ public class Paintball extends JavaPlugin{
 				player.sendMessage(Translator.getString("YOU_LEFT_LOBBY"));
 			}
 			
-			// vault rewards after session:
-			if (vaultRewardsEnabled && vaultRewardsFeature != null) {
+			// vault rewards after session: -> now given directly after match end
+			/*if (vaultRewardsEnabled && vaultRewardsFeature != null) {
 				double reward = vaultRewardsFeature.getSessionMoney(playerName);
 				if (vaultRewardsFeature.transferCurrentSession(playerName)) player.sendMessage(Translator.getString("YOU_RECEIVED_SESSION_VAULT_REWARD", new KeyValuePair("money", String.valueOf(reward))));
-			}
+			}*/
 			
 			return true;
 		}

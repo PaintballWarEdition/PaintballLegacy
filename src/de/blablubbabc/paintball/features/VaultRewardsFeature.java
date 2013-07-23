@@ -1,8 +1,5 @@
 package de.blablubbabc.paintball.features;
 
-import java.util.HashMap;
-import java.util.Map;
-
 import net.milkbowl.vault.economy.Economy;
 import net.milkbowl.vault.economy.EconomyResponse;
 
@@ -15,7 +12,7 @@ import de.blablubbabc.paintball.utils.Log;
 public class VaultRewardsFeature {
 
 	private Economy economy = null;
-	private Map<String, Double> sessions = new HashMap<String, Double>();
+	//private Map<String, Double> sessions = new HashMap<String, Double>();
 	
 	public VaultRewardsFeature(Plugin vaultPlugin) {
 		RegisteredServiceProvider<Economy> rsp = Bukkit.getServer().getServicesManager().getRegistration(Economy.class);
@@ -29,7 +26,7 @@ public class VaultRewardsFeature {
 	}
 	
 	// returns current money during this session:
-	public double givePlayerMoneyAfterSession(String playerName, double moneyToAdd) {
+	/*public double givePlayerMoneyAfterSession(String playerName, double moneyToAdd) {
 		if (economy == null || playerName == null) return 0.0;
 		
 		Double current = sessions.get(playerName);
@@ -38,9 +35,9 @@ public class VaultRewardsFeature {
 		
 		sessions.put(playerName, current);
 		return current;
-	}
+	}*/
 	
-	public double getSessionMoney(String playerName) {
+	/*public double getSessionMoney(String playerName) {
 		Double current = sessions.get(playerName);
 		return current != null ? current : 0.0;
 	}
@@ -48,7 +45,7 @@ public class VaultRewardsFeature {
 	public boolean transferCurrentSession(String playerName) {
 		Double current = sessions.remove(playerName);
 		return current != null && givePlayerMoneyInstant(playerName, current);
-	}
+	}*/
 	
 	// return true if successfull
 	public boolean givePlayerMoneyInstant(String playerName, double moneyToAdd) {
