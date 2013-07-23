@@ -354,7 +354,7 @@ public class CmdAdmin {
 			}
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 		} else if (args[1].equalsIgnoreCase("gifts") || args[1].equalsIgnoreCase("gift")) {
-			if(args.length == 2 || args.length == 3) {
+			if (args.length == 2 || args.length == 3) {
 				int amount = 1;
 				if(args.length == 3) {
 					try {
@@ -364,17 +364,22 @@ public class CmdAdmin {
 						sender.sendMessage(Translator.getString("INVALID_NUMBER"));
 					}
 				}
-				if(amount > 0) {
+				
+				if (amount > 0) {
 					//sender nicht in der lobby?
 					if(!(sender instanceof Player) || !Lobby.isPlaying((Player)sender)) {
 						sender.sendMessage(Translator.getString("YOU_GAVE_ALL_GIFT"));
 					}
+					
 					for(Player p : Lobby.LOBBY.getMembers()) {
 						if(Lobby.isPlaying(p)) {
 							plugin.weaponManager.getGiftManager().giveGift(p, amount, true);
 						}
 					}	
+				} else {
+					sender.sendMessage(Translator.getString("INVALID_NUMBER"));
 				}
+				
 				return true;
 			}
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
