@@ -137,9 +137,6 @@ public class MatchManager {
 		plugin.arenaManager.resetNext();
 		plugin.arenaManager.setActive(arena);
 		
-		// reset arena voteManager:
-		if (plugin.arenaVoting) voteManager = new VoteManager(plugin.arenaVotingOptions, plugin.arenaVotingRandomOption);
-		
 		Map<String, String> vars = new HashMap<String, String>();
 		vars.put("arena", arena);
 		plugin.feeder.status(Translator.getString("MATCH_START_ARENA", vars));
@@ -552,6 +549,9 @@ public class MatchManager {
 					} else {
 						plugin.feeder.status(status);
 					}
+					
+					// reset arena voteManager:
+					if (plugin.arenaVoting) voteManager = new VoteManager(plugin.arenaVotingOptions, plugin.arenaVotingRandomOption);
 				}
 			});
 		}
