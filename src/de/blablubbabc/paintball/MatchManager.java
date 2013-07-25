@@ -39,6 +39,8 @@ public class MatchManager {
 	public void handleArenaVote(Player player, int voteID) {
 		if (voteManager.isOver()) {
 			player.sendMessage(Translator.getString("GAME_VOTE_IS_OVER"));
+		} else if (!voteManager.isValid()) {
+			player.sendMessage(Translator.getString("GAME_VOTE_DISABLED"));
 		} else {
 			voteManager.handleVote(player, voteID);
 		}
@@ -47,18 +49,20 @@ public class MatchManager {
 	public void sendVoteOptions(Player player) {
 		if (voteManager.isOver()) {
 			player.sendMessage(Translator.getString("GAME_VOTE_IS_OVER"));
+		} else if (!voteManager.isValid()) {
+			player.sendMessage(Translator.getString("GAME_VOTE_DISABLED"));
 		} else {
 			voteManager.sendVoteOptions(player);
 		}
 	}
 	
 	public void onLobbyLeave(Player player) {
-		if (!voteManager.isOver()) voteManager.handleVoteUndo(player.getName());
+		if (!voteManager.isOver() && voteManager.isValid()) voteManager.handleVoteUndo(player.getName());
 	}
 	
-	public boolean isVotingOver() {
+	/*public boolean isVotingOver() {
 		return voteManager.isOver();
-	}
+	}*/
 	
 	public synchronized void forceReload() {
 		//closing all matches and kicking all players from lobby:
@@ -480,7 +484,7 @@ public class MatchManager {
 		if (countdown == null && plugin.active) {
 			plugin.feeder.status(Translator.getString("NEW_MATCH_STARTS_SOON"));
 			
-			if (plugin.arenaVoting) {
+			if (plugin.arenaVoting && voteManager.isValid()) {
 				// broadcast options:
 				voteManager.broadcastVoteOptions();
 			}
@@ -495,7 +499,7 @@ public class MatchManager {
 						}
 					}
 					
-					if (plugin.arenaVoting && !voteManager.isOver()) {
+					if (plugin.arenaVoting && !voteManager.isOver() && voteManager.isValid()) {
 						// broadcast options again
 						if (countdown.getTime() == plugin.arenaVotingBroadcastOptionsAtCountdownTime) {
 							voteManager.broadcastVoteOptions();
@@ -539,7 +543,7 @@ public class MatchManager {
 					String status = ready();
 					if(status.equalsIgnoreCase(Translator.getString("READY"))) {
 						String selectedArena = null;
-						if (plugin.arenaVoting && voteManager.didSomebodyVote()) {
+						if (plugin.arenaVoting && voteManager.isValid() && voteManager.didSomebodyVote()) {
 							selectedArena = voteManager.getVotedAndReadyArena();
 						} else {
 							selectedArena = plugin.arenaManager.getNextArena();

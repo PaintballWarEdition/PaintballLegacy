@@ -34,10 +34,14 @@ public class VoteManager {
 			// add random option:
 			voteOptions.add(new VoteOption(null));
 		} else {
-			// take all:
-			for (String arenaName : readyArenas) {
-				voteOptions.add(new VoteOption(arenaName));
+			// are there even enough ready arenas to create a vote?
+			if (readyArenas.size() >= 2) {
+				// take all:
+				for (String arenaName : readyArenas) {
+					voteOptions.add(new VoteOption(arenaName));
+				}
 			}
+			// else: voteOptiosn empty -> not valid
 		}
 		
 	}
@@ -51,6 +55,11 @@ public class VoteManager {
 	
 	public boolean isOver() {
 		return isOver;
+	}
+	
+	// it will not be valid, if there are less than 2 VoteOptions to choose from
+	public boolean isValid() {
+		return voteOptions.size() >= 2;
 	}
 	
 	public void broadcastVoteOptions() {
