@@ -41,7 +41,7 @@ public class VoteManager {
 					voteOptions.add(new VoteOption(arenaName));
 				}
 			}
-			// else: voteOptiosn empty -> not valid
+			// else: voteOptions empty -> not valid
 		}
 		
 	}

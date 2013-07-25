@@ -545,9 +545,13 @@ public class MatchManager {
 						String selectedArena = null;
 						if (plugin.arenaVoting && voteManager.isValid() && voteManager.didSomebodyVote()) {
 							selectedArena = voteManager.getVotedAndReadyArena();
-						} else {
+						}
+						
+						// still null -> there must be another ready arena, because of the check above
+						if (selectedArena == null) {
 							selectedArena = plugin.arenaManager.getNextArena();
 						}
+						
 						//start match
 						gameStart(selectedArena);
 					} else {
