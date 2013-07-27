@@ -34,6 +34,7 @@ import org.bukkit.event.entity.ProjectileLaunchEvent;
 import org.bukkit.event.entity.EntityDamageEvent.DamageCause;
 import org.bukkit.event.hanging.HangingBreakByEntityEvent;
 import org.bukkit.event.inventory.InventoryClickEvent;
+import org.bukkit.event.inventory.InventoryOpenEvent;
 import org.bukkit.event.inventory.InventoryType.SlotType;
 import org.bukkit.event.player.AsyncPlayerChatEvent;
 import org.bukkit.event.player.PlayerChangedWorldEvent;
@@ -138,6 +139,17 @@ public class EventListener implements Listener {
 		}
 	}
 
+	// denying all inventories (chests, furnaces, etc..) in the lobby
+	@EventHandler(priority = EventPriority.NORMAL)
+	public void onInventoryOpen(InventoryOpenEvent event) {
+		Player player = (Player) event.getPlayer();
+		if (Lobby.LOBBY.isMember(player)) {
+			if (!event.getInventory().getName().equalsIgnoreCase(Translator.getString("SHOP_NAME"))) {
+				event.setCancelled(true);
+			}
+		}
+	}
+	
 	@EventHandler(priority = EventPriority.NORMAL)
 	public void onInteract(PlayerInteractEvent event) {
 		Block block = event.getClickedBlock();
