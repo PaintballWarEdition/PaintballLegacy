@@ -81,15 +81,23 @@ public class GadgetManager {
 		return getGadget(entity, match, playerName) != null;
 	}
 	
+	public Gadget getGadget(Entity entity, Match match) {
+		if (entity == null || match == null) throw new IllegalArgumentException();
+		MatchEntry matchEntry = gadgets.get(match);
+		if (matchEntry != null) {
+			Gadget gadget = matchEntry.getGadget(entity);
+			if (gadget != null) {
+				return gadget;
+			}
+		}
+		return null;
+	}
+	
 	public Gadget getGadget(Entity entity) {
 		if (entity == null) throw new IllegalArgumentException();
 		for (MatchEntry matchEntry : gadgets.values()) {
 			Gadget gadget = matchEntry.getGadget(entity);
 			if (gadget != null) {
-				/*if (removeWhenFound) {
-					if (matchEntry.getMatchGadgetCount() == 0) gadgets.remove(matchEntry.match);
-					overallCounter--;
-				}*/
 				return gadget;
 			}
 		}
@@ -101,10 +109,6 @@ public class GadgetManager {
 		for (MatchEntry matchEntry : gadgets.values()) {
 			Gadget gadget = matchEntry.getGadget(entity, playerName);
 			if (gadget != null) {
-				/*if (removeWhenFound) {
-					if (matchEntry.getMatchGadgetCount() == 0) gadgets.remove(matchEntry.match);
-					overallCounter--;
-				}*/
 				return gadget;
 			}
 		}
@@ -117,10 +121,6 @@ public class GadgetManager {
 		if (matchEntry != null) {
 			Gadget gadget = matchEntry.getGadget(entity, playerName);
 			if (gadget != null) {
-				/*if (removeWhenFound) {
-					if (matchEntry.getMatchGadgetCount() == 0) gadgets.remove(matchEntry.match);
-					overallCounter--;
-				}*/
 				return gadget;
 			}
 		}
@@ -161,10 +161,18 @@ public class GadgetManager {
 		for (MatchEntry matchEntry : gadgets.values()) {
 			Gadget gadget = matchEntry.getGadget(location, playerName);
 			if (gadget != null) {
-				/*if (removeWhenFound) {
-					if (matchEntry.getMatchGadgetCount() == 0) gadgets.remove(matchEntry.match);
-					overallCounter--;
-				}*/
+				return gadget;
+			}
+		}
+		return null;
+	}
+	
+	public Gadget getGadget(Location location, Match match) {
+		if (location == null || match == null) throw new IllegalArgumentException();
+		MatchEntry matchEntry = gadgets.get(match);
+		if (matchEntry != null) {
+			Gadget gadget = matchEntry.getGadget(location);
+			if (gadget != null) {
 				return gadget;
 			}
 		}
@@ -177,10 +185,6 @@ public class GadgetManager {
 		if (matchEntry != null) {
 			Gadget gadget = matchEntry.getGadget(location, playerName);
 			if (gadget != null) {
-				/*if (removeWhenFound) {
-					if (matchEntry.getMatchGadgetCount() == 0) gadgets.remove(matchEntry.match);
-					overallCounter--;
-				}*/
 				return gadget;
 			}
 		}
@@ -208,13 +212,8 @@ public class GadgetManager {
 	
 	
 	private class MatchEntry {
-		//private final Match match;
 		private int overallMatchCounter = 0;
 		private Map<String, List<Gadget>> matchPlayerGadgets = new HashMap<String, List<Gadget>>();
-		
-		/*private MatchEntry(Match match) {
-			this.match = match;
-		}*/
 		
 		private MatchEntry() {
 			
@@ -254,27 +253,15 @@ public class GadgetManager {
 		// COMPARE TO ENTITY
 		
 		private Gadget getGadget(Entity entity) {
-			//Gadget found = null;
 			for (Entry<String, List<Gadget>> playerEntry : matchPlayerGadgets.entrySet()) {
 				List<Gadget> playerGadgets = playerEntry.getValue();
 				for (Gadget gadget : playerGadgets) {
 					if (gadget.isSimiliar(entity)) {
 						return gadget;
-						//found = gadget;
-						//break;
 					}
 				}
-				
-				/*if (found != null && removeWhenFound) {
-					if (playerGadgets.remove(found)) {
-						if (playerGadgets.size() == 0) matchPlayerGadgets.remove(playerEntry.getKey());
-						overallMatchCounter--;
-					}
-					break;
-				}*/
 			}
 			return null;
-			//return found;
 		}
 		
 		private Gadget getGadget(Entity entity, String playerName) {
@@ -282,10 +269,6 @@ public class GadgetManager {
 			if (playerGadgets != null) {
 				for (Gadget gadget : playerGadgets) {
 					if (gadget.isSimiliar(entity)) {
-						/*if (removeWhenFound && playerGadgets.remove(gadget)) {
-							if (playerGadgets.size() == 0) matchPlayerGadgets.remove(playerName);
-							overallMatchCounter--;
-						}*/
 						return gadget;
 					}
 				}
@@ -296,28 +279,16 @@ public class GadgetManager {
 		// COMPARE TO LOCATION (BLOCK)
 		
 		private Gadget getGadget(Location location) {
-			//Gadget found = null;
 			for (Entry<String, List<Gadget>> playerEntry : matchPlayerGadgets.entrySet()) {
 				List<Gadget> playerGadgets = playerEntry.getValue();
 				for (Gadget gadget : playerGadgets) {
 					if (gadget.isSimiliar(location)) {
-						//found = gadget;
 						return gadget;
-						//break;
 					}
 				}
-				
-				/*if (found != null && removeWhenFound) {
-					if (playerGadgets.remove(found)) {
-						if (playerGadgets.size() == 0) matchPlayerGadgets.remove(playerEntry.getKey());
-						overallMatchCounter--;
-					}
-					break;
-				}*/
 			}
 			
 			return null;
-			//return found;
 		}
 		
 		private Gadget getGadget(Location location, String playerName) {
@@ -325,10 +296,6 @@ public class GadgetManager {
 			if (playerGadgets != null) {
 				for (Gadget gadget : playerGadgets) {
 					if (gadget.isSimiliar(location)) {
-						/*if (removeWhenFound && playerGadgets.remove(gadget)) {
-							if (playerGadgets.size() == 0) matchPlayerGadgets.remove(playerName);
-							overallMatchCounter--;
-						}*/
 						return gadget;
 					}
 				}

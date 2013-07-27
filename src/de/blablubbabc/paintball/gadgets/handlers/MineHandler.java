@@ -55,31 +55,27 @@ public class MineHandler extends WeaponHandler implements Listener {
 	@EventHandler
 	public void onPaintballHit(PaintballHitEvent event) {
 		if (Paintball.instance.mine) {
-			Player shooter= event.getShooter();
-			String shooterName = event.getShooter().getName();
+			Player shooter = event.getShooter();
 			Match match = event.getMatch();
 			Projectile ball = event.getProjectileHitEvent().getEntity();
 			Location location = ball.getLocation();
 			
-			Gadget mineGadget = gadgetManager.getGadget(location, event.getMatch(), shooterName);
-			if (mineGadget != null && match == mineGadget.getMatch()) {
-				Mine mine = (Mine) mineGadget;
-				Player owner = mine.getOwner();
-				if (match.enemys(shooter, owner) || shooter.equals(owner)) {
-					mine.explode();
-				}
-			}
+			checkAndExplode(location, match, shooter);
 
 			BlockIterator iterator = new BlockIterator(location.getWorld(), location.toVector(), ball.getVelocity().normalize(), 0, 2);
 			while (iterator.hasNext()) {
-				mineGadget = gadgetManager.getGadget(iterator.next().getLocation(), match, shooterName);
-				if (mineGadget != null && match == mineGadget.getMatch()) {
-					Mine mine = (Mine) mineGadget;
-					Player owner = mine.getOwner();
-					if (match.enemys(shooter, owner) || shooter.equals(owner)) {
-						mine.explode();
-					}
-				}
+				checkAndExplode(iterator.next().getLocation(), match, shooter);
+			}
+		}
+	}
+	
+	private void checkAndExplode(Location location, Match match, Player shooter) {
+		Gadget mineGadget = gadgetManager.getGadget(location, match);
+		if (mineGadget != null && match == mineGadget.getMatch()) {
+			Mine mine = (Mine) mineGadget;
+			Player owner = mine.getOwner();
+			if (match.enemys(shooter, owner) || shooter.equals(owner)) {
+				mine.explode();
 			}
 		}
 	}
