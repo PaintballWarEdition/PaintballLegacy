@@ -122,41 +122,49 @@ public class ArenaManager {
 
 
 	//GETTING ARENAS
-	public String getNextArena() {
+	public String getNextArena(VoteManager voteManager) {
+		String next = null;
+		
 		// ready arenas:
-		List<String> ready = getReadyArenas();
+		List<String> readyArenas = getReadyArenas();
 		// is there even a ready arena?
-		if (ready.isEmpty()) return null;
+		if (readyArenas.isEmpty()) return null;
 		
 		//force map:
-		String next = null;
-		if(nextArenaForce != null && ready.contains(nextArenaForce)) {
+		if(nextArenaForce != null && readyArenas.contains(nextArenaForce)) {
 			next = nextArenaForce;
 		} else {
-			if (plugin.arenaRotationRandom) {
-				// random next arena:
-				if (ready.size() >= 2) {
-					int index = Utils.random.nextInt(ready.size());
-					next = ready.get(index);
-					if (last != null) {
-						// get next arena which is not last:
-						while (next.equals(last)) {
-							index += 1;
-							next = ready.get(index >= ready.size() ? 0 : index);
-						}
-					}
-				} else {
-					// there is only one ready arena..:
-					next = ready.get(0);
-				}
-			} else {
-				// rotation:
-				if (current >= ready.size()) current = 0;
-				String arena = ready.get(current);
-				current++;
-				return arena;
+			// voteManager
+			if (plugin.arenaVoting && voteManager != null && voteManager.isValid() && voteManager.didSomebodyVote()) {
+				next = voteManager.getVotedAndReadyArena(readyArenas);
 			}
 			
+			// still null -> there must be another ready arena, because this methods gets only called after a check
+			if (next == null) {
+				if (plugin.arenaRotationRandom) {
+					// random next arena:
+					if (readyArenas.size() >= 2) {
+						int index = Utils.random.nextInt(readyArenas.size());
+						next = readyArenas.get(index);
+						if (last != null) {
+							// get next arena which is not last:
+							while (next.equals(last)) {
+								index += 1;
+								next = readyArenas.get(index >= readyArenas.size() ? 0 : index);
+							}
+						}
+					} else {
+						// there is only one ready arena..:
+						next = readyArenas.get(0);
+					}
+				} else {
+					// rotation:
+					if (current >= readyArenas.size()) current = 0;
+					String arena = readyArenas.get(current);
+					current++;
+					return arena;
+				}
+			}
 		}
 		
 		last = next;

@@ -139,15 +139,12 @@ public class VoteManager {
 	}
 	
 	// returns the highest voted AND currently ready arena. If no arena is ready -> return null
-	public String getVotedAndReadyArena() {
+	public String getVotedAndReadyArena(List<String> readyArenas) {
 		if (!isOver) {
 			endVoting();
 		}
 		
 		Collections.sort(voteOptions);
-		
-		// get the currently ready arenas:
-		List<String> allReady = Paintball.instance.arenaManager.getReadyArenas();
 		
 		// start at highest voted option:
 		for (int i = voteOptions.size() - 1; i >= 0; i--) {
@@ -155,7 +152,7 @@ public class VoteManager {
 			String arenaName = vote.getArena();
 			// random vote option:
 			if (arenaName == null) {
-				List<String> remaining = new ArrayList<String>(allReady);
+				List<String> remaining = new ArrayList<String>(readyArenas);
 				remaining.removeAll(getVoteAbleArenas());
 				// pick random:
 				if (remaining.size() > 0) {
@@ -165,7 +162,7 @@ public class VoteManager {
 				continue;
 			} else {
 				// check if arena is still ready:
-				if (allReady.contains(arenaName)) {
+				if (readyArenas.contains(arenaName)) {
 					return arenaName;
 				}
 				// else -> keep searching:

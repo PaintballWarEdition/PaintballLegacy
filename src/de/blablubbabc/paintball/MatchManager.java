@@ -542,15 +542,8 @@ public class MatchManager {
 					
 					String status = ready();
 					if(status.equalsIgnoreCase(Translator.getString("READY"))) {
-						String selectedArena = null;
-						if (plugin.arenaVoting && voteManager.isValid() && voteManager.didSomebodyVote()) {
-							selectedArena = voteManager.getVotedAndReadyArena();
-						}
-						
-						// still null -> there must be another ready arena, because of the check above
-						if (selectedArena == null) {
-							selectedArena = plugin.arenaManager.getNextArena();
-						}
+						// get next arena, but check for forced or voted arena:
+						String selectedArena = plugin.arenaManager.getNextArena(voteManager);
 						
 						//start match
 						gameStart(selectedArena);
