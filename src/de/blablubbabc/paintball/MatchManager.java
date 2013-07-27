@@ -346,11 +346,11 @@ public class MatchManager {
 		if (draw) {
 			plugin.feeder.text(Translator.getString("MATCH_DRAW"));
 		} else {
-			vars.put("winner_color", Lobby.getTeam(match.win).color().toString());
-			vars.put("winner", match.win);
+			vars.put("winner_color", match.win.color().toString());
+			vars.put("winner", match.win.getName());
 			vars.put("winner_size", String.valueOf(match.winners.size()));
-			vars.put("looser_color", Lobby.getTeam(match.loose).color().toString());
-			vars.put("looser", match.loose);
+			vars.put("looser_color", match.loose.color().toString());
+			vars.put("looser", match.loose.getName());
 			vars.put("looser_size", String.valueOf(match.loosers.size()));
 			plugin.feeder.text(Translator.getString("WINNER_TEAM", vars));
 
@@ -515,7 +515,7 @@ public class MatchManager {
 					
 					if (countdown.getTime() <= 5) {
 						for (Player player : Lobby.LOBBY.getMembers()) {
-							player.playSound(player.getLocation(), Sound.ORB_PICKUP, 0.5F, 0.0F);	
+							player.playSound(player.getLocation(), Sound.ORB_PICKUP, 0.5F, 1.0F);	
 						}
 					}
 				}
@@ -536,18 +536,22 @@ public class MatchManager {
 					}
 					countdown = null;
 					
-					for (Player player : Lobby.LOBBY.getMembers()) {
-						player.playSound(player.getLocation(), Sound.ORB_PICKUP, 1.0F, 2.0F);	
-					}
-					
 					String status = ready();
 					if(status.equalsIgnoreCase(Translator.getString("READY"))) {
+						for (Player player : Lobby.LOBBY.getMembers()) {
+							player.playSound(player.getLocation(), Sound.ORB_PICKUP, 1.0F, 2.0F);	
+						}
+						
 						// get next arena, but check for forced or voted arena:
 						String selectedArena = plugin.arenaManager.getNextArena(voteManager);
 						
 						//start match
 						gameStart(selectedArena);
 					} else {
+						for (Player player : Lobby.LOBBY.getMembers()) {
+							player.playSound(player.getLocation(), Sound.ORB_PICKUP, 1.0F, 0.0F);	
+						}
+						
 						plugin.feeder.status(status);
 					}
 					

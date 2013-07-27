@@ -170,7 +170,7 @@ public class Newsfeeder {
 	public void death(Player target, Match match) {
 		Map<String, String> vars = new HashMap<String, String>();
 		vars.put("plugin", pluginName);
-		vars.put("target_color", Lobby.getTeam(match.getTeamName(target)).color().toString());
+		vars.put("target_color", match.getTeamLobby(target).color().toString());
 		vars.put("target", target.getName());
 		for(Player player : Lobby.LOBBY.getMembers()) {
 			if(!Lobby.toggledFeed(player)) player.sendMessage(Translator.getString("PLAYER_DIED", vars));
@@ -180,7 +180,7 @@ public class Newsfeeder {
 	public void afkLeave(Player target, Match match) {
 		Map<String, String> vars = new HashMap<String, String>();
 		vars.put("plugin", pluginName);
-		vars.put("player_color", Lobby.getTeam(match.getTeamName(target)).color().toString());
+		vars.put("player_color", match.getTeamLobby(target).color().toString());
 		vars.put("player", target.getName());
 		for(Player player : Lobby.LOBBY.getMembers()) {
 			if(!Lobby.toggledFeed(player)) player.sendMessage(Translator.getString("PLAYER_AFK", vars));

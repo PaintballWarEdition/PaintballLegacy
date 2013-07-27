@@ -89,12 +89,12 @@ public enum Lobby {
 	}
 	//STATIC
 	//GETTER
-	public synchronized static Lobby getTeam(String team) {
+	/*public synchronized static Lobby getTeam(String team) {
 		for (Lobby t : Lobby.values()) {
 			if (t.getName().equalsIgnoreCase(team)) return t;
 		}
 		return null;
-	}
+	}*/
 	public synchronized static Lobby getTeam(Player player) {
 		for (Lobby team : Lobby.values()) {
 			if (team.isMember(player) && team != Lobby.LOBBY) return team;

@@ -26,8 +26,8 @@ public class FragInformations {
 		this.target = target;
 		this.origin = origin;
 		
-		this.killerColor = killerColor != null ? killerColor : ChatColor.WHITE;
-		this.targetColor = targetColor != null ? targetColor : ChatColor.WHITE;
+		setKillerColor(killerColor);
+		setTargetColor(targetColor);
 	}
 	
 	// GETTERS
@@ -72,11 +72,11 @@ public class FragInformations {
 	// SETTERS
 	
 	public void setKillerColor(ChatColor killerColor) {
-		this.killerColor = killerColor;
+		this.killerColor = killerColor != null ? killerColor : ChatColor.WHITE;
 	}
 	
 	public void setTargetColor(ChatColor targetColor) {
-		this.targetColor = targetColor;
+		this.targetColor = targetColor != null ? targetColor : ChatColor.WHITE;
 	}
 	
 	public void setPreKiller(String preKiller) {

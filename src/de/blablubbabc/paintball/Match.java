@@ -11,6 +11,7 @@ import java.util.Random;
 import java.util.Set;
 
 import org.bukkit.Bukkit;
+import org.bukkit.Color;
 import org.bukkit.DyeColor;
 import org.bukkit.Location;
 import org.bukkit.Material;
@@ -77,8 +78,8 @@ public class Match {
 
 	public List<Player> winners = new ArrayList<Player>();
 	public List<Player> loosers = new ArrayList<Player>();
-	public String win = "";
-	public String loose = "";
+	public Lobby win = null;
+	public Lobby loose = null;
 
 	public Match(final Paintball plugin, Set<Player> red, Set<Player> blue, Set<Player> spec,
 			Set<Player> random, String arena) {
@@ -296,7 +297,7 @@ public class Match {
 					gameEnd(true, null, null, null, null);
 				} else {
 					Player p = winnerTeam.iterator().next();
-					gameEnd(false, winnerTeam, getEnemyTeam(p), getTeamName(p), getEnemyTeamName(p));
+					gameEnd(false, winnerTeam, getEnemyTeam(p), getTeamLobby(p), getEnemyTeamLobby(p));
 				}
 			}
 		});
@@ -339,18 +340,12 @@ public class Match {
 		PlayerDataStore.clearPlayer(player, false, false);
 		// INVENTORY
 
-		player.getInventory().setHelmet(
-				Utils.setLeatherArmorColor(new ItemStack(Material.LEATHER_HELMET, 1),
-						Lobby.getTeam(getTeamName(player)).colorA()));
-		player.getInventory().setChestplate(
-				Utils.setLeatherArmorColor(new ItemStack(Material.LEATHER_CHESTPLATE, 1),
-						Lobby.getTeam(getTeamName(player)).colorA()));
-		player.getInventory().setLeggings(
-				Utils.setLeatherArmorColor(new ItemStack(Material.LEATHER_LEGGINGS, 1),
-						Lobby.getTeam(getTeamName(player)).colorA()));
-		player.getInventory().setBoots(
-				Utils.setLeatherArmorColor(new ItemStack(Material.LEATHER_BOOTS, 1),
-						Lobby.getTeam(getTeamName(player)).colorA()));
+		Color color = getTeamLobby(player).colorA();
+		
+		player.getInventory().setHelmet(Utils.setLeatherArmorColor(new ItemStack(Material.LEATHER_HELMET, 1), color));
+		player.getInventory().setChestplate(Utils.setLeatherArmorColor(new ItemStack(Material.LEATHER_CHESTPLATE, 1), color));
+		player.getInventory().setLeggings(Utils.setLeatherArmorColor(new ItemStack(Material.LEATHER_LEGGINGS, 1),color));
+		player.getInventory().setBoots(Utils.setLeatherArmorColor(new ItemStack(Material.LEATHER_BOOTS, 1), color));
 		
 		// SHOP ITEM
 		if (plugin.shop) player.getInventory().setItem(7, plugin.shopManager.item.clone());
@@ -403,8 +398,8 @@ public class Match {
 		
 		// MESSAGE
 		Map<String, String> vars = new HashMap<String, String>();
-		vars.put("team_color", Lobby.getTeam(getTeamName(player)).color().toString());
-		vars.put("team", getTeamName(player));
+		vars.put("team_color", getTeamLobby(player).color().toString());
+		vars.put("team", getTeamLobby(player).getName());
 		player.sendMessage(Translator.getString("BE_IN_TEAM", vars));
 		// SPAWN PROTECTION
 		if (plugin.protectionTime > 0) {
@@ -658,7 +653,23 @@ public class Match {
 		return false;
 	}
 
-	public String getTeamName(Player player) {
+	public Lobby getTeamLobby(Player player) {
+		if (redT.contains(player))
+			return Lobby.RED;
+		if (blueT.contains(player))
+			return Lobby.BLUE;
+		return null;
+	}
+	
+	public Lobby getEnemyTeamLobby(Player player) {
+		if (redT.contains(player))
+			return Lobby.BLUE;
+		if (blueT.contains(player))
+			return Lobby.RED;
+		return null;
+	}
+	
+	/*public String getTeamName(Player player) {
 		if (redT.contains(player))
 			return Lobby.RED.getName();
 		if (blueT.contains(player))
@@ -672,7 +683,7 @@ public class Match {
 		if (blueT.contains(player))
 			return Lobby.RED.getName();
 		return null;
-	}
+	}*/
 
 	public boolean isSpec(Player player) {
 		if (spec.contains(player))
@@ -794,8 +805,7 @@ public class Match {
 			if (matchOver)
 				return;
 			if (survivors(getTeam(player)) == 0) {
-				gameEnd(false, getEnemyTeam(player), getTeam(player), getEnemyTeamName(player),
-						getTeamName(player));
+				gameEnd(false, getEnemyTeam(player), getTeam(player), getEnemyTeamLobby(player), getTeamLobby(player));
 			}
 		} else if (spec.contains(player))
 			spec.remove(player);
@@ -1008,14 +1018,14 @@ public class Match {
 
 		// survivors?->endGame
 		if (survivors(getTeam(target)) == 0) {
-			gameEnd(false, getTeam(killer), getTeam(target), getTeamName(killer),
-					getTeamName(target));
+			gameEnd(false, getTeam(killer), getTeam(target), getTeamLobby(killer),
+					getTeamLobby(target));
 		}
 
 	}
 	
 	private void feed(Player target, Player killer, Match match, Origin origin) {
-		FragInformations fragInfo = new FragInformations(killer, target, origin,  Lobby.getTeam(match.getTeamName(killer)).color(), Lobby.getTeam(match.getTeamName(target)).color());
+		FragInformations fragInfo = new FragInformations(killer, target, origin, match.getTeamLobby(killer).color(), match.getTeamLobby(target).color());
 		
 		if (match.setting_respawns != -1 && match.setting_respawns != 0) {
 			KeyValuePair livesPair = new KeyValuePair("lives", String.valueOf(match.setting_respawns + 1));
@@ -1106,12 +1116,12 @@ public class Match {
 
 		// survivors?->endGame
 		if (survivors(getTeam(target)) == 0) {
-			gameEnd(false, getEnemyTeam(target), getTeam(target), getEnemyTeamName(target),
-					getTeamName(target));
+			gameEnd(false, getEnemyTeam(target), getTeam(target), getEnemyTeamLobby(target),
+					getTeamLobby(target));
 		}
 	}
 
-	private synchronized void gameEnd(final boolean draw, Set<Player> winnerS, Set<Player> looserS, String winS, String looseS) {
+	private synchronized void gameEnd(final boolean draw, Set<Player> winnerS, Set<Player> looserS, Lobby winTeam,Lobby looseTeam) {
 		matchOver = true;
 		endTimers();
 		undoAllColors();
@@ -1125,8 +1135,8 @@ public class Match {
 			for (Player p : looserS) {
 				this.loosers.add(p);
 			}
-			this.win = winS;
-			this.loose = looseS;
+			this.win = winTeam;
+			this.loose = looseTeam;
 		}
 		final Match this2 = this;
 		plugin.getServer().getScheduler().scheduleSyncDelayedTask(plugin, new Runnable() {
