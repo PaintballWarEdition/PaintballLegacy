@@ -39,29 +39,27 @@ public class NoGravityHandler {
 			
 			@Override
 			public void run() {
-				if(!entities.isEmpty()) {
-					Iterator<Entry<Entity, NoGravityState>> iterator = entities.entrySet().iterator();
-					while (iterator.hasNext()) {
-						Entry<Entity, NoGravityState> entry = iterator.next();
-						Entity entity = entry.getKey();
-						NoGravityState state = entry.getValue();
-						int duration = state.getDuration();
-						
-						if (!entity.isValid() || duration <= 0) {
-							iterator.remove();
-							// stop task if no longer needed:
-							if (entities.isEmpty()) {
-								Paintball.instance.getServer().getScheduler().cancelTask(taskID);
-								taskID = -1;
-							}
-						} else {
-							entity.setVelocity(state.getVelocity());
-							state.setDuration(--duration);
+				Iterator<Entry<Entity, NoGravityState>> iterator = entities.entrySet().iterator();
+				while (iterator.hasNext()) {
+					Entry<Entity, NoGravityState> entry = iterator.next();
+					Entity entity = entry.getKey();
+					NoGravityState state = entry.getValue();
+					int duration = state.getDuration();
+					
+					if (!entity.isValid() || duration <= 0) {
+						iterator.remove();
+						// stop task if no longer needed:
+						if (entities.isEmpty()) {
+							Paintball.instance.getServer().getScheduler().cancelTask(taskID);
+							taskID = -1;
 						}
+					} else {
+						entity.setVelocity(state.getVelocity());
+						state.setDuration(--duration);
 					}
 				}
 			}
-		}, 20L, 1L).getTaskId();
+		}, 0L, 1L).getTaskId();
 	}
 	
 	private class NoGravityState {

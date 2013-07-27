@@ -1,5 +1,6 @@
 1.2.0
 * drops: everything or everything besides snowballs, + config amount of snowballs
+* checkout if chests can be accessed in matches, and if that is a problem
 
 afterwards:
 * making some weapons configurable
