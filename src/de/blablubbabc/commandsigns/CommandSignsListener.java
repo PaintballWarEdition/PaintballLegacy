@@ -31,27 +31,25 @@ public class CommandSignsListener implements Listener {
 				Sign sign = (Sign) state;
 				String line1 = ChatColor.stripColor(sign.getLine(0));
 				if (line1.equalsIgnoreCase(plugin.commandSignIdentifier)) {
-					for (int i = 1; i < 4; i++) {
-						String command = ChatColor.stripColor(sign.getLine(i));
-						if (!command.isEmpty()) {
-							if (command.startsWith("/")) command = command.substring(1);
-							event.setCancelled(true);
-							Player player = event.getPlayer();
-							
-							// pb shop sign and normal shop disabled:
-							if (command.startsWith("pb shop") && !plugin.shop && plugin.commandSignIgnoreShopDisabled) {
-								String[] argsCmd = command.split(" ");
-								String[] args = new String[argsCmd.length - 1];
-								for (int j = 1; i < argsCmd.length; i++) {
-									args[j - 1] = argsCmd[j];
-								}
-								// run shop command and ignore shop inactive:
-								plugin.commandManager.cmdShop.command(player, args, true);
-							} else {
-								// perform command like normal:
-								player.performCommand(command);
+					String command = ChatColor.stripColor(sign.getLine(1) + sign.getLine(2) + sign.getLine(3));
+					if (!command.isEmpty()) {
+						event.setCancelled(true);
+						Player player = event.getPlayer();
+						
+						if (command.startsWith("/")) command = command.substring(1);
+						
+						// pb shop sign and normal shop disabled:
+						if (command.startsWith("pb shop") && !plugin.shop && plugin.commandSignIgnoreShopDisabled) {
+							String[] argsCmd = command.split(" ");
+							String[] args = new String[argsCmd.length - 1];
+							for (int j = 1; j < argsCmd.length; j++) {
+								args[j - 1] = argsCmd[j];
 							}
-							break;
+							// run shop command and ignore shop inactive:
+							plugin.commandManager.cmdShop.command(player, args, true);
+						} else {
+							// perform command like normal:
+							player.performCommand(command);
 						}
 					}
 				}
