@@ -75,7 +75,7 @@ public class EventListener implements Listener {
 
 	// /////////////////////////////////////////
 	// EVENTS
-
+	
 	@EventHandler(priority = EventPriority.NORMAL, ignoreCancelled = true)
 	public void onSignCreate(SignChangeEvent event) {
 		Player player = event.getPlayer();
