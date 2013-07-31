@@ -91,10 +91,10 @@ public class Utils {
 		return eyeLocation.add(new Vector(-viewDirection.getZ(), 0.0, viewDirection.getX()).normalize().multiply(0.2));
 	}
 	
-	public static Integer getNumber(String s) {
+	public static Integer getNumber(String string) {
 		try {
-			return Integer.parseInt(s);
-		} catch(Exception e) {
+			return Integer.parseInt(string);
+		} catch(NumberFormatException e) {
 			return null;
 		}
 	}
