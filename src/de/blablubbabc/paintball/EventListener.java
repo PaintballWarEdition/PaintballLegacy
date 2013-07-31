@@ -257,11 +257,13 @@ public class EventListener implements Listener {
 											}
 										}
 									} else if (plugin.allowMelee && event.getCause() == DamageCause.ENTITY_ATTACK) {
-										if (target.getHealth() > plugin.meleeDamage) {
-											target.setHealth(target.getHealth() - plugin.meleeDamage);
-											Sounds.playMeleeHit(attacker, target);
-										} else {
-											matchA.frag(target, attacker, meleeOrigin);
+										if (matchA.enemys(target, attacker)) {
+											if (target.getHealth() > plugin.meleeDamage) {
+												target.setHealth(target.getHealth() - plugin.meleeDamage);
+												Sounds.playMeleeHit(attacker, target);
+											} else {
+												matchA.frag(target, attacker, meleeOrigin);
+											}
 										}
 									}
 								}
