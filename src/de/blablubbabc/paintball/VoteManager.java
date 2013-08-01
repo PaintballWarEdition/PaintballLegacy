@@ -19,8 +19,9 @@ public class VoteManager {
 	
 	private boolean isOver = false;
 	
-	// numberOfOptions between 2 and 8 !
+	// numberOfOptions at least 2!
 	public VoteManager(int numberOfOptions, boolean addRandomOption) {
+		if (numberOfOptions < 2) numberOfOptions = 2;
 		// init vote options:
 		List<String> readyArenas = Paintball.instance.arenaManager.getReadyArenas();
 		

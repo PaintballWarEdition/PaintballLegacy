@@ -27,6 +27,8 @@ import org.bukkit.scoreboard.Scoreboard;
 
 import de.blablubbabc.BlaDB.BlaSQLite;
 import de.blablubbabc.commandsigns.CommandSignsListener;
+import de.blablubbabc.paintball.addons.melodies.Instrument;
+import de.blablubbabc.paintball.addons.melodies.Musician;
 import de.blablubbabc.paintball.commands.CommandManager;
 import de.blablubbabc.paintball.features.InSignsFeature;
 import de.blablubbabc.paintball.features.TagAPIListener;
@@ -36,8 +38,6 @@ import de.blablubbabc.paintball.gadgets.Gift;
 import de.blablubbabc.paintball.gadgets.WeaponManager;
 import de.blablubbabc.paintball.joindelay.JoinWaitRunnable;
 import de.blablubbabc.paintball.joindelay.WaitTimer;
-import de.blablubbabc.paintball.melodies.Instrus;
-import de.blablubbabc.paintball.melodies.Musiker;
 import de.blablubbabc.paintball.shop.ShopManager;
 import de.blablubbabc.paintball.statistics.arena.ArenaSetting;
 import de.blablubbabc.paintball.statistics.arena.ArenaStat;
@@ -83,7 +83,7 @@ public class Paintball extends JavaPlugin{
 	public Newsfeeder feeder;
 	public ArenaManager arenaManager;
 	public Translator translator;
-	public Musiker musik;
+	public Musician musik;
 	public Stats statsManager;
 	public RankManager rankManager;
 	public WeaponManager weaponManager;
@@ -443,8 +443,8 @@ public class Paintball extends JavaPlugin{
 		if(getConfig().get("Paintball.Arena Rotation.Random Rotation") == null)getConfig().set("Paintball.Arena Rotation.Random Rotation", true);
 		// arena voting:
 		if(getConfig().get("Paintball.Arena Rotation.Arena Voting.enabled") == null)getConfig().set("Paintball.Arena Rotation.Arena Voting.enabled", true);
-		// between 2 and 8:
-		if(getConfig().get("Paintball.Arena Rotation.Arena Voting.Number of Vote Options (between 2 and 8)") == null)getConfig().set("Paintball.Arena Rotation.Arena Voting.Number of Vote Options (between 2 and 8)", 4);
+		// at least 2:
+		if(getConfig().get("Paintball.Arena Rotation.Arena Voting.Number of Vote Options (at least 2)") == null)getConfig().set("Paintball.Arena Rotation.Arena Voting.Number of Vote Options (at least 2)", 4);
 		if(getConfig().get("Paintball.Arena Rotation.Arena Voting.Random Arena Option") == null)getConfig().set("Paintball.Arena Rotation.Arena Voting.Random Arena Option", true);
 		if(getConfig().get("Paintball.Arena Rotation.Arena Voting.Broadcast Options again at Countdown Time") == null)getConfig().set("Paintball.Arena Rotation.Arena Voting.Broadcast Options again at Countdown Time", 15);
 		if(getConfig().get("Paintball.Arena Rotation.Arena Voting.End Voting at Countdown Time") == null)getConfig().set("Paintball.Arena Rotation.Arena Voting.End Voting at Countdown Time", 5);
@@ -737,8 +737,8 @@ public class Paintball extends JavaPlugin{
 		arenaRotationRandom = getConfig().getBoolean("Paintball.Arena Rotation.Random Rotation", true);
 		// arena voting:
 		arenaVoting = getConfig().getBoolean("Paintball.Arena Rotation.Arena Voting.enabled", true);
-		// between 2 and 8:
-		arenaVotingOptions = getConfig().getInt("Paintball.Arena Rotation.Arena Voting.Number of Vote Options (between 2 and 8)", 4);
+		// at least 2:
+		arenaVotingOptions = Math.max(2, getConfig().getInt("Paintball.Arena Rotation.Arena Voting.Number of Vote Options (at least 2)", 4));
 		arenaVotingRandomOption = getConfig().getBoolean("Paintball.Arena Rotation.Arena Voting.Random Arena Option", true);
 		arenaVotingBroadcastOptionsAtCountdownTime = getConfig().getInt("Paintball.Arena Rotation.Arena Voting.Broadcast Options again at Countdown Time", 15);
 		arenaVotingEndAtCountdownTime = getConfig().getInt("Paintball.Arena Rotation.Arena Voting.End Voting at Countdown Time", 5);
@@ -947,7 +947,7 @@ public class Paintball extends JavaPlugin{
 			return;
 		}
 		//MELODIES
-		musik = new Musiker(this, melodyWin, winNbs, melodyDefeat, defeatNbs, melodyDraw, drawNbs);
+		musik = new Musician(this, melodyWin, winNbs, melodyDefeat, defeatNbs, melodyDraw, drawNbs);
 		if(!musik.success) {
 			Log.severe("Couldn't find/load the default melodies. Disables now..", true);
 			getServer().getPluginManager().disablePlugin(this);
@@ -961,7 +961,7 @@ public class Paintball extends JavaPlugin{
 		Sounds.init();
 
 		// init enums:
-		Instrus.values();
+		Instrument.values();
 		Lobby.values();
 		ArenaStat.values();
 		ArenaSetting.values();
@@ -1046,14 +1046,14 @@ public class Paintball extends JavaPlugin{
 				public int getValue() {
 					try {
 						//get max:
-						int max = Lobby.LOBBY.maxNumber();
+						int max = Lobby.maxPlayersInLobby();
 						//reset max:
-						Lobby.resetMaxPlayers();
+						Lobby.resetMaxPlayersInLobby();
 						return max;
 					} catch (Exception e) {
 						// Failed to get the value :(
 						//reset max:
-						Lobby.resetMaxPlayers();
+						Lobby.resetMaxPlayersInLobby();
 						return 0;
 					}
 				}
@@ -1078,7 +1078,7 @@ public class Paintball extends JavaPlugin{
 
 			metrics.start();
 		} catch (IOException e) {
-			Lobby.resetMaxPlayers();
+			Lobby.resetMaxPlayersInLobby();
 			// Failed to submit the stats :-(
 		}
 

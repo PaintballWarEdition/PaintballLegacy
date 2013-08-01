@@ -18,8 +18,18 @@ public enum Lobby {
 	SPECTATE	("spectator", Color.YELLOW, ChatColor.YELLOW),
 	LOBBY		("lobby", Color.WHITE, ChatColor.WHITE);
 	
+	// for statistics:
+	private static int maxPlayersInLobby = 0;
+	
+	public static int maxPlayersInLobby() {
+		return maxPlayersInLobby;
+	}
+	
+	public synchronized static void resetMaxPlayersInLobby() {
+		maxPlayersInLobby = Lobby.LOBBY.players.size();
+	}
+	
 	private Map<Player, Boolean> players;	//members of a team: true: playing, false: waiting; Lobby: true/false toggle messages
-	private int maxPlayers;
 	private String name;
 	private ChatColor color;
 	//private int colorA;
@@ -30,7 +40,6 @@ public enum Lobby {
 		this.color = color;
 		this.colorA = colorA;
 		this.players = new HashMap<Player, Boolean>();
-		this.maxPlayers = 0;
 	}
 	//METHODS
 	//SETTER
@@ -38,7 +47,9 @@ public enum Lobby {
 		if (!players.containsKey(player)) {
 			players.put(player, false);
 			//max Players since last metrics submit-try
-			if (players.size() > maxPlayers) maxPlayers = players.size();
+			if (this == Lobby.LOBBY) {
+				if (players.size() > maxPlayersInLobby) maxPlayersInLobby = players.size();
+			}
 		}
 	}
 	public synchronized void removeMember(Player player) {
@@ -58,6 +69,7 @@ public enum Lobby {
 	public synchronized boolean isMember(Player player) {
 		return players.containsKey(player);
 	}
+	
 	public synchronized int numberInGame() {
 		int number = 0;
 		for (Player player : players.keySet()) {
@@ -65,6 +77,7 @@ public enum Lobby {
 		}
 		return number;
 	}
+	
 	public synchronized int numberWaiting() {
 		int number = 0;
 		for (Player player : players.keySet()) {
@@ -72,18 +85,19 @@ public enum Lobby {
 		}
 		return number;
 	}
+	
 	public synchronized int number() {
 		return players.size();
 	}
-	public int maxNumber() {
-		return maxPlayers;
-	}
+	
 	public String getName() {
 		return name;
 	}
+	
 	public ChatColor color() {
 		return color;
 	}
+	
 	public Color colorA() {
 		return colorA;
 	}
@@ -129,12 +143,6 @@ public enum Lobby {
 	public synchronized static void remove(Player player) {
 		for (Lobby l : Lobby.values()) {
 			l.removeMember(player);
-		}
-	}
-	
-	public synchronized static void resetMaxPlayers() {
-		for (Lobby l : Lobby.values()) {
-			l.maxPlayers = l.players.size();
 		}
 	}
 }

@@ -187,6 +187,8 @@ public class WeaponManager {
 		return ballHandler;
 	}
 	
+	// EVENTS //
+	
 	public void onInteract(PlayerInteractEvent event, Match match) {
 		for (WeaponHandler weaponHandler : weaponHandlers) {
 			weaponHandler.onInteract(event, match);
@@ -222,6 +224,8 @@ public class WeaponManager {
 			weaponHandler.onItemHeld(player, newItem);
 		}
 	}
+	
+	///////////////////////////////////////////////////////////////////////////
 	
 	public void cleanUp(Match match, String playerName) {
 		for (WeaponHandler weaponHandler : weaponHandlers) {

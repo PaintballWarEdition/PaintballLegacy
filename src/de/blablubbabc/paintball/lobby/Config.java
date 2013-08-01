@@ -9,39 +9,37 @@ public class Config {
 	// general:
 	public boolean versioncheck;
 	public boolean noPerms;
+	public boolean debug;
+	public boolean effects;
 	// Language
 	public String local;
 	public String languageFileEncoding;
 	
 	
+	// lobby join checks
+	public boolean checkInventory;
+	public boolean checkGamemode;
+	public boolean checkFlymode;
+	public boolean checkBurning;
+	public boolean checkHealth;
+	public boolean checkFood;
+	public boolean checkEffects;
 	
 	public boolean saveInventory;
-	public boolean onlyRandom;
-	public boolean autoRandom;
+	public int joinDelaySeconds;
 	
-	public boolean otherDamage;
-	public boolean falldamage;
-	public boolean allowMelee;
-	public int meleeDamage;
 	public boolean autoLobby;
+	//public String defaultLobbyName;
 	public boolean autoTeam;
 	public boolean worldMode;
 	public List<String> worldModeWorlds;
+	
 	public boolean afkDetection;
 	public int afkRadius;
 	public int afkRadius2;
 	public int afkMatchAmount;
+	
 	public boolean autoSpecLobby;
-	public boolean effects;
-	public boolean debug;
-
-	// arena voting
-	public boolean arenaVoting;
-	// between 2 and 8:
-	public int arenaVotingOptions;
-	public boolean arenaVotingRandomOption;
-	public int arenaVotingBroadcastOptionsAtCountdownTime;
-	public int arenaVotingEndAtCountdownTime;
 
 	public boolean commandSignEnabled;
 	public String commandSignIdentifier;

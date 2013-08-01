@@ -1,4 +1,4 @@
-package de.blablubbabc.paintball.melodies;
+package de.blablubbabc.paintball.addons.melodies;
 
 import java.io.File;
 import java.io.FileInputStream;
@@ -11,8 +11,7 @@ import org.bukkit.Sound;
 import org.bukkit.entity.Player;
 import org.bukkit.plugin.Plugin;
 
-
-public class Musiker {
+public class Musician {
 	private Plugin plugin;
 	private File path;
 	
@@ -26,7 +25,7 @@ public class Musiker {
 	public Melody defeat;
 	public Melody draw;
 
-	public Musiker(Plugin plugin, String winFile, boolean winNbs, String defeatFile, boolean defeatNbs,
+	public Musician(Plugin plugin, String winFile, boolean winNbs, String defeatFile, boolean defeatNbs,
 			String drawFile, boolean drawNbs) {
 		// init
 		this.plugin = plugin;
@@ -193,7 +192,7 @@ public class Musiker {
 							// delay in ticks (line * 2 ticks):
 							long delay = (line - 1) * 2;
 							// add note to melodie:
-							melody.addTon(new Ton(sound, id, delay));
+							melody.addTon(new Note(sound, id, delay));
 						}
 					}
 				}
@@ -280,7 +279,7 @@ public class Musiker {
 						}
 						// System.out.print(sound.toString() + " / " + key +
 						// " / " + tick);
-						melodie.addTon(new Ton(sound, key,
+						melodie.addTon(new Note(sound, key,
 								(tick * getDelay(tempo))));
 					}
 				}
@@ -317,7 +316,7 @@ public class Musiker {
 
 	private Sound getSound(String s) {
 		try {
-			Instrus i = Instrus.valueOf(s.toUpperCase());
+			Instrument i = Instrument.valueOf(s.toUpperCase());
 			switch (i) {
 			case PI:
 				return Sound.NOTE_PIANO;

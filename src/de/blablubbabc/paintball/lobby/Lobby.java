@@ -10,24 +10,25 @@ public class Lobby {
 	// SETTINGS:
 	// lobby spawns
 	public List<Location> lobbyspawns;
-	// lobby join checks
-	public boolean checkInventory;
-	public boolean checkGamemode;
-	public boolean checkFlymode;
-	public boolean checkBurning;
-	public boolean checkHealth;
-	public boolean checkFood;
-	public boolean checkEffects;
 
-	public int joinDelaySeconds;
-
+	
 	// countdown
 	public int countdown;
 	public int countdownInit;
 	public int countdownStart;
-	// lobby size
+	// when to start searching for a game
 	public int minPlayers;
+	// when to stop players from joining a team
 	public int maxPlayers;
+	// team selection
+	public boolean onlyRandom;
+	public boolean autoRandom;
+	// damage
+	public boolean otherDamage;
+	public boolean falldamage;
+	// melee
+	public boolean allowMelee;
+	public int meleeDamage;
 	// arena rotation
 	public boolean arenaRotationRandom;
 	// whether shop shall be disable through out all games in this lobby
@@ -36,6 +37,14 @@ public class Lobby {
 	// can decide if they want to use this.
 	// public Shop shop;
 
+	// arena voting
+	public boolean arenaVoting;
+	// between 2 and 8:
+	public int arenaVotingOptions;
+	public boolean arenaVotingRandomOption;
+	public int arenaVotingBroadcastOptionsAtCountdownTime;
+	public int arenaVotingEndAtCountdownTime;
+	
 	// command blocking
 	public List<String> allowedCommands;
 	public List<String> blacklistedCommandsRegex;

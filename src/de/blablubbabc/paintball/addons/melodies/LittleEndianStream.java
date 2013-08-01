@@ -1,4 +1,4 @@
-package de.blablubbabc.paintball.melodies;
+package de.blablubbabc.paintball.addons.melodies;
 
 import java.io.DataInputStream;
 import java.io.IOException;

@@ -1,4 +1,4 @@
-package de.blablubbabc.paintball.melodies;
+package de.blablubbabc.paintball.addons.melodies;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -6,23 +6,23 @@ import org.bukkit.entity.Player;
 import org.bukkit.plugin.Plugin;
 
 public class Melody {
-	private ArrayList<Ton> melody;
+	private ArrayList<Note> melody;
 	private long maxDelay;
 	private HashMap<String, Integer> playing;
 	
 	public Melody() {
-		melody = new ArrayList<Ton>();
+		melody = new ArrayList<Note>();
 		playing = new HashMap<String, Integer>();
 		maxDelay = 0;
 	}
 	
-	public synchronized void addTon(Ton ton) {
+	public synchronized void addTon(Note ton) {
 		melody.add(ton);
 		if(ton.getDelay() > maxDelay) maxDelay = ton.getDelay();
 	}
 	
 	public synchronized void printNotes() {
-		for(Ton t : melody) {
+		for(Note t : melody) {
 			System.out.println(t.toString());
 		}
 	}
@@ -41,7 +41,7 @@ public class Melody {
 					stop(plugin, p);
 					return;
 				}
-				for(Ton ton : melody) {
+				for(Note ton : melody) {
 					if(delay == ton.getDelay()) ton.play(p);
 				}
 				delay += 2;
