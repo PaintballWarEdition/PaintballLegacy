@@ -32,7 +32,7 @@ import de.blablubbabc.paintball.utils.Utils;
 public class MarkerHandler extends WeaponHandler {
 	
 	public MarkerHandler(int customItemTypeID, boolean useDefaultType) {
-		super(customItemTypeID, useDefaultType, new Origin() {
+		super("Marker", customItemTypeID, useDefaultType, new Origin() {
 			
 			@Override
 			public String getKillMessage(FragInformations fragInfo) {

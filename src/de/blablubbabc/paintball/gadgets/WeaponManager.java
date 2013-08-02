@@ -1,7 +1,8 @@
 package de.blablubbabc.paintball.gadgets;
 
-import java.util.ArrayList;
-import java.util.List;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.Map.Entry;
 
 import org.bukkit.DyeColor;
 import org.bukkit.Material;
@@ -34,7 +35,7 @@ import de.blablubbabc.paintball.gadgets.handlers.TurretHandler;
 import de.blablubbabc.paintball.utils.Translator;
 
 public class WeaponManager {
-	private List<WeaponHandler> weaponHandlers = new ArrayList<WeaponHandler>();
+	private Map<String, WeaponHandler> weaponHandlers = new HashMap<String, WeaponHandler>();
 	
 	private GiftHandler giftHandler;
 	private NoGravityHandler noGravityHandler;
@@ -138,12 +139,24 @@ public class WeaponManager {
 	
 	//////////////////////////////////////////////
 	
+	public void giveWeapon(Player player, String weaponName) {
+		giveWeapon(player, weaponName, 1);
+	}
+	
 	public void giveWeapon(Player player, WeaponHandler weapon) {
 		giveWeapon(player, weapon, 1);
 	}
 	
+	public void giveWeapon(Player player, String weaponName, int amount) {
+		giveWeapon(player, getWeaponHandler(weaponName), amount);
+	}
+	
 	public void giveWeapon(Player player, WeaponHandler weapon, int amount) {
 		giveWeapon(player, weapon, amount, false);
+	}
+	
+	public void giveWeapon(Player player, String weaponName, int amount, boolean updateInventory) {
+		giveWeapon(player, getWeaponHandler(weaponName), amount, updateInventory);
 	}
 	
 	@SuppressWarnings("deprecation")
@@ -165,14 +178,25 @@ public class WeaponManager {
 		}
 	}
 	
-	public List<WeaponHandler> getRegisteredWeaponHandlers() {
-		return weaponHandlers;
-	}
+	/*public Collection<WeaponHandler> getRegisteredWeaponHandlers() {
+		return weaponHandlers.values();
+	}*/
 	
 	//////////////////////////////////////////////
 	
-	public void registerWeaponHandler(WeaponHandler weaponHandler) {
-		if (!weaponHandlers.contains(weaponHandler)) weaponHandlers.add(weaponHandler);
+	public WeaponHandler getWeaponHandler(String weaponName) {
+		if (weaponName == null || weaponName.isEmpty()) return null;
+		for (Entry<String, WeaponHandler> entry : weaponHandlers.entrySet()) {
+			if (entry.getKey().equalsIgnoreCase(weaponName)) return entry.getValue();
+		}
+		return null;
+	}
+	
+	public void registerWeaponHandler(String weaponName, WeaponHandler weaponHandler) {
+		if (weaponName == null || weaponName.isEmpty() || weaponHandler == null) throw new IllegalArgumentException();
+		weaponName = weaponName.toLowerCase();
+		if (weaponHandlers.containsKey(weaponName)) throw new IllegalArgumentException("Weapon with name '" + weaponName + "' is already registered!");
+		weaponHandlers.put(weaponName, weaponHandler);
 	}
 	
 	public GiftHandler getGiftManager() {
@@ -190,37 +214,37 @@ public class WeaponManager {
 	// EVENTS //
 	
 	public void onInteract(PlayerInteractEvent event, Match match) {
-		for (WeaponHandler weaponHandler : weaponHandlers) {
+		for (WeaponHandler weaponHandler : weaponHandlers.values()) {
 			weaponHandler.onInteract(event, match);
 		}
 	}
 	
 	public void onBlockPlace(BlockPlaceEvent event, Match match) {
-		for (WeaponHandler weaponHandler : weaponHandlers) {
+		for (WeaponHandler weaponHandler : weaponHandlers.values()) {
 			weaponHandler.onBlockPlace(event, match);
 		}
 	}
 	
 	public void onItemPickup(PlayerPickupItemEvent event) {
-		for (WeaponHandler weaponHandler : weaponHandlers) {
+		for (WeaponHandler weaponHandler : weaponHandlers.values()) {
 			weaponHandler.onItemPickup(event);
 		}
 	}
 	
 	public void onDamagedByEntity(EntityDamageByEntityEvent event, Match match, Player attacker) {
-		for (WeaponHandler weaponHandler : weaponHandlers) {
+		for (WeaponHandler weaponHandler : weaponHandlers.values()) {
 			weaponHandler.onDamagedByEntity(event, match, attacker);
 		}
 	}
 	
 	public void onProjectileHit(ProjectileHitEvent event, Projectile projectile, Match match, Player shooter) {
-		for (WeaponHandler weaponHandler : weaponHandlers) {
+		for (WeaponHandler weaponHandler : weaponHandlers.values()) {
 			weaponHandler.onProjectileHit(event, projectile, match, shooter);
 		}
 	}
 	
 	public void onItemHeld(Player player, ItemStack newItem) {
-		for (WeaponHandler weaponHandler : weaponHandlers) {
+		for (WeaponHandler weaponHandler : weaponHandlers.values()) {
 			weaponHandler.onItemHeld(player, newItem);
 		}
 	}
@@ -228,13 +252,13 @@ public class WeaponManager {
 	///////////////////////////////////////////////////////////////////////////
 	
 	public void cleanUp(Match match, String playerName) {
-		for (WeaponHandler weaponHandler : weaponHandlers) {
+		for (WeaponHandler weaponHandler : weaponHandlers.values()) {
 			weaponHandler.cleanUp(match, playerName);
 		}
 	}
 	
 	public void cleanUp(Match match) {
-		for (WeaponHandler weaponHandler : weaponHandlers) {
+		for (WeaponHandler weaponHandler : weaponHandlers.values()) {
 			weaponHandler.cleanUp(match);
 		}
 	}
@@ -268,7 +292,7 @@ public class WeaponManager {
 		}
 		
 		
-		for (WeaponHandler weaponHandler : weaponHandlers) {
+		for (WeaponHandler weaponHandler : weaponHandlers.values()) {
 			if (weaponHandler.getItemTypeID() == typeID) {
 				return weaponHandler.setItemMeta(itemStack);
 			}

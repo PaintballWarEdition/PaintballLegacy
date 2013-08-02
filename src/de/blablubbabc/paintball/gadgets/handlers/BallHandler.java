@@ -22,7 +22,7 @@ public class BallHandler extends WeaponHandler {
 	private GadgetManager gadgetManager = new GadgetManager();
 	
 	public BallHandler(int customItemTypeID, boolean useDefaultType) {
-		super(customItemTypeID, useDefaultType, null);
+		super("Paintball", customItemTypeID, useDefaultType, null);
 	}
 	
 	public Ball createBall(Match match, Player player, Snowball entity, Origin origin) {

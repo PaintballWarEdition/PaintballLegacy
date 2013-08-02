@@ -38,7 +38,7 @@ public class GrenadeHandler extends WeaponHandler implements Listener {
 	private GadgetManager gadgetManager = new GadgetManager();
 	
 	public GrenadeHandler(int customItemTypeID, boolean useDefaultType) {
-		super(customItemTypeID, useDefaultType, new Origin() {
+		super("Grenade", customItemTypeID, useDefaultType, new Origin() {
 			
 			@Override
 			public String getKillMessage(FragInformations fragInfo) {

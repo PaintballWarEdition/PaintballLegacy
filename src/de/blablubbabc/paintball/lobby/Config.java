@@ -1,6 +1,5 @@
 package de.blablubbabc.paintball.lobby;
 
-import java.util.ArrayList;
 import java.util.List;
 
 import de.blablubbabc.paintball.gadgets.Gift;
@@ -50,24 +49,19 @@ public class Config {
 
 	// vault rewards
 	public boolean vaultRewardsEnabled;
-	public double vaultRewardKill;
-	public double vaultRewardHit;
 	public double vaultRewardWin;
 	public double vaultRewardRound;
+	
+	// points und cash
+	public int pointsPerWin;
+	public int pointsPerRound;
+	public int cashPerWin;
+	public int cashPerRound;
 
 	public boolean teleportFix;
 	public boolean useXPBar;
 	public int protectionTime;
 	public List<String> disabledArenas;
-
-	// gifts
-	public boolean giftsEnabled;
-	public double giftOnSpawnChance;
-	public ArrayList<Gift> gifts;
-	public double giftChanceFactor;
-	public boolean bWishes;
-	public String wishes;
-	public int wishesDelay;
 
 	// player tags
 	public boolean tags;

@@ -40,7 +40,7 @@ public class AirstrikeHandler extends WeaponHandler {
 	private Map<String, List<FinalMark>> finalMarks = new HashMap<String, List<FinalMark>>();
 	
 	public AirstrikeHandler(int customItemTypeID, boolean useDefaultType) {
-		super(customItemTypeID, useDefaultType, new Origin() {
+		super("Airstrike", customItemTypeID, useDefaultType, new Origin() {
 			
 			@Override
 			public String getKillMessage(FragInformations fragInfo) {

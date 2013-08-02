@@ -2,6 +2,8 @@ package de.blablubbabc.paintball.lobby;
 
 import java.util.List;
 
+import de.blablubbabc.paintball.gadgets.Gift;
+
 public class OtherSettings {
 	// WEAPONS and GADGET
 	// Marker
@@ -97,4 +99,13 @@ public class OtherSettings {
 
 	// SHOPS
 	public List<String> shopGoods;
+	
+	// gifts
+	public boolean giftsEnabled;
+	public double giftOnSpawnChance;
+	public List<Gift> gifts;
+	public double giftChanceFactor;
+	public boolean bWishes;
+	public String wishes;
+	public int wishesDelay;
 }

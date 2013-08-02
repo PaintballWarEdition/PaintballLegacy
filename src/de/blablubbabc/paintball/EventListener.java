@@ -554,7 +554,7 @@ public class EventListener implements Listener {
 			String playerName = player.getName();
 			if (Lobby.LOBBY.isMember(player)) {
 				//chat name color:
-				if (plugin.chatNameColor) {
+				if (plugin.chatNameColor ) {
 					if (Lobby.isPlaying(player) || Lobby.isSpectating(player)) {
 						ChatColor color = Lobby.LOBBY.color();
 						Match match = plugin.matchManager.getMatch(player);
@@ -567,10 +567,12 @@ public class EventListener implements Listener {
 							color = Lobby.SPECTATE.color();
 						
 						// change name color via format:
-						String format = event.getFormat();
-						String displayName = ChatColor.stripColor(player.getDisplayName());
-						format = format.replaceFirst(displayName, color + displayName);
-						event.setFormat(format);
+						if (plugin.chatNameColor) {
+							String format = event.getFormat();
+							String displayName = ChatColor.stripColor(player.getDisplayName());
+							format = format.replaceFirst(displayName, color + displayName);
+							event.setFormat(format);
+						}
 					}
 				}
 				
@@ -580,7 +582,7 @@ public class EventListener implements Listener {
 					String prefix = rank.getPrefix();
 					if (prefix != null && !prefix.isEmpty()) {
 						if (plugin.ranksChatPrefixOnlyForPaintballers) {
-							// remove paintballers from resipients:
+							// remove paintballers from recipients:
 							event.getRecipients().removeAll(Lobby.LOBBY.getMembers());
 							// send chat message with prefix to paintballers manually:
 							String messageToSend = prefix + String.format(event.getFormat(), player.getDisplayName(), event.getMessage());

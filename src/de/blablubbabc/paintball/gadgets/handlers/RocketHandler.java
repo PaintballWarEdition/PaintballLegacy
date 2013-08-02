@@ -34,7 +34,7 @@ public class RocketHandler extends WeaponHandler {
 	private GadgetManager gadgetManager = new GadgetManager();
 	
 	public RocketHandler(int customItemTypeID, boolean useDefaultType) {
-		super(customItemTypeID, useDefaultType, new Origin() {
+		super("Rocket Launcher", customItemTypeID, useDefaultType, new Origin() {
 			
 			@Override
 			public String getKillMessage(FragInformations fragInfo) {

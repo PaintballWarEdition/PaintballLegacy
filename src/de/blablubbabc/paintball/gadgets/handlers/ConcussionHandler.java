@@ -38,7 +38,7 @@ public class ConcussionHandler extends WeaponHandler implements Listener {
 	private int next = 0;
 	
 	public ConcussionHandler(int customItemTypeID, boolean useDefaultType) {
-		super(customItemTypeID, useDefaultType, null);
+		super("Concussion", customItemTypeID, useDefaultType, null);
 		Paintball.instance.getServer().getPluginManager().registerEvents(this, Paintball.instance);
 	}
 	

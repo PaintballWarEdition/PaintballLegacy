@@ -40,7 +40,7 @@ public class OrbitalstrikeHandler extends WeaponHandler {
 	private final Vector[] directions = new Vector[36];
 	
 	public OrbitalstrikeHandler(int customItemTypeID, boolean useDefaultType) {
-		super(customItemTypeID, useDefaultType, new Origin() {
+		super("Orbitalstrike", customItemTypeID, useDefaultType, new Origin() {
 			
 			@Override
 			public String getKillMessage(FragInformations fragInfo) {

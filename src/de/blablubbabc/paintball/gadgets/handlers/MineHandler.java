@@ -37,7 +37,7 @@ public class MineHandler extends WeaponHandler implements Listener {
 	private GadgetManager gadgetManager = new GadgetManager();
 	
 	public MineHandler(int customItemTypeID, boolean useDefaultType) {
-		super(customItemTypeID, useDefaultType, new Origin() {
+		super("Mine", customItemTypeID, useDefaultType, new Origin() {
 			
 			@Override
 			public String getKillMessage(FragInformations fragInfo) {

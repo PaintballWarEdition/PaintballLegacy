@@ -14,13 +14,19 @@ import de.blablubbabc.paintball.Origin;
 import de.blablubbabc.paintball.Paintball;
 
 public abstract class WeaponHandler {
+	protected final String weaponName;
 	protected final ItemStack item;
 	protected final Origin origin;
 	
-	public WeaponHandler(int customItemTypeID, boolean useDefaultType, Origin origin) {
-		Paintball.instance.weaponManager.registerWeaponHandler(this);
+	public WeaponHandler(String weaponName, int customItemTypeID, boolean useDefaultType, Origin origin) {
+		this.weaponName = weaponName;
+		Paintball.instance.weaponManager.registerWeaponHandler(weaponName, this);
 		item = setItemMeta(new ItemStack(useDefaultType ? getDefaultItemTypeID() : customItemTypeID));
 		this.origin = origin != null ? origin : new Origin();
+	}
+	
+	public String getWeaponName() {
+		return weaponName;
 	}
 	
 	protected abstract int getDefaultItemTypeID();

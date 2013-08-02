@@ -359,7 +359,7 @@ public class Match {
 		
 		// if marker is not paintball item:
 		if (plugin.weaponManager.getBallHandler().getItemTypeID() != plugin.weaponManager.getMarkerHandler().getItemTypeID()) {
-			plugin.weaponManager.giveWeapon(player, plugin.weaponManager.getMarkerHandler());
+			plugin.weaponManager.giveWeapon(player, plugin.weaponManager.getMarkerHandler(), 1);
 		}
 		
 		if (setting_balls > 0) {

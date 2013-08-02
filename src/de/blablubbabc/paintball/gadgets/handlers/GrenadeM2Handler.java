@@ -35,7 +35,7 @@ public class GrenadeM2Handler extends WeaponHandler implements Listener {
 	private int next = 0;
 	
 	public GrenadeM2Handler(int customItemTypeID, boolean useDefaultType) {
-		super(customItemTypeID, useDefaultType, new Origin() {
+		super("Grenade Mark 2", customItemTypeID, useDefaultType, new Origin() {
 			
 			@Override
 			public String getKillMessage(FragInformations fragInfo) {

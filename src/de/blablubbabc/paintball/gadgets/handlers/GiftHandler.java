@@ -27,7 +27,7 @@ public class GiftHandler extends WeaponHandler {
 	private long time;
 	
 	public GiftHandler(int customItemTypeID, boolean useDefaultType) {
-		super(customItemTypeID, useDefaultType, null);
+		super("Gift", customItemTypeID, useDefaultType, null);
 		time = 1000 * 60 * Paintball.instance.wishesDelay;
 	}
 	

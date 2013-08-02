@@ -45,7 +45,7 @@ public class TurretHandler extends WeaponHandler implements Listener {
 	private Location nextTurretSpawn = null;
 	
 	public TurretHandler(int customItemTypeID, boolean useDefaultType) {
-		super(customItemTypeID, useDefaultType, new Origin() {
+		super("Turret", customItemTypeID, useDefaultType, new Origin() {
 			
 			@Override
 			public String getKillMessage(FragInformations fragInfo) {

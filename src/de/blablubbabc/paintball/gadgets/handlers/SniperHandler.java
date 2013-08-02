@@ -30,7 +30,7 @@ public class SniperHandler extends WeaponHandler {
 	private List<String> zooming = new ArrayList<String>();
 	
 	public SniperHandler(int customItemTypeID, boolean useDefaultType) {
-		super(customItemTypeID, useDefaultType, new Origin() {
+		super("Sniper", customItemTypeID, useDefaultType, new Origin() {
 			
 			@Override
 			public String getKillMessage(FragInformations fragInfo) {

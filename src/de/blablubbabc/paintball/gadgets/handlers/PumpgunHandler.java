@@ -23,7 +23,7 @@ import de.blablubbabc.paintball.utils.Utils;
 public class PumpgunHandler extends WeaponHandler {	
 	
 	public PumpgunHandler(int customItemTypeID, boolean useDefaultType) {
-		super(customItemTypeID, useDefaultType, new Origin() {
+		super("Pumpgun", customItemTypeID, useDefaultType, new Origin() {
 			
 			@Override
 			public String getKillMessage(FragInformations fragInfo) {

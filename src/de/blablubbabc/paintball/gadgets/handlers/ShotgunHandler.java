@@ -25,7 +25,7 @@ public class ShotgunHandler extends WeaponHandler {
 	private int[] angles = new int[5];
 	
 	public ShotgunHandler(int customItemTypeID, boolean useDefaultType) {
-		super(customItemTypeID, useDefaultType, new Origin() {
+		super("Shotgun", customItemTypeID, useDefaultType, new Origin() {
 			
 			@Override
 			public String getKillMessage(FragInformations fragInfo) {

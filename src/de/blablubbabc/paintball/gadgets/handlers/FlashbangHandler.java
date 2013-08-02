@@ -38,7 +38,7 @@ public class FlashbangHandler extends WeaponHandler implements Listener {
 	private int next = 0;
 	
 	public FlashbangHandler(int customItemTypeID, boolean useDefaultType) {
-		super(customItemTypeID, useDefaultType, null);
+		super("Flashbang", customItemTypeID, useDefaultType, null);
 		Paintball.instance.getServer().getPluginManager().registerEvents(this, Paintball.instance);
 	}
 	

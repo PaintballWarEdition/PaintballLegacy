@@ -17,11 +17,13 @@ public class TDMSettings {
 	public int pointsPerHit;
 	public int pointsPerTeamattack;
 	public int pointsPerWin;
-	public int pointsPerRound;
 	public int cashPerKill;
 	public int cashPerHit;
-	public int cashPerWin;
-	public int cashPerRound;
+	// vault rewards
+	public boolean vaultRewardsEnabled;
+	public double vaultRewardKill;
+	public double vaultRewardHit;
+	public double vaultRewardRound;
 
 	// appearance
 	public boolean listnames;
