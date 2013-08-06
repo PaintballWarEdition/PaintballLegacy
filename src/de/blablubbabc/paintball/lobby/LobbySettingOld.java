@@ -2,7 +2,7 @@ package de.blablubbabc.paintball.lobby;
 
 import java.util.Arrays;
 
-public enum LobbySetting {
+public enum LobbySettingOld {
 	CountdownSeconds("Countdown.Seconds", 20),
 	CountdownDelaySeconds("Countdown.DelaySeconds", 10),
 	MaxPlayers("MaxPlayers", 1000),
@@ -42,7 +42,7 @@ public enum LobbySetting {
 	private String path;
 	private Object defaultValue;
 	
-	LobbySetting(String path, Object defaultValue) {
+	LobbySettingOld(String path, Object defaultValue) {
 		this.path = path;
 		this.defaultValue = defaultValue;
 	}

@@ -33,6 +33,7 @@ public class Config {
 	public boolean worldMode;
 	public List<String> worldModeWorlds;
 	
+	// gamemodes have to trigger when to check for afk state or when to mark player as non-afk
 	public boolean afkDetection;
 	public int afkRadius;
 	public int afkRadius2;
@@ -61,9 +62,10 @@ public class Config {
 	public boolean teleportFix;
 	public boolean useXPBar;
 	public int protectionTime;
-	public List<String> disabledArenas;
+	// should be moved into arena ymls
+	//public List<String> disabledArenas;
 
-	// player tags
+	// player tags; defaults -> gamemodes can override these
 	public boolean tags;
 	public boolean tagsColor;
 	public boolean tagsInvis;

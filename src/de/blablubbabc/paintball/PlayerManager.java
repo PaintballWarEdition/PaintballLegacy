@@ -59,6 +59,10 @@ public class PlayerManager {
 	}
 	
 	public PlayerStats getPlayerStats(String playerName) {
+		// if currently loading..
+		if (isPlayerStillLocked(playerName)) {
+			return null;
+		}
 		// check if in cache, if not return temporary retrieved PlayerStats or null, 
 		// if no stats exist for this player:
 		PlayerStats stats = playerStats.get(playerName);
@@ -173,8 +177,9 @@ public class PlayerManager {
 				});
 	}*/
 
-	public boolean exists(String player) {
-		return Paintball.instance.sql.sqlPlayers.isPlayerExisting(player);
+	public boolean exists(String playerName) {
+		if (isPlayerStillLocked(playerName)) return true;
+		return Paintball.instance.sql.sqlPlayers.isPlayerExisting(playerName);
 	}
 
 	// STATS
