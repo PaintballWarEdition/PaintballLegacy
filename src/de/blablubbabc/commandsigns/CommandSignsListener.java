@@ -7,6 +7,7 @@ import org.bukkit.block.Sign;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
+import org.bukkit.event.block.Action;
 import org.bukkit.event.player.PlayerInteractEvent;
 
 import de.blablubbabc.paintball.Paintball;
@@ -31,10 +32,13 @@ public class CommandSignsListener implements Listener {
 				Sign sign = (Sign) state;
 				String line1 = ChatColor.stripColor(sign.getLine(0));
 				if (line1.equalsIgnoreCase(plugin.commandSignIdentifier)) {
+					// allow breaking (do not cancle):
+					Player player = event.getPlayer();
+					if (player.isSneaking() && event.getAction() == Action.LEFT_CLICK_BLOCK && player.hasPermission("paintball.admin")) return;
+					
 					String command = ChatColor.stripColor(sign.getLine(1) + sign.getLine(2) + sign.getLine(3));
 					if (!command.isEmpty()) {
 						event.setCancelled(true);
-						Player player = event.getPlayer();
 						
 						if (command.startsWith("/")) command = command.substring(1);
 						
