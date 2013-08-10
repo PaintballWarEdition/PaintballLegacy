@@ -1,4 +1,4 @@
-package de.blablubbabc.paintball.lobby;
+package de.blablubbabc.paintball.lobby.settings.old;
 
 import java.util.Arrays;
 

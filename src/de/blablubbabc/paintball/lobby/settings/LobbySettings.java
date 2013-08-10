@@ -1,82 +1,91 @@
-package de.blablubbabc.paintball.lobby;
+package de.blablubbabc.paintball.lobby.settings;
 
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.regex.Pattern;
 
+import org.bukkit.Location;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.configuration.file.YamlConfiguration;
 
-import de.blablubbabc.paintball.gadgets.Gift;
+import de.blablubbabc.paintball.shop.Shop;
 
-public class LobbySettingsOld {
+public class LobbySettings {
+
+	// SETTINGS:
+	// countdown seconds
 	public int countdownSeconds;
-	public int countdownDelaySeconds;
+	// delay
+	public int countdownDelay;
+	
+	// when to start searching for a game
+	public int minPlayers;
+	// when to stop players from joining a team
 	public int maxPlayers;
-	public boolean coloredListnames;
-	public boolean coloredChat;
-	public boolean shopEnabled;
-	public String shop;
-	public List<String> allowedCommands;
-	public List<String> blacklistedCommands;
-	public boolean blacklistAdminOverride;
-	public boolean saveInventory;
+	
+	// team selection
 	public boolean onlyRandom;
 	public boolean autoRandom;
+	
+	// command blocking
+	public List<String> allowedCommands;
+	public boolean blacklistEnabled;
+	public boolean blacklistAdminOverride;
+	public List<String> blacklistedCommandsRegex;
+	
+	// arena rotation
+	public boolean matchRotationRandom;
+
+	// match voting
+	public boolean matchVotingEnabled;
+	public int matchVotingNumberOfOptions;
+	public boolean matchVotingRandomOption;
+	public int matchVotingBroadcastOptionsAtCountdownTime;
+	public int matchVotingEndAtCountdownTime;
+
+	// ranks
+	public boolean ranksLobbyArmor;
+	public boolean ranksChatPrefix;
+	public boolean ranksChatPrefixOnlyForPaintballers;
+	public boolean ranksAdminBypassShop;
+
+	// Match related settings:
+	
+	// damage
+	public boolean falldamage;
+	public boolean otherDamage;
+	
+	// melee
+	public boolean allowMelee;
+	public int meleeDamage;
+	
 	public boolean autoSpecLobby;
+	
+	// gamemodes have to trigger when to check for afk state or when to mark
+	// player as non-afk
 	public boolean afkDetectionEnabled;
 	public int afkRadius;
-	public int afkPoints;
-
-	// gifts
-	public boolean giftsEnabled;
-	public List<Gift> gifts; // later inserted
-	public double giftChanceFactor; //generated
-	public boolean wishesEnabled;
-	public String wishesText;
-	public int wishesDelayMinutes;
-
-	// lobby join checks
-	public boolean checkInventory;
-	public boolean checkGamemode;
-	public boolean checkFlymode;
-	public boolean checkBurningFallingDiving;
-	public boolean checkHealth;
-	public boolean checkFoodlevel;
-	public boolean checkEffects;
+	public int afkRadiusSquared;
+	public int afkCounter;
 	
-	@SuppressWarnings("unchecked")
-	public LobbySettingsOld(File file, LobbySettingsOld defSettings) {
-		boolean isDefault = defSettings == null;
+	// whether shop shall be disable through out all games in this lobby
+	public boolean shopEnabled;
+
+	// the by default suggested shop for games in this lobby. Gamemode settings
+	// can decide if they want to use this.
+	public Shop shop;
+
+	public LobbySettings(File file, LobbySettings defSettings) {
+		boolean isDefault = (defSettings == null);
 		
 		YamlConfiguration config = YamlConfiguration.loadConfiguration(file);
 		
 		// INITIALIZE DEFAULT CONFIG:
 		if (isDefault) {
-			for (LobbySettingOld defSetting : LobbySettingOld.values()) {
+			for (LobbySetting defSetting : LobbySetting.values()) {
 				setDefault(config, defSetting);
-			}
-			
-			// gifts
-			if (config.get(LobbySettingOld.Gifts.getPath()) == null) {
-				List<Gift> giftsDef = new ArrayList<Gift>();
-				giftsDef.add(new Gift(332, (short)0, 50, 30.0, "Hope you have luck with these balls!"));
-				giftsDef.add(new Gift(344, (short)0, 2, 15.0, "May these grenades be with you!"));
-				giftsDef.add(new Gift(390, (short)0, 2, 15.0, "I knew you ever wanted to be a sneaky killer!"));
-				giftsDef.add(new Gift(356, (short)0, 2, 15.0, "Heat them with these rocket launchers!"));
-				giftsDef.add(new Gift(280, (short)0, 1, 15.0, "I knew you ever wanted to order a airstrike at least once!"));
-				giftsDef.add(new Gift(54, (short)0, 2, 5.0, "I got some more gifts for you!"));
-				giftsDef.add(new Gift(86, (short)0, 1, 3.0, "They survived the apocalypse? But the will not survive this!"));
-				giftsDef.add(new Gift(0, (short)0, 0, 2.0, "You had no luck this time :("));
-				
-				for(Gift g : giftsDef) {
-					config.set(LobbySettingOld.Gifts.getPath()+"."+giftsDef.indexOf(g)+".message", g.getMessage());
-					config.set(LobbySettingOld.Gifts.getPath()+"."+giftsDef.indexOf(g)+".id", g.getItem(false).getTypeId());
-					config.set(LobbySettingOld.Gifts.getPath()+"."+giftsDef.indexOf(g)+".subid", g.getItem(false).getDurability());
-					config.set(LobbySettingOld.Gifts.getPath()+"."+giftsDef.indexOf(g)+".amount", g.getItem(false).getAmount());
-					config.set(LobbySettingOld.Gifts.getPath()+"."+giftsDef.indexOf(g)+".chance", g.getChance());
-				}
 			}
 			
 			// SAVE CONFIG
@@ -88,7 +97,106 @@ public class LobbySettingsOld {
 			
 		}
 		
-		// READ VALUES
+		// READ SETTINGS
+		
+		// countdown seconds
+		countdownSeconds = Math.max(0, config.getInt(LobbySetting.CountdownSeconds.getPath(), isDefault ? (Integer) LobbySetting.CountdownSeconds.getDefaultValue() : defSettings.countdownSeconds));
+		// delay
+		countdownDelay = Math.max(0, config.getInt(LobbySetting.CountdownSeconds.getPath(), isDefault ? (Integer) LobbySetting.CountdownDelaySeconds.getDefaultValue() : defSettings.countdownDelay));
+		
+		// when to start searching for a game
+		minPlayers = Math.max(1, config.getInt(LobbySetting.MinPlayers.getPath(), isDefault ? (Integer) LobbySetting.MinPlayers.getDefaultValue() : defSettings.minPlayers));
+		// when to stop players from joining a team
+		maxPlayers = Math.max(1, config.getInt(LobbySetting.MaxPlayers.getPath(), isDefault ? (Integer) LobbySetting.MaxPlayers.getDefaultValue() : defSettings.maxPlayers));
+		
+		// team selection
+		onlyRandom = config.getBoolean(LobbySetting.OnlyRandom.getPath(), isDefault ? (Boolean) LobbySetting.OnlyRandom.getDefaultValue() : defSettings.onlyRandom);
+		autoRandom = config.getBoolean(LobbySetting.AutoRandom.getPath(), isDefault ? (Boolean) LobbySetting.AutoRandom.getDefaultValue() : defSettings.autoRandom);
+		
+		// command blocking
+		allowedCommands = (List<String>) config.getList(LobbySetting.AllowedCommands.getPath(), isDefault ? (List<String>) LobbySetting.AllowedCommands.getDefaultValue() : defSettings.allowedCommands);
+		
+		blacklistEnabled = config.getBoolean(LobbySetting.BlacklistEnabled.getPath(), isDefault ? (Boolean) LobbySetting.BlacklistEnabled.getDefaultValue() : defSettings.blacklistEnabled);
+		blacklistAdminOverride = config.getBoolean(LobbySetting.BlacklistAdminOverride.getPath(), isDefault ? (Boolean) LobbySetting.BlacklistAdminOverride.getDefaultValue() : defSettings.blacklistAdminOverride);
+		
+		if (isDefault) {
+			List<String> blacklistedCommands = (List<String>) config.getList(LobbySetting.AllowedCommands.getPath(), (List<String>) LobbySetting.BlacklistedCommands.getDefaultValue());
+			
+			blacklistedCommandsRegex = new ArrayList<String>();
+			for (String black : blacklistedCommands) {
+				String[] split = black.split(" ");
+				if (split.length == 0) continue;
+				String regex = Pattern.quote(split[0]);
+				for (int i = 1; i < split.length; i++) {
+					String s = split[i];
+					if(s.equals("{args}")) {
+						regex += " \\S*";
+					} else if(s.equals("{player}")) {
+						regex += " {player}";
+					} else {
+						regex += Pattern.quote(" "+s);
+					}
+				}
+				blacklistedCommandsRegex.add(regex);
+			}
+		} else {
+			blacklistedCommandsRegex = defSettings.blacklistedCommandsRegex;
+		}
+		
+		// arena rotation
+		matchRotationRandom = config.getBoolean(LobbySetting.MatchRotationRandom.getPath(), isDefault ? (Boolean) LobbySetting.MatchRotationRandom.getDefaultValue() : defSettings.matchRotationRandom);
+
+		// match voting
+		matchVotingEnabled = config.getBoolean(LobbySetting.MatchVotingEnabled.getPath(), isDefault ? (Boolean) LobbySetting.MatchVotingEnabled.getDefaultValue() : defSettings.matchVotingEnabled);
+		matchVotingNumberOfOptions = Math.max(2, config.getInt(LobbySetting.MatchVotingNumberOfOptions.getPath(), isDefault ? (Integer) LobbySetting.MatchVotingNumberOfOptions.getDefaultValue() : defSettings.matchVotingNumberOfOptions));
+		matchVotingRandomOption = config.getBoolean(LobbySetting.MatchVotingRandomOption.getPath(), isDefault ? (Boolean) LobbySetting.MatchVotingRandomOption.getDefaultValue() : defSettings.matchVotingRandomOption);
+		matchVotingBroadcastOptionsAtCountdownTime = config.getInt(LobbySetting.MatchVotingBroadcastTime.getPath(), isDefault ? (Integer) LobbySetting.MatchVotingBroadcastTime.getDefaultValue() : defSettings.matchVotingBroadcastOptionsAtCountdownTime);
+		matchVotingEndAtCountdownTime = config.getInt(LobbySetting.MatchVotingEndVotingTime.getPath(), isDefault ? (Integer) LobbySetting.MatchVotingEndVotingTime.getDefaultValue() : defSettings.matchVotingEndAtCountdownTime);
+
+		// ranks
+		ranksLobbyArmor;
+		ranksChatPrefix;
+		ranksChatPrefixOnlyForPaintballers;
+		ranksAdminBypassShop;
+
+		// Match related settings:
+		
+		// damage
+		falldamage;
+		otherDamage;
+		
+		// melee
+		allowMelee;
+		meleeDamage;
+		
+		autoSpecLobby;
+		
+		// gamemodes have to trigger when to check for afk state or when to mark
+		// player as non-afk
+		afkDetectionEnabled;
+		afkRadius;
+		afkRadiusSquared;
+		afkCounter;
+		
+		// whether shop shall be disable through out all games in this lobby
+		shopEnabled;
+		// the by default suggested shop for games in this lobby. 
+		// Gamemode can decide if they want to use this.
+		shop;
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
 		countdownSeconds = Math.max(0, config.getInt(LobbySettingOld.CountdownSeconds.getPath(), isDefault ? (Integer) LobbySettingOld.CountdownSeconds.getDefaultValue() : defSettings.countdownSeconds));
 		countdownDelaySeconds = Math.max(config.getInt(LobbySettingOld.CountdownDelaySeconds.getPath(), (Integer) LobbySettingOld.CountdownDelaySeconds.getDefaultValue()), 0);
 		maxPlayers = Math.max(config.getInt(LobbySettingOld.MaxPlayers.getPath(), (Integer) LobbySettingOld.MaxPlayers.getDefaultValue()), 2);
@@ -150,30 +258,10 @@ public class LobbySettingsOld {
 	
 	
 	@SuppressWarnings("unchecked")
-	public LobbySettingsOld(File file) {
+	public LobbySettings(File file) {
 		YamlConfiguration config = YamlConfiguration.loadConfiguration(file);
-		for (LobbySettingOld defSetting : LobbySettingOld.values()) {
+		for (LobbySetting defSetting : LobbySetting.values()) {
 			setDefault(config, defSetting);
-		}
-		//GIFTS
-		if (config.get(LobbySettingOld.Gifts.getPath()) == null) {
-			List<Gift> giftsDef = new ArrayList<Gift>();
-			giftsDef.add(new Gift(332, (short)0, 50, 30.0, "Hope you have luck with these balls!"));
-			giftsDef.add(new Gift(344, (short)0, 2, 15.0, "May these grenades be with you!"));
-			giftsDef.add(new Gift(390, (short)0, 2, 15.0, "I knew you ever wanted to be a sneaky killer!"));
-			giftsDef.add(new Gift(356, (short)0, 2, 15.0, "Heat them with these rocket launchers!"));
-			giftsDef.add(new Gift(280, (short)0, 1, 15.0, "I knew you ever wanted to order a airstrike at least once!"));
-			giftsDef.add(new Gift(54, (short)0, 2, 5.0, "I got some more gifts for you!"));
-			giftsDef.add(new Gift(86, (short)0, 1, 3.0, "They survived the apocalypse? But the will not survive this!"));
-			giftsDef.add(new Gift(0, (short)0, 0, 2.0, "You had no luck this time :("));
-			
-			for(Gift g : giftsDef) {
-				config.set(LobbySettingOld.Gifts.getPath()+"."+giftsDef.indexOf(g)+".message", g.getMessage());
-				config.set(LobbySettingOld.Gifts.getPath()+"."+giftsDef.indexOf(g)+".id", g.getItem(false).getTypeId());
-				config.set(LobbySettingOld.Gifts.getPath()+"."+giftsDef.indexOf(g)+".subid", g.getItem(false).getDurability());
-				config.set(LobbySettingOld.Gifts.getPath()+"."+giftsDef.indexOf(g)+".amount", g.getItem(false).getAmount());
-				config.set(LobbySettingOld.Gifts.getPath()+"."+giftsDef.indexOf(g)+".chance", g.getChance());
-			}
 		}
 		
 		try {
@@ -226,6 +314,7 @@ public class LobbySettingsOld {
 		wishesDelayMinutes = Math.max(config.getInt(LobbySettingOld.WishesDelayMinutes.getPath(), (Integer) LobbySettingOld.WishesDelayMinutes.getDefaultValue()), 0);
 
 		// LOBBY JOIN CHECKS
+		saveInventory = getBoolean(config, LobbySettingOld.SaveInventory);
 		saveInventory = config.getBoolean(LobbySettingOld.SaveInventory.getPath(), (Boolean) LobbySettingOld.SaveInventory.getDefaultValue());
 		checkInventory = config.getBoolean(LobbySettingOld.CheckInventory.getPath(), (Boolean) LobbySettingOld.CheckInventory.getDefaultValue());
 		checkGamemode = config.getBoolean(LobbySettingOld.CheckGamemode.getPath(), (Boolean) LobbySettingOld.CheckGamemode.getDefaultValue());
@@ -237,8 +326,10 @@ public class LobbySettingsOld {
 		
 	}
 	
-	private void setDefault(YamlConfiguration config, LobbySettingOld defSetting) {
-		if (config.get(defSetting.getPath()) == null) config.set(defSetting.getPath(), defSetting.getDefaultValue());
+	
+	private void setDefault(YamlConfiguration config, LobbySetting setting) {
+		if (config.get(setting.getPath()) == null) config.set(setting.getPath(), setting.getDefaultValue());
 	}
+	
 	
 }

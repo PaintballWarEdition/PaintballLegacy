@@ -267,8 +267,7 @@ public class Musician {
 						byte inst = scanner.readByte();
 						Sound sound = getSound(inst);
 						if (sound == null) {
-							log("ERROR: Couldn't get a instrument right: "
-									+ inst);
+							log("ERROR: Couldn't get a instrument right: " + inst);
 							return null;
 						}
 						byte key = scanner.readByte();

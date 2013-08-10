@@ -1,7 +1,9 @@
-package de.blablubbabc.paintball.lobby;
+package de.blablubbabc.paintball.lobby.settings.old;
 
 public class TDMSettings {
 
+	// match pre game countdown
+	public int countdownStart;
 	// roundtimer
 	public int roundTimer;
 	// lives and respawns

@@ -1,4 +1,4 @@
-package de.blablubbabc.paintball.lobby;
+package de.blablubbabc.paintball.lobby.settings.old;
 
 import java.util.List;
 
@@ -32,14 +32,6 @@ public class Config {
 	public boolean autoTeam;
 	public boolean worldMode;
 	public List<String> worldModeWorlds;
-	
-	// gamemodes have to trigger when to check for afk state or when to mark player as non-afk
-	public boolean afkDetection;
-	public int afkRadius;
-	public int afkRadius2;
-	public int afkMatchAmount;
-	
-	public boolean autoSpecLobby;
 
 	public boolean commandSignEnabled;
 	public String commandSignIdentifier;
@@ -59,6 +51,7 @@ public class Config {
 	public int cashPerWin;
 	public int cashPerRound;
 
+	// invisible after teleport workaround via hide + delayed unhide
 	public boolean teleportFix;
 	public boolean useXPBar;
 	public int protectionTime;

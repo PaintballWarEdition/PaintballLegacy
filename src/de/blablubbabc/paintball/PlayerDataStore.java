@@ -32,6 +32,7 @@ public class PlayerDataStore {
 	private boolean isFlying;
 	// Status
 	private float walkspeed;
+	private float flyspeed;
 	private float exhaustion;
 	private float saturation;
 	private int foodlevel;
@@ -84,6 +85,7 @@ public class PlayerDataStore {
 		isFlying = player.isFlying();
 		// Status
 		walkspeed = player.getWalkSpeed();
+		flyspeed = player.getFlySpeed();
 		exhaustion = player.getExhaustion();
 		saturation = player.getSaturation();
 		foodlevel = player.getFoodLevel();
@@ -137,6 +139,7 @@ public class PlayerDataStore {
 		player.setFlying(isFlying);
 		// Status
 		player.setWalkSpeed(walkspeed);
+		player.setFlySpeed(flyspeed);
 		player.setExhaustion(exhaustion);
 		player.setSaturation(saturation);
 		player.setFoodLevel(foodlevel);
@@ -184,6 +187,7 @@ public class PlayerDataStore {
 		if (player.getAllowFlight()) player.setAllowFlight(false);
 		if (player.isFlying()) player.setFlying(false);
 		if (player.getWalkSpeed() != 0.2F) player.setWalkSpeed(0.2F);
+		if (player.getFlySpeed() != 0.1F) player.setFlySpeed(0.1F);
 		if (player.getFoodLevel() != 20) player.setFoodLevel(20);
 		if (player.getHealth() != 20) player.setHealth(20);
 		if (player.getFireTicks() != 0) player.setFireTicks(0);

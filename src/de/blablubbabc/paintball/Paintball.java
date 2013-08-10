@@ -133,6 +133,7 @@ public class Paintball extends JavaPlugin{
 	public boolean ranksLobbyArmor;
 	public boolean ranksChatPrefix;
 	public boolean ranksChatPrefixOnlyForPaintballers;
+	//TODO this is currently not set:
 	public boolean ranksAdminBypassShop;
 	
 	public boolean shop;
@@ -979,6 +980,10 @@ public class Paintball extends JavaPlugin{
 		serverList = new Serverlister();
 		// SHOP MANAGER
 		shopManager = new ShopManager(this);
+		//COMMANDS
+		commandManager = new CommandManager(this);
+		CommandExecutor ce = commandManager;
+		getCommand("pb").setExecutor(ce);
 		// COMMAND SIGNS LISTENER
 		commandSignListener = new CommandSignsListener(this);
 		//PLAYERMANAGER
@@ -995,10 +1000,6 @@ public class Paintball extends JavaPlugin{
 		statsManager = new Stats(this);
 		getServer().getPluginManager().registerEvents(listener, this);
 		getServer().getPluginManager().registerEvents(new TeleportFix(this), this);
-		//COMMANDS
-		commandManager = new CommandManager(this);
-		CommandExecutor ce = commandManager;
-		getCommand("pb").setExecutor(ce);
 
 		active = true;
 		happyhour = false;
