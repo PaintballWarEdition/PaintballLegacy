@@ -52,7 +52,7 @@ public enum LobbySetting {
 	private String path;
 	private Object defaultValue;
 	
-	LobbySetting(String path, Object defaultValue) {
+	private LobbySetting(String path, Object defaultValue) {
 		this.path = path;
 		this.defaultValue = defaultValue;
 	}

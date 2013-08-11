@@ -4,6 +4,8 @@ import java.io.File;
 import java.util.HashMap;
 import java.util.Map;
 
+import org.bukkit.configuration.file.YamlConfiguration;
+
 import de.blablubbabc.paintball.FileManager;
 import de.blablubbabc.paintball.lobby.settings.LobbySettings;
 
@@ -18,6 +20,10 @@ public class LobbyManager {
 		
 		// load defaultLobbySettings:
 		defaultLobbySettings = new LobbySettings(getDefaultLobbySettingsFile(), null);
+		
+		// load lobbies and other LobbySettings:
+		YamlConfiguration lobbiesConfig = YamlConfiguration.loadConfiguration(FileManager.getLobbiesFilePath());
+		
 	}
 	
 	public File getDefaultLobbySettingsFile() {
