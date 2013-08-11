@@ -6,8 +6,6 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.regex.Pattern;
 
-import org.bukkit.Location;
-import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.configuration.file.YamlConfiguration;
 
 import de.blablubbabc.paintball.shop.Shop;
@@ -46,8 +44,8 @@ public class LobbySettings {
 	public int matchVotingEndAtCountdownTime;
 
 	// ranks
-	public boolean ranksLobbyArmor;
-	public boolean ranksChatPrefix;
+	public boolean ranksLobbyArmorEnabled;
+	public boolean ranksChatPrefixEnabled;
 	public boolean ranksChatPrefixOnlyForPaintballers;
 	public boolean ranksAdminBypassShop;
 
@@ -76,7 +74,8 @@ public class LobbySettings {
 	// the by default suggested shop for games in this lobby. Gamemode settings
 	// can decide if they want to use this.
 	public Shop shop;
-
+	
+	@SuppressWarnings("unchecked")
 	public LobbySettings(File file, LobbySettings defSettings) {
 		boolean isDefault = (defSettings == null);
 		
@@ -154,176 +153,40 @@ public class LobbySettings {
 		matchVotingEndAtCountdownTime = config.getInt(LobbySetting.MatchVotingEndVotingTime.getPath(), isDefault ? (Integer) LobbySetting.MatchVotingEndVotingTime.getDefaultValue() : defSettings.matchVotingEndAtCountdownTime);
 
 		// ranks
-		ranksLobbyArmor;
-		ranksChatPrefix;
-		ranksChatPrefixOnlyForPaintballers;
-		ranksAdminBypassShop;
+		ranksLobbyArmorEnabled = config.getBoolean(LobbySetting.RanksLobbyArmorEnabled.getPath(), isDefault ? (Boolean) LobbySetting.RanksLobbyArmorEnabled.getDefaultValue() : defSettings.ranksLobbyArmorEnabled);
+		ranksChatPrefixEnabled = config.getBoolean(LobbySetting.RanksChatPrefixEnabled.getPath(), isDefault ? (Boolean) LobbySetting.RanksChatPrefixEnabled.getDefaultValue() : defSettings.ranksChatPrefixEnabled);
+		ranksChatPrefixOnlyForPaintballers = config.getBoolean(LobbySetting.RanksChatPrefixOnlyForPaintballers.getPath(), isDefault ? (Boolean) LobbySetting.RanksChatPrefixOnlyForPaintballers.getDefaultValue() : defSettings.ranksChatPrefixOnlyForPaintballers);
+		ranksAdminBypassShop = config.getBoolean(LobbySetting.RanksAdminBypassShop.getPath(), isDefault ? (Boolean) LobbySetting.RanksAdminBypassShop.getDefaultValue() : defSettings.ranksAdminBypassShop);
 
 		// Match related settings:
 		
 		// damage
-		falldamage;
-		otherDamage;
+		falldamage = config.getBoolean(LobbySetting.FallDamage.getPath(), isDefault ? (Boolean) LobbySetting.FallDamage.getDefaultValue() : defSettings.falldamage);
+		otherDamage = config.getBoolean(LobbySetting.OtherDamage.getPath(), isDefault ? (Boolean) LobbySetting.OtherDamage.getDefaultValue() : defSettings.otherDamage);
 		
 		// melee
-		allowMelee;
-		meleeDamage;
+		allowMelee = config.getBoolean(LobbySetting.AllowMelee.getPath(), isDefault ? (Boolean) LobbySetting.AllowMelee.getDefaultValue() : defSettings.allowMelee);
+		meleeDamage = Math.max(0, config.getInt(LobbySetting.MeleeDamage.getPath(), isDefault ? (Integer) LobbySetting.MeleeDamage.getDefaultValue() : defSettings.meleeDamage));
 		
-		autoSpecLobby;
+		autoSpecLobby = config.getBoolean(LobbySetting.AutoSpecLobby.getPath(), isDefault ? (Boolean) LobbySetting.AutoSpecLobby.getDefaultValue() : defSettings.autoSpecLobby);
 		
 		// gamemodes have to trigger when to check for afk state or when to mark
 		// player as non-afk
-		afkDetectionEnabled;
-		afkRadius;
-		afkRadiusSquared;
-		afkCounter;
+		afkDetectionEnabled = config.getBoolean(LobbySetting.AfkDetectionEnabled.getPath(), isDefault ? (Boolean) LobbySetting.AfkDetectionEnabled.getDefaultValue() : defSettings.afkDetectionEnabled);
+		afkRadius = Math.max(1, config.getInt(LobbySetting.AfkRadius.getPath(), isDefault ? (Integer) LobbySetting.AfkRadius.getDefaultValue() : defSettings.afkRadius));
+		afkRadiusSquared = afkRadius * afkRadius;
+		afkCounter = Math.max(1, config.getInt(LobbySetting.AfkCounter.getPath(), isDefault ? (Integer) LobbySetting.AfkCounter.getDefaultValue() : defSettings.afkCounter));
 		
 		// whether shop shall be disable through out all games in this lobby
-		shopEnabled;
+		shopEnabled = config.getBoolean(LobbySetting.ShopEnabled.getPath(), isDefault ? (Boolean) LobbySetting.ShopEnabled.getDefaultValue() : defSettings.shopEnabled);
 		// the by default suggested shop for games in this lobby. 
 		// Gamemode can decide if they want to use this.
-		shop;
-		
-		
-		
-		
-		
-		
-		
-		
-		
-		
-		
-		
-		
-		
-		countdownSeconds = Math.max(0, config.getInt(LobbySettingOld.CountdownSeconds.getPath(), isDefault ? (Integer) LobbySettingOld.CountdownSeconds.getDefaultValue() : defSettings.countdownSeconds));
-		countdownDelaySeconds = Math.max(config.getInt(LobbySettingOld.CountdownDelaySeconds.getPath(), (Integer) LobbySettingOld.CountdownDelaySeconds.getDefaultValue()), 0);
-		maxPlayers = Math.max(config.getInt(LobbySettingOld.MaxPlayers.getPath(), (Integer) LobbySettingOld.MaxPlayers.getDefaultValue()), 2);
-		coloredListnames = config.getBoolean(LobbySettingOld.ColoredListnames.getPath(), (Boolean) LobbySettingOld.ColoredListnames.getDefaultValue());
-		coloredChat = config.getBoolean(LobbySettingOld.ColoredChat.getPath(), (Boolean) LobbySettingOld.ColoredChat.getDefaultValue());
-		shopEnabled = config.getBoolean(LobbySettingOld.ShopEnabled.getPath(), (Boolean) LobbySettingOld.ShopEnabled.getDefaultValue());
-		// shop
-		shop = config.getString(LobbySettingOld.Shop.getPath(), (String) LobbySettingOld.Shop.getDefaultValue());
-		
-		allowedCommands = (List<String>) config.getList(LobbySettingOld.AllowedCommands.getPath(), (List<String>) LobbySettingOld.AllowedCommands.getDefaultValue());
-		blacklistedCommands = (List<String>) config.getList(LobbySettingOld.BlacklistedCommands.getPath(), (List<String>) LobbySettingOld.BlacklistedCommands.getDefaultValue());
-		blacklistAdminOverride = config.getBoolean(LobbySettingOld.BlacklistAdminOverride.getPath(), (Boolean) LobbySettingOld.BlacklistAdminOverride.getDefaultValue());
-		onlyRandom = config.getBoolean(LobbySettingOld.OnlyRandom.getPath(), (Boolean) LobbySettingOld.OnlyRandom.getDefaultValue());
-		autoRandom = config.getBoolean(LobbySettingOld.AutoRandom.getPath(), (Boolean) LobbySettingOld.AutoRandom.getDefaultValue());
-		autoSpecLobby = config.getBoolean(LobbySettingOld.AutoSpecLobby.getPath(), (Boolean) LobbySettingOld.AutoSpecLobby.getDefaultValue());
-		afkDetectionEnabled = config.getBoolean(LobbySettingOld.AfkDetectionEnabled.getPath(), (Boolean) LobbySettingOld.AfkDetectionEnabled.getDefaultValue());
-		afkRadius = Math.max(config.getInt(LobbySettingOld.AfkRadius.getPath(), (Integer) LobbySettingOld.AfkRadius.getDefaultValue()), 1);
-		afkPoints = Math.max(config.getInt(LobbySettingOld.AfkPoints.getPath(), (Integer) LobbySettingOld.AfkPoints.getDefaultValue()), 1);
-
-		// GIFTS
-		giftsEnabled = config.getBoolean(LobbySettingOld.GiftsEnabled.getPath(), (Boolean) LobbySettingOld.GiftsEnabled.getDefaultValue());
-
-		gifts = new ArrayList<Gift>();
-		
-		ConfigurationSection giftsEntries = config.getConfigurationSection(LobbySettingOld.Gifts.getPath());
-		double allChances = 0;
-		for(String key : giftsEntries.getKeys(false)) {
-			int id = Math.max(giftsEntries.getConfigurationSection(key).getInt("id", 0), 0);
-			int subI = Math.max(giftsEntries.getConfigurationSection(key).getInt("subid", 0), 0);
-			short sub = (subI > Short.MAX_VALUE ? Short.MAX_VALUE : (short) subI);
-			int amount = Math.max(giftsEntries.getConfigurationSection(key).getInt("amount", 0), 0);
-			double chance = Math.min(Math.max(giftsEntries.getConfigurationSection(key).getDouble("chance", 0.0), 0.0),100.0);
-			allChances += chance;
-			String message = giftsEntries.getConfigurationSection(key).getString("message", "Have fun with this!");
-			gifts.add(new Gift(id, sub, amount, chance, message));
+		if (isDefault) {
+			String shopName = config.getString(LobbySetting.ShopName.getPath(), (String) LobbySetting.ShopName.getDefaultValue());
+			//shop = ShopManager.getShopByName(name);
+		} else {
+			shop = defSettings.shop;
 		}
-		giftChanceFactor = (100/allChances);
-		
-		wishesEnabled = config.getBoolean(LobbySettingOld.WishesEnabled.getPath(), (Boolean) LobbySettingOld.WishesEnabled.getDefaultValue());
-		wishesText = config.getString(LobbySettingOld.WishesText.getPath(), (String) LobbySettingOld.WishesText.getDefaultValue());
-		wishesDelayMinutes = Math.max(config.getInt(LobbySettingOld.WishesDelayMinutes.getPath(), (Integer) LobbySettingOld.WishesDelayMinutes.getDefaultValue()), 0);
-
-		// LOBBY JOIN CHECKS
-		saveInventory = config.getBoolean(LobbySettingOld.SaveInventory.getPath(), (Boolean) LobbySettingOld.SaveInventory.getDefaultValue());
-		checkInventory = config.getBoolean(LobbySettingOld.CheckInventory.getPath(), (Boolean) LobbySettingOld.CheckInventory.getDefaultValue());
-		checkGamemode = config.getBoolean(LobbySettingOld.CheckGamemode.getPath(), (Boolean) LobbySettingOld.CheckGamemode.getDefaultValue());
-		checkFlymode = config.getBoolean(LobbySettingOld.CheckFlymode.getPath(), (Boolean) LobbySettingOld.CheckFlymode.getDefaultValue());
-		checkBurningFallingDiving = config.getBoolean(LobbySettingOld.CheckBurningFallingDiving.getPath(), (Boolean) LobbySettingOld.CheckBurningFallingDiving.getDefaultValue());
-		checkHealth = config.getBoolean(LobbySettingOld.CheckHealth.getPath(), (Boolean) LobbySettingOld.CheckHealth.getDefaultValue());
-		checkFoodlevel = config.getBoolean(LobbySettingOld.CheckFoodlevel.getPath(), (Boolean) LobbySettingOld.CheckFoodlevel.getDefaultValue());
-		checkEffects = config.getBoolean(LobbySettingOld.CheckEffects.getPath(), (Boolean) LobbySettingOld.CheckEffects.getDefaultValue());
-		
-	}
-	
-	
-	
-	
-	
-	
-	
-	@SuppressWarnings("unchecked")
-	public LobbySettings(File file) {
-		YamlConfiguration config = YamlConfiguration.loadConfiguration(file);
-		for (LobbySetting defSetting : LobbySetting.values()) {
-			setDefault(config, defSetting);
-		}
-		
-		try {
-			config.save(file);
-		} catch (IOException e) {
-			e.printStackTrace();
-		}
-		
-		//VALUES
-		countdownSeconds = Math.max(config.getInt(LobbySettingOld.CountdownSeconds.getPath(), (Integer) LobbySettingOld.CountdownSeconds.getDefaultValue()), 0);
-		countdownDelaySeconds = Math.max(config.getInt(LobbySettingOld.CountdownDelaySeconds.getPath(), (Integer) LobbySettingOld.CountdownDelaySeconds.getDefaultValue()), 0);
-		maxPlayers = Math.max(config.getInt(LobbySettingOld.MaxPlayers.getPath(), (Integer) LobbySettingOld.MaxPlayers.getDefaultValue()), 2);
-		coloredListnames = config.getBoolean(LobbySettingOld.ColoredListnames.getPath(), (Boolean) LobbySettingOld.ColoredListnames.getDefaultValue());
-		coloredChat = config.getBoolean(LobbySettingOld.ColoredChat.getPath(), (Boolean) LobbySettingOld.ColoredChat.getDefaultValue());
-		shopEnabled = config.getBoolean(LobbySettingOld.ShopEnabled.getPath(), (Boolean) LobbySettingOld.ShopEnabled.getDefaultValue());
-		// SHOP
-		shop = config.getString(LobbySettingOld.Shop.getPath(), (String) LobbySettingOld.Shop.getDefaultValue());
-		
-		allowedCommands = (List<String>) config.getList(LobbySettingOld.AllowedCommands.getPath(), (List<String>) LobbySettingOld.AllowedCommands.getDefaultValue());
-		blacklistedCommands = (List<String>) config.getList(LobbySettingOld.BlacklistedCommands.getPath(), (List<String>) LobbySettingOld.BlacklistedCommands.getDefaultValue());
-		blacklistAdminOverride = config.getBoolean(LobbySettingOld.BlacklistAdminOverride.getPath(), (Boolean) LobbySettingOld.BlacklistAdminOverride.getDefaultValue());
-		onlyRandom = config.getBoolean(LobbySettingOld.OnlyRandom.getPath(), (Boolean) LobbySettingOld.OnlyRandom.getDefaultValue());
-		autoRandom = config.getBoolean(LobbySettingOld.AutoRandom.getPath(), (Boolean) LobbySettingOld.AutoRandom.getDefaultValue());
-		autoSpecLobby = config.getBoolean(LobbySettingOld.AutoSpecLobby.getPath(), (Boolean) LobbySettingOld.AutoSpecLobby.getDefaultValue());
-		afkDetectionEnabled = config.getBoolean(LobbySettingOld.AfkDetectionEnabled.getPath(), (Boolean) LobbySettingOld.AfkDetectionEnabled.getDefaultValue());
-		afkRadius = Math.max(config.getInt(LobbySettingOld.AfkRadius.getPath(), (Integer) LobbySettingOld.AfkRadius.getDefaultValue()), 1);
-		afkPoints = Math.max(config.getInt(LobbySettingOld.AfkPoints.getPath(), (Integer) LobbySettingOld.AfkPoints.getDefaultValue()), 1);
-
-		// GIFTS
-		giftsEnabled = config.getBoolean(LobbySettingOld.GiftsEnabled.getPath(), (Boolean) LobbySettingOld.GiftsEnabled.getDefaultValue());
-
-		gifts = new ArrayList<Gift>();
-		
-		ConfigurationSection giftsEntries = config.getConfigurationSection(LobbySettingOld.Gifts.getPath());
-		double allChances = 0;
-		for(String key : giftsEntries.getKeys(false)) {
-			int id = Math.max(giftsEntries.getConfigurationSection(key).getInt("id", 0), 0);
-			int subI = Math.max(giftsEntries.getConfigurationSection(key).getInt("subid", 0), 0);
-			short sub = (subI > Short.MAX_VALUE ? Short.MAX_VALUE : (short) subI);
-			int amount = Math.max(giftsEntries.getConfigurationSection(key).getInt("amount", 0), 0);
-			double chance = Math.min(Math.max(giftsEntries.getConfigurationSection(key).getDouble("chance", 0.0), 0.0),100.0);
-			allChances += chance;
-			String message = giftsEntries.getConfigurationSection(key).getString("message", "Have fun with this!");
-			gifts.add(new Gift(id, sub, amount, chance, message));
-		}
-		giftChanceFactor = (100/allChances);
-		
-		wishesEnabled = config.getBoolean(LobbySettingOld.WishesEnabled.getPath(), (Boolean) LobbySettingOld.WishesEnabled.getDefaultValue());
-		wishesText = config.getString(LobbySettingOld.WishesText.getPath(), (String) LobbySettingOld.WishesText.getDefaultValue());
-		wishesDelayMinutes = Math.max(config.getInt(LobbySettingOld.WishesDelayMinutes.getPath(), (Integer) LobbySettingOld.WishesDelayMinutes.getDefaultValue()), 0);
-
-		// LOBBY JOIN CHECKS
-		saveInventory = getBoolean(config, LobbySettingOld.SaveInventory);
-		saveInventory = config.getBoolean(LobbySettingOld.SaveInventory.getPath(), (Boolean) LobbySettingOld.SaveInventory.getDefaultValue());
-		checkInventory = config.getBoolean(LobbySettingOld.CheckInventory.getPath(), (Boolean) LobbySettingOld.CheckInventory.getDefaultValue());
-		checkGamemode = config.getBoolean(LobbySettingOld.CheckGamemode.getPath(), (Boolean) LobbySettingOld.CheckGamemode.getDefaultValue());
-		checkFlymode = config.getBoolean(LobbySettingOld.CheckFlymode.getPath(), (Boolean) LobbySettingOld.CheckFlymode.getDefaultValue());
-		checkBurningFallingDiving = config.getBoolean(LobbySettingOld.CheckBurningFallingDiving.getPath(), (Boolean) LobbySettingOld.CheckBurningFallingDiving.getDefaultValue());
-		checkHealth = config.getBoolean(LobbySettingOld.CheckHealth.getPath(), (Boolean) LobbySettingOld.CheckHealth.getDefaultValue());
-		checkFoodlevel = config.getBoolean(LobbySettingOld.CheckFoodlevel.getPath(), (Boolean) LobbySettingOld.CheckFoodlevel.getDefaultValue());
-		checkEffects = config.getBoolean(LobbySettingOld.CheckEffects.getPath(), (Boolean) LobbySettingOld.CheckEffects.getDefaultValue());
-		
 	}
 	
 	

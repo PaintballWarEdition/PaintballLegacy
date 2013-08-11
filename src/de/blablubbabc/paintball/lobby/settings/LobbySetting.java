@@ -30,9 +30,9 @@ public enum LobbySetting {
 	MatchVotingEndVotingTime("Match Rotation.Match Voting.End Voting at Countdown Time", 5),
 	
 	// ranks
-	RanksChatPrefix("Ranks.Chat Prefix.enabled", true),
+	RanksLobbyArmorEnabled("Ranks.Lobby Armor", true),
+	RanksChatPrefixEnabled("Ranks.Chat Prefix.enabled", true),
 	RanksChatPrefixOnlyForPaintballers("Ranks.Chat Prefix.Only visible for Paintballers", true),
-	RanksLobbyArmor("Ranks.Lobby Armor", true),
 	RanksAdminBypassShop("Ranks.Admins Bypass Shop Restrictions", false),
 	
 	// Match related settings:
@@ -47,7 +47,7 @@ public enum LobbySetting {
 	ColoredListnames("Overall Match Settings.ColoredListnames", true),
 	ColoredChat("Overall Match Settings.ColoredChat", true),
 	ShopEnabled("Overall Match Settings.Shop.Enabled", true),
-	Shop("Overall Match Settings.Shop.Shop ID", "default");
+	ShopName("Overall Match Settings.Shop.Shop ID", "default");
 	
 	private String path;
 	private Object defaultValue;
