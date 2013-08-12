@@ -11,5 +11,6 @@ public interface LobbyI {
 	public LobbyState getState();
 	public Set<PPlayerI> getPPlayers();
 	public LobbySettings getSettings();
-	
+	public void close();
+	public void kickAllPlayers(String message);
 }

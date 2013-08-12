@@ -5,7 +5,14 @@ import java.io.File;
 import de.blablubbabc.paintball.lobby.settings.LobbySettings;
 
 public interface LobbyManagerI {
+	/**
+	 * Creates a new lobby
+	 * @param lobbyName
+	 * @param lobbySettingsName
+	 * @return
+	 */
 	public LobbyI createLobby(String lobbyName, String lobbySettingsName);
+	public void removeLobby(String lobbyName);
 	public void saveLobbiesFile();
 	public LobbySettings loadLobbySettings(String settingsName);
 	public LobbySettings loadLobbySettings(String settingsName, File file);

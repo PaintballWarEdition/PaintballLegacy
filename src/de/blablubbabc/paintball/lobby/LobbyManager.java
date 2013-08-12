@@ -6,6 +6,7 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
 
+import org.apache.commons.lang.Validate;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.configuration.file.YamlConfiguration;
 
@@ -76,6 +77,9 @@ public class LobbyManager implements LobbyManagerI {
 	
 	@Override
 	public LobbyI createLobby(String lobbyName, String lobbySettingsName) {
+		Validate.notNull(lobbyName, "Invalid lobbyName given!");
+		Validate.notNull(lobbySettingsName, "Invalid lobbySettingsName given!");
+		
 		Lobby lobby = new Lobby(lobbyName, getDefaultLobbySettings());
 		lobbies.put(lobbyName, lobby);
 		// add to lobbies file:
@@ -83,6 +87,14 @@ public class LobbyManager implements LobbyManagerI {
 		// save lobbies file:
 		saveLobbiesFile();
 		return lobby;
+	}
+	
+	@Override
+	public void removeLobby(String lobbyName) {
+		Validate.notNull(lobbyName, "Invalid lobbyName given!");
+		
+		Lobby lobby = lobbies.remove(lobbyName);
+		lobby.close();
 	}
 	
 	@Override
@@ -97,14 +109,18 @@ public class LobbyManager implements LobbyManagerI {
 	}
 	
 	@Override
-	public LobbySettings loadLobbySettings(String settingsName) {
-		return loadLobbySettings(settingsName, getLobbySettingsFilePath(settingsName));
+	public LobbySettings loadLobbySettings(String lobbySettingsName) {
+		Validate.notNull(lobbySettingsName, "Invalid lobbySettingsName given!");
+		
+		return loadLobbySettings(lobbySettingsName, getLobbySettingsFilePath(lobbySettingsName));
 	}
 	
 	@Override
-	public LobbySettings loadLobbySettings(String settingsName, File file) {
-		LobbySettings settings = new LobbySettings(settingsName, file, getDefaultLobbySettings());
-		lobbySettings.put(settingsName, settings);
+	public LobbySettings loadLobbySettings(String lobbySettingsName, File file) {
+		Validate.notNull(lobbySettingsName, "Invalid lobbySettingsName given!");
+		
+		LobbySettings settings = new LobbySettings(lobbySettingsName, file, getDefaultLobbySettings());
+		lobbySettings.put(lobbySettingsName, settings);
 		return settings;
 	}
 	
@@ -124,7 +140,9 @@ public class LobbyManager implements LobbyManagerI {
 	}
 	
 	@Override
-	public File getLobbySettingsFilePath(String settingsName) {
-		return new File(FileManager.getLobbiesFolder(), settingsName);
+	public File getLobbySettingsFilePath(String lobbySettingsName) {
+		Validate.notNull(lobbySettingsName, "Invalid lobbySettingsName given!");
+		
+		return new File(FileManager.getLobbiesFolder(), lobbySettingsName);
 	}
 }

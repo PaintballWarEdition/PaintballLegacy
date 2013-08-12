@@ -18,13 +18,16 @@ public class Lobby implements LobbyI {
 	private List<Location> lobbyspawns;
 	private int currentLobbyspawn;
 	// state
-	private LobbyState state = LobbyState.WAITING;
+	private LobbyState state = LobbyState.CLOSED;
 	
 	private final Set<PPlayer> pplayers = new HashSet<PPlayer>();
 	
 	public Lobby(String lobbyName, LobbySettings settings) {
 		this.lobbyName = lobbyName;
 		this.settings = settings;
+		
+		// TODO lobbies can be closed persistently
+		state = LobbyState.WAITING;
 	}
 	
 	@Override
@@ -47,6 +50,16 @@ public class Lobby implements LobbyI {
 		return settings;
 	}
 	
+	@Override
+	public void close() {
+		// TODO translation
+		kickAllPlayers("Lobby was closed.");
+		state = LobbyState.CLOSED;
+	}
 	
+	@Override
+	public void kickAllPlayers(String message) {
+		//TODO;
+	}
 	
 }
