@@ -4,37 +4,37 @@ import org.bukkit.event.Cancellable;
 import org.bukkit.event.Event;
 import org.bukkit.event.HandlerList;
 
-import de.blablubbabc.paintball.api.Arena;
-import de.blablubbabc.paintball.api.Gametype;
-import de.blablubbabc.paintball.api.Lobby;
+import de.blablubbabc.paintball.api.arena.ArenaI;
+import de.blablubbabc.paintball.api.gametype.GametypeI;
+import de.blablubbabc.paintball.api.lobby.LobbyI;
 
 public class MatchPreStartEvent extends Event implements Cancellable {
 	private static final HandlerList handlers = new HandlerList();
 
 	private boolean cancelled;
 	
-	private final Lobby lobby;
+	private final LobbyI lobby;
 	
-	private Arena arena;
-	private Gametype gametype;
+	private ArenaI arena;
+	private GametypeI gametype;
 	private String gameConfig;
 	
-	public MatchPreStartEvent(Lobby lobby, Arena arena, Gametype gametype, String gameConfig) {
+	public MatchPreStartEvent(LobbyI lobby, ArenaI arena, GametypeI gametype, String gameConfig) {
 		this.lobby = lobby;
 		this.arena = arena;
 		this.gametype = gametype;
 		this.gameConfig = gameConfig;
 	}
 
-	public Lobby getLobby() {
+	public LobbyI getLobby() {
 		return lobby;
 	}
 	
-	public Arena getArena() {
+	public ArenaI getArena() {
 		return arena;
 	}
 
-	public void setArena(Arena arena) {
+	public void setArena(ArenaI arena) {
 		if (arena == null) throw new IllegalArgumentException("Arena is null!");
 		// check is Ready
 		// check supports gametype
@@ -45,11 +45,11 @@ public class MatchPreStartEvent extends Event implements Cancellable {
 		return gameConfig;
 	}
 	
-	public Gametype getGametype() {
+	public GametypeI getGametype() {
 		return gametype;
 	}
 	
-	public void setGametypeAndConfig(Gametype gametype, String gameConfig) {
+	public void setGametypeAndConfig(GametypeI gametype, String gameConfig) {
 		if (gametype == null) throw new IllegalArgumentException("Gametype is null!");
 		if (gameConfig == null || gameConfig.isEmpty()) throw new IllegalArgumentException("No GameConfig was given");
 		// check: is supported by arena

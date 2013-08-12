@@ -12,6 +12,8 @@ import de.blablubbabc.paintball.shop.Shop;
 
 public class LobbySettings {
 
+	private final String settingsName;
+	
 	// SETTINGS:
 	// countdown seconds
 	public int countdownSeconds;
@@ -76,9 +78,9 @@ public class LobbySettings {
 	public Shop shop;
 	
 	@SuppressWarnings("unchecked")
-	public LobbySettings(File file, LobbySettings defSettings) {
+	public LobbySettings(String settingsName, File file, LobbySettings defSettings) {
+		this.settingsName = settingsName;
 		boolean isDefault = (defSettings == null);
-		
 		YamlConfiguration config = YamlConfiguration.loadConfiguration(file);
 		
 		// INITIALIZE DEFAULT CONFIG:
@@ -189,6 +191,9 @@ public class LobbySettings {
 		}
 	}
 	
+	public String getSettingsName() {
+		return settingsName;
+	}
 	
 	private void setDefault(YamlConfiguration config, LobbySetting setting) {
 		if (config.get(setting.getPath()) == null) config.set(setting.getPath(), setting.getDefaultValue());

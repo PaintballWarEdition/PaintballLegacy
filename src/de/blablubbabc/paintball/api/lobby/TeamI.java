@@ -1,13 +1,15 @@
-package de.blablubbabc.paintball.api;
+package de.blablubbabc.paintball.api.lobby;
 
 import java.util.Set;
 
 import org.bukkit.ChatColor;
 import org.bukkit.Color;
 
-public interface Team {
+import de.blablubbabc.paintball.api.pplayer.PPlayerI;
+
+public interface TeamI {
 	public String getName();
 	public Color getColor();
 	public ChatColor getChatColor();
-	public Set<PPlayer> getPPlayers();
+	public Set<PPlayerI> getPPlayers();
 }

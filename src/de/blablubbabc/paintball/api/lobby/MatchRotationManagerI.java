@@ -1,4 +1,4 @@
-package de.blablubbabc.paintball.api;
+package de.blablubbabc.paintball.api.lobby;
 
 /**
  * Handles what match shall be played next for a lobby by taking care of things
@@ -7,7 +7,7 @@ package de.blablubbabc.paintball.api;
  * @author blablubbabc
  * 
  */
-public interface MatchRotationManager {
+public interface MatchRotationManagerI {
 	
 	public void handleForceMatchSelection();
 	public void handleVote();

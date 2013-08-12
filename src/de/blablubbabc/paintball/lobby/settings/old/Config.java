@@ -2,9 +2,17 @@ package de.blablubbabc.paintball.lobby.settings.old;
 
 import java.util.List;
 
-import de.blablubbabc.paintball.gadgets.Gift;
-
 public class Config {
+	public static Config instance = null;
+	
+	public Config() {
+		instance = this;
+		
+		// load config:
+		
+		//TODO
+	}
+	
 	// general:
 	public boolean versioncheck;
 	public boolean noPerms;
@@ -14,6 +22,10 @@ public class Config {
 	public String local;
 	public String languageFileEncoding;
 	
+	// lobby settings
+	
+	public String defaultLobbySettingsName;
+	public String defaultLobbyName;
 	
 	// lobby join checks
 	public boolean checkInventory;

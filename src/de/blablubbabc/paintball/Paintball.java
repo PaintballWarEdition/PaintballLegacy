@@ -1144,7 +1144,7 @@ public class Paintball extends JavaPlugin{
 		Log.info("By blablubbabc enabled.");
 
 	}
-
+	
 	public void delayedInfo() {
 		getServer().getScheduler().runTaskLaterAsynchronously(this, new Runnable() {
 
