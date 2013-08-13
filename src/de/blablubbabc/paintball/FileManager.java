@@ -68,8 +68,8 @@ public class FileManager {
 		return new File(getPaintballDataFolder(), "languages");
 	}
 	
-	public static File getLobbiesFolder() {
-		return new File(getPaintballDataFolder(), "lobbies");
+	public static File getLobbySettingsFolder() {
+		return new File(getPaintballDataFolder(), "lobby settings");
 	}
 	
 	public static File getShopsFolder() {

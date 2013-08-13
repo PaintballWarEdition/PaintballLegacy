@@ -996,7 +996,7 @@ public class Match {
 				plugin.getServer().getScheduler().runTask(plugin, new Runnable() {
 					@Override
 					public void run() {
-						plugin.enterLobby(target);
+						plugin.playerManager.enterLobby(target);
 					}
 				});
 
@@ -1011,7 +1011,7 @@ public class Match {
 			plugin.getServer().getScheduler().runTask(plugin, new Runnable() {
 				@Override
 				public void run() {
-					plugin.enterLobby(target);
+					plugin.playerManager.enterLobby(target);
 				}
 			});
 		}
@@ -1094,7 +1094,7 @@ public class Match {
 				plugin.getServer().getScheduler().runTask(plugin, new Runnable() {
 					@Override
 					public void run() {
-						plugin.enterLobby(target);
+						plugin.playerManager.enterLobby(target);
 					}
 				});
 
@@ -1109,7 +1109,7 @@ public class Match {
 			plugin.getServer().getScheduler().runTask(plugin, new Runnable() {
 				@Override
 				public void run() {
-					plugin.enterLobby(target);
+					plugin.playerManager.enterLobby(target);
 				}
 			});
 		}

@@ -11,23 +11,23 @@ import org.bukkit.entity.Player;
 import de.blablubbabc.paintball.api.lobby.LobbyI;
 import de.blablubbabc.paintball.api.pplayer.PPlayerI;
 import de.blablubbabc.paintball.lobby.settings.LobbySettings;
-import de.blablubbabc.paintball.lobby.settings.old.PPlayer;
+import de.blablubbabc.paintball.pplayer.PPlayer;
 
 public class Lobby implements LobbyI {
 	private String lobbyName;
 	private LobbySettings settings;
 	// lobby spawns
 	private List<Location> lobbyspawns;
-	private int currentLobbyspawn;
+	private int currentLobbyspawn = 0;
 	// state
 	private LobbyState state = LobbyState.CLOSED;
 	
 	private final Set<PPlayer> pplayers = new HashSet<PPlayer>();
 	
 	public Lobby(String lobbyName, LobbySettings settings, List<Location> lobbyspawns) {
-		Validate.notNull(lobbyName, "LobbyName is null!");
-		Validate.notNull(settings, "LobbySettings is null!");
-		Validate.notNull(lobbyspawns, "LobbySpawns is null!");
+		Validate.notNull(lobbyName, "Invalid LobbyName: null");
+		Validate.notNull(settings, "Invalid LobbySettings: null");
+		Validate.notNull(lobbyspawns, "Invalid LobbySpawns: null");
 		
 		this.lobbyName = lobbyName;
 		this.settings = settings;
@@ -49,7 +49,7 @@ public class Lobby implements LobbyI {
 
 	@Override
 	public void addSpawn(Location spawn) {
-		Validate.notNull(spawn, "Spawn is null!");
+		Validate.notNull(spawn, "Invalid spawn location: null");
 		
 		lobbyspawns.add(spawn);
 		// save lobbies file:
@@ -96,22 +96,47 @@ public class Lobby implements LobbyI {
 	}
 	
 	@Override
+	public void open() {
+		state = LobbyState.WAITING;
+	}
+	
+	@Override
 	public void kickAllPlayers(String message) {
-		Validate.notNull(message, "Message is null!");
+		Validate.notNull(message, "Invalid message: null");
 		
-		//TODO;
+		for (PPlayer pplayer : pplayers) {
+			kickPlayer(pplayer, message);
+		}
 	}
 
 	@Override
-	public void kickPlayer(String playerName) {
+	public void kickPlayer(String playerName, String message) {
+		
+	}
+	
+	@Override
+	public void kickPlayer(PPlayerI pplayer, String message) {
+		Validate.notNull(pplayer, "Invalid pplayer: null");
+		Validate.notNull(message, "Invalid message: null");
+		
+		// reset player when he really was in this lobby
+		if (pplayers.remove(pplayer)) {
+			// playerManager.clearRestoreTeleportPlayer(pplayer.getPlayer());
+		}
+	}
+
+	@Override
+	public void join(Player player, Runnable runAfterwards) {
 		// TODO Auto-generated method stub
 		
 	}
 
 	@Override
-	public void join(Player player) {
-		// TODO Auto-generated method stub
-		
+	public Location getNextSpawn() {
+		if(currentLobbyspawn >= lobbyspawns.size()) currentLobbyspawn = 0;
+		return (lobbyspawns.size() > 0 ? lobbyspawns.get(currentLobbyspawn) : null);
 	}
+
+	
 	
 }

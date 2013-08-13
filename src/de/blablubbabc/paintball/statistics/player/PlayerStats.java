@@ -115,7 +115,7 @@ public class PlayerStats {
 			dirty = false;
 			
 			// update stats on scoreboard, if player is in lobby:
-			Paintball.instance.updateLobbyScoreboard(playerName);
+			Paintball.instance.playerManager.updateLobbyScoreboard(playerName);
 		}
 	}
 	

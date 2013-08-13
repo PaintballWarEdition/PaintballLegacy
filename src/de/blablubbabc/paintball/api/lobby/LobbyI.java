@@ -16,6 +16,7 @@ public interface LobbyI {
 	public Set<PPlayerI> getPPlayers();
 	public LobbySettings getSettings();
 	public List<Location> getSpawns();
+	public Location getNextSpawn();
 	
 	public void setName(String newName);
 	public void setSettings(LobbySettings newSettings);
@@ -23,7 +24,10 @@ public interface LobbyI {
 	
 	public void addSpawn(Location spawn);
 	public void close();
-	public void kickPlayer(String playerName);
+	public void open();
+	public void kickPlayer(String playerName, String message);
+	public void kickPlayer(PPlayerI pplayer, String message);
 	public void kickAllPlayers(String message);
-	public void join(Player player);
+	public void join(Player player, Runnable runAfterwards);
+	
 }

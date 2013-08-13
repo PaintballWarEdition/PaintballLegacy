@@ -128,13 +128,13 @@ public class EventListener implements Listener {
 			if (!fromPb && toPb) {
 				if (!Lobby.LOBBY.isMember(player)) {
 					if (plugin.autoTeam) {
-						plugin.commandManager.joinTeam(player, false, Lobby.RANDOM);
+						plugin.playerManager.joinTeam(player, false, Lobby.RANDOM);
 					} else {
-						plugin.commandManager.joinLobbyPre(player, false, null);
+						plugin.playerManager.joinLobbyPre(player, false, null);
 					}
 				}
 			} else if (fromPb && !toPb) {
-				plugin.leaveLobby(player, true);
+				plugin.playerManager.leaveLobby(player, true);
 			}
 		}
 	}
@@ -601,7 +601,7 @@ public class EventListener implements Listener {
 	@EventHandler(priority = EventPriority.HIGH)
 	public void onPlayerDeath(PlayerDeathEvent event) {
 		Player player = (Player) event.getEntity();
-		if (plugin.leaveLobby(player, true)) {
+		if (plugin.playerManager.leaveLobby(player, true)) {
 			// drops?
 			event.setDroppedExp(0);
 			event.setKeepLevel(false);
@@ -654,7 +654,7 @@ public class EventListener implements Listener {
 	}
 
 	private void onPlayerDisconnect(Player player) {
-		plugin.leaveLobby(player, true);
+		plugin.playerManager.leaveLobby(player, true);
 	}
 
 }

@@ -22,7 +22,7 @@ public class WaitTimer {
 			public void run() {
 				// check if player moved:
 				if (waitRunnable.didPlayerMove(player.getLocation())) {
-					plugin.abortingJoinWaiting(player);
+					plugin.playerManager.abortingJoinWaiting(player);
 				}
 				
 				time--;

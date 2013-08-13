@@ -10,20 +10,14 @@ import java.util.List;
 import java.util.Map;
 import java.util.regex.Pattern;
 
-import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.configuration.ConfigurationSection;
-import org.bukkit.entity.Player;
 import org.bukkit.plugin.Plugin;
 import org.bukkit.plugin.java.JavaPlugin;
-import org.bukkit.scoreboard.DisplaySlot;
-import org.bukkit.scoreboard.Objective;
-import org.bukkit.scoreboard.Score;
-import org.bukkit.scoreboard.Scoreboard;
 
 import de.blablubbabc.BlaDB.BlaSQLite;
 import de.blablubbabc.commandsigns.CommandSignsListener;
@@ -36,16 +30,12 @@ import de.blablubbabc.paintball.features.VaultRewardsFeature;
 import de.blablubbabc.paintball.features.VoteListener;
 import de.blablubbabc.paintball.gadgets.Gift;
 import de.blablubbabc.paintball.gadgets.WeaponManager;
-import de.blablubbabc.paintball.joindelay.JoinWaitRunnable;
-import de.blablubbabc.paintball.joindelay.WaitTimer;
 import de.blablubbabc.paintball.shop.ShopManager;
 import de.blablubbabc.paintball.statistics.arena.ArenaSetting;
 import de.blablubbabc.paintball.statistics.arena.ArenaStat;
 import de.blablubbabc.paintball.statistics.general.GeneralStat;
 import de.blablubbabc.paintball.statistics.player.PlayerStat;
-import de.blablubbabc.paintball.statistics.player.PlayerStats;
 import de.blablubbabc.paintball.statistics.player.match.tdm.TDMMatchStat;
-import de.blablubbabc.paintball.utils.KeyValuePair;
 import de.blablubbabc.paintball.utils.Log;
 import de.blablubbabc.paintball.utils.Metrics;
 import de.blablubbabc.paintball.utils.Poster;
@@ -1175,7 +1165,7 @@ public class Paintball extends JavaPlugin{
 	
 	//METHODS LOBBYSPAWNS
 	private void loadDB() {
-		lobbyspawns = new LinkedList<Location>();
+		lobbyspawns = new ArrayList<Location>();
 		for(Location loc : sql.sqlArenaLobby.getLobbyspawns()) {
 			lobbyspawns.add(loc);
 		}
@@ -1231,176 +1221,6 @@ public class Paintball extends JavaPlugin{
 	public synchronized List<String> afkGetEntries() {
 		List<String> entries = new ArrayList<String>(afkMatchCount.keySet());	
 		return entries;
-	}
-
-	private Map<String, Scoreboard> lobbyScoreboards = new HashMap<String, Scoreboard>();
-	
-	private Map<String, WaitTimer> currentlyWaiting = new HashMap<String, WaitTimer>();
-	private List<String> currentlyLoading = new ArrayList<String>();
-	
-	public void joinLobbyFresh(final Player player, boolean withDelay, final Runnable runAfterwards) {
-		final String playerName = player.getName();
-		
-		// join delay:
-		if (withDelay && joinDelaySeconds > 0) {
-			// is the player already waiting for join or waiting for stats loading -> ignore:
-			WaitTimer waitTimer = currentlyWaiting.get(playerName);
-			if (waitTimer == null && !currentlyLoading.contains(playerName)) {
-				// let the player know:
-				player.sendMessage(Translator.getString("DO_NOT_MOVE", new KeyValuePair("seconds", String.valueOf(joinDelaySeconds))));
-				// wait:
-				joinLater(player, new Runnable() {
-					
-					@Override
-					public void run() {
-						// waiting is over:
-						currentlyWaiting.remove(playerName);
-						// load and then join:
-						handleLoadingAndJoin(player, runAfterwards);
-					}
-				});
-				
-			}
-		} else {
-			// load and then join:
-			handleLoadingAndJoin(player, runAfterwards);
-		}
-	}
-	
-	private void handleLoadingAndJoin(final Player player, final Runnable runAfterwards) {
-		final String playerName = player.getName();
-		// is player already in the process of joining ?
-		if (!currentlyLoading.contains(playerName)) {
-			// load player stats and continue after loading:
-			currentlyLoading.add(playerName);
-			playerManager.loadPlayerStatsAsync(playerName, new Runnable() {
-				
-				@Override
-				public void run() {
-					// loading is finished:
-					currentlyLoading.remove(playerName);
-					// join lobby:
-					Lobby.LOBBY.addMember(player);
-					feeder.join(playerName);
-					playerManager.teleportStoreClearPlayer(player, getNextLobbySpawn());
-					// ASSIGN RANK
-					if (ranksLobbyArmor) rankManager.getRank(playerName).assignArmorToPlayer(player);
-					// ASSIGN SCOREBOARD
-					if (scoreboardLobby) {
-						initLobbyScoreboard(player);
-					}
-					
-					// continue afterwards:
-					if (runAfterwards != null) runAfterwards.run();
-				}
-			});
-		}
-	}
-	
-	private void initLobbyScoreboard(Player player) {
-		String playerName = player.getName();
-		Scoreboard lobbyBoard = lobbyScoreboards.get(playerName);
-		if (lobbyBoard == null) {
-			lobbyBoard = Bukkit.getScoreboardManager().getNewScoreboard();
-			lobbyScoreboards.put(playerName, lobbyBoard);
-			
-			String header = Translator.getString("SCOREBOARD_LOBBY_HEADER"); 
-			Objective objective = lobbyBoard.registerNewObjective(header.length() > 16 ? header.substring(0, 16) : header, "dummy");
-			objective.setDisplaySlot(DisplaySlot.SIDEBAR);
-		}
-		
-		updateLobbyScoreboard(playerName);
-		player.setScoreboard(lobbyBoard);
-	}
-	
-	public void updateLobbyScoreboard(String playerName) {
-		Scoreboard lobbyBoard = lobbyScoreboards.get(playerName);
-		if (lobbyBoard != null) {
-			Objective objective = lobbyBoard.getObjective(DisplaySlot.SIDEBAR);
-			if (objective == null) return;
-			PlayerStats stats = playerManager.getPlayerStats(playerName);
-			for (PlayerStat stat : PlayerStat.values()) {
-				// skip airstrikes and grenades count:
-				if (stat == PlayerStat.AIRSTRIKES || stat == PlayerStat.GRENADES) continue;	
-				String scoreName = Translator.getString("SCOREBOARD_LOBBY_" + stat.getKey().toUpperCase());
-				Score score = objective.getScore(Bukkit.getOfflinePlayer(scoreName.length() > 16 ? scoreName.substring(0, 16) : scoreName));
-				score.setScore(stats.getStat(stat));
-			}
-		}
-	}
-	
-	public void abortingJoinWaiting(Player player) {
-		String playerName = player.getName();
-		WaitTimer waitTimer = currentlyWaiting.remove(playerName);
-		if (waitTimer != null) {
-			// abort and end Timer:
-			player.sendMessage(Translator.getString("JOINING_ABORTED"));
-			waitTimer.onAbort();
-		}
-	}
-	
-	private void joinLater(final Player player, final Runnable runAfterWaiting) {
-		final JoinWaitRunnable waitRunnable = new JoinWaitRunnable(runAfterWaiting, player.getLocation());
-		WaitTimer waitTimer = new WaitTimer(this, player, 0L, 20L, joinDelaySeconds, waitRunnable);
-		currentlyWaiting.put(player.getName(), waitTimer);
-	}
-	
-	public synchronized void enterLobby(Player player) {
-		PlayerDataStore.clearPlayer(player, true, true);
-		String playerName = player.getName();
-		//set waiting
-		if(Lobby.isPlaying(player) || Lobby.isSpectating(player)) Lobby.getTeam(player).setWaiting(player);
-		//Lobbyteleport
-		player.teleport(getNextLobbySpawn());
-		// ASSIGN RANK
-		if (ranksLobbyArmor) rankManager.getRank(playerName).assignArmorToPlayer(player);
-		// ASSIGN SCOREBOARD
-		if (scoreboardLobby) {
-			initLobbyScoreboard(player);
-		}
-	}
-	
-	public synchronized boolean leaveLobby(Player player, boolean messages) {
-		String playerName = player.getName();
-		
-		if (Lobby.LOBBY.isMember(player)) {
-			if (Lobby.isPlaying(player) || Lobby.isSpectating(player)) {
-				matchManager.getMatch(player).left(player);
-			}
-			
-			//lobby remove:
-			Lobby.remove(player);
-			
-			// undo arena voting:
-			if (arenaVoting) matchManager.onLobbyLeave(player);
-			
-			// restore and teleport back:
-			playerManager.clearRestoreTeleportPlayer(player);
-			
-			// if player not in lobby and not in match -> stats no longer needed:
-			if (!Lobby.LOBBY.isMember(player) && matchManager.getMatch(player) == null) playerManager.unloadPlayerStats(playerName);
-			
-			// remove scoreboard for this player
-			if (scoreboardLobby) {
-				lobbyScoreboards.remove(playerName);
-			}
-			
-			//messages:
-			if (messages) {
-				feeder.leave(playerName);
-				player.sendMessage(Translator.getString("YOU_LEFT_LOBBY"));
-			}
-			
-			// vault rewards after session: -> now given directly after match end
-			/*if (vaultRewardsEnabled && vaultRewardsFeature != null) {
-				double reward = vaultRewardsFeature.getSessionMoney(playerName);
-				if (vaultRewardsFeature.transferCurrentSession(playerName)) player.sendMessage(Translator.getString("YOU_RECEIVED_SESSION_VAULT_REWARD", new KeyValuePair("money", String.valueOf(reward))));
-			}*/
-			
-			return true;
-		}
-		
-		return false;
 	}
 	
 }

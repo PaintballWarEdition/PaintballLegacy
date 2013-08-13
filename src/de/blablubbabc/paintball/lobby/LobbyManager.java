@@ -147,7 +147,7 @@ public class LobbyManager implements LobbyManagerI {
 		loadDefaultLobbySettings();
 
 		// load all remaining LobbySettings from lobbies folder:
-		for (File settingsFile : FileManager.getConfigFilesInFolder(FileManager.getLobbiesFolder())) {
+		for (File settingsFile : FileManager.getConfigFilesInFolder(getLobbySettingsFolder())) {
 			String lobbySettingsName = FileManager.removeExtension(settingsFile.getName());
 			if (lobbySettingsName.isEmpty() || settingsFile.equals(Config.instance.defaultLobbySettingsName))
 				continue;
@@ -199,10 +199,15 @@ public class LobbyManager implements LobbyManagerI {
 	}
 
 	@Override
+	public File getLobbySettingsFolder() {
+		return FileManager.getLobbySettingsFolder();
+	}
+
+	@Override
 	public File getLobbySettingsFilePath(String lobbySettingsName) {
 		Validate.notNull(lobbySettingsName, "Invalid lobbySettingsName given: null");
 
-		return new File(FileManager.getLobbiesFolder(), lobbySettingsName + ".yml");
+		return new File(FileManager.getLobbySettingsFolder(), lobbySettingsName + ".yml");
 	}
 
 }

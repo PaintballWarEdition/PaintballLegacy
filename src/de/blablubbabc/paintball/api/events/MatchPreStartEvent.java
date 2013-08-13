@@ -5,7 +5,7 @@ import org.bukkit.event.Event;
 import org.bukkit.event.HandlerList;
 
 import de.blablubbabc.paintball.api.arena.ArenaI;
-import de.blablubbabc.paintball.api.gametype.GametypeI;
+import de.blablubbabc.paintball.api.gamemode.GamemodeI;
 import de.blablubbabc.paintball.api.lobby.LobbyI;
 
 public class MatchPreStartEvent extends Event implements Cancellable {
@@ -16,10 +16,10 @@ public class MatchPreStartEvent extends Event implements Cancellable {
 	private final LobbyI lobby;
 	
 	private ArenaI arena;
-	private GametypeI gametype;
+	private GamemodeI gametype;
 	private String gameConfig;
 	
-	public MatchPreStartEvent(LobbyI lobby, ArenaI arena, GametypeI gametype, String gameConfig) {
+	public MatchPreStartEvent(LobbyI lobby, ArenaI arena, GamemodeI gametype, String gameConfig) {
 		this.lobby = lobby;
 		this.arena = arena;
 		this.gametype = gametype;
@@ -45,11 +45,11 @@ public class MatchPreStartEvent extends Event implements Cancellable {
 		return gameConfig;
 	}
 	
-	public GametypeI getGametype() {
+	public GamemodeI getGametype() {
 		return gametype;
 	}
 	
-	public void setGametypeAndConfig(GametypeI gametype, String gameConfig) {
+	public void setGametypeAndConfig(GamemodeI gametype, String gameConfig) {
 		if (gametype == null) throw new IllegalArgumentException("Gametype is null!");
 		if (gameConfig == null || gameConfig.isEmpty()) throw new IllegalArgumentException("No GameConfig was given");
 		// check: is supported by arena

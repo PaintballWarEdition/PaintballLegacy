@@ -107,11 +107,41 @@ public interface LobbyManagerI {
 	 */
 	public LobbySettings getLobbySettings(String settingsName);
 
+	/**
+	 * Returns the default LobbySettings.
+	 * 
+	 * @return the default LobbySettings
+	 */
 	public LobbySettings getDefaultLobbySettings();
 
+	/**
+	 * Returns the default Lobby.
+	 * 
+	 * @return the default Lobby
+	 */
 	public LobbyI getDefaultLobby();
 
+	/**
+	 * Returns the file path to the lobbies file.
+	 * 
+	 * @return the file path to the lobbies file
+	 */
 	public File getLobbiesFilePath();
 
+	/**
+	 * Returns the file path to the lobby settings folder.
+	 * 
+	 * @return the file path to the lobby settings folder
+	 */
+	public File getLobbySettingsFolder();
+
+	/**
+	 * Returns the path to the settings file with this name inside the lobby
+	 * settings folder.
+	 * 
+	 * @param settingsName
+	 *            the name of the LobbySettings / the file
+	 * @return the path to the settings file with this name
+	 */
 	public File getLobbySettingsFilePath(String settingsName);
 }
