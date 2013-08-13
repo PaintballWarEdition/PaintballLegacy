@@ -61,7 +61,7 @@ public class RankManager {
 				
 				// PREFIX
 				String prefix = rankSection.getString("Prefix");
-				if (prefix != null) ChatColor.translateAlternateColorCodes('&', prefix);
+				if (prefix != null) prefix = ChatColor.translateAlternateColorCodes('&', prefix);
 				
 				// ARMOR
 				ItemStack helmet = itemFromConfig(rankSection.getConfigurationSection("Helmet"));

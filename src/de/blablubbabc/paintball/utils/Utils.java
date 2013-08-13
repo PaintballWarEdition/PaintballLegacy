@@ -82,6 +82,7 @@ public class Utils {
 				ChatColor color = ChatColor.getByChar(b[i + 1]);
 				if (color != null) {
 					b[i] = altColorChar;
+					// needed?
 					b[i + 1] = color.getChar();
 				}
 			}
