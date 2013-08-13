@@ -331,6 +331,7 @@ public class Match {
 		} else {
 			return;
 		}
+		player.leaveVehicle();
 		player.teleport(loc);
 		// sound
 		Sounds.playEquipLoadout(player);
