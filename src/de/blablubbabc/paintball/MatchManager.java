@@ -508,7 +508,8 @@ public class MatchManager {
 						// end voting
 						if (countdown.getTime() == plugin.arenaVotingEndAtCountdownTime) {
 							voteManager.endVoting();
-							plugin.feeder.textUntoggled(Translator.getString("GAME_VOTE_MOST_VOTES", new KeyValuePair("arena", voteManager.getHighestVotedArena())));
+							if (voteManager.didSomebodyVote()) plugin.feeder.textUntoggled(Translator.getString("GAME_VOTE_MOST_VOTES", new KeyValuePair("arena", voteManager.getHighestVotedArena())));
+							else plugin.feeder.textUntoggled(Translator.getString("GAME_VOTE_NOBODY_VOTED"));
 						}
 						
 					}
