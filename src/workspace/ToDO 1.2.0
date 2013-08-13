@@ -3,6 +3,8 @@
 * checkout if chests can be accessed in matches, and if that is a problem
 * players not being respawned if in vehicle
 * most voted arena displayed, even when nobody voted (it will select a random one then)
+* make turret only placeable, if enpught space
+* setting for mines, that they are not placeable in hallways of 1 * 2 size
 
 afterwards:
 * making some weapons configurable

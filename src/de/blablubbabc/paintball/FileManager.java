@@ -1,6 +1,7 @@
 package de.blablubbabc.paintball;
 
 import java.io.File;
+import java.io.FilenameFilter;
 
 public class FileManager {
 	
@@ -9,6 +10,40 @@ public class FileManager {
 		//TODO
 		
 		
+	}
+	
+	/**
+	 * Non-deep search for config files (.yml ending).
+	 * 
+	 * @param folder
+	 *            folder to search in
+	 * @return array of config files
+	 */
+	public static File[] getConfigFilesInFolder(File folder) {
+		if (folder == null || !folder.isDirectory())
+			return new File[0];
+
+		return folder.listFiles(new FilenameFilter() {
+
+			@Override
+			public boolean accept(File dir, String name) {
+				return name.endsWith(".yml");
+			}
+		});
+	}
+	
+	public static String removeExtension(String fileName) {
+		if (fileName == null) {
+	        return null;
+	    }
+
+		int index = fileName.lastIndexOf(".");
+
+	    if (index == -1) {
+	        return fileName;
+	    } else {
+	        return fileName.substring(0, index);
+	    }
 	}
 	
 	// FOLDERS:

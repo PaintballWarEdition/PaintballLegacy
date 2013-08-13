@@ -70,7 +70,7 @@ public class CmdShop {
 				//Kaufen in der lobby während match aber tot:
 				Match match = plugin.matchManager.getMatch(player);
 				if(match != null && match.isSurvivor(player)) {
-					Integer id = Utils.getNumber(args[1]);
+					Integer id = Utils.parseInteger(args[1]);
 					ShopGood[] goods = plugin.shopManager.getGoods();
 					if(id != null && id > 0 && id <= goods.length) {
 						ShopGood good = goods[id - 1];

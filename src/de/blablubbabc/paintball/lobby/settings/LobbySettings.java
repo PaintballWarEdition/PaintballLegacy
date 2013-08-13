@@ -13,6 +13,7 @@ import de.blablubbabc.paintball.shop.Shop;
 public class LobbySettings {
 
 	private final String settingsName;
+	private final YamlConfiguration config;
 	
 	// SETTINGS:
 	// countdown seconds
@@ -81,21 +82,13 @@ public class LobbySettings {
 	public LobbySettings(String settingsName, File file, LobbySettings defSettings) {
 		this.settingsName = settingsName;
 		boolean isDefault = (defSettings == null);
-		YamlConfiguration config = YamlConfiguration.loadConfiguration(file);
+		config = YamlConfiguration.loadConfiguration(file);
 		
 		// INITIALIZE DEFAULT CONFIG:
 		if (isDefault) {
 			for (LobbySetting defSetting : LobbySetting.values()) {
 				setDefault(config, defSetting);
 			}
-			
-			// SAVE CONFIG
-			try {
-				config.save(file);
-			} catch (IOException e) {
-				e.printStackTrace();
-			}
-			
 		}
 		
 		// READ SETTINGS
@@ -189,6 +182,11 @@ public class LobbySettings {
 		} else {
 			shop = defSettings.shop;
 		}
+		
+		
+		
+		// SAVE CONFIG (creates the file, if it didn't exist before)
+		saveToFile(file);
 	}
 	
 	public String getSettingsName() {
@@ -199,5 +197,12 @@ public class LobbySettings {
 		if (config.get(setting.getPath()) == null) config.set(setting.getPath(), setting.getDefaultValue());
 	}
 	
+	public void saveToFile(File file) {
+		try {
+			config.save(file);
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+	}
 	
 }

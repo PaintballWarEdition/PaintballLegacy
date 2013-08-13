@@ -6,11 +6,13 @@ import java.util.List;
 import java.util.Random;
 import java.util.Set;
 
+import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Chunk;
 import org.bukkit.Color;
 import org.bukkit.Location;
 import org.bukkit.Material;
+import org.bukkit.World;
 import org.bukkit.block.BlockFace;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
@@ -91,10 +93,78 @@ public class Utils {
 		return eyeLocation.add(new Vector(-viewDirection.getZ(), 0.0, viewDirection.getX()).normalize().multiply(0.2));
 	}
 	
-	public static Integer getNumber(String string) {
+	
+	// /////////////////////////////////////////////////////////////
+	
+	// LOCATIONS TO / FROM STRING
+	
+	public static String LocationToString(Location loc) {
+		return loc.getWorld().getName() + ";" + loc.getX() + ";" + loc.getY() + ";" + loc.getZ() + ";" + loc.getYaw() + ";" + loc.getPitch();
+	}
+		
+	public static Location StringToLocation(String string) {
+		if (string == null) return null;
+		String[] split = string.split(";");
+		if (split.length != 4 && split.length != 6) return null;
+		
+		World world = Bukkit.getWorld(split[0]);
+		if (world == null) return null;
+		Double x = parseDouble(split[1]);
+		if (x == null) return null;
+		Double y = parseDouble(split[2]);
+		if (y == null) return null;
+		Double z = parseDouble(split[3]);
+		if (z == null) return null;
+		
+		Float yaw = 0.0F;
+		Float pitch = 0.0F;
+		if (split.length == 6) {
+			yaw = parseFloat(split[4]);
+			if (yaw == null) yaw = 0.0F;
+			pitch = parseFloat(split[5]);
+			if (pitch == null) pitch = 0.0F;
+		}
+		
+		return new Location(world, x, y, z, yaw, pitch);
+	}
+		
+	public static List<Location> StringsToLocations(List<String> strings) {
+		List<Location> locs = new ArrayList<Location>();
+		for (String s : strings) {
+			Location loc = StringToLocation(s);
+			if (loc != null) locs.add(loc);
+		}
+		return locs;
+	}
+	
+	public static List<String> LocationsToStrings(List<Location> locs) {
+		List<String> strings = new ArrayList<String>();
+		for (Location loc : locs) {
+			if (loc != null) strings.add(LocationToString(loc));
+		}
+		return strings;
+	}
+	
+	public static Integer parseInteger(String string) {
 		try {
 			return Integer.parseInt(string);
 		} catch(NumberFormatException e) {
+			return null;
+		}
+	}
+	
+	public static Float parseFloat(String string) {
+		try {
+			return Float.parseFloat(string);
+		} catch (NumberFormatException e) {
+			return null;
+		}
+	}
+	
+	public static Double parseDouble(String string) {
+		try {
+			return Double.parseDouble(string);
+		} catch (NumberFormatException e) {
 			return null;
 		}
 	}

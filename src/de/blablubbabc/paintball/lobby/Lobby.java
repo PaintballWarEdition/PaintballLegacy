@@ -4,7 +4,9 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
+import org.apache.commons.lang.Validate;
 import org.bukkit.Location;
+import org.bukkit.entity.Player;
 
 import de.blablubbabc.paintball.api.lobby.LobbyI;
 import de.blablubbabc.paintball.api.pplayer.PPlayerI;
@@ -12,8 +14,8 @@ import de.blablubbabc.paintball.lobby.settings.LobbySettings;
 import de.blablubbabc.paintball.lobby.settings.old.PPlayer;
 
 public class Lobby implements LobbyI {
-	private final String lobbyName;
-	private final LobbySettings settings;
+	private String lobbyName;
+	private LobbySettings settings;
 	// lobby spawns
 	private List<Location> lobbyspawns;
 	private int currentLobbyspawn;
@@ -22,9 +24,14 @@ public class Lobby implements LobbyI {
 	
 	private final Set<PPlayer> pplayers = new HashSet<PPlayer>();
 	
-	public Lobby(String lobbyName, LobbySettings settings) {
+	public Lobby(String lobbyName, LobbySettings settings, List<Location> lobbyspawns) {
+		Validate.notNull(lobbyName, "LobbyName is null!");
+		Validate.notNull(settings, "LobbySettings is null!");
+		Validate.notNull(lobbyspawns, "LobbySpawns is null!");
+		
 		this.lobbyName = lobbyName;
 		this.settings = settings;
+		this.lobbyspawns = lobbyspawns;
 		
 		// TODO lobbies can be closed persistently
 		state = LobbyState.WAITING;
@@ -33,6 +40,19 @@ public class Lobby implements LobbyI {
 	@Override
 	public String getName() {
 		return lobbyName;
+	}
+	
+	@Override
+	public List<Location> getSpawns() {
+		return lobbyspawns;
+	}
+
+	@Override
+	public void addSpawn(Location spawn) {
+		Validate.notNull(spawn, "Spawn is null!");
+		
+		lobbyspawns.add(spawn);
+		// save lobbies file:
 	}
 	
 	@Override
@@ -51,6 +71,24 @@ public class Lobby implements LobbyI {
 	}
 	
 	@Override
+	public void setName(String newName) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void setSettings(LobbySettings newSettings) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void setSpawns(List<Location> newSpawns) {
+		// TODO Auto-generated method stub
+		
+	}
+	
+	@Override
 	public void close() {
 		// TODO translation
 		kickAllPlayers("Lobby was closed.");
@@ -59,7 +97,21 @@ public class Lobby implements LobbyI {
 	
 	@Override
 	public void kickAllPlayers(String message) {
+		Validate.notNull(message, "Message is null!");
+		
 		//TODO;
+	}
+
+	@Override
+	public void kickPlayer(String playerName) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void join(Player player) {
+		// TODO Auto-generated method stub
+		
 	}
 	
 }

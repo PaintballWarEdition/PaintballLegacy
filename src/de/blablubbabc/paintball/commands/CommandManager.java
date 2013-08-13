@@ -186,7 +186,7 @@ public class CommandManager implements CommandExecutor{
 						
 						if (args.length == 1) plugin.matchManager.sendVoteOptions(player);
 						else {
-							Integer voteID = Utils.getNumber(args[1]);
+							Integer voteID = Utils.parseInteger(args[1]);
 							
 							if (voteID != null) {
 								plugin.matchManager.handleArenaVote(player, voteID);
