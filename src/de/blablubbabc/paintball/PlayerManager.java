@@ -112,7 +112,7 @@ public class PlayerManager {
 		Paintball.instance.feeder.players(player);
 	}
 
-	public boolean joinLobbyPreChecks(Player player) {
+	private boolean joinLobbyPreChecks(Player player) {
 		// Lobby vorhanden?
 		if (Paintball.instance.getLobbyspawnsCount() == 0) {
 			player.sendMessage(Translator.getString("NO_LOBBY_FOUND"));
@@ -168,12 +168,12 @@ public class PlayerManager {
 		if (joinLobbyPreChecks(player)) joinLobbyFresh(player, withDelay, runOnSuccess);
 	}
 	
-private Map<String, Scoreboard> lobbyScoreboards = new HashMap<String, Scoreboard>();
+	private Map<String, Scoreboard> lobbyScoreboards = new HashMap<String, Scoreboard>();
 	
 	private Map<String, WaitTimer> currentlyWaiting = new HashMap<String, WaitTimer>();
 	private List<String> currentlyLoading = new ArrayList<String>();
 	
-	public void joinLobbyFresh(final Player player, boolean withDelay, final Runnable runAfterwards) {
+	private void joinLobbyFresh(final Player player, boolean withDelay, final Runnable runAfterwards) {
 		final String playerName = player.getName();
 		
 		// join delay:

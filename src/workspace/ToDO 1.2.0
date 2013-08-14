@@ -1,7 +1,8 @@
 1.2.0
 * drops: everything or everything besides snowballs, + config amount of snowballs
 * make turret only placeable, if enpught space
-* setting for mines, that they are not placeable in hallways of 1 * 2 size
+* setting for mines, that they are not placeable in hallways
+* change/fix worldmode: use teleport event instead of playerchangedworld event and seperate joining/leaving and teleporting, so teleporting can be disable via plugin
 
 afterwards:
 * making some weapons configurable

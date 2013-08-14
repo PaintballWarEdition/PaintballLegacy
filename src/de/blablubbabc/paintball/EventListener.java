@@ -119,7 +119,7 @@ public class EventListener implements Listener {
 		}
 	}
 	
-	@EventHandler(priority = EventPriority.NORMAL)
+	@EventHandler(priority = EventPriority.HIGHEST)
 	public void onWorldChange(PlayerChangedWorldEvent event) {
 		if (plugin.worldMode) {
 			Player player = event.getPlayer();

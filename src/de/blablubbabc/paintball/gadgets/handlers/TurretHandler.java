@@ -6,6 +6,7 @@ import org.bukkit.Material;
 import org.bukkit.Sound;
 import org.bukkit.World;
 import org.bukkit.block.Block;
+import org.bukkit.block.BlockFace;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.EntityType;
 import org.bukkit.entity.LivingEntity;
@@ -124,6 +125,12 @@ public class TurretHandler extends WeaponHandler implements Listener {
 				String playerName = player.getName();
 				if (gadgetManager.getMatchGadgetCount(match) < Paintball.instance.turretMatchLimit) {
 					if (gadgetManager.getPlayerGadgetCount(match, playerName) < Paintball.instance.turretPlayerLimit) {
+						
+						// check space:
+						if (block.getRelative(BlockFace.UP).getType() != Material.AIR) {
+							player.sendMessage(Translator.getString("GADGET_NOT_ENOUGH_SPACE"));
+							return;
+						}
 						
 						Location spawnLoc = block.getLocation();
 						nextTurretSpawn = spawnLoc;

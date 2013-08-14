@@ -6,6 +6,7 @@ import org.bukkit.Material;
 import org.bukkit.Sound;
 import org.bukkit.World;
 import org.bukkit.block.Block;
+import org.bukkit.block.BlockFace;
 import org.bukkit.block.BlockState;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
@@ -111,6 +112,12 @@ public class MineHandler extends WeaponHandler implements Listener {
 				if (gadgetManager.getMatchGadgetCount(match) < Paintball.instance.mineMatchLimit) {
 					if (gadgetManager.getPlayerGadgetCount(match, playerName) < Paintball.instance.minePlayerLimit) {
 						
+						// check space (not in 1*2 hallways):
+						if (blocksHallway(block)) {
+							player.sendMessage(Translator.getString("GADGET_NOT_ENOUGH_SPACE"));
+							return;
+						}
+						
 						Paintball.instance.getServer().getScheduler().runTaskLater(Paintball.instance, new Runnable() {
 
 							@Override
@@ -138,6 +145,38 @@ public class MineHandler extends WeaponHandler implements Listener {
 				}
 			}	
 		}
+	}
+	
+	private boolean blocksHallway(Block block) {
+		//TODO
+		if (block.getRelative(BlockFace.UP, 2).getType() != Material.AIR && block.getRelative(BlockFace.UP).getType() == Material.AIR) {
+			boolean west = isWall(block, BlockFace.WEST);
+			boolean east = isWall(block, BlockFace.EAST);
+			boolean north = isWall(block, BlockFace.NORTH);
+			boolean south = isWall(block, BlockFace.SOUTH);
+
+			if (west && east && !north && !south) return true;
+			if (north && south && !west && !east) return true;
+			
+			boolean northWest = isWall(block, BlockFace.NORTH_WEST);
+			boolean southEast = isWall(block, BlockFace.SOUTH_EAST);
+
+			if (northWest && southEast) return true;
+			
+			boolean northEast = isWall(block, BlockFace.NORTH_EAST);
+			boolean southWest = isWall(block, BlockFace.SOUTH_WEST);
+
+			if (northEast && southWest) return true;
+			
+			
+		}
+		return false;
+	}
+	
+	private boolean isWall(Block block, BlockFace direction) {
+		Block bottom = block.getRelative(direction);
+		Block top = bottom.getRelative(BlockFace.UP);
+		return bottom.getType() != Material.AIR || top.getType() != Material.AIR;
 	}
 	
 	@Override

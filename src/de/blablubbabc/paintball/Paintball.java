@@ -601,7 +601,7 @@ public class Paintball extends JavaPlugin{
 		if(getConfig().get("Paintball.Extras.Orbitalstrike.Player Limit") == null)getConfig().set("Paintball.Extras.Orbitalstrike.Player Limit", 1);
 		
 		if(getConfig().get("Paintball.Shop.enabled") == null)getConfig().set("Paintball.Shop.enabled", true);
-		if(getConfig().get("Paintball.Shop.Close Inventory Menu On Purchase") == null)getConfig().set("Paintball.Shop.Close Inventory Menu On Purchase", true);
+		if(getConfig().get("Paintball.Shop.Close Inventory Menu On Purchase") == null)getConfig().set("Paintball.Shop.Close Inventory Menu On Purchase", false);
 		if(getConfig().get("Paintball.Shop.Goods (amount-name-id-subid-price-rank)") == null)getConfig().set("Paintball.Shop.Goods (amount-name-id-subid-price-rank)", goodsDef);
 		saveConfig();
 
