@@ -44,9 +44,9 @@ public class ShopMenu {
 		Utils.setItemMeta(prevIcon, Translator.getString("SHOP_PREVIOUS_PAGE"), null);
 		
 		// calculate needed rows:
-		int neededRows = (int) Math.ceil((int) (goods.length / 9));
+		int rows = (int) Math.ceil((int) (goods.length / 9));
 		// min 2, max 6 !
-		int rows = Math.min(Math.max(neededRows, 2), 6);
+		rows = Math.min(Math.max(rows, 2), 6);
 		int contentRows = rows - 1;
 		inventorySlots = rows * 9;
 		contentSlots = contentRows * 9;
