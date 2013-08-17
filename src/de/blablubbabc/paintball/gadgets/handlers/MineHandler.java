@@ -112,8 +112,8 @@ public class MineHandler extends WeaponHandler implements Listener {
 				if (gadgetManager.getMatchGadgetCount(match) < Paintball.instance.mineMatchLimit) {
 					if (gadgetManager.getPlayerGadgetCount(match, playerName) < Paintball.instance.minePlayerLimit) {
 						
-						// check space (not in 1*2 hallways):
-						if (blocksHallway(block)) {
+						// check space (hallways)
+						if (Paintball.instance.mineCheckForHallway && blocksHallway(block)) {
 							player.sendMessage(Translator.getString("GADGET_NOT_ENOUGH_SPACE"));
 							return;
 						}
@@ -148,24 +148,96 @@ public class MineHandler extends WeaponHandler implements Listener {
 	}
 	
 	private boolean blocksHallway(Block block) {
-		//TODO
 		if (block.getRelative(BlockFace.UP, 2).getType() != Material.AIR && block.getRelative(BlockFace.UP).getType() == Material.AIR) {
 			boolean west = isWall(block, BlockFace.WEST);
 			boolean east = isWall(block, BlockFace.EAST);
 			boolean north = isWall(block, BlockFace.NORTH);
 			boolean south = isWall(block, BlockFace.SOUTH);
 
+			// | H |    | X |
+			// X o X    H o H
+			// | H |    | X |
 			if (west && east && !north && !south) return true;
 			if (north && south && !west && !east) return true;
 			
 			boolean northWest = isWall(block, BlockFace.NORTH_WEST);
 			boolean southEast = isWall(block, BlockFace.SOUTH_EAST);
-
-			if (northWest && southEast) return true;
-			
 			boolean northEast = isWall(block, BlockFace.NORTH_EAST);
 			boolean southWest = isWall(block, BlockFace.SOUTH_WEST);
 
+			// X H X    X h |   | h |   | h X
+			// h o h    H o h   h o h   h o H
+			// | h |    X h |   X H X   | h X
+			if (northWest) {
+				if (northEast && !north) {
+					if (!west || !east || !south) return true;
+				}
+				if (southWest && !west) {
+					if (!north || !east || !south) return true;
+				}
+			}
+			if (southEast) {
+				if (southWest && !south) {
+					if (!north || !east || !west) return true;
+				}
+				if (northEast && !east) {
+					if (!west || !north || !south) return true;
+				}
+			}
+			
+			// X H |    | h |
+			// h o X    h o X
+			// | h |    X H |
+			if (east) {
+				if (northWest && !north) {
+					if (!south || !west) return true;
+				}
+				if (southWest && !south) {
+					if (!north || !west) return true;
+				}
+			}
+			
+			// | X |    | X |
+			// h o H    H o h
+			// | h X    X h |
+			if (north) {
+				if (southEast && !east) {
+					if (!south || !west) return true;
+				}
+				if (southWest && !west) {
+					if (!south || !east) return true;
+				}
+			}
+			
+			// | h |    | H X
+			// X o h    X o h
+			// | H X    | h |
+			if (west) {
+				if (southEast && !south) {
+					if (!east || !north) return true;
+				}
+				if (northEast && !north) {
+					if (!south || !east) return true;
+				}
+			}
+			
+			// | h X    X h |
+			// h o H    H o h
+			// | X |    | X |
+			if (south) {
+				if (northEast && !east) {
+					if (!north || !west) return true;
+				}
+				if (northWest && !west) {
+					if (!north || !east) return true;
+				}
+			}
+			
+			
+			// X | |    | | X
+			// | o |    | o |
+			// | | X    X | |
+			if (northWest && southEast) return true;
 			if (northEast && southWest) return true;
 			
 			

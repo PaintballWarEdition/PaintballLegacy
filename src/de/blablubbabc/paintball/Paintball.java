@@ -268,6 +268,7 @@ public class Paintball extends JavaPlugin{
 	
 	public boolean mine;
 	public double mineRange;
+	public boolean mineCheckForHallway;
 	public int mineTime;
 	public int mineMatchLimit;
 	public int minePlayerLimit;
@@ -571,6 +572,7 @@ public class Paintball extends JavaPlugin{
 		if(getConfig().get("Paintball.Extras.Rocket.Player Limit") == null)getConfig().set("Paintball.Extras.Rocket.Player Limit", 25);
 		
 		if(getConfig().get("Paintball.Extras.Mine.enabled") == null)getConfig().set("Paintball.Extras.Mine.enabled", true);
+		if(getConfig().get("Paintball.Extras.Mine.Check for Hallways") == null)getConfig().set("Paintball.Extras.Mine.Check for Hallways", true);
 		if(getConfig().get("Paintball.Extras.Mine.Range") == null)getConfig().set("Paintball.Extras.Mine.Range", 4.0);
 		if(getConfig().get("Paintball.Extras.Mine.Explosion-Time-Radius in Ticks") == null)getConfig().set("Paintball.Extras.Mine.Explosion-Time-Radius in Ticks", 60);
 		if(getConfig().get("Paintball.Extras.Mine.Match Limit") == null)getConfig().set("Paintball.Extras.Mine.Match Limit", 50);
@@ -887,6 +889,7 @@ public class Paintball extends JavaPlugin{
 		if(rocketPlayerLimit < 0) rocketPlayerLimit = 0;
 		
 		mine = getConfig().getBoolean("Paintball.Extras.Mine.enabled", true);
+		mineCheckForHallway = getConfig().getBoolean("Paintball.Extras.Mine.Check for Hallways", true);
 		mineRange = getConfig().getDouble("Paintball.Extras.Mine.Range", 4.0);
 		if(mineRange < 0) mineRange = 0;
 		mineTime = getConfig().getInt("Paintball.Extras.Mine.Explosion-Time-Radius in Ticks", 60);
