@@ -2,6 +2,7 @@
 * drops: everything or everything besides snowballs, + config amount of snowballs
 * change/fix worldmode: use teleport event instead of playerchangedworld event and seperate joining/leaving and teleporting, so teleporting can be disable via plugin
 * give info if world has pvp disabled
+* arena list (page 1 of 0) of no arenas
 
 afterwards:
 * making some weapons configurable

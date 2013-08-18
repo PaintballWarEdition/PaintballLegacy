@@ -148,40 +148,82 @@ public class MineHandler extends WeaponHandler implements Listener {
 	}
 	
 	private boolean blocksHallway(Block block) {
-		if (block.getRelative(BlockFace.UP, 2).getType() != Material.AIR && block.getRelative(BlockFace.UP).getType() == Material.AIR) {
-			boolean west = isWall(block, BlockFace.WEST);
-			boolean east = isWall(block, BlockFace.EAST);
-			boolean north = isWall(block, BlockFace.NORTH);
-			boolean south = isWall(block, BlockFace.SOUTH);
-
+		if (block.getRelative(BlockFace.UP).getType() == Material.AIR) {
+			boolean roofed = isRoofed(block);
+			
+			Block northB = block.getRelative(BlockFace.NORTH);
+			Block southB = block.getRelative(BlockFace.SOUTH);
+			Block westB = block.getRelative(BlockFace.WEST);
+			Block eastB = block.getRelative(BlockFace.EAST);
+			
+			boolean north = isWall(northB);
+			boolean south = isWall(southB);
+			boolean west = isWall(westB);
+			boolean east = isWall(eastB);
+			
+			boolean northRoofed = isRoofed(northB);
+			boolean southRoofed = isRoofed(southB);
+			boolean westRoofed = isRoofed(westB);
+			boolean eastRoofed = isRoofed(eastB);
+			
 			// | H |    | X |
 			// X o X    H o H
 			// | H |    | X |
-			if (west && east && !north && !south) return true;
-			if (north && south && !west && !east) return true;
+			if (west && east && !north && !south && (roofed || northRoofed || southRoofed)) return true;
+			if (north && south && !west && !east && (roofed || westRoofed || eastRoofed)) return true;
 			
-			boolean northWest = isWall(block, BlockFace.NORTH_WEST);
-			boolean southEast = isWall(block, BlockFace.SOUTH_EAST);
-			boolean northEast = isWall(block, BlockFace.NORTH_EAST);
-			boolean southWest = isWall(block, BlockFace.SOUTH_WEST);
+			Block northWestB = block.getRelative(BlockFace.NORTH_WEST);
+			Block southEastB = block.getRelative(BlockFace.SOUTH_EAST);
+			Block northEastB = block.getRelative(BlockFace.NORTH_EAST);
+			Block southWestB = block.getRelative(BlockFace.SOUTH_WEST);
+			
+			boolean northWest = isWall(northWestB);
+			boolean southEast = isWall(southEastB);
+			boolean northEast = isWall(northEastB);
+			boolean southWest = isWall(southWestB);
+			
+			/*boolean northWestRoofed = isRoofed(northWestB);
+			boolean southEastRoofed = isRoofed(southEastB);
+			boolean northEastRoofed = isRoofed(northEastB);
+			boolean southWestRoofed = isRoofed(southWestB);*/
 
 			// X H X    X h |   | h |   | h X
 			// h o h    H o h   h o h   h o H
 			// | h |    X h |   X H X   | h X
 			if (northWest) {
 				if (northEast && !north) {
-					if (!west || !east || !south) return true;
+					if (roofed || northRoofed) {
+						if (!west || !east || !south) return true;
+					}
+					if (!west && westRoofed && (east || eastRoofed) && (south || southRoofed)) return true;
+					if (!east && eastRoofed && (west || westRoofed) && (south || southRoofed)) return true;
+					if (!south && southRoofed && (west || westRoofed) && (east || eastRoofed)) return true;
 				}
 				if (southWest && !west) {
-					if (!north || !east || !south) return true;
+					if (roofed || westRoofed) {
+						if (!north || !east || !south) return true;
+					}
+					if (!north && northRoofed && (east || eastRoofed) && (south || southRoofed)) return true;
+					if (!east && eastRoofed && (north || northRoofed) && (south || southRoofed)) return true;
+					if (!south && southRoofed && (north || northRoofed) && (east || eastRoofed)) return true;
 				}
 			}
 			if (southEast) {
 				if (southWest && !south) {
-					if (!north || !east || !west) return true;
+					if (roofed || southRoofed) {
+						if (!north || !east || !west) return true;
+					}
+					if (!north && northRoofed && (east || eastRoofed) && (west || westRoofed)) return true;
+					if (!east && eastRoofed && (north || northRoofed) && (west || westRoofed)) return true;
+					if (!west && westRoofed && (north || northRoofed) && (east || eastRoofed)) return true;
 				}
 				if (northEast && !east) {
-					if (!west || !north || !south) return true;
+					if (roofed || eastRoofed) {
+						if (!west || !north || !south) return true;
+					}
+					if (!north && northRoofed && (south || southRoofed) && (west || westRoofed)) return true;
+					if (!south && southRoofed && (north || northRoofed) && (west || westRoofed)) return true;
+					if (!west && westRoofed && (north || northRoofed) && (south || southRoofed)) return true;
 				}
 			}
 			
@@ -190,10 +232,18 @@ public class MineHandler extends WeaponHandler implements Listener {
 			// | h |    X H |
 			if (east) {
 				if (northWest && !north) {
-					if (!south || !west) return true;
+					if (roofed || northRoofed) {
+						if (!south || !west) return true;
+					}
+					if (!south && southRoofed && (west || westRoofed)) return true;
+					if (!west && westRoofed && (south || southRoofed)) return true;
 				}
 				if (southWest && !south) {
-					if (!north || !west) return true;
+					if (roofed || southRoofed) {
+						if (!north || !west) return true;
+					}
+					if (!north && northRoofed && (west || westRoofed)) return true;
+					if (!west && westRoofed && (north || northRoofed)) return true;
 				}
 			}
 			
@@ -202,10 +252,18 @@ public class MineHandler extends WeaponHandler implements Listener {
 			// | h X    X h |
 			if (north) {
 				if (southEast && !east) {
-					if (!south || !west) return true;
+					if (roofed || eastRoofed) {
+						if (!south || !west) return true;
+					}
+					if (!south && southRoofed && (west || westRoofed)) return true;
+					if (!west && westRoofed && (south || southRoofed)) return true;
 				}
 				if (southWest && !west) {
-					if (!south || !east) return true;
+					if (roofed || westRoofed) {
+						if (!south || !east) return true;
+					}
+					if (!south && southRoofed && (east || eastRoofed)) return true;
+					if (!east && eastRoofed && (south || southRoofed)) return true;
 				}
 			}
 			
@@ -214,10 +272,18 @@ public class MineHandler extends WeaponHandler implements Listener {
 			// | H X    | h |
 			if (west) {
 				if (southEast && !south) {
-					if (!east || !north) return true;
+					if (roofed || southRoofed) {
+						if (!east || !north) return true;
+					}
+					if (!east && eastRoofed && (north || northRoofed)) return true;
+					if (!north && northRoofed && (east || eastRoofed)) return true;
 				}
 				if (northEast && !north) {
-					if (!south || !east) return true;
+					if (roofed || northRoofed) {
+						if (!south || !east) return true;
+					}
+					if (!east && eastRoofed && (south || southRoofed)) return true;
+					if (!south && southRoofed && (east || eastRoofed)) return true;
 				}
 			}
 			
@@ -226,10 +292,18 @@ public class MineHandler extends WeaponHandler implements Listener {
 			// | X |    | X |
 			if (south) {
 				if (northEast && !east) {
-					if (!north || !west) return true;
+					if (roofed || eastRoofed) {
+						if (!north || !west) return true;
+					}
+					if (!west && westRoofed && (north || northRoofed)) return true;
+					if (!north && northRoofed && (west || westRoofed)) return true;
 				}
 				if (northWest && !west) {
-					if (!north || !east) return true;
+					if (roofed || westRoofed) {
+						if (!north || !east) return true;
+					}
+					if (!east && eastRoofed && (north || northRoofed)) return true;
+					if (!north && northRoofed && (east || eastRoofed)) return true;
 				}
 			}
 			
@@ -237,18 +311,22 @@ public class MineHandler extends WeaponHandler implements Listener {
 			// X | |    | | X
 			// | o |    | o |
 			// | | X    X | |
-			if (northWest && southEast) return true;
-			if (northEast && southWest) return true;
+			if (northWest && southEast && (roofed || (westRoofed && southRoofed) || (northRoofed && eastRoofed))) return true;
+			if (northEast && southWest && (roofed || (westRoofed && northRoofed) || (southRoofed && eastRoofed))) return true;
 			
 			
 		}
 		return false;
 	}
 	
-	private boolean isWall(Block block, BlockFace direction) {
-		Block bottom = block.getRelative(direction);
+	private boolean isWall(Block bottom) {
 		Block top = bottom.getRelative(BlockFace.UP);
 		return bottom.getType() != Material.AIR || top.getType() != Material.AIR;
+	}
+	
+	private boolean isRoofed(Block bottom) {
+		Block top = bottom.getRelative(BlockFace.UP, 2);
+		return top.getType() != Material.AIR;
 	}
 	
 	@Override
