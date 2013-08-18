@@ -307,13 +307,11 @@ public class MineHandler extends WeaponHandler implements Listener {
 				}
 			}
 			
-			
 			// X | |    | | X
 			// | o |    | o |
 			// | | X    X | |
-			if (northWest && southEast && (roofed || (westRoofed && southRoofed) || (northRoofed && eastRoofed))) return true;
-			if (northEast && southWest && (roofed || (westRoofed && northRoofed) || (southRoofed && eastRoofed))) return true;
-			
+			if (northWest && southEast && ((roofed && !(west && south) && !(north && east)) || (westRoofed && southRoofed && !(west && south)) || (northRoofed && eastRoofed && !(north && east)))) return true;
+			if (northEast && southWest && ((roofed && !(west && north) && !(south && east)) || (westRoofed && northRoofed && !(west && north)) || (southRoofed && eastRoofed && !(east && south)))) return true;
 			
 		}
 		return false;

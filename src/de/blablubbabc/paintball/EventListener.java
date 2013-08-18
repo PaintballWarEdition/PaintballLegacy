@@ -434,6 +434,7 @@ public class EventListener implements Listener {
 	@EventHandler(priority = EventPriority.LOWEST, ignoreCancelled = false)
 	public void onPlayerPlace(BlockPlaceEvent event) {
 		Player player = event.getPlayer();
+		
 		if (player.getGameMode() == GameMode.CREATIVE) return;
 		
 		if (Lobby.LOBBY.isMember(player)) {
