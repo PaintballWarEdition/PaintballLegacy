@@ -52,17 +52,30 @@ public class PlayerDataStore {
 	// Scoreboard
 	private Scoreboard scoreboard;
 
+	// teleport, store, clear
 	public PlayerDataStore(Player player, Location to) {
-		teleportStoreClearPlayer(player, to);
+		teleportPlayer(player, to);
+		storeClearPlayer(player);
+	}
+	
+	// only store, clear
+	public PlayerDataStore(Player player) {
+		// make sure location is not null..
+		location = player.getLocation();
+		
+		storeClearPlayer(player);
 	}
 
-	public void teleportStoreClearPlayer(Player player, Location to) {
+	private void teleportPlayer(Player player, Location to) {
 		// PREPARE
 		player.closeInventory();
 		player.leaveVehicle();
 		// LOCATION
 		location = player.getLocation();
 		player.teleport(to);
+	}
+	
+	private void storeClearPlayer(Player player) {
 		// GAMEMODE
 		gamemode = player.getGameMode();
 		player.setGameMode(GameMode.SURVIVAL);
@@ -111,7 +124,7 @@ public class PlayerDataStore {
 	}
 
 	@SuppressWarnings("deprecation")
-	public void restoreTeleportPlayer(Player player) {
+	public void restoreTeleportPlayer(Player player, boolean withoutTeleport) {
 		// PREPARE
 		// scoreboard will be reset anyway:
 		clearPlayer(player, true, true);
@@ -165,7 +178,7 @@ public class PlayerDataStore {
 		player.updateInventory();
 		
 		// TELEPORT BACK
-		player.teleport(location);
+		if (!withoutTeleport) player.teleport(location);
 	}
 	
 	@SuppressWarnings("deprecation")

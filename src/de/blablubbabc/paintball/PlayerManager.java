@@ -55,6 +55,10 @@ public class PlayerManager {
 		
 	}
 	
+	public void joinLobbyPre(Player player, boolean withDelay, Runnable runOnSuccess) {
+		if (joinLobbyPreChecks(player)) joinLobbyFresh(player, withDelay, runOnSuccess);
+	}
+	
 	private void handleJoinTeam(Player player, Lobby team) {
 		if(Lobby.isPlaying(player) || Lobby.isSpectating(player)) {
 			player.sendMessage(Translator.getString("CANNOT_CHANGE_TEAM_PLAYING"));
@@ -164,10 +168,6 @@ public class PlayerManager {
 		return true;
 	}
 	
-	public void joinLobbyPre(Player player, boolean withDelay, Runnable runOnSuccess) {
-		if (joinLobbyPreChecks(player)) joinLobbyFresh(player, withDelay, runOnSuccess);
-	}
-	
 	private Map<String, Scoreboard> lobbyScoreboards = new HashMap<String, Scoreboard>();
 	
 	private Map<String, WaitTimer> currentlyWaiting = new HashMap<String, WaitTimer>();
@@ -217,7 +217,8 @@ public class PlayerManager {
 					// join lobby:
 					Lobby.LOBBY.addMember(player);
 					Paintball.instance.feeder.join(playerName);
-					teleportStoreClearPlayer(player, Paintball.instance.getNextLobbySpawn());
+					if (Paintball.instance.worldMode) storeClearPlayer(player, Paintball.instance.getNextLobbySpawn());
+					else teleportStoreClearPlayer(player, Paintball.instance.getNextLobbySpawn());
 					// ASSIGN RANK
 					if (Paintball.instance.ranksLobbyArmor) Paintball.instance.rankManager.getRank(playerName).assignArmorToPlayer(player);
 					// ASSIGN SCOREBOARD
@@ -310,7 +311,11 @@ public class PlayerManager {
 			if (Paintball.instance.arenaVoting) Paintball.instance.matchManager.onLobbyLeave(player);
 			
 			// restore and teleport back:
-			clearRestoreTeleportPlayer(player);
+			if (Paintball.instance.worldMode) {
+				clearRestorePlayer(player);
+			} else {
+				clearRestoreTeleportPlayer(player);
+			}
 			
 			// if player not in lobby and not in match -> stats no longer needed:
 			if (!Lobby.LOBBY.isMember(player) && Paintball.instance.matchManager.getMatch(player) == null) unloadPlayerStats(playerName);
@@ -436,8 +441,9 @@ public class PlayerManager {
 							public void run() {
 								Player player = Paintball.instance.getServer().getPlayerExact(name);
 								if (player != null) {
+									// autoLobby and worldMode
 									if (Paintball.instance.autoLobby || (Paintball.instance.worldMode && Paintball.instance.worldModeWorlds.contains(player.getWorld().getName()))) {
-										if (Paintball.instance.autoTeam) {
+										if(Paintball.instance.autoTeam) {
 											joinTeam(player, false, Lobby.RANDOM);
 										} else {
 											joinLobbyPre(player, false, null);
@@ -455,12 +461,12 @@ public class PlayerManager {
 	/**
 	 * This method should only be used inside this class and surrounded by locking the player by adding and removing it from the playersToAdd list.
 	 * 
-	 * @param name
+	 * @param playerName playername
 	 */
-	private void addPlayer(final String name) {
+	private void addPlayer(final String playerName) {
 		// TODO is exits check really necessary here ?
-		if (!Paintball.instance.sql.sqlPlayers.isPlayerExisting(name)) {
-			Paintball.instance.sql.sqlPlayers.addNewPlayer(name);
+		if (!Paintball.instance.sql.sqlPlayers.isPlayerExisting(playerName)) {
+			Paintball.instance.sql.sqlPlayers.addNewPlayer(playerName);
 		}
 	}
 
@@ -550,10 +556,21 @@ public class PlayerManager {
 		playerStore.put(player.getName(), new PlayerDataStore(player, to));
 	}
 	
+	public void storeClearPlayer(Player player, Location to) {
+		playerStore.put(player.getName(), new PlayerDataStore(player));
+	}
+	
 	public void clearRestoreTeleportPlayer(Player player) {
 		PlayerDataStore playerData = playerStore.remove(player.getName());
 		if (playerData != null) {
-			playerData.restoreTeleportPlayer(player);
+			playerData.restoreTeleportPlayer(player, false);
+		}
+	}
+	
+	public void clearRestorePlayer(Player player) {
+		PlayerDataStore playerData = playerStore.remove(player.getName());
+		if (playerData != null) {
+			playerData.restoreTeleportPlayer(player, true);
 		}
 	}
 

@@ -98,24 +98,43 @@ public class CommandManager implements CommandExecutor{
 						}*/
 							player.sendMessage(Translator.getString("ALREADY_IN_LOBBY"));
 							return true;
+						} else if (plugin.worldMode) {
+							player.sendMessage(Translator.getString("NO_JOINING_WORLDMODE"));
+							return true;
 						} else {
 							plugin.playerManager.joinLobbyPre(player, true, null);
 							return true;
 						}
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////			
 					} else if (args[0].equalsIgnoreCase("blue")) {
+						if (plugin.worldMode) {
+							player.sendMessage(Translator.getString("NO_JOINING_WORLDMODE"));
+							return true;
+						}
 						plugin.playerManager.joinTeam(player, true, Lobby.BLUE);
 						return true;
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 					} else if (args[0].equalsIgnoreCase("red")) {
+						if (plugin.worldMode) {
+							player.sendMessage(Translator.getString("NO_JOINING_WORLDMODE"));
+							return true;
+						}
 						plugin.playerManager.joinTeam(player, true, Lobby.RED);
 						return true;
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 					} else if (args[0].equalsIgnoreCase("random") || args[0].equalsIgnoreCase("join")) {
+						if (plugin.worldMode) {
+							player.sendMessage(Translator.getString("NO_JOINING_WORLDMODE"));
+							return true;
+						}
 						plugin.playerManager.joinTeam(player, true, Lobby.RANDOM);
 						return true;
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 					} else if (args[0].equalsIgnoreCase("spec")) {
+						if (plugin.worldMode) {
+							player.sendMessage(Translator.getString("NO_JOINING_WORLDMODE"));
+							return true;
+						}
 						plugin.playerManager.joinTeam(player, true, Lobby.SPECTATE);
 						return true;
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -154,6 +173,9 @@ public class CommandManager implements CommandExecutor{
 							}*/
 							if (plugin.autoLobby && !player.hasPermission("paintball.admin")) {
 								player.sendMessage(Translator.getString("CANNOT_LEAVE_LOBBY"));
+							} else if (plugin.worldMode) {
+								player.sendMessage(Translator.getString("NO_LEAVING_WORLDMODE"));
+								return true;
 							} else {
 								plugin.playerManager.leaveLobby(player, true);
 							}
