@@ -18,18 +18,17 @@ import de.blablubbabc.paintball.utils.Translator;
 
 public class CmdArena {
 	private Paintball plugin;
-	private ArenaManager am;
 	
 	private int entriesPerPage = 15;
 
-	public CmdArena(Paintball pl, ArenaManager a) {
+	public CmdArena(Paintball pl) {
 		plugin = pl;
-		am = a;
 	}
 
 	public boolean command(CommandSender sender, String[] args) {
 		if (sender instanceof Player) {
 			Player player = (Player) sender;
+			ArenaManager arenaManager = plugin.arenaManager;
 			if (args[1].equalsIgnoreCase("list")) {
 				int page = 1;
 				if (args.length >= 3) {
@@ -41,7 +40,7 @@ public class CmdArena {
 					}
 				}
 				// list
-				List<String> arenas = am.getAllArenaNames();
+				List<String> arenas = arenaManager.getAllArenaNames();
 				Map<String, String> vars = new HashMap<String, String>();
 				vars.put("arenas", String.valueOf(arenas.size()));
 				player.sendMessage(Translator.getString("ARENA_LIST_HEADER", vars));
@@ -65,7 +64,7 @@ public class CmdArena {
 				for (int i = start; i < end; i++) {
 					String name = arenas.get(i);
 					vars2.put("arena", name);
-					vars2.put("status", am.getArenaStatus(name));
+					vars2.put("status", arenaManager.getArenaStatus(name));
 					player.sendMessage(Translator.getString("ARENA_LIST_ENTRY", vars2));
 				}
 				return true;
@@ -73,9 +72,9 @@ public class CmdArena {
 				String name = args[1];
 				Map<String, String> vars = new HashMap<String, String>();
 				vars.put("arena", name);
-				if (!am.existing(name)) {
+				if (!arenaManager.existing(name)) {
 					if (args.length == 2) {
-						am.addArena(name);
+						arenaManager.addArena(name);
 						player.sendMessage(Translator.getString("ARENA_CREATED", vars));
 						return true;
 					} else {
@@ -89,8 +88,8 @@ public class CmdArena {
 				//Existing:
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 				if (args[2].equalsIgnoreCase("info")) {
-					Map<ArenaStat, Integer> arenaStats = am.getArenaStats(name);
-					vars.put("status", am.getArenaStatus(name));
+					Map<ArenaStat, Integer> arenaStats = arenaManager.getArenaStats(name);
+					vars.put("status", arenaManager.getArenaStatus(name));
 					for (Entry<ArenaStat, Integer> entry : arenaStats.entrySet()) {
 						vars.put(entry.getKey().getKey(), String.valueOf(entry.getValue()));
 					}
@@ -103,7 +102,7 @@ public class CmdArena {
 					player.sendMessage(Translator.getString("ARENA_INFO_STATS_GRENADES", vars));
 					player.sendMessage(Translator.getString("ARENA_INFO_STATS_AIRSTRIKES", vars));
 					
-					Map<ArenaSetting, Integer> arenaSettings = am.getArenaSettings(name);
+					Map<ArenaSetting, Integer> arenaSettings = arenaManager.getArenaSettings(name);
 					for (Entry<ArenaSetting, Integer> entry : arenaSettings.entrySet()) {
 						vars.put(entry.getKey().getKey(), String.valueOf(entry.getValue()));
 					}
@@ -123,24 +122,24 @@ public class CmdArena {
 					player.sendMessage(Translator.getString("ARENA_INFO_SETTINGS_ROUND_TIME", vars));
 					
 					vars.put("team", String.valueOf(Lobby.BLUE.getName()));
-					int bluespawnsize = am.getBlueSpawnsSize(name);
+					int bluespawnsize = arenaManager.getBlueSpawnsSize(name);
 					vars.put("spawns", String.valueOf(bluespawnsize));
 					player.sendMessage(Translator.getString("ARENA_INFO_SPAWNS", vars));
 					
 					vars.put("team", String.valueOf(Lobby.RED.getName()));
-					int redspawnsize = am.getRedSpawnsSize(name);
+					int redspawnsize = arenaManager.getRedSpawnsSize(name);
 					vars.put("spawns", String.valueOf(redspawnsize));
 					player.sendMessage(Translator.getString("ARENA_INFO_SPAWNS", vars));
 					
 					vars.put("team", String.valueOf(Lobby.SPECTATE.getName()));
-					int specspawnsize = am.getSpecSpawnsSize(name);
+					int specspawnsize = arenaManager.getSpecSpawnsSize(name);
 					vars.put("spawns", String.valueOf(specspawnsize));
 					player.sendMessage(Translator.getString("ARENA_INFO_SPAWNS", vars));
 					
-					if (!am.isReady(name)) {
+					if (!arenaManager.isReady(name)) {
 						player.sendMessage(Translator.getString("ARENA_INFO_NEEDS_HEADER"));
-						if (am.inUse(name)) player.sendMessage(Translator.getString("ARENA_INFO_NEEDS_NO_USE"));
-						if (am.isDisabled(name)) player.sendMessage(Translator.getString("ARENA_INFO_NEEDS_ENABLE"));
+						if (arenaManager.inUse(name)) player.sendMessage(Translator.getString("ARENA_INFO_NEEDS_NO_USE"));
+						if (arenaManager.isDisabled(name)) player.sendMessage(Translator.getString("ARENA_INFO_NEEDS_ENABLE"));
 						//if(!am.pvpEnabled(name)) player.sendMessage(plugin.t.getString("ARENA_INFO_NEEDS_PVP"));
 						if (redspawnsize == 0) {
 							vars.put("team", Lobby.RED.getName());
@@ -159,57 +158,57 @@ public class CmdArena {
 					return true;
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 				} else if (args[2].equalsIgnoreCase("blue")) {
-					if (am.inUse(name)) {
+					if (arenaManager.inUse(name)) {
 						player.sendMessage(Translator.getString("ARENA_NO_EDIT_IN_USE"));
 						return true;
 					}
-					am.addBlueSpawn(name, player.getLocation());
+					arenaManager.addBlueSpawn(name, player.getLocation());
 					vars.put("team_color", Lobby.BLUE.color().toString());
 					vars.put("team", Lobby.BLUE.getName());
-					vars.put("team_spawns", String.valueOf(am.getBlueSpawnsSize(name)));
+					vars.put("team_spawns", String.valueOf(arenaManager.getBlueSpawnsSize(name)));
 					player.sendMessage(Translator.getString("ARENA_SPAWN_ADDED", vars));
 					return true;
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 				} else if (args[2].equalsIgnoreCase("red")) {
-					if (am.inUse(name)) {
+					if (arenaManager.inUse(name)) {
 						player.sendMessage(Translator.getString("ARENA_NO_EDIT_IN_USE"));
 						return true;
 					}
-					am.addRedSpawn(name, player.getLocation());
+					arenaManager.addRedSpawn(name, player.getLocation());
 					vars.put("team_color", Lobby.RED.color().toString());
 					vars.put("team", Lobby.RED.getName());
-					vars.put("team_spawns", String.valueOf(am.getRedSpawnsSize(name)));
+					vars.put("team_spawns", String.valueOf(arenaManager.getRedSpawnsSize(name)));
 					player.sendMessage(Translator.getString("ARENA_SPAWN_ADDED", vars));
 					return true;
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 				} else if (args[2].equalsIgnoreCase("spec")) {
-					if (am.inUse(name)) {
+					if (arenaManager.inUse(name)) {
 						player.sendMessage(Translator.getString("ARENA_NO_EDIT_IN_USE"));
 						return true;
 					}
-					am.addSpecSpawn(name, player.getLocation());
+					arenaManager.addSpecSpawn(name, player.getLocation());
 					vars.put("team_color", Lobby.SPECTATE.color().toString());
 					vars.put("team", Lobby.SPECTATE.getName());
-					vars.put("team_spawns", String.valueOf(am.getSpecSpawnsSize(name)));
+					vars.put("team_spawns", String.valueOf(arenaManager.getSpecSpawnsSize(name)));
 					player.sendMessage(Translator.getString("ARENA_SPAWN_ADDED", vars));
 					return true;
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 				} else if (args[2].equalsIgnoreCase("remove")) {
-					if (am.inUse(name)) {
+					if (arenaManager.inUse(name)) {
 						player.sendMessage(Translator.getString("ARENA_NO_EDIT_IN_USE"));
 						return true;
 					}
-					am.remove(name);
+					arenaManager.remove(name);
 					player.sendMessage(Translator.getString("ARENA_REMOVED", vars));
 					return true;
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 				} else if (args[2].equalsIgnoreCase("delblue")) {
-					if (am.inUse(name)) {
+					if (arenaManager.inUse(name)) {
 						player.sendMessage(Translator.getString("ARENA_NO_EDIT_IN_USE"));
 						return true;
 					}
-					int num = am.getBlueSpawnsSize(name);
-					am.removeBlueSpawns(name);
+					int num = arenaManager.getBlueSpawnsSize(name);
+					arenaManager.removeBlueSpawns(name);
 					vars.put("team_color", Lobby.BLUE.color().toString());
 					vars.put("team", Lobby.BLUE.getName());
 					vars.put("team_spawns", String.valueOf(num));
@@ -217,12 +216,12 @@ public class CmdArena {
 					return true;
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 				} else if (args[2].equalsIgnoreCase("delred")) {
-					if (am.inUse(name)) {
+					if (arenaManager.inUse(name)) {
 						player.sendMessage(Translator.getString("ARENA_NO_EDIT_IN_USE"));
 						return true;
 					}
-					int num = am.getRedSpawnsSize(name);
-					am.removeRedSpawns(name);
+					int num = arenaManager.getRedSpawnsSize(name);
+					arenaManager.removeRedSpawns(name);
 					vars.put("team_color", Lobby.RED.color().toString());
 					vars.put("team", Lobby.RED.getName());
 					vars.put("team_spawns", String.valueOf(num));
@@ -230,12 +229,12 @@ public class CmdArena {
 					return true;
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 				} else if (args[2].equalsIgnoreCase("delspec")) {
-					if (am.inUse(name)) {
+					if (arenaManager.inUse(name)) {
 						player.sendMessage(Translator.getString("ARENA_NO_EDIT_IN_USE"));
 						return true;
 					}
-					int num = am.getSpecSpawnsSize(name);
-					am.removeSpecSpawns(name);
+					int num = arenaManager.getSpecSpawnsSize(name);
+					arenaManager.removeSpecSpawns(name);
 					vars.put("team_color", Lobby.SPECTATE.color().toString());
 					vars.put("team", Lobby.SPECTATE.getName());
 					vars.put("team_spawns", String.valueOf(num));
@@ -243,7 +242,7 @@ public class CmdArena {
 					return true;
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 				} else if (args[2].equalsIgnoreCase("set")) {
-					if (am.inUse(name)) {
+					if (arenaManager.inUse(name)) {
 						player.sendMessage(Translator.getString("ARENA_NO_EDIT_IN_USE"));
 						return true;
 					}
@@ -253,7 +252,7 @@ public class CmdArena {
 							int value = Integer.parseInt(args[4]);
 							Map<ArenaSetting, Integer> newSettings = new HashMap<ArenaSetting, Integer>();
 							newSettings.put(setting, value);
-							am.setSettings(name, newSettings);
+							arenaManager.setSettings(name, newSettings);
 							vars.put("setting", setting.getKey());
 							vars.put("value", String.valueOf(value));
 							player.sendMessage(Translator.getString("ARENA_SET_SETTING", vars));
@@ -269,11 +268,11 @@ public class CmdArena {
 					}
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 				} else if (args[2].equalsIgnoreCase("disable")) {
-					if (am.inUse(name)) {
+					if (arenaManager.inUse(name)) {
 						player.sendMessage(Translator.getString("ARENA_NO_EDIT_IN_USE"));
 						return true;
 					}
-					if (am.disable(name)) {
+					if (arenaManager.disable(name)) {
 						player.sendMessage(Translator.getString("ARENA_DISABLED", vars));
 					} else {
 						player.sendMessage(Translator.getString("ARENA_ALREADY_DISABLED", vars));
@@ -281,11 +280,11 @@ public class CmdArena {
 					return true;
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 				} else if (args[2].equalsIgnoreCase("enable")) {
-					if (am.inUse(name)) {
+					if (arenaManager.inUse(name)) {
 						player.sendMessage(Translator.getString("ARENA_NO_EDIT_IN_USE"));
 						return true;
 					}
-					if (am.enable(name)) {
+					if (arenaManager.enable(name)) {
 						player.sendMessage(Translator.getString("ARENA_ENABLED", vars));
 					} else {
 						player.sendMessage(Translator.getString("ARENA_ALREADY_ENABLED", vars));

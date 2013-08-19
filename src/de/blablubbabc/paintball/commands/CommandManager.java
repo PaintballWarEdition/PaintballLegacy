@@ -27,7 +27,7 @@ public class CommandManager implements CommandExecutor{
 	public CommandManager(Paintball pl) {
 		plugin = pl;
 		blablubbabc = ChatColor.AQUA + "" + ChatColor.BOLD + "[ " + ChatColor.GOLD + "" + ChatColor.ITALIC + "" + ChatColor.BOLD + "Paintball by blablubbabc" + ChatColor.RESET + ChatColor.AQUA + "" + ChatColor.BOLD + " ]";
-		cmdArena = new CmdArena(plugin, plugin.arenaManager);
+		cmdArena = new CmdArena(plugin);
 		cmdAdmin = new CmdAdmin(plugin);
 		cmdShop = new CmdShop(plugin);
 	}
