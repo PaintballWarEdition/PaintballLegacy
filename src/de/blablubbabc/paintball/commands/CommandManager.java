@@ -107,7 +107,7 @@ public class CommandManager implements CommandExecutor{
 						}
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////			
 					} else if (args[0].equalsIgnoreCase("blue")) {
-						if (plugin.worldMode) {
+						if (plugin.worldMode && !Lobby.LOBBY.isMember(player)) {
 							player.sendMessage(Translator.getString("NO_JOINING_WORLDMODE"));
 							return true;
 						}
@@ -115,7 +115,7 @@ public class CommandManager implements CommandExecutor{
 						return true;
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 					} else if (args[0].equalsIgnoreCase("red")) {
-						if (plugin.worldMode) {
+						if (plugin.worldMode && !Lobby.LOBBY.isMember(player)) {
 							player.sendMessage(Translator.getString("NO_JOINING_WORLDMODE"));
 							return true;
 						}
@@ -123,7 +123,7 @@ public class CommandManager implements CommandExecutor{
 						return true;
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 					} else if (args[0].equalsIgnoreCase("random") || args[0].equalsIgnoreCase("join")) {
-						if (plugin.worldMode) {
+						if (plugin.worldMode && !Lobby.LOBBY.isMember(player)) {
 							player.sendMessage(Translator.getString("NO_JOINING_WORLDMODE"));
 							return true;
 						}
@@ -131,7 +131,7 @@ public class CommandManager implements CommandExecutor{
 						return true;
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 					} else if (args[0].equalsIgnoreCase("spec")) {
-						if (plugin.worldMode) {
+						if (plugin.worldMode && !Lobby.LOBBY.isMember(player)) {
 							player.sendMessage(Translator.getString("NO_JOINING_WORLDMODE"));
 							return true;
 						}
