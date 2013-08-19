@@ -46,7 +46,7 @@ public class CmdArena {
 				player.sendMessage(Translator.getString("ARENA_LIST_HEADER", vars));
 				
 				int start = (page - 1) * entriesPerPage;
-				int max_page = (int) Math.ceil((double) arenas.size() / entriesPerPage);
+				int max_page = Math.max(1, (int) Math.ceil((double) arenas.size() / entriesPerPage));
 				// selected page to high ?
 				if (start >= arenas.size()) {
 					if (arenas.size() > 0) page = max_page;
