@@ -1,6 +1,5 @@
 1.2.0
 * drops: everything or everything besides snowballs, + config amount of snowballs
-* give info if world has pvp disabled
 
 afterwards:
 * making some weapons configurable

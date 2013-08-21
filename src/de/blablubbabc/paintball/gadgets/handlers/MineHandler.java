@@ -148,7 +148,7 @@ public class MineHandler extends WeaponHandler implements Listener {
 	}
 	
 	private boolean blocksHallway(Block block) {
-		if (block.getRelative(BlockFace.UP).getType() == Material.AIR) {
+		if (block.getRelative(BlockFace.UP).isEmpty()) {
 			boolean roofed = isRoofed(block);
 			
 			Block northB = block.getRelative(BlockFace.NORTH);
@@ -319,12 +319,12 @@ public class MineHandler extends WeaponHandler implements Listener {
 	
 	private boolean isWall(Block bottom) {
 		Block top = bottom.getRelative(BlockFace.UP);
-		return bottom.getType() != Material.AIR || top.getType() != Material.AIR;
+		return bottom.getType().isSolid() || top.getType().isSolid();
 	}
 	
 	private boolean isRoofed(Block bottom) {
 		Block top = bottom.getRelative(BlockFace.UP, 2);
-		return top.getType() != Material.AIR;
+		return top.getType().isSolid();
 	}
 	
 	@Override
