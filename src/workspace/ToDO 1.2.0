@@ -1,5 +1,6 @@
 1.2.0
 * drops: everything or everything besides snowballs, + config amount of snowballs
+* Voting for arena names when only one arena with that name is in the current options
 
 afterwards:
 * making some weapons configurable
