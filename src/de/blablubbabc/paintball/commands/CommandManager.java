@@ -14,7 +14,6 @@ import de.blablubbabc.paintball.Rank;
 import de.blablubbabc.paintball.statistics.player.PlayerStat;
 import de.blablubbabc.paintball.utils.KeyValuePair;
 import de.blablubbabc.paintball.utils.Translator;
-import de.blablubbabc.paintball.utils.Utils;
 
 public class CommandManager implements CommandExecutor{
 	private Paintball plugin;
