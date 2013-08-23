@@ -603,7 +603,7 @@ public class Paintball extends JavaPlugin{
 		
 		if(getConfig().get("Paintball.Shop.enabled") == null)getConfig().set("Paintball.Shop.enabled", true);
 		if(getConfig().get("Paintball.Shop.Close Inventory Menu On Purchase") == null)getConfig().set("Paintball.Shop.Close Inventory Menu On Purchase", false);
-		if(getConfig().get("Paintball.Shop.Admins bypass rank restrictions") == null)getConfig().set("Paintball.Shop.Admins bypass rank restrictions", true);
+		if(getConfig().get("Paintball.Shop.Admins bypass rank restrictions") == null)getConfig().set("Paintball.Shop.Admins bypass rank restrictions", false);
 		if(getConfig().get("Paintball.Shop.Goods (amount-name-id-subid-price-rank)") == null)getConfig().set("Paintball.Shop.Goods (amount-name-id-subid-price-rank)", goodsDef);
 		saveConfig();
 
@@ -791,7 +791,7 @@ public class Paintball extends JavaPlugin{
 		
 		//shop:
 		shop = getConfig().getBoolean("Paintball.Shop.enabled", true);
-		shopCloseMenuOnPurchase = getConfig().getBoolean("Paintball.Shop.Close Inventory Menu On Purchase", true);
+		shopCloseMenuOnPurchase = getConfig().getBoolean("Paintball.Shop.Close Inventory Menu On Purchase", false);
 		ranksAdminBypassShop = getConfig().getBoolean("Paintball.Shop.Admins bypass rank restrictions", false);
 		shopGoods = (ArrayList<String>) getConfig().getList("Paintball.Shop.Goods (amount-name-id-subid-price-rank)", goodsDef);
 
