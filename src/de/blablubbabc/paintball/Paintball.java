@@ -118,11 +118,11 @@ public class Paintball extends JavaPlugin{
 	// chat
 	public boolean chatMessageColor;
 	public boolean chatNameColor;
+	public boolean chatFeaturesOnlyForPaintballersVisible;
 	
 	// ranks
 	public boolean ranksLobbyArmor;
 	public boolean ranksChatPrefix;
-	public boolean ranksChatPrefixOnlyForPaintballers;
 	public boolean ranksAdminBypassShop;
 	
 	public boolean shop;
@@ -420,10 +420,10 @@ public class Paintball extends JavaPlugin{
 		// chat colors
 		if(getConfig().get("Paintball.Chat.Colored Message") == null)getConfig().set("Paintball.Chat.Colored Message", true);
 		if(getConfig().get("Paintball.Chat.Colored Name") == null)getConfig().set("Paintball.Chat.Colored Name", false);
+		if(getConfig().get("Paintball.Chat.Changes only visible for Paintballers") == null)getConfig().set("Paintball.Chat.Changes only visible for Paintballers", true);
 		
 		// ranks
 		if(getConfig().get("Paintball.Ranks.Chat Prefix.enabled") == null)getConfig().set("Paintball.Ranks.Chat Prefix.enabled", true);
-		if(getConfig().get("Paintball.Ranks.Chat Prefix.Only visible for Paintballers") == null)getConfig().set("Paintball.Ranks.Chat Prefix.Only visible for Paintballers", true);
 		if(getConfig().get("Paintball.Ranks.Lobby Armor") == null)getConfig().set("Paintball.Ranks.Lobby Armor", true);
 		
 		// scoreboards
@@ -716,10 +716,10 @@ public class Paintball extends JavaPlugin{
 		// chat colors
 		chatMessageColor = getConfig().getBoolean("Paintball.Chat.Colored Message", true);
 		chatNameColor = getConfig().getBoolean("Paintball.Chat.Colored Name By Displayname Replacing", false);
+		chatFeaturesOnlyForPaintballersVisible = getConfig().getBoolean("Paintball.Chat.Changes only visible for Paintballers", true);
 		
 		// ranks
 		ranksChatPrefix = getConfig().getBoolean("Paintball.Ranks.Chat Prefix.enabled", true);
-		ranksChatPrefixOnlyForPaintballers = getConfig().getBoolean("Paintball.Ranks.Chat Prefix.Only visible for Paintballers", true);
 		ranksLobbyArmor = getConfig().getBoolean("Paintball.Ranks.Lobby Armor", true);
 		
 		// scoreboards

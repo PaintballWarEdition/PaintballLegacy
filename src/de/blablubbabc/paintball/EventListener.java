@@ -527,7 +527,7 @@ public class EventListener implements Listener {
 		return false;
 	}
 	
-	@EventHandler(priority = EventPriority.LOWEST)
+	/*@EventHandler(priority = EventPriority.LOWEST)
 	public void onPlayerChatEarly(AsyncPlayerChatEvent event) {
 		if (plugin.chatMessageColor) {
 			final Player player = event.getPlayer();
@@ -546,55 +546,67 @@ public class EventListener implements Listener {
 				if (plugin.chatMessageColor) event.setMessage(color + event.getMessage());
 			}
 		}
-	}
+	}*/
 	
 	@EventHandler(priority = EventPriority.HIGHEST)
 	public void onPlayerChatLate(AsyncPlayerChatEvent event) {
-		if (plugin.chatNameColor || plugin.ranksChatPrefix) {
-			Player player = event.getPlayer();
-			String playerName = player.getName();
-			if (Lobby.LOBBY.isMember(player)) {
-				//chat name color:
-				if (plugin.chatNameColor ) {
-					if (Lobby.isPlaying(player) || Lobby.isSpectating(player)) {
-						ChatColor color = Lobby.LOBBY.color();
-						Match match = plugin.matchManager.getMatch(player);
-						// colorize message:
-						if (match.isRed(player))
-							color = Lobby.RED.color();
-						else if (match.isBlue(player))
-							color = Lobby.BLUE.color();
-						else if (match.isSpec(player))
-							color = Lobby.SPECTATE.color();
-						
-						// change name color via format:
-						if (plugin.chatNameColor) {
-							String format = event.getFormat();
-							String displayName = ChatColor.stripColor(player.getDisplayName());
-							format = format.replaceFirst(displayName, color + displayName);
-							event.setFormat(format);
-						}
-					}
+		Player player = event.getPlayer();
+		String playerName = player.getName();
+		if (Lobby.LOBBY.isMember(player)) {
+			// determine team color:
+			
+			ChatColor color = Lobby.LOBBY.color();
+			if (Lobby.isPlaying(player) || Lobby.isSpectating(player)) {
+				Match match = plugin.matchManager.getMatch(player);
+				if (match.isRed(player)) {
+					color = Lobby.RED.color();
+				} else if (match.isBlue(player)) {
+					color = Lobby.BLUE.color();
+				} else if (match.isSpec(player)) {
+					color = Lobby.SPECTATE.color();
+				}
+			}
+			
+			String messageToUse = event.getMessage();
+			String formatToUse = event.getFormat();
+			
+			if (plugin.chatMessageColor) {
+				messageToUse = color + event.getMessage();
+			}
+			
+			if (plugin.chatNameColor) {
+				// change name color via format:
+				if (plugin.chatNameColor) {
+					String displayName = ChatColor.stripColor(player.getDisplayName());
+					formatToUse = formatToUse.replaceFirst(displayName, color + displayName);
+				}
+			}
+			
+			if (plugin.ranksChatPrefix ) {
+				Rank rank = plugin.rankManager.getRank(playerName);
+				String prefix = rank.getPrefix();
+				if (prefix != null && !prefix.isEmpty()) {
+					formatToUse = prefix + formatToUse;
+				}
+			}
+			
+			
+			// chat feature onyl visible for paintballers:
+			if (plugin.chatFeaturesOnlyForPaintballersVisible) {
+				
+				// remove paintballers from recipients:
+				event.getRecipients().removeAll(Lobby.LOBBY.getMembers());
+				
+				// send chat message to paintballers manually:
+				String messageToSend = String.format(formatToUse, player.getDisplayName(), messageToUse);
+				
+				for (Player member : Lobby.LOBBY.getMembers()) {
+					member.sendMessage(messageToSend);
 				}
 				
-				// rank prefix:
-				if (plugin.ranksChatPrefix ) {
-					Rank rank = plugin.rankManager.getRank(playerName);
-					String prefix = rank.getPrefix();
-					if (prefix != null && !prefix.isEmpty()) {
-						if (plugin.ranksChatPrefixOnlyForPaintballers) {
-							// remove paintballers from recipients:
-							event.getRecipients().removeAll(Lobby.LOBBY.getMembers());
-							// send chat message with prefix to paintballers manually:
-							String messageToSend = prefix + String.format(event.getFormat(), player.getDisplayName(), event.getMessage());
-							for (Player member : Lobby.LOBBY.getMembers()) {
-								member.sendMessage(messageToSend);
-							}
-						} else {
-							event.setFormat(prefix + event.getFormat());
-						}
-					}
-				}
+			} else {
+				event.setFormat(formatToUse);
+				event.setMessage(messageToUse);
 			}
 		}
 	}
