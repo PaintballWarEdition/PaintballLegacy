@@ -127,7 +127,7 @@ public class TurretHandler extends WeaponHandler implements Listener {
 					if (gadgetManager.getPlayerGadgetCount(match, playerName) < Paintball.instance.turretPlayerLimit) {
 						
 						// check space:
-						if (block.getRelative(BlockFace.UP).getType() != Material.AIR) {
+						if (block.getRelative(BlockFace.UP).getType().isSolid()) {
 							player.sendMessage(Translator.getString("GADGET_NOT_ENOUGH_SPACE"));
 							return;
 						}
