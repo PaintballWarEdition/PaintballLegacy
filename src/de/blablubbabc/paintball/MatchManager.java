@@ -21,6 +21,7 @@ import de.blablubbabc.paintball.statistics.player.match.tdm.TDMMatchStats;
 import de.blablubbabc.paintball.utils.KeyValuePair;
 import de.blablubbabc.paintball.utils.Timer;
 import de.blablubbabc.paintball.utils.Translator;
+import de.blablubbabc.paintball.utils.Utils;
 
 public class MatchManager {
 
@@ -36,13 +37,20 @@ public class MatchManager {
 		if (plugin.arenaVoting) voteManager = new VoteManager(plugin.arenaVotingOptions, plugin.arenaVotingRandomOption);
 	}
 
-	public void handleArenaVote(Player player, int voteID) {
+	public void handleArenaVote(Player player, String vote) {
 		if (voteManager.isOver()) {
 			player.sendMessage(Translator.getString("GAME_VOTE_IS_OVER"));
 		} else if (!voteManager.isValid()) {
 			player.sendMessage(Translator.getString("GAME_VOTE_DISABLED"));
 		} else {
-			voteManager.handleVote(player, voteID);
+			Integer voteID = Utils.parseInteger(vote);
+			
+			if (voteID != null) {
+				voteManager.handleVote(player, voteID);
+			} else {
+				//player.sendMessage(Translator.getString("INVALID_ID"));
+				voteManager.handleVote(player, vote);
+			}
 		}
 	}
 	

@@ -204,16 +204,10 @@ public class CommandManager implements CommandExecutor{
 							return false;
 						}
 						
-						if (args.length == 1) plugin.matchManager.sendVoteOptions(player);
-						else {
-							Integer voteID = Utils.parseInteger(args[1]);
-							
-							if (voteID != null) {
-								plugin.matchManager.handleArenaVote(player, voteID);
-								return true;
-							} else {
-								player.sendMessage(Translator.getString("INVALID_ID"));
-							}
+						if (args.length == 1) {
+							plugin.matchManager.sendVoteOptions(player);
+						} else {
+							plugin.matchManager.handleArenaVote(player, args[1]);
 						}
 						return true;
 

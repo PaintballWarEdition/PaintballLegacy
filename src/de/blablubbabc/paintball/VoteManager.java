@@ -93,6 +93,37 @@ public class VoteManager {
 		}
 	}
 	
+	public void handleVote(Player player, String votedArena) {
+		if (isOver) throw new IllegalStateException("Voting is already over, but a vote shall be handled.");
+		
+		int id = getIdForArenaName(votedArena);
+		if (id == -1) {
+			player.sendMessage(Translator.getString("GAME_VOTE_INVALID_ARENA_NAME", new KeyValuePair("max", String.valueOf(voteOptions.size()))));
+		} else {
+			handleVote(player, id);
+		}
+	}
+	
+	// returns the first option with this arena name:
+	private int getIdForArenaName(String arenaName) {
+		if (arenaName != null) {
+			for (int i = 0; i < voteOptions.size(); i++) {
+				VoteOption option = voteOptions.get(i);
+				String voteArena = option.getArena();
+				
+				if (voteArena == null) {
+					if (arenaName.equalsIgnoreCase(Translator.getString("RANDOM")) || arenaName.equalsIgnoreCase("random")) {
+						return i;
+					}
+				} else if (voteArena.equalsIgnoreCase(arenaName)) {
+					return i;
+				}
+			}
+		}
+		
+		return -1;
+	}
+	
 	public void handleVote(Player player, int voteID) {
 		if (isOver) throw new IllegalStateException("Voting is already over, but a vote shall be handled.");
 		
