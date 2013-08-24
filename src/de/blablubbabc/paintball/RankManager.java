@@ -91,7 +91,7 @@ public class RankManager {
 		for (Rank rank : ranks) {
 			String node = "Ranks." + rank.getName();
 			config.set(node + ".Needed Points", rank.getNeededPoints());
-			config.set(node + ".Prefix", rank.getPrefix());
+			config.set(node + ".Prefix", Utils.translateColorCodesToAlternative('&', rank.getPrefix()));
 			
 			itemToConfig(config.createSection(node + ".Helmet"), rank.getHelmet());
 			itemToConfig(config.createSection(node + ".Chestplate"), rank.getChestplate());
