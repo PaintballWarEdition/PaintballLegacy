@@ -7,18 +7,12 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-import org.bukkit.Bukkit;
 import org.bukkit.GameMode;
 import org.bukkit.Location;
 import org.bukkit.entity.Player;
-import org.bukkit.scoreboard.DisplaySlot;
-import org.bukkit.scoreboard.Objective;
-import org.bukkit.scoreboard.Score;
-import org.bukkit.scoreboard.Scoreboard;
 
 import de.blablubbabc.paintball.joindelay.JoinWaitRunnable;
 import de.blablubbabc.paintball.joindelay.WaitTimer;
-import de.blablubbabc.paintball.statistics.player.PlayerStat;
 import de.blablubbabc.paintball.statistics.player.PlayerStats;
 import de.blablubbabc.paintball.utils.KeyValuePair;
 import de.blablubbabc.paintball.utils.Translator;
@@ -168,8 +162,6 @@ public class PlayerManager {
 		return true;
 	}
 	
-	private Map<String, Scoreboard> lobbyScoreboards = new HashMap<String, Scoreboard>();
-	
 	private Map<String, WaitTimer> currentlyWaiting = new HashMap<String, WaitTimer>();
 	private List<String> currentlyLoading = new ArrayList<String>();
 	
@@ -221,47 +213,11 @@ public class PlayerManager {
 					else teleportStoreClearPlayer(player, Paintball.instance.getNextLobbySpawn());
 					// ASSIGN RANK
 					if (Paintball.instance.ranksLobbyArmor) Paintball.instance.rankManager.getRank(playerName).assignArmorToPlayer(player);
-					// ASSIGN SCOREBOARD
-					if (Paintball.instance.scoreboardLobby) {
-						initLobbyScoreboard(player);
-					}
 					
 					// continue afterwards:
 					if (runAfterwards != null) runAfterwards.run();
 				}
 			});
-		}
-	}
-	
-	private void initLobbyScoreboard(Player player) {
-		String playerName = player.getName();
-		Scoreboard lobbyBoard = lobbyScoreboards.get(playerName);
-		if (lobbyBoard == null) {
-			lobbyBoard = Bukkit.getScoreboardManager().getNewScoreboard();
-			lobbyScoreboards.put(playerName, lobbyBoard);
-			
-			String header = Translator.getString("SCOREBOARD_LOBBY_HEADER"); 
-			Objective objective = lobbyBoard.registerNewObjective(header.length() > 16 ? header.substring(0, 16) : header, "dummy");
-			objective.setDisplaySlot(DisplaySlot.SIDEBAR);
-		}
-		
-		updateLobbyScoreboard(playerName);
-		player.setScoreboard(lobbyBoard);
-	}
-	
-	public void updateLobbyScoreboard(String playerName) {
-		Scoreboard lobbyBoard = lobbyScoreboards.get(playerName);
-		if (lobbyBoard != null) {
-			Objective objective = lobbyBoard.getObjective(DisplaySlot.SIDEBAR);
-			if (objective == null) return;
-			PlayerStats stats = getPlayerStats(playerName);
-			for (PlayerStat stat : PlayerStat.values()) {
-				// skip airstrikes and grenades count:
-				if (stat == PlayerStat.AIRSTRIKES || stat == PlayerStat.GRENADES) continue;	
-				String scoreName = Translator.getString("SCOREBOARD_LOBBY_" + stat.getKey().toUpperCase());
-				Score score = objective.getScore(Bukkit.getOfflinePlayer(scoreName.length() > 16 ? scoreName.substring(0, 16) : scoreName));
-				score.setScore(stats.getStat(stat));
-			}
 		}
 	}
 	
@@ -290,10 +246,6 @@ public class PlayerManager {
 		player.teleport(Paintball.instance.getNextLobbySpawn());
 		// ASSIGN RANK
 		if (Paintball.instance.ranksLobbyArmor) Paintball.instance.rankManager.getRank(playerName).assignArmorToPlayer(player);
-		// ASSIGN SCOREBOARD
-		if (Paintball.instance.scoreboardLobby) {
-			initLobbyScoreboard(player);
-		}
 	}
 	
 	public synchronized boolean leaveLobby(Player player, boolean messages) {
@@ -319,11 +271,6 @@ public class PlayerManager {
 			
 			// if player not in lobby and not in match -> stats no longer needed:
 			if (!Lobby.LOBBY.isMember(player) && Paintball.instance.matchManager.getMatch(player) == null) unloadPlayerStats(playerName);
-			
-			// remove scoreboard for this player
-			if (Paintball.instance.scoreboardLobby) {
-				lobbyScoreboards.remove(playerName);
-			}
 			
 			//messages:
 			if (messages) {

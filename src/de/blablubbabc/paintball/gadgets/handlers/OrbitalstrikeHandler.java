@@ -6,6 +6,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
+import org.bukkit.DyeColor;
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.block.Block;
@@ -182,7 +183,7 @@ public class OrbitalstrikeHandler extends WeaponHandler {
 			player.sendBlockChange(last.getLocation(), Material.NETHER_FENCE, (byte) 0);
 		}
 		last = last.getRelative(BlockFace.UP);
-		player.sendBlockChange(last.getLocation(), Material.REDSTONE_BLOCK, (byte) 0);
+		player.sendBlockChange(last.getLocation(), Material.WOOL, DyeColor.RED.getWoolData());
 	}
 	
 	private void demark(Player player) {
@@ -234,7 +235,7 @@ public class OrbitalstrikeHandler extends WeaponHandler {
 					i--;
 					oldLoc = new Location(location.getWorld(), location.getBlockX(), location.getBlockY() + i, location.getBlockZ());
 					for (Player p : match.getAll()) {
-						p.sendBlockChange(oldLoc, Material.REDSTONE_BLOCK, (byte) 0);
+						p.sendBlockChange(oldLoc, Material.WOOL, DyeColor.RED.getWoolData());
 					}
 
 					if (i <= 1) {
@@ -350,7 +351,7 @@ public class OrbitalstrikeHandler extends WeaponHandler {
 				player.sendBlockChange(last.getLocation(), Material.NETHER_FENCE, (byte) 0);
 			}
 			last = last.getRelative(BlockFace.UP);
-			player.sendBlockChange(last.getLocation(), Material.REDSTONE_BLOCK, (byte) 0);
+			player.sendBlockChange(last.getLocation(), Material.WOOL, DyeColor.RED.getWoolData());
 		}
 		
 		private void demark(String playerName, Match match) {

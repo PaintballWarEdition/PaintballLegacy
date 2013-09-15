@@ -10,11 +10,8 @@ import org.bukkit.entity.Entity;
 import org.bukkit.entity.EntityType;
 import org.bukkit.entity.Item;
 import org.bukkit.entity.Player;
-import org.bukkit.event.EventHandler;
-import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.bukkit.event.block.Action;
-import org.bukkit.event.inventory.InventoryPickupItemEvent;
 import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.event.player.PlayerPickupItemEvent;
 import org.bukkit.inventory.ItemStack;
@@ -48,13 +45,6 @@ public class FlashbangHandler extends WeaponHandler implements Listener {
 	
 	private int getNext() {
 		return ++next;
-	}
-	
-	@EventHandler(priority = EventPriority.NORMAL, ignoreCancelled = true)
-	public void onHopperPickupItem(InventoryPickupItemEvent event) {
-		if (gadgetManager.isGadget(event.getItem())) {
-			event.setCancelled(true);
-		}
 	}
 	
 	@Override

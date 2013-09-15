@@ -10,21 +10,15 @@ import java.util.Map;
 import java.util.Random;
 import java.util.Set;
 
-import org.bukkit.Bukkit;
 import org.bukkit.Color;
 import org.bukkit.DyeColor;
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
-import org.bukkit.scoreboard.DisplaySlot;
-import org.bukkit.scoreboard.Objective;
-import org.bukkit.scoreboard.Score;
-import org.bukkit.scoreboard.Scoreboard;
 import org.kitteh.tag.TagAPI;
 
 import de.blablubbabc.paintball.statistics.arena.ArenaSetting;
-import de.blablubbabc.paintball.statistics.player.PlayerStat;
 import de.blablubbabc.paintball.statistics.player.match.tdm.TDMMatchStat;
 import de.blablubbabc.paintball.statistics.player.match.tdm.TDMMatchStats;
 import de.blablubbabc.paintball.utils.KeyValuePair;
@@ -44,7 +38,6 @@ public class Match {
 	private Set<Player> spec = new HashSet<Player>();
 	private Set<Player> allPlayers = new HashSet<Player>();
 	private Map<Player, Integer> protection = new HashMap<Player, Integer>();
-	private Map<String, Scoreboard> scoreboards = new HashMap<String, Scoreboard>();
 	private Set<String> justRespawned = new HashSet<String>();
 	// STATS
 	private Map<String, TDMMatchStats> playerMatchStats = new HashMap<String, TDMMatchStats>();
@@ -140,9 +133,6 @@ public class Match {
 			// STATS
 			String playerName = player.getName();
 			playerMatchStats.put(playerName, new TDMMatchStats(plugin.playerManager.getPlayerStats(playerName)));
-
-			// SCOREBOARD
-			initMatchScoreboard(player);
 			
 			PlayerDataStore.clearPlayer(player, true, true);
 			spawnPlayer(player);
@@ -175,9 +165,6 @@ public class Match {
 							p.teleport(loc);
 						}	
 					}
-					
-					// scoreboard:
-					updateAllMatchScoreboardTimers(startTimer.getTime());
 				}
 			}, new Runnable() {
 				
@@ -267,9 +254,6 @@ public class Match {
 						player.setLevel(roundTimer.getTime());
 					}
 				}
-				
-				// scoreboard:
-				updateAllMatchScoreboardTimers(roundTimer.getTime());
 			}
 		}, new Runnable() {
 			
@@ -421,67 +405,6 @@ public class Match {
 			}
 			
 		}, 12L);
-	}
-	
-	private void initMatchScoreboard(Player player) {
-		if (plugin.scoreboardMatch) {
-			String playerName = player.getName();
-			Scoreboard matchBoard = scoreboards.get(playerName);
-			if (matchBoard == null) {
-				matchBoard = Bukkit.getScoreboardManager().getNewScoreboard();
-				scoreboards.put(playerName, matchBoard);
-			}
-			
-			String header = Translator.getString("SCOREBOARD_MATCH_HEADER", new KeyValuePair("round_time", "0:00")); 
-			Objective objective = matchBoard.registerNewObjective(header.length() > 16 ? header.substring(0, 16) : header, "dummy");
-			objective.setDisplaySlot(DisplaySlot.SIDEBAR);
-			updateMatchScoreboard(playerName);
-			player.setScoreboard(matchBoard);
-		} else {
-			// assign default server scoreboard instead then:
-			player.setScoreboard(Bukkit.getScoreboardManager().getMainScoreboard());
-		}
-	}
-	
-	private void updateAllMatchScoreboardTimers(int timeInSeconds) {
-		if (plugin.scoreboardMatch) {
-			int minutes = (int) (timeInSeconds / 60);
-			int seconds = timeInSeconds % 60;
-			
-			String secondsString = String.valueOf(seconds);
-			String header = Translator.getString("SCOREBOARD_MATCH_HEADER", 
-					new KeyValuePair("round_time", String.valueOf(minutes) + ":" + (seconds >= 10 ? secondsString : "0" + secondsString))); 
-			header = header.length() > 16 ? header.substring(0, 16) : header;
-			
-			for (Scoreboard scoreboard : scoreboards.values()) {
-				scoreboard.getObjective(DisplaySlot.SIDEBAR).setDisplayName(header);
-			}
-		}
-	}
-	
-	public void updateMatchScoreboard(String playerName) {
-		if (plugin.scoreboardMatch) {
-			Scoreboard matchBoard = scoreboards.get(playerName);
-			if (matchBoard != null) {
-				Objective objective = matchBoard.getObjective(DisplaySlot.SIDEBAR);
-				TDMMatchStats stats = playerMatchStats.get(playerName);
-				for (TDMMatchStat stat : TDMMatchStat.values()) {
-					// skip airstrikes, grenades and teamattacks count:
-					if (stat == TDMMatchStat.AIRSTRIKES || stat == TDMMatchStat.GRENADES || stat == TDMMatchStat.TEAMATTACKS) continue;	
-					String scoreName = Translator.getString("SCOREBOARD_MATCH_" + stat.getPlayerStat().getKey().toUpperCase());
-					Score score = objective.getScore(Bukkit.getOfflinePlayer(scoreName.length() > 16 ? scoreName.substring(0, 16) : scoreName));
-					score.setScore(stats.getStat(stat));
-				}
-				// add overall points and cash to scoreboard:
-				String overallPoints = Translator.getString("SCOREBOARD_MATCH_OVERALL_POINTS");
-				Score overallPointsScore = objective.getScore(Bukkit.getOfflinePlayer(overallPoints.length() > 16 ? overallPoints.substring(0, 16) : overallPoints));
-				overallPointsScore.setScore(stats.getPlayerStats().getStat(PlayerStat.POINTS));
-				
-				String overallCash = Translator.getString("SCOREBOARD_MATCH_OVERALL_MONEY");
-				Score overallCashScore = objective.getScore(Bukkit.getOfflinePlayer(overallCash.length() > 16 ? overallCash.substring(0, 16) : overallCash));
-				overallCashScore.setScore(stats.getPlayerStats().getStat(PlayerStat.MONEY));
-			}
-		}
 	}
 	
 	public boolean isJustRespawned(String playerName) {
@@ -840,7 +763,6 @@ public class Match {
 		TDMMatchStats matchStats = playerMatchStats.get(playerName);
 		matchStats.addStat(TDMMatchStat.SHOTS, 1, true);
 		matchStats.calculateQuotes();
-		updateMatchScoreboard(playerName);
 	}
 
 	public void onGrenade(Player player) {
@@ -897,7 +819,6 @@ public class Match {
 					matchStats.addStat(TDMMatchStat.POINTS, plugin.pointsPerHit, true);
 					matchStats.addStat(TDMMatchStat.MONEY, plugin.cashPerHit, true);
 					matchStats.calculateQuotes();
-					updateMatchScoreboard(shooterName);
 					
 					// dead?->frag
 					// message:
@@ -953,12 +874,10 @@ public class Match {
 		killerStats.addStat(TDMMatchStat.POINTS, plugin.pointsPerKill, true);
 		killerStats.addStat(TDMMatchStat.MONEY, plugin.cashPerKill, true);
 		killerStats.calculateQuotes();
-		updateMatchScoreboard(killerName);
 		// TARGET:
 		TDMMatchStats targetStats = playerMatchStats.get(targetName);
 		targetStats.addStat(TDMMatchStat.DEATHS, 1, true);
 		targetStats.calculateQuotes();
-		updateMatchScoreboard(targetName);
 		
 		// 0 lives = -> out
 		livesLeft.put(target, 0);
@@ -1047,7 +966,6 @@ public class Match {
 		TDMMatchStats matchStats = playerMatchStats.get(playerName);
 		if (matchStats != null) {
 			matchStats.addStat(TDMMatchStat.MONEY_SPENT, moneySpent, false);
-			updateMatchScoreboard(playerName);
 		}
 	}
 
@@ -1063,7 +981,6 @@ public class Match {
 		TDMMatchStats targetStats = playerMatchStats.get(targetName);
 		targetStats.addStat(TDMMatchStat.DEATHS, 1, true);
 		targetStats.calculateQuotes();
-		updateMatchScoreboard(targetName);
 		
 		// FEED
 		target.sendMessage(Translator.getString("YOU_DIED"));

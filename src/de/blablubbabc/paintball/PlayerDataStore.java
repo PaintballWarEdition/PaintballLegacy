@@ -2,7 +2,6 @@ package de.blablubbabc.paintball;
 
 import java.util.ArrayList;
 
-import org.bukkit.Bukkit;
 import org.bukkit.GameMode;
 import org.bukkit.Location;
 import org.bukkit.entity.Player;
@@ -10,7 +9,6 @@ import org.bukkit.event.entity.EntityDamageEvent;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.PlayerInventory;
 import org.bukkit.potion.PotionEffect;
-import org.bukkit.scoreboard.Scoreboard;
 
 import de.blablubbabc.paintball.utils.Translator;
 
@@ -36,21 +34,19 @@ public class PlayerDataStore {
 	private float exhaustion;
 	private float saturation;
 	private int foodlevel;
-	private double health;
-	private double maxHealth;
+	private int health;
+	private int maxHealth;
 	private int fireTicks;
 	private int remainingAir;
 	private int ticksLived;
 	private int noDamageTicks;
 	private float fallDistance;
 	private GameMode gamemode;
-	private double lastDamage;
+	private int lastDamage;
 	private EntityDamageEvent lastDamageCause;
 	// Level / exp
 	private int level;
 	private float exp;
-	// Scoreboard
-	private Scoreboard scoreboard;
 
 	// teleport, store, clear
 	public PlayerDataStore(Player player, Location to) {
@@ -115,8 +111,6 @@ public class PlayerDataStore {
 		// Level / exp
 		level = player.getLevel();
 		exp = player.getExp();
-		// scoreboard
-		scoreboard = player.getScoreboard();
 
 		// CLEAR COMPLETE
 		// the scoreboard will be set by the lobby / match if necesarry
@@ -169,10 +163,6 @@ public class PlayerDataStore {
 		// Level / exp
 		player.setLevel(level);
 		player.setExp(exp);
-		// scoreboard
-		if (Paintball.instance.scoreboardLobby) {
-			player.setScoreboard(scoreboard != null ? scoreboard : Bukkit.getScoreboardManager().getMainScoreboard());
-		}
 		
 		player.setGameMode(gamemode);
 		player.updateInventory();
