@@ -35,7 +35,7 @@ public class ShopListener implements Listener {
 			ShopMenu menu = plugin.shopManager.getShopMenu(playerName);
 			if (menu != null) {
 				event.setCancelled(true);
-				if (event.getSlotType() == SlotType.CONTAINER && event.isLeftClick()) {
+				if (event.getSlotType() == SlotType.CONTAINER && event.isLeftClick() && event.getRawSlot() < event.getView().getTopInventory().getSize()) {
 					int slot = event.getSlot();
 					menu.onClick(player, slot);
 				}
