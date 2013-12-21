@@ -16,6 +16,11 @@ public class Timer {
 
 			@Override
 			public void run() {
+				if (time <= 0) {
+					end();
+					if (end != null) end.run();
+				}
+				
 				if (eachDelay != null) eachDelay.run();
 
 				if (send != null) {
@@ -37,12 +42,7 @@ public class Timer {
 						send.run();
 					}
 				}
-				
 				time--;
-				if (time < 1) {
-					end();
-					if (end != null) end.run();
-				}
 			}
 		}, preDelay, delay).getTaskId();
 	}
