@@ -8,6 +8,7 @@ import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.block.Action;
+import org.bukkit.event.player.PlayerCommandPreprocessEvent;
 import org.bukkit.event.player.PlayerInteractEvent;
 
 import de.blablubbabc.paintball.Paintball;
@@ -53,7 +54,11 @@ public class CommandSignsListener implements Listener {
 							plugin.commandManager.cmdShop.command(player, args, true);
 						} else {
 							// perform command like normal:
-							player.performCommand(command);
+							PlayerCommandPreprocessEvent commandEvent = new PlayerCommandPreprocessEvent(player, command);
+							plugin.getServer().getPluginManager().callEvent(commandEvent);
+							if (!commandEvent.isCancelled()) {
+								player.performCommand(commandEvent.getMessage());
+							}
 						}
 					}
 				}
