@@ -101,7 +101,7 @@ public class EventListener implements Listener {
 			}
 		}
 	}
-
+	
 	@EventHandler(priority = EventPriority.NORMAL, ignoreCancelled = true)
 	public void onHangingEntityBreak(HangingBreakByEntityEvent event) {
 		Entity remover = event.getRemover();
@@ -235,37 +235,37 @@ public class EventListener implements Listener {
 		}
 		
 		if (attacker != null) {
-			Match matchA = plugin.matchManager.getMatch(attacker);
-			if (matchA != null) {
-				plugin.weaponManager.onDamagedByEntity(event, matchA, attacker);
-				
-				if (event.getEntity() instanceof Player) {
+			if (Lobby.LOBBY.isMember(attacker)) {
+				Entity damagedEntity = event.getEntity();
+				EntityType damagedType = damagedEntity.getType();
+				// handle damage to hanging entities:
+				if (damagedType == EntityType.PAINTING || damagedType == EntityType.ITEM_FRAME) {
+					event.setCancelled(true);
+					return;
+				} else if (damagedType == EntityType.PLAYER) {
 					Player target = (Player) event.getEntity();
-					if (attacker != target) {
-						Match matchB = plugin.matchManager.getMatch(target);
-						if (matchB != null ) {
-							if (matchA == matchB) {
-								if (!matchA.isSpec(attacker) && !matchA.isSpec(target) && matchA.isSurvivor(attacker) 
-										&& matchA.isSurvivor(target) && matchA.hasStarted()) {
-									// damage cause?
-									if (event.getCause() == DamageCause.PROJECTILE) {
-										// Paintball hit?
-										if (damager instanceof Snowball) {
-											Gadget ball = plugin.weaponManager.getBallHandler().getBall(event.getDamager(), matchA, attacker.getName());
-											if (ball != null) {
-												matchA.onHitByBall(target, attacker, ball.getGadgetOrigin());
-											}
-										}
-									} else if (plugin.allowMelee && event.getCause() == DamageCause.ENTITY_ATTACK) {
-										if (matchA.enemys(target, attacker)) {
-											if (target.getHealth() > plugin.meleeDamage) {
-												target.setHealth(target.getHealth() - plugin.meleeDamage);
-												Sounds.playMeleeHit(attacker, target);
-											} else {
-												matchA.frag(target, attacker, meleeOrigin);
-											}
-										}
-									}
+					if (target == attacker) return;
+					Match matchA = plugin.matchManager.getMatch(attacker);
+					if (matchA == null) return;
+					Match matchB = plugin.matchManager.getMatch(target);
+					if (matchB == null || matchA != matchB) return;
+					if (!matchA.isSpec(attacker) && !matchA.isSpec(target) && matchA.isSurvivor(attacker) && matchA.isSurvivor(target) && matchA.hasStarted()) {
+						// damage cause?
+						if (event.getCause() == DamageCause.PROJECTILE) {
+							// Paintball hit?
+							if (damager instanceof Snowball) {
+								Gadget ball = plugin.weaponManager.getBallHandler().getBall(event.getDamager(), matchA, attacker.getName());
+								if (ball != null) {
+									matchA.onHitByBall(target, attacker, ball.getGadgetOrigin());
+								}
+							}
+						} else if (plugin.allowMelee && event.getCause() == DamageCause.ENTITY_ATTACK) {
+							if (matchA.enemys(target, attacker)) {
+								if (target.getHealth() > plugin.meleeDamage) {
+									target.setHealth(target.getHealth() - plugin.meleeDamage);
+									Sounds.playMeleeHit(attacker, target);
+								} else {
+									matchA.frag(target, attacker, meleeOrigin);
 								}
 							}
 						}
@@ -314,8 +314,16 @@ public class EventListener implements Listener {
 	public void onPlayerInteractPlayer(PlayerInteractEntityEvent event) {
 		Player player = (Player) event.getPlayer();
 		if (Lobby.LOBBY.isMember(player)) {
-			if (plugin.giftsEnabled && player.getItemInHand().getType() == Material.CHEST) {
-				if (event.getRightClicked() instanceof Player) {
+			Entity clickedEntity = event.getRightClicked();
+			EntityType clickedType = clickedEntity.getType();
+			if (clickedType == EntityType.ITEM_FRAME || clickedType == EntityType.PAINTING) {
+				// no clicking of item frames:
+				event.setCancelled(true);
+			} else if (clickedType == EntityType.PLAYER) {
+				// gifting others:
+				if (!plugin.giftsEnabled) return;
+				ItemStack itemInHand = player.getItemInHand();
+				if (itemInHand != null && itemInHand.getType() == Material.CHEST) {
 					Player receiver = (Player) event.getRightClicked();
 					if (Lobby.getTeam(receiver) != null) {
 						plugin.weaponManager.getGiftManager().transferGift(player, receiver);
