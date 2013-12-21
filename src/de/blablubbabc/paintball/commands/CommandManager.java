@@ -200,7 +200,7 @@ public class CommandManager implements CommandExecutor{
 						
 						if (!plugin.arenaVoting) {
 							player.sendMessage(Translator.getString("GAME_VOTE_DISABLED"));
-							return false;
+							return true;
 						}
 						
 						if (args.length == 1) {
