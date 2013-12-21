@@ -12,6 +12,7 @@ import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
 
 import de.blablubbabc.paintball.Paintball;
+import de.blablubbabc.paintball.api.PaintballAPI;
 import de.blablubbabc.paintball.utils.KeyValuePair;
 import de.blablubbabc.paintball.utils.Translator;
 import de.blablubbabc.paintball.utils.Utils;
@@ -21,74 +22,72 @@ public class ShopMenu {
 	private static final ItemStack prevIcon = new ItemStack(Material.BOOK_AND_QUILL);
 	private static final ItemStack pageIcon = new ItemStack(Material.PAPER, 0);
 	
-	
+	private final Paintball plugin;
 	private final ShopGood[] goods;
 	
-	private final int inventorySlots;
 	private final int contentSlots;
+
 	private final int nextSlot;
 	private final int previousSlot;
 	
-	private boolean singlePage = false;
+	private final boolean singlePage;
 	
-	private Inventory[] inventories;
-	private Map<String, Integer> viewers;
-	
-	private Paintball plugin;
+	private final Inventory[] inventories;
+	private final Map<String, Integer> viewers = new HashMap<String, Integer>();
 	
 	public ShopMenu(Paintball plugin, ShopGood[] goods) {
 		this.plugin = plugin;
 		this.goods = goods;
-		
+
 		Utils.setItemMeta(nextIcon, Translator.getString("SHOP_NEXT_PAGE"), null);
 		Utils.setItemMeta(prevIcon, Translator.getString("SHOP_PREVIOUS_PAGE"), null);
-		
+
 		// calculate needed rows:
-		int rows = (int) Math.ceil((int) (goods.length / 9));
-		// min 2, max 6 !
-		rows = Math.min(Math.max(rows, 2), 6);
-		int contentRows = rows - 1;
-		inventorySlots = rows * 9;
-		contentSlots = contentRows * 9;
-		nextSlot = inventorySlots - 1;
-		previousSlot = nextSlot - 8;
-		
-		viewers = new HashMap<String, Integer>();
-		
-		int sizeY = 1 + (goods.length / 9);
-		int num = 1 + (sizeY / contentRows);
-		inventories = new Inventory[num];
-		
-		int left = goods.length;
-		
-		int pageSlot = previousSlot + 4;
-		
-		// one inventory page enough ? -> no page buttons needed
-		if (left <= inventorySlots) {
-			singlePage = true;
-			inventories[0] = Bukkit.createInventory(null, inventorySlots, Translator.getString("SHOP_NAME"));
-			int size = left;
-			left -= size;
-			for (int j = 0; j < size; j++) {
-				inventories[0].setItem(j, goods[j].getIcon());
-			}
-		} else {
+		int neededRows = (int) Math.ceil(goods.length / 9D);
+		// multiple pages needed?
+		if (neededRows > 6) {
 			singlePage = false;
-			for (int i = 0; i < num; i++) {
-				inventories[i] = Bukkit.createInventory(null, inventorySlots, Translator.getString("SHOP_NAME"));
+			int neededPages = (int) Math.ceil(neededRows / 5D);
+			contentSlots = 45; // (9*5)
+			nextSlot = 53; //(9*6 - 1)
+			previousSlot = nextSlot - 8;
+			int pageSlot = previousSlot + 4;
+			
+			inventories = new Inventory[neededPages];
+			// init pages:
+			int left = goods.length;
+			for (int i = 0; i < neededPages; i++) {
+				Inventory inventory = Bukkit.createInventory(null, 54, Translator.getString("SHOP_NAME"));
+				inventories[i] = inventory;
 				int size = Math.min(left, contentSlots);
 				left -= size;
+				int startIndex = i * contentSlots;
 				for (int j = 0; j < size; j++) {
-					inventories[i].setItem(j, goods[j + i * contentSlots].getIcon());
+					inventory.setItem(j, goods[startIndex + j].getIcon());
 				}
 				// buttons:
-				// only needed if num of inventories > 1
-				ItemStack page = pageIcon.clone();
-				page.setAmount(i + 1);
-				Utils.setItemMeta(page, Translator.getString("SHOP_PAGE", new KeyValuePair("page", String.valueOf(i + 1))), null);
+				ItemStack pageItem = pageIcon.clone();
+				pageItem.setAmount(i + 1);
+				Utils.setItemMeta(pageItem, Translator.getString("SHOP_PAGE", new KeyValuePair("page", String.valueOf(i + 1))), null);
 				inventories[i].setItem(previousSlot, prevIcon);
-				inventories[i].setItem(pageSlot, page);
+				inventories[i].setItem(pageSlot, pageItem);
 				inventories[i].setItem(nextSlot, nextIcon);
+			}
+			
+		} else {
+			singlePage = true;
+			contentSlots = neededRows * 9;
+			// un-needed but final:
+			nextSlot = 0;
+			previousSlot = 0;
+			
+			inventories = new Inventory[1];
+			// init single page:
+			Inventory inventory = Bukkit.createInventory(null, contentSlots, Translator.getString("SHOP_NAME"));
+			inventories[0] = inventory;
+			int left = goods.length;
+			for (int j = 0; j < left; j++) {
+				inventory.setItem(j, goods[j].getIcon());
 			}
 		}
 	}
@@ -110,7 +109,7 @@ public class ShopMenu {
 	}
 	
 	private int getGoodNumber(int page, int slot) {
-		return (page * (singlePage ? inventorySlots : contentSlots)) + slot;
+		return (page * contentSlots) + slot;
 	}
 	
 	private ShopGood getGood(int goodNumber) {
