@@ -381,15 +381,12 @@ public class PlayerManager {
 	}
 	
 	public PlayerStats getPlayerStats(String playerName) {
-		// if currently loading..
-		if (isPlayerStillLocked(playerName)) {
-			return null;
-		}
-		// check if in cache, if not return temporary retrieved PlayerStats or null, 
-		// if no stats exist for this player:
 		PlayerStats stats = playerStats.get(playerName);
 		if (stats == null) {
-			if (exists(playerName)) stats = new PlayerStats(playerName);
+			// check if in cache, if not return temporary retrieved PlayerStats or null, if no stats exist (yet) for this player:
+			if (!isPlayerStillLocked(playerName)) {
+				if (exists(playerName)) stats = new PlayerStats(playerName);
+			} // else: return null
 		}
 		return stats;
 	}
