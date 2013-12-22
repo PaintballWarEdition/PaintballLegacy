@@ -173,7 +173,7 @@ public class PlayerManager {
 	private Map<String, WaitTimer> currentlyWaiting = new HashMap<String, WaitTimer>();
 	private List<String> currentlyLoading = new ArrayList<String>();
 	
-	private void joinLobbyFresh(final Player player, boolean withDelay, final Runnable runAfterwards) {
+	private void joinLobbyFresh(final Player player, boolean withDelay, final Runnable runOnSuccess) {
 		final String playerName = player.getName();
 		
 		// join delay:
@@ -191,18 +191,18 @@ public class PlayerManager {
 						// waiting is over:
 						currentlyWaiting.remove(playerName);
 						// load and then join:
-						handleLoadingAndJoin(player, runAfterwards);
+						handleLoadingAndJoin(player, runOnSuccess);
 					}
 				});
 				
 			}
 		} else {
 			// load and then join:
-			handleLoadingAndJoin(player, runAfterwards);
+			handleLoadingAndJoin(player, runOnSuccess);
 		}
 	}
 	
-	private void handleLoadingAndJoin(final Player player, final Runnable runAfterwards) {
+	private void handleLoadingAndJoin(final Player player, final Runnable runOnSuccess) {
 		final String playerName = player.getName();
 		// is player already in the process of joining ?
 		if (!currentlyLoading.contains(playerName)) {
@@ -214,20 +214,27 @@ public class PlayerManager {
 				public void run() {
 					// loading is finished:
 					currentlyLoading.remove(playerName);
-					// join lobby:
-					Lobby.LOBBY.addMember(player);
-					Paintball.instance.feeder.join(playerName);
-					if (Paintball.instance.worldMode) storeClearPlayer(player, Paintball.instance.getNextLobbySpawn());
-					else teleportStoreClearPlayer(player, Paintball.instance.getNextLobbySpawn());
-					// ASSIGN RANK
-					if (Paintball.instance.ranksLobbyArmor) Paintball.instance.rankManager.getRank(playerName).assignArmorToPlayer(player);
-					// ASSIGN SCOREBOARD
-					if (Paintball.instance.scoreboardLobby) {
-						initLobbyScoreboard(player);
-					}
 					
-					// continue afterwards:
-					if (runAfterwards != null) runAfterwards.run();
+					// did the player leave in the mean time?
+					if (player.isOnline()) {
+						// join lobby:
+						Lobby.LOBBY.addMember(player);
+						Paintball.instance.feeder.join(playerName);
+						if (Paintball.instance.worldMode) storeClearPlayer(player, Paintball.instance.getNextLobbySpawn());
+						else teleportStoreClearPlayer(player, Paintball.instance.getNextLobbySpawn());
+						// ASSIGN RANK
+						if (Paintball.instance.ranksLobbyArmor) Paintball.instance.rankManager.getRank(playerName).assignArmorToPlayer(player);
+						// ASSIGN SCOREBOARD (after teleport)
+						if (Paintball.instance.scoreboardLobby) {
+							initLobbyScoreboard(player);
+						}
+						
+						// continue afterwards:
+						if (runOnSuccess != null) runOnSuccess.run();
+					} else {
+						// unload playerStats again..
+						unloadPlayerStats(playerName);
+					}
 				}
 			});
 		}
@@ -446,6 +453,8 @@ public class PlayerManager {
 											joinLobbyPre(player, false, null);
 										}
 									}
+								} else {
+									// do nothing
 								}
 							}
 						}, 1L);
