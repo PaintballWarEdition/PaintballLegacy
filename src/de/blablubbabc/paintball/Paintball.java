@@ -38,11 +38,12 @@ import de.blablubbabc.paintball.statistics.player.PlayerStat;
 import de.blablubbabc.paintball.statistics.player.match.tdm.TDMMatchStat;
 import de.blablubbabc.paintball.utils.Log;
 import de.blablubbabc.paintball.utils.Metrics;
-import de.blablubbabc.paintball.utils.Poster;
 import de.blablubbabc.paintball.utils.Serverlister;
 import de.blablubbabc.paintball.utils.Sounds;
 import de.blablubbabc.paintball.utils.TeleportFix;
 import de.blablubbabc.paintball.utils.Translator;
+import de.blablubbabc.paintball.utils.Updater;
+import de.blablubbabc.paintball.utils.Updater.UpdateType;
 import de.blablubbabc.paintball.utils.Utils;
 import de.blablubbabc.paintball.utils.Metrics.Graph;
 
@@ -327,6 +328,9 @@ public class Paintball extends JavaPlugin{
 		
 		// LOGGER
 		Log.init(this);
+		// enabled warnings logging:
+		Log.logWarnings(true);
+		
 		//CONFIG
 		ArrayList<String> goodsDef = new ArrayList<String>();
 		
@@ -970,8 +974,6 @@ public class Paintball extends JavaPlugin{
 		weaponManager.initWeaponHandlers();
 		// RANKMANAGER
 		rankManager = new RankManager(new File(this.getDataFolder().getPath() + File.separator + "ranks.yml"));
-		// SERVERLISTER CONFIG:
-		serverList = new Serverlister();
 		// SHOP MANAGER
 		shopManager = new ShopManager(this);
 		//COMMANDS
@@ -1123,30 +1125,85 @@ public class Paintball extends JavaPlugin{
 			}
 		}
 		
-		
-		
-		final Paintball plugin = this;
-		getServer().getScheduler().scheduleSyncDelayedTask(this, new Runnable() {
+		// after all plguins are enabled:
+		this.getServer().getScheduler().runTaskLater(this, new Runnable() {
 
 			@Override
 			public void run() {
-				delayedInfo();
-				new Poster(plugin);
+				// SERVERLISTER CONFIG:
+				serverList = new Serverlister(Paintball.this);
+				
+				// check for updates:
+				if (Paintball.this.versioncheck) {
+					Updater updater = new Updater(Paintball.this, 41489, Paintball.this.getFile(), UpdateType.NO_DOWNLOAD, true);
+					Log.info("--------- Checking version ----------");
+					Updater.UpdateResult result = updater.getResult();
+					switch(result)
+			        {
+			            case SUCCESS:
+			                // Success: The updater found an update, and has readied it to be loaded the next time the server restarts/reloads
+			            	Log.info("A new version of paintball was found and downloaded: " + updater.getLatestName() + "(" + updater.getLatestType() + ")", true);
+			            	Log.info("It should be loaded the next time the server restarts/reloads.");
+			                break;
+			            case NO_UPDATE:
+			                // No Update: The updater did not find an update, and nothing was downloaded.
+			            	Log.info("You are running the latest version (or a dev- or compat-build). :)");
+			                break;
+			            case DISABLED:
+			                // Won't Update: The updater was disabled in its configuration file.
+			            	Log.info("You denied version checking. :(");
+							Log.info("If you want to be informed about a new version of paintball");
+							Log.info("-> enable it in plugins/Updater/config.yml");
+			                break;
+			            case FAIL_DOWNLOAD:
+			                // Download Failed: The updater found an update, but was unable to download it.
+			            	Log.warning("Download failed. :(");
+			                break;
+			            case FAIL_DBO:
+			                // dev.bukkit.org Failed: For some reason, the updater was unable to contact DBO to download the file.
+			            	Log.info("Couldn't currently connect to DBO. :(");
+			                break;
+			            case FAIL_NOVERSION:
+			                // No version found: When running the version check, the file on DBO did not contain the a version in the format 'vVersion' such as 'v1.0'.
+			            	Log.warning("Bad version string format. Nag blablubbabc about this.. :/");
+			            	break;
+			            case FAIL_BADID:
+			                // Bad id: The id provided by the plugin running the updater was invalid and doesn't exist on DBO.
+			            	Log.warning("Bad project id. Nag blablubbabc about this.. :/");
+			                break;
+			            case FAIL_APIKEY:
+			                // Bad API key: The user provided an invalid API key for the updater to use.
+			            	Log.warning("Bad API key. Check your updater configuration.");
+			                break;
+			            case UPDATE_AVAILABLE:
+			            	// There was an update found, but because you had the UpdateType set to NO_DOWNLOAD, it was not downloaded.
+			            	Paintball.this.needsUpdate = true;
+			            	Log.info("There is a new version of paintball available: " + updater.getLatestName() + "(" + updater.getLatestType() + ")", true);
+			            	Log.info("Download at the bukkit dev page.");
+			        }
+					Log.info("--------- ---------------- ----------");
+				} else {
+					Log.info("--------- Checking version ----------");
+					Log.info("You denied version checking. :(");
+					Log.info("If you want to be informed about a new version of paintball");
+					Log.info("-> enable it in the config.");
+					Log.info("--------- ---------------- ----------");
+				}
+				
+				getServer().getScheduler().runTaskLaterAsynchronously(Paintball.this, new Runnable() {
+
+					@Override
+					public void run() {
+						Log.printInfo();
+						// stop logging of warnings:
+						Log.logWarnings(false);
+					}
+				}, 20L);
 			}
 		}, 1L);
 		
 		Log.info("By blablubbabc enabled.");
 
-	}
-	
-	public void delayedInfo() {
-		getServer().getScheduler().runTaskLaterAsynchronously(this, new Runnable() {
-
-			@Override
-			public void run() {
-				Log.printInfo();
-			}
-		}, 20L);
 	}
 	
 	public void onDisable(){

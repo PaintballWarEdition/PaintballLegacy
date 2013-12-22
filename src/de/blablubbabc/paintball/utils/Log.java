@@ -12,10 +12,19 @@ public class Log {
 	private static Logger logger;
 	private static ConsoleCommandSender consoleSender;
 	private static List<String> warnings = new ArrayList<String>();
+	private static boolean logWarnings = false;
 	
 	public static void init(Plugin pl) {
 		consoleSender = pl.getServer().getConsoleSender();
 		logger = pl.getLogger();
+	}
+	
+	public static void logWarnings(boolean logWarnings) {
+		Log.logWarnings = logWarnings;
+	}
+	
+	public static boolean isLoggingWarnings() {
+		return Log.logWarnings;
 	}
 	
 	public static void log(String message) {
@@ -54,7 +63,7 @@ public class Log {
 	}
 	
 	public static void addWarning(String message) {
-		warnings.add(message);
+		if (Log.logWarnings) warnings.add(message);
 	}
 	
 	public static void printCurrentWarnings() {
