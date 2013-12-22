@@ -140,12 +140,12 @@ public class Match {
 			// STATS
 			String playerName = player.getName();
 			playerMatchStats.put(playerName, new TDMMatchStats(plugin.playerManager.getPlayerStats(playerName)));
-
-			// SCOREBOARD
-			initMatchScoreboard(player);
 			
 			PlayerDataStore.clearPlayer(player, true, true);
 			spawnPlayer(player);
+			
+			// SCOREBOARD (after spawning/teleporting the player due to compatibility to HealthBar which switches scoreboard during world changes)
+			initMatchScoreboard(player);
 		}
 
 		for (Player p : this.spec) {
