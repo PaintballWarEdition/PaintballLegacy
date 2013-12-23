@@ -1252,7 +1252,7 @@ public class Paintball extends JavaPlugin{
 			}
 		}
 		long timeWaited = System.currentTimeMillis() - start;
-		Log.info("Waited " + timeWaited + "ms for async (probably stats saving) tasks to finish.");
+		if (timeWaited > 0) Log.info("Waited " + timeWaited + "ms for async (probably stats saving) tasks to finish.");
 		
 		sql.closeConnection();
 		getServer().getScheduler().cancelTasks(this);
