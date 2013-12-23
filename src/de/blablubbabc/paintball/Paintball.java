@@ -1203,7 +1203,7 @@ public class Paintball extends JavaPlugin{
 			            case UPDATE_AVAILABLE:
 			            	// There was an update found, but because you had the UpdateType set to NO_DOWNLOAD, it was not downloaded.
 			            	Paintball.this.needsUpdate = true;
-			            	Log.info("There is a new version of paintball available: " + updater.getLatestName() + "(" + updater.getLatestType() + ")", true);
+			            	Log.info("There is a new version of paintball available: " + updater.getLatestName() + " (" + updater.getLatestType() + ")", true);
 			            	Log.info("Download at the bukkit dev page.");
 			        }
 					Log.info("--------- ---------------- ----------");
