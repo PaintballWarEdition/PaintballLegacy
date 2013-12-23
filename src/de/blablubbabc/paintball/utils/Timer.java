@@ -8,8 +8,7 @@ public class Timer {
 	private int task = -1;
 	private int time;
 
-	public Timer(Plugin plugin, long preDelay, long delay, final int times, final Runnable eachDelay,
-			final Runnable send, final Runnable end) {
+	public Timer(Plugin plugin, long preDelay, long delay, final int times, final Runnable eachDelay, final Runnable send, final Runnable end) {
 		this.plugin = plugin;
 		time = times;
 		task = plugin.getServer().getScheduler().runTaskTimer(plugin, new Runnable() {
@@ -19,6 +18,7 @@ public class Timer {
 				if (time <= 0) {
 					end();
 					if (end != null) end.run();
+					return;
 				}
 				
 				if (eachDelay != null) eachDelay.run();
