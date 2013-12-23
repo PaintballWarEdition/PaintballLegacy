@@ -35,7 +35,13 @@ public class PlayerManager {
 		playerStats = new HashMap<String, PlayerStats>();
 		playersToAdd = new HashSet<String>();
 		
-		addAllOnlinePlayers();
+		Paintball.instance.getServer().getScheduler().runTaskLater(Paintball.instance, new Runnable() {
+			
+			@Override
+			public void run() {
+				addAllOnlinePlayers();
+			}
+		}, 1L);
 	}
 	
 	// LOBBY JOINING

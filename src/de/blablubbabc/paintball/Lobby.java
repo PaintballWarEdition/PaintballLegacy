@@ -41,6 +41,7 @@ public enum Lobby {
 		this.colorA = colorA;
 		this.players = new HashMap<Player, Boolean>();
 	}
+
 	//METHODS
 	//SETTER
 	public synchronized void addMember(Player player) {
