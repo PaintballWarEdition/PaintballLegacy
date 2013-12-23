@@ -29,31 +29,37 @@ public class Stats {
 
 	//SETTER
 	public void addGeneralStats(final Map<GeneralStat, Integer> stats) {
+		Paintball.instance.addAsyncTask();
 		plugin.getServer().getScheduler().runTaskAsynchronously(plugin, new Runnable() {
 			
 			@Override
 			public void run() {
 				plugin.sql.sqlGeneralStats.addStats(stats);
+				Paintball.instance.removeAsyncTask();
 			}
 		});
 	}
 
 	public void matchEndStats(final Map<GeneralStat, Integer> stats, final int playerAmount) {
+		Paintball.instance.addAsyncTask();
 		plugin.getServer().getScheduler().runTaskAsynchronously(plugin, new Runnable() {
 			
 			@Override
 			public void run() {
 				plugin.sql.sqlGeneralStats.addStatsMatchEnd(stats, playerAmount);
+				Paintball.instance.removeAsyncTask();
 			}
 		});
 	}
 
 	public void setGeneralStats(final Map<GeneralStat, Integer> stats) {
+		Paintball.instance.addAsyncTask();
 		plugin.getServer().getScheduler().runTaskAsynchronously(plugin, new Runnable() {
 			
 			@Override
 			public void run() {
 				plugin.sql.sqlGeneralStats.setStats(stats);
+				Paintball.instance.removeAsyncTask();
 			}
 		});
 	}
@@ -78,6 +84,7 @@ public class Stats {
 	}
 	
 	public void sendTop(final CommandSender sender, final PlayerStat stat) {
+		Paintball.instance.addAsyncTask();
 		plugin.getServer().getScheduler().runTaskAsynchronously(plugin, new Runnable() {
 			
 			@Override
@@ -110,6 +117,7 @@ public class Stats {
 						sender.sendMessage(Translator.getString("TOP_TEN_ENTRY", vars));
 					} else break;
 				}
+				Paintball.instance.removeAsyncTask();
 			}
 		});
 	}
@@ -126,6 +134,7 @@ public class Stats {
 	}
 	
 	public void sendRank(final CommandSender sender, final String name, final PlayerStat stat) {
+		Paintball.instance.addAsyncTask();
 		plugin.getServer().getScheduler().runTaskAsynchronously(plugin, new Runnable() {
 			
 			@Override
@@ -139,11 +148,13 @@ public class Stats {
 				} else {
 					sender.sendMessage(Translator.getString("PLAYER_NOT_FOUND", vars));
 				}
+				Paintball.instance.removeAsyncTask();
 			}
 		});
 	}
 
 	public void sendCash(final CommandSender sender, final String name) {
+		Paintball.instance.addAsyncTask();
 		plugin.getServer().getScheduler().runTaskAsynchronously(plugin, new Runnable() {
 			
 			@Override
@@ -157,6 +168,7 @@ public class Stats {
 				} else {
 					sender.sendMessage(Translator.getString("PLAYER_NOT_FOUND", vars));
 				}
+				Paintball.instance.removeAsyncTask();
 			}
 		});
 	}
@@ -177,6 +189,7 @@ public class Stats {
 	}
 
 	public void sendStats(final CommandSender sender, final String name) {
+		Paintball.instance.addAsyncTask();
 		plugin.getServer().getScheduler().runTaskAsynchronously(plugin, new Runnable() {
 			
 			@Override
@@ -222,6 +235,7 @@ public class Stats {
 				} else {
 					sender.sendMessage(Translator.getString("PLAYER_NOT_FOUND", vars));
 				}
+				Paintball.instance.removeAsyncTask();
 			}
 		});
 	}

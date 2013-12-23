@@ -183,6 +183,7 @@ public class CmdAdmin {
 		if(args[1].equalsIgnoreCase("reset")) {
 			if(args.length == 3 && args[2].equalsIgnoreCase("all")) {
 				sender.sendMessage(Translator.getString("THIS_NEEDS_TIME"));
+				Paintball.instance.addAsyncTask();
 				plugin.getServer().getScheduler().runTaskAsynchronously(plugin, new Runnable() {
 					
 					@Override
@@ -199,6 +200,7 @@ public class CmdAdmin {
 						vars.put("time", String.valueOf(delta));
 						vars.put("amount", String.valueOf(amount));
 						sender.sendMessage(Translator.getString("ALL_STATS_RESET", vars));
+						Paintball.instance.removeAsyncTask();
 					}
 				});
 				return true;
@@ -275,15 +277,15 @@ public class CmdAdmin {
 			}
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 		} else if(args[1].equalsIgnoreCase("next")) {
-			if(args.length == 3) {
+			if (args.length == 3) {
 				String arena = args[2];
-				if(!plugin.arenaManager.existing(arena)) {
+				if (!plugin.arenaManager.existing(arena)) {
 					Map<String, String> vars = new HashMap<String, String>();
 					vars.put("arena", arena);
 					sender.sendMessage(Translator.getString("ARENA_NOT_FOUND", vars));
 					return true;
 				}
-				if(!plugin.arenaManager.isReady(arena)) {
+				if (!plugin.arenaManager.isReady(arena)) {
 					sender.sendMessage(Translator.getString("ARENA_NOT_READY"));
 					return true;
 				}
@@ -294,7 +296,7 @@ public class CmdAdmin {
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 		} else if(args[1].equalsIgnoreCase("disable")) {
 			String status = "";
-			if(plugin.active) {
+			if (plugin.active) {
 				plugin.active = false;
 				status = Translator.getString("OFF");
 			} else {

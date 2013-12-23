@@ -62,6 +62,31 @@ public class Paintball extends JavaPlugin{
 	public static Paintball instance;
 	
 	public boolean currentlyDisableing = false;
+
+	private Integer asyncDetector = new Integer(0);
+	public void addAsyncTask() {
+		synchronized (asyncDetector) {
+			asyncDetector++;
+		}
+	}
+	
+	public void removeAsyncTask() {
+		synchronized (asyncDetector) {
+			asyncDetector--;
+		}
+	}
+	
+	public int getAsyncTasksCount() {
+		synchronized (asyncDetector) {
+			return asyncDetector.intValue();
+		}
+	}
+	
+	public boolean isAsyncTaskRunning() {
+		synchronized (asyncDetector) {
+			return asyncDetector > 0;
+		}
+	}
 	
 	public PlayerManager playerManager;
 	public CommandManager commandManager;
@@ -93,8 +118,8 @@ public class Paintball extends JavaPlugin{
 	public int lobbyspawn;
 	private List<Location> lobbyspawns;
 
-	//Public afk detection
-	public Map<String, Integer> afkMatchCount;
+	//afk detection
+	private Map<String, Integer> afkMatchCount;
 	
 	//CONFIG:
 	//general:
@@ -1194,9 +1219,11 @@ public class Paintball extends JavaPlugin{
 
 					@Override
 					public void run() {
+						Paintball.instance.addAsyncTask();
 						Log.printInfo();
 						// stop logging of warnings:
 						Log.logWarnings(false);
+						Paintball.instance.removeAsyncTask();
 					}
 				}, 20L);
 			}
@@ -1206,14 +1233,32 @@ public class Paintball extends JavaPlugin{
 
 	}
 	
-	public void onDisable(){
+	public void onDisable() {
 		currentlyDisableing = true;
 		matchManager.forceReload();
+		// wait for async tasks to complete:
+		final long start = System.currentTimeMillis();
+		while (this.isAsyncTaskRunning()) {
+			try {
+				Thread.sleep(5);
+			} catch (InterruptedException e) {
+				e.printStackTrace();
+			}
+			// wait max 5 seconds then disable anyways..:
+			if (System.currentTimeMillis() - start > 5000) {
+				Log.warning("Waited over 5 seconds for " + this.getAsyncTasksCount()
+						+ " remaining async tasks to complete. Disabling Paintball now anyways..");
+				break;
+			}
+		}
+		long timeWaited = System.currentTimeMillis() - start;
+		Log.info("Waited " + timeWaited + "ms for async (probably stats saving) tasks to finish.");
+		
 		sql.closeConnection();
 		getServer().getScheduler().cancelTasks(this);
-		instance = null;
 		Log.info("Disabled!");
 		currentlyDisableing = false;
+		instance = null;
 	}
 
 	public void reload(CommandSender sender) {
@@ -1265,23 +1310,31 @@ public class Paintball extends JavaPlugin{
 	}*/
 	
 	
-	public synchronized void afkRemove(String player) {
-		afkMatchCount.remove(player);
+	public void afkRemove(String player) {
+		synchronized (afkMatchCount) {
+			afkMatchCount.remove(player);
+		}
 	}
 	
-	public synchronized int afkGet(String player) {
-		int amount = 0;
-		if(afkMatchCount.get(player) != null) amount = afkMatchCount.get(player);
-		return amount;
+	public int afkGet(String player) {
+		synchronized (afkMatchCount) {
+			int amount = 0;
+			if(afkMatchCount.get(player) != null) amount = afkMatchCount.get(player);
+			return amount;
+		}
 	}
 	
-	public synchronized void afkSet(String player, int amount) {
-		afkMatchCount.put(player, amount);
+	public void afkSet(String player, int amount) {
+		synchronized (afkMatchCount) {
+			afkMatchCount.put(player, amount);
+		}
 	}
 	
-	public synchronized List<String> afkGetEntries() {
-		List<String> entries = new ArrayList<String>(afkMatchCount.keySet());	
-		return entries;
+	public List<String> afkGetEntries() {
+		synchronized (afkMatchCount) {
+			List<String> entries = new ArrayList<String>(afkMatchCount.keySet());	
+			return entries;
+		}
 	}
 	
 }

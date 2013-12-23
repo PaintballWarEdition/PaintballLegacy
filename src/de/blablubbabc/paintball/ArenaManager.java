@@ -220,32 +220,38 @@ public class ArenaManager {
 
 	//STATS
 	public void addStats(final String arena, final Map<ArenaStat, Integer> stats) {
+		Paintball.instance.addAsyncTask();
 		plugin.getServer().getScheduler().runTaskAsynchronously(plugin, new Runnable() {
 			
 			@Override
 			public void run() {
 				plugin.sql.sqlArenaLobby.addArenaStats(arena, stats);
+				Paintball.instance.removeAsyncTask();
 				//statsList.add("rounds"); statsList.add("kills"); statsList.add("shots"); statsList.add("grenades"); statsList.add("airstrikes");
 			}
 		});
 	}
 
 	public void setStats(final String arena, final Map<ArenaStat, Integer> stats) {
+		Paintball.instance.addAsyncTask();
 		plugin.getServer().getScheduler().runTaskAsynchronously(plugin, new Runnable() {
 			
 			@Override
 			public void run() {
 				plugin.sql.sqlArenaLobby.setArenaStats(arena, stats);
+				Paintball.instance.removeAsyncTask();
 			}
 		});
 	}
 	//SETTINGS
 	public void setSettings(final String arena, final Map<ArenaSetting, Integer> settings) {
+		Paintball.instance.addAsyncTask();
 		plugin.getServer().getScheduler().runTaskAsynchronously(plugin, new Runnable() {
 			
 			@Override
 			public void run() {
 				plugin.sql.sqlArenaLobby.setArenaSettings(arena, settings);
+				Paintball.instance.removeAsyncTask();
 				//settingsList.add("balls"); settingsList.add("grenades"); settingsList.add("airstrikes"); settingsList.add("lives"); settingsList.add("respawns");
 			}
 		});

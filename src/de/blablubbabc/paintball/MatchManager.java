@@ -281,6 +281,7 @@ public class MatchManager {
 		}
 		
 		// SAVE PLAYER STATS TO DATABASE
+		Paintball.instance.addAsyncTask();
 		plugin.getServer().getScheduler().runTaskAsynchronously(plugin, new Runnable() {
 			
 			@Override
@@ -317,13 +318,14 @@ public class MatchManager {
 							plugin.feeder.status(ready());
 						}
 						//TIME
-						if(plugin.debug) {
+						if (plugin.debug) {
 							double delta = (System.nanoTime() - time1) / 10E6;
 							DecimalFormat dec = new DecimalFormat("#.###");
 							plugin.feeder.text("+Async Stats Saving: Took " + dec.format(delta) + " ms");
 						}
 					}
 				});
+				Paintball.instance.removeAsyncTask();
 			}
 		});
 		

@@ -361,6 +361,7 @@ public class PlayerManager {
 	
 	public void loadPlayerStatsAsync(final String playerName, final Runnable runAfterwards) {
 		if (playerStats.get(playerName) == null) {
+			Paintball.instance.addAsyncTask();
 			Paintball.instance.getServer().getScheduler().runTaskAsynchronously(Paintball.instance, new Runnable() {
 
 				@Override
@@ -370,6 +371,7 @@ public class PlayerManager {
 						// run afterwards-task sync:
 						Paintball.instance.getServer().getScheduler().runTask(Paintball.instance, runAfterwards);
 					}
+					Paintball.instance.removeAsyncTask();
 				}
 			});
 		} else {
@@ -425,6 +427,7 @@ public class PlayerManager {
 		// lock player
 		playersToAdd.add(name);
 		
+		Paintball.instance.addAsyncTask();
 		Paintball.instance.getServer().getScheduler().runTaskAsynchronously(Paintball.instance, new Runnable() {
 
 			@Override
@@ -460,6 +463,7 @@ public class PlayerManager {
 						}, 1L);
 					}
 				});
+				Paintball.instance.removeAsyncTask();
 			}
 		});
 	}
@@ -477,11 +481,13 @@ public class PlayerManager {
 	}
 
 	public void resetAllDataAsync() {
+		Paintball.instance.addAsyncTask();
 		Paintball.instance.getServer().getScheduler().runTaskAsynchronously(Paintball.instance, new Runnable() {
 
 			@Override
 			public void run() {
 				resetAllData();
+				Paintball.instance.removeAsyncTask();
 			}
 		});
 	}

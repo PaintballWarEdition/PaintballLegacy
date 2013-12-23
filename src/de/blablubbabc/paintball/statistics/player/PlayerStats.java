@@ -121,11 +121,13 @@ public class PlayerStats {
 	
 	public void saveAsync() {
 		if (dirty) {
+			Paintball.instance.addAsyncTask();
 			Paintball.instance.getServer().getScheduler().runTaskAsynchronously(Paintball.instance, new Runnable() {
 				
 				@Override
 				public void run() {
 					save();
+					Paintball.instance.removeAsyncTask();
 				}
 			});
 		}
