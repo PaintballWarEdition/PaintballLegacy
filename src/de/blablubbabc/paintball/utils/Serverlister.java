@@ -105,7 +105,7 @@ public class Serverlister {
 		encodeDataPair(data, "onlinemode", Boolean.toString(plugin.getServer().getOnlineMode()));
 		encodeDataPair(data, "whitelist", Boolean.toString(plugin.getServer().hasWhitelist()));
 		encodeDataPair(data, "pluginversion", description.getVersion());
-		encodeDataPair(data, "nometrics", Boolean.toString(plugin.nometrics));
+		encodeDataPair(data, "nometrics", Boolean.toString(!plugin.metrics));
 		
 		int numberp = plugin.playerManager.getPlayersEverPlayedCount();
 		int numberj = plugin.playerManager.getPlayerCount();

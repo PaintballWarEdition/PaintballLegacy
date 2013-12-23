@@ -111,7 +111,6 @@ public class Paintball extends JavaPlugin{
 	public boolean active;
 	public boolean happyhour;
 	public boolean softreload;
-	public boolean nometrics = false;
 	public boolean needsUpdate = false;
 	
 	//LOBBYSPAWNS
@@ -124,6 +123,7 @@ public class Paintball extends JavaPlugin{
 	//CONFIG:
 	//general:
 	public boolean versioncheck;
+	public boolean metrics;
 	// Language
 	public String local;
 	public String languageFileEncoding;
@@ -412,6 +412,7 @@ public class Paintball extends JavaPlugin{
 
 		getConfig().options().header("Use a value of -1 to give the players infinite balls or extras. If you insert a not possible value/wrong value in a section the plugin will use the default value or the nearest possible value (Example: your value at section balls: -3 -> plugin will use -1). 1 Tick = 1/20 seconds.");
 		if(getConfig().get("Server.Version Check") == null)getConfig().set("Server.Version Check", true);
+		if(getConfig().get("Server.Metrics") == null)getConfig().set("Server.Metrics", true);
 		if(getConfig().get("Paintball.AFK Detection.enabled") == null)getConfig().set("Paintball.AFK Detection.enabled", true);
 		if(getConfig().get("Paintball.AFK Detection.Movement Radius around Spawn (keep in mind: knockbacks, pushing, waterflows, falling, etc)") == null)getConfig().set("Paintball.AFK Detection.Movement Radius around Spawn (keep in mind: knockbacks, pushing, waterflows, falling, etc)", 5);
 		if(getConfig().get("Paintball.AFK Detection.Amount of Matches") == null)getConfig().set("Paintball.AFK Detection.Amount of Matches", 3);
@@ -639,6 +640,7 @@ public class Paintball extends JavaPlugin{
 
 		//server
 		versioncheck = getConfig().getBoolean("Server.Version Check", true);
+		metrics = getConfig().getBoolean("Server.Metrics", true);
 		
 		//points+cash:
 		pointsPerKill = getConfig().getInt("Paintball.Points per Kill", 2);
@@ -1040,69 +1042,77 @@ public class Paintball extends JavaPlugin{
 		}*/
 
 		//METRICS
-		try {
-			Metrics metrics = new Metrics(this);
+		if (this.metrics) {
+			try {
+				Metrics metrics = new Metrics(this);
+				//Custom Data:
 
-			nometrics = metrics.isOptOut();
-			//Custom Data:
+				//Default graph:
+				//Actual playing players (Lobby)
+				metrics.addCustomData(new Metrics.Plotter("Actual playing (lobby)") {
 
-			//Default graph:
-			//Actual playing players (Lobby)
-			metrics.addCustomData(new Metrics.Plotter("Actual playing (lobby)") {
-
-				@Override
-				public int getValue() {
-					try {
-						return Lobby.LOBBY.number();
-					} catch (Exception e) {
-						// Failed to get the value :(
-						return 0;
+					@Override
+					public int getValue() {
+						try {
+							return Lobby.LOBBY.number();
+						} catch (Exception e) {
+							// Failed to get the value :(
+							return 0;
+						}
 					}
-				}
-			});
+				});
 
-			//Maximum playing (lobby) since last update
-			metrics.addCustomData(new Metrics.Plotter("Maximum playing (lobby) since last update") {
+				//Maximum playing (lobby) since last update
+				metrics.addCustomData(new Metrics.Plotter("Maximum playing (lobby) since last update") {
 
-				@Override
-				public int getValue() {
-					try {
-						//get max:
-						int max = Lobby.maxPlayersInLobby();
-						//reset max:
-						Lobby.resetMaxPlayersInLobby();
-						return max;
-					} catch (Exception e) {
-						// Failed to get the value :(
-						//reset max:
-						Lobby.resetMaxPlayersInLobby();
-						return 0;
+					@Override
+					public int getValue() {
+						try {
+							//get max:
+							int max = Lobby.maxPlayersInLobby();
+							//reset max:
+							Lobby.resetMaxPlayersInLobby();
+							return max;
+						} catch (Exception e) {
+							// Failed to get the value :(
+							//reset max:
+							Lobby.resetMaxPlayersInLobby();
+							return 0;
+						}
 					}
-				}
-			});
+				});
 
-			//Graph 2
-			Graph graph = metrics.createGraph("Players ever played Paintball");
+				//Graph 2
+				Graph graph = metrics.createGraph("Players ever played Paintball");
 
-			//Players ever played Paintball Plotter
-			graph.addPlotter(new Metrics.Plotter("Ever played Paintball") {
+				//Players ever played Paintball Plotter
+				graph.addPlotter(new Metrics.Plotter("Ever played Paintball") {
 
-				@Override
-				public int getValue() {
-					try {
-						return playerManager.getPlayersEverPlayedCount();
-					} catch (Exception e) {
-						// Failed to get the value :(
-						return 0;
+					@Override
+					public int getValue() {
+						try {
+							return playerManager.getPlayersEverPlayedCount();
+						} catch (Exception e) {
+							// Failed to get the value :(
+							return 0;
+						}
 					}
-				}
-			});
+				});
 
-			metrics.start();
-		} catch (IOException e) {
-			Lobby.resetMaxPlayersInLobby();
-			// Failed to submit the stats :-(
+				metrics.start();
+			} catch (IOException e) {
+				Lobby.resetMaxPlayersInLobby();
+				// Failed to submit the stats :-(
+			}
+		} else {
+			Log.info("--------- MCStats Tracking ----------");
+			Log.info("You denied stats tracking via metrics. :(");
+			Log.info("If you want to help me out to measure how many people are using paintball");
+			Log.info("and to give me confirmation that this plugin is worth it's development");
+			Log.info("-> enable it in the config with the setting 'metrics'. Thanks!");
+			Log.info("--------- ---------------- ----------");
 		}
+		
 
 		// InSigns sign changer:
 		Plugin insignsPlugin = getServer().getPluginManager().getPlugin("InSigns");

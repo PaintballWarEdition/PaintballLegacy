@@ -298,7 +298,9 @@ public class Metrics {
                 }
                 return true;
             }
-            return configuration.getBoolean("opt-out", false);
+            //return configuration.getBoolean("opt-out", false);
+            // ignore the opt-out setting, it has it's own setting to check
+            return false;
         }
     }
 
