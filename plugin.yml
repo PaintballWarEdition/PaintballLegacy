@@ -1,6 +1,6 @@
 name: Paintball
 main: de.blablubbabc.paintball.Paintball
-version: 1.2.5
+version: 1.2.6-DEV1
 author: blablubbabc
 description: Paintball by blablubbabc.
 softdepend: [InSigns, TagAPI, Votifier, Multiverse-Core, My Worlds, Transporter, Multiworld]
