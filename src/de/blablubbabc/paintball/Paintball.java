@@ -145,6 +145,8 @@ public class Paintball extends JavaPlugin{
 	public boolean chatMessageColor;
 	public boolean chatNameColor;
 	public boolean chatFeaturesOnlyForPaintballersVisible;
+	public boolean chatReplaceFormat;
+	public String chatFormat;
 	
 	// ranks
 	public boolean ranksLobbyArmor;
@@ -447,10 +449,12 @@ public class Paintball extends JavaPlugin{
 		
 		if(getConfig().get("Paintball.Ball speed multi") == null)getConfig().set("Paintball.Ball speed multi", 2.5);
 		if(getConfig().get("Paintball.Colored listnames") == null)getConfig().set("Paintball.Colored listnames", true);
-		// chat colors
+		// chat related
 		if(getConfig().get("Paintball.Chat.Colored Message") == null)getConfig().set("Paintball.Chat.Colored Message", true);
 		if(getConfig().get("Paintball.Chat.Colored Name") == null)getConfig().set("Paintball.Chat.Colored Name", false);
 		if(getConfig().get("Paintball.Chat.Changes only visible for Paintballers") == null)getConfig().set("Paintball.Chat.Changes only visible for Paintballers", true);
+		if(getConfig().get("Paintball.Chat.Format.Use alternate chat format") == null)getConfig().set("Paintball.Chat.Format.Use alternate chat format", false);
+		if(getConfig().get("Paintball.Chat.Format.Alternate chat format") == null)getConfig().set("Paintball.Chat.Format.Alternate chat format", "&6%s%7: &f%s");
 		
 		// ranks
 		if(getConfig().get("Paintball.Ranks.Chat Prefix.enabled") == null)getConfig().set("Paintball.Ranks.Chat Prefix.enabled", true);
@@ -748,6 +752,8 @@ public class Paintball extends JavaPlugin{
 		chatMessageColor = getConfig().getBoolean("Paintball.Chat.Colored Message", true);
 		chatNameColor = getConfig().getBoolean("Paintball.Chat.Colored Name By Displayname Replacing", false);
 		chatFeaturesOnlyForPaintballersVisible = getConfig().getBoolean("Paintball.Chat.Changes only visible for Paintballers", true);
+		chatReplaceFormat = getConfig().getBoolean("Paintball.Chat.Format.Use alternate chat format", false);
+		chatFormat = ChatColor.translateAlternateColorCodes('&', getConfig().getString("Paintball.Chat.Format.Alternate chat format", "&6%s&7: &f%s"));
 		
 		// ranks
 		ranksChatPrefix = getConfig().getBoolean("Paintball.Ranks.Chat Prefix.enabled", true);

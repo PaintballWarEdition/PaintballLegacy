@@ -576,7 +576,7 @@ public class EventListener implements Listener {
 			}
 			
 			String messageToUse = event.getMessage();
-			String formatToUse = event.getFormat();
+			String formatToUse = plugin.chatReplaceFormat ? plugin.chatFormat : event.getFormat();
 			
 			if (plugin.chatMessageColor) {
 				messageToUse = color + event.getMessage();
@@ -584,10 +584,8 @@ public class EventListener implements Listener {
 			
 			if (plugin.chatNameColor) {
 				// change name color via format:
-				if (plugin.chatNameColor) {
-					String displayName = ChatColor.stripColor(player.getDisplayName());
-					formatToUse = formatToUse.replaceFirst(displayName, color + displayName);
-				}
+				String displayName = ChatColor.stripColor(player.getDisplayName());
+				formatToUse = formatToUse.replaceFirst(displayName, color + displayName);
 			}
 			
 			if (plugin.ranksChatPrefix ) {
