@@ -1180,8 +1180,8 @@ public class Paintball extends JavaPlugin{
 				// check for updates:
 				if (Paintball.this.versioncheck) {
 					Updater updater = new Updater(Paintball.this, 41489, Paintball.this.getFile(), UpdateType.NO_DOWNLOAD, true);
-					Log.info("--------- Checking version ----------");
 					Updater.UpdateResult result = updater.getResult(); // this freezes until the result is available
+					Log.info("--------- Checking version ----------");
 					switch(result)
 			        {
 			            case SUCCESS:
