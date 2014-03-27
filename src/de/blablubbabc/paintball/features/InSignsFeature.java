@@ -1,8 +1,8 @@
 package de.blablubbabc.paintball.features;
 
 import java.text.DecimalFormat;
-import de.blablubbabc.insigns.Changer;
 import de.blablubbabc.insigns.InSigns;
+import de.blablubbabc.insigns.SimpleChanger;
 import de.blablubbabc.paintball.Paintball;
 import de.blablubbabc.paintball.statistics.player.PlayerStat;
 import de.blablubbabc.paintball.statistics.player.PlayerStats;
@@ -14,6 +14,7 @@ import org.bukkit.plugin.Plugin;
 
 public class InSignsFeature {
 	private final Paintball plugin;
+	@SuppressWarnings("unused")
 	private final InSigns insigns;
 	private final DecimalFormat format;
 	
@@ -31,10 +32,10 @@ public class InSignsFeature {
 			else if(s.equals("airstrikes")) s = "as";
 			else if(s.equals("money_spent")) s = "spent";
 			
-			insigns.addChanger(new Changer("[PB_"+s.toUpperCase()+"]", "paintball.admin") {
-
+			new SimpleChanger(Paintball.instance, "[PB_"+s.toUpperCase()+"]", "paintball.admin") {
+				
 				@Override
-				public String getValue(Player player, Location location) {
+				public String getValue(Player player, Location signLocation, String affectedLine) {
 					String playerName = player.getName();
 					if(!plugin.sql.isConnected()) {
 						return Translator.getString("NOT_CONNECTED");
@@ -51,14 +52,13 @@ public class InSignsFeature {
 						}
 					}
 				}
-
-			});
+			};
 			
 			// rank changers:
-			insigns.addChanger(new Changer("[PB_R_"+s.toUpperCase()+"]", "paintball.admin") {
-
+			new SimpleChanger(Paintball.instance, "[PB_R_"+s.toUpperCase()+"]", "paintball.admin") {
+				
 				@Override
-				public String getValue(Player player, Location location) {
+				public String getValue(Player player, Location signLocation, String affectedLine) {
 					String playerName = player.getName();
 					if (!plugin.sql.isConnected()) {
 						return Translator.getString("NOT_CONNECTED");
@@ -68,15 +68,14 @@ public class InSignsFeature {
 						return Translator.getString("NOT_FOUND");
 					}
 				}
-
-			});
+			};
 		}
 		
 		// Create additional changer for default rank (points):
-		insigns.addChanger(new Changer("[PB_RANK]", "paintball.admin") {
-
+		new SimpleChanger(Paintball.instance, "[PB_RANK]", "paintball.admin") {
+			
 			@Override
-			public String getValue(Player player, Location location) {
+			public String getValue(Player player, Location signLocation, String affectedLine) {
 				String playerName = player.getName();
 				if (!plugin.sql.isConnected())
 					return Translator.getString("NOT_CONNECTED");
@@ -86,9 +85,6 @@ public class InSignsFeature {
 					return Translator.getString("NOT_FOUND");
 				}
 			}
-
-		});
-		
+		};
 	}
-
 }
