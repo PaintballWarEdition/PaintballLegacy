@@ -10,6 +10,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.regex.Pattern;
 
+import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Location;
 import org.bukkit.Material;
@@ -1168,8 +1169,8 @@ public class Paintball extends JavaPlugin{
 			}
 		}
 		
-		// after all plguins are enabled:
-		this.getServer().getScheduler().runTaskLater(this, new Runnable() {
+		// after all plugins are enabled:
+		Bukkit.getScheduler().runTaskLaterAsynchronously(this, new Runnable() {
 
 			@Override
 			public void run() {
@@ -1180,7 +1181,7 @@ public class Paintball extends JavaPlugin{
 				if (Paintball.this.versioncheck) {
 					Updater updater = new Updater(Paintball.this, 41489, Paintball.this.getFile(), UpdateType.NO_DOWNLOAD, true);
 					Log.info("--------- Checking version ----------");
-					Updater.UpdateResult result = updater.getResult();
+					Updater.UpdateResult result = updater.getResult(); // this freezes until the result is available
 					switch(result)
 			        {
 			            case SUCCESS:
@@ -1194,7 +1195,7 @@ public class Paintball extends JavaPlugin{
 			                break;
 			            case DISABLED:
 			                // Won't Update: The updater was disabled in its configuration file.
-			            	Log.info("You denied version checking. :(");
+			            	Log.info("You denied version checking.");
 							Log.info("If you want to be informed about a new version of paintball");
 							Log.info("-> enable it in plugins/Updater/config.yml");
 			                break;
@@ -1221,7 +1222,7 @@ public class Paintball extends JavaPlugin{
 			            case UPDATE_AVAILABLE:
 			            	// There was an update found, but because you had the UpdateType set to NO_DOWNLOAD, it was not downloaded.
 			            	Paintball.this.needsUpdate = true;
-			            	Log.info("There is a new version of paintball available: " + updater.getLatestName() + " (" + updater.getLatestType() + ")", true);
+			            	Log.info("There is a new version of paintball available: " + updater.getLatestName() + " (" + updater.getLatestType().name() + ")", true);
 			            	Log.info("Download at the bukkit dev page.");
 			        }
 					Log.info("--------- ---------------- ----------");
@@ -1233,15 +1234,13 @@ public class Paintball extends JavaPlugin{
 					Log.info("--------- ---------------- ----------");
 				}
 				
-				getServer().getScheduler().runTaskLaterAsynchronously(Paintball.this, new Runnable() {
+				Bukkit.getScheduler().runTaskLater(Paintball.this, new Runnable() {
 
 					@Override
 					public void run() {
-						Paintball.instance.addAsyncTask();
 						Log.printInfo();
 						// stop logging of warnings:
 						Log.logWarnings(false);
-						Paintball.instance.removeAsyncTask();
 					}
 				}, 20L);
 			}

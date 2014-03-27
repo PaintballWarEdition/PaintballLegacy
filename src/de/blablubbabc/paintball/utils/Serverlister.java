@@ -150,7 +150,7 @@ public class Serverlister {
 				}
 			}
 		} else {
-			// do nothing: version is now check with the Updater class
+			// do nothing: version is now checked with the Updater class
 		}
 	}
 
