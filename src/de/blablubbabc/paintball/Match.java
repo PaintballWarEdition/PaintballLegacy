@@ -29,6 +29,7 @@ import de.blablubbabc.paintball.statistics.player.match.tdm.TDMMatchStat;
 import de.blablubbabc.paintball.statistics.player.match.tdm.TDMMatchStats;
 import de.blablubbabc.paintball.utils.KeyValuePair;
 import de.blablubbabc.paintball.utils.Sounds;
+import de.blablubbabc.paintball.utils.TeleportManager;
 import de.blablubbabc.paintball.utils.Timer;
 import de.blablubbabc.paintball.utils.Translator;
 import de.blablubbabc.paintball.utils.Utils;
@@ -172,7 +173,7 @@ public class Match {
 						if (ploc.getBlockX() != loc.getBlockX() || ploc.getBlockY() != loc.getBlockY() || ploc.getBlockZ() != loc.getBlockZ()) {
 							loc.setPitch(ploc.getPitch());
 							loc.setYaw(ploc.getYaw());
-							p.teleport(loc);
+							TeleportManager.teleport(p, loc);
 						}	
 					}
 					
@@ -332,7 +333,7 @@ public class Match {
 			return;
 		}
 		player.leaveVehicle();
-		player.teleport(loc);
+		TeleportManager.teleport(player, loc);
 		// sound
 		Sounds.playEquipLoadout(player);
 		// afk Location
@@ -492,7 +493,7 @@ public class Match {
 	public synchronized void spawnSpec(Player player) {
 		if (spawnSpec > (specspawns.size() - 1))
 			spawnSpec = 0;
-		player.teleport(specspawns.get(spawnSpec));
+		TeleportManager.teleport(player, specspawns.get(spawnSpec));
 		spawnSpec++;
 		// INVENTORY
 		player.getInventory().setHelmet(

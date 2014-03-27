@@ -8,6 +8,8 @@ import org.bukkit.ChatColor;
 import org.bukkit.command.ConsoleCommandSender;
 import org.bukkit.plugin.Plugin;
 
+import de.blablubbabc.paintball.Paintball;
+
 public class Log {
 	private static Logger logger;
 	private static ConsoleCommandSender consoleSender;
@@ -17,6 +19,12 @@ public class Log {
 	public static void init(Plugin pl) {
 		consoleSender = pl.getServer().getConsoleSender();
 		logger = pl.getLogger();
+	}
+	
+	public static void debug(String message) {
+		if (Paintball.instance.debug) {
+			log("[PB DEBUG] " + message);
+		}
 	}
 	
 	public static void logWarnings(boolean logWarnings) {

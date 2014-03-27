@@ -12,6 +12,7 @@ import org.bukkit.inventory.PlayerInventory;
 import org.bukkit.potion.PotionEffect;
 import org.bukkit.scoreboard.Scoreboard;
 
+import de.blablubbabc.paintball.utils.TeleportManager;
 import de.blablubbabc.paintball.utils.Translator;
 
 
@@ -67,12 +68,9 @@ public class PlayerDataStore {
 	}
 
 	private void teleportPlayer(Player player, Location to) {
-		// PREPARE
-		player.closeInventory();
-		player.leaveVehicle();
-		// LOCATION
+		// LOCATION +  TELEPORT
 		location = player.getLocation();
-		player.teleport(to);
+		TeleportManager.teleport(player, to);
 	}
 	
 	private void storeClearPlayer(Player player) {
@@ -178,7 +176,7 @@ public class PlayerDataStore {
 		player.updateInventory();
 		
 		// TELEPORT BACK
-		if (!withoutTeleport) player.teleport(location);
+		if (!withoutTeleport) TeleportManager.teleport(player, location);
 	}
 	
 	@SuppressWarnings("deprecation")

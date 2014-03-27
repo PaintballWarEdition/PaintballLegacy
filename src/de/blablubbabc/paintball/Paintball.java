@@ -40,7 +40,7 @@ import de.blablubbabc.paintball.utils.Log;
 import de.blablubbabc.paintball.utils.Metrics;
 import de.blablubbabc.paintball.utils.Serverlister;
 import de.blablubbabc.paintball.utils.Sounds;
-import de.blablubbabc.paintball.utils.TeleportFix;
+import de.blablubbabc.paintball.utils.TeleportManager;
 import de.blablubbabc.paintball.utils.Translator;
 import de.blablubbabc.paintball.utils.Updater;
 import de.blablubbabc.paintball.utils.Updater.UpdateType;
@@ -1022,7 +1022,7 @@ public class Paintball extends JavaPlugin{
 		//STATS
 		statsManager = new Stats(this);
 		getServer().getPluginManager().registerEvents(listener, this);
-		getServer().getPluginManager().registerEvents(new TeleportFix(this), this);
+		new TeleportManager();
 
 		active = true;
 		happyhour = false;
