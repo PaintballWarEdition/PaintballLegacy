@@ -60,6 +60,7 @@ import de.blablubbabc.paintball.utils.Metrics.Graph;
  */
 public class Paintball extends JavaPlugin{
 	public static Paintball instance;
+	public Thread mainThread;
 	
 	public boolean currentlyDisableing = false;
 
@@ -352,6 +353,7 @@ public class Paintball extends JavaPlugin{
 	@SuppressWarnings("unchecked")
 	public void onEnable(){	
 		instance = this;
+		mainThread = Thread.currentThread();
 		
 		// LOGGER
 		Log.init(this);
@@ -1274,6 +1276,7 @@ public class Paintball extends JavaPlugin{
 		getServer().getScheduler().cancelTasks(this);
 		Log.info("Disabled!");
 		currentlyDisableing = false;
+		mainThread = null;
 		instance = null;
 	}
 
