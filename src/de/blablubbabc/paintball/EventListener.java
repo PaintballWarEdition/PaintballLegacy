@@ -2,6 +2,7 @@ package de.blablubbabc.paintball;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -556,7 +557,7 @@ public class EventListener implements Listener {
 		}
 	}*/
 	
-	@EventHandler(priority = EventPriority.HIGHEST)
+	@EventHandler(priority = EventPriority.HIGHEST, ignoreCancelled = true)
 	public void onPlayerChatLate(AsyncPlayerChatEvent event) {
 		Player player = event.getPlayer();
 		String playerName = player.getName();
@@ -599,17 +600,18 @@ public class EventListener implements Listener {
 			
 			// chat feature onyl visible for paintballers:
 			if (plugin.chatFeaturesOnlyForPaintballersVisible) {
-				
-				// remove paintballers from recipients:
-				event.getRecipients().removeAll(Lobby.LOBBY.getMembers());
-				
 				// send chat message to paintballers manually:
 				String messageToSend = String.format(formatToUse, player.getDisplayName(), messageToUse);
 				
-				for (Player member : Lobby.LOBBY.getMembers()) {
-					member.sendMessage(messageToSend);
+				Set<Player> recipients = event.getRecipients();
+				Iterator<Player> iter = recipients.iterator();
+				while (iter.hasNext()) {
+					Player recipient = iter.next();
+					if (Lobby.LOBBY.isMember(player)) {
+						iter.remove();
+						recipient.sendMessage(messageToSend);
+					}
 				}
-				
 			} else {
 				event.setFormat(formatToUse);
 				event.setMessage(messageToUse);
