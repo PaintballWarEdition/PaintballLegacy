@@ -457,7 +457,7 @@ public class Paintball extends JavaPlugin{
 		if(getConfig().get("Paintball.Chat.Colored Name") == null)getConfig().set("Paintball.Chat.Colored Name", false);
 		if(getConfig().get("Paintball.Chat.Changes only visible for Paintballers") == null)getConfig().set("Paintball.Chat.Changes only visible for Paintballers", true);
 		if(getConfig().get("Paintball.Chat.Format.Use alternate chat format") == null)getConfig().set("Paintball.Chat.Format.Use alternate chat format", false);
-		if(getConfig().get("Paintball.Chat.Format.Alternate chat format") == null)getConfig().set("Paintball.Chat.Format.Alternate chat format", "&6%s%7: &f%s");
+		if(getConfig().get("Paintball.Chat.Format.Alternate chat format") == null)getConfig().set("Paintball.Chat.Format.Alternate chat format", "&6%s&7: &f%s");
 		
 		// ranks
 		if(getConfig().get("Paintball.Ranks.Chat Prefix.enabled") == null)getConfig().set("Paintball.Ranks.Chat Prefix.enabled", true);
