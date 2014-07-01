@@ -173,8 +173,8 @@ public class Updater {
 		final File updaterConfigFile = new File(updaterFile, "config.yml");
 
 		this.config
-				.options()
-				.header("This configuration file affects all plugins using the Updater system (version 2+ - http://forums.bukkit.org/threads/96681/ )" + '\n' + "If you wish to use your API key, read http://wiki.bukkit.org/ServerMods_API and place it below." + '\n' + "Some updating systems will not adhere to the disabled value, but these may be turned off in their plugin's configuration.");
+					.options()
+					.header("This configuration file affects all plugins using the Updater system (version 2+ - http://forums.bukkit.org/threads/96681/ )" + '\n' + "If you wish to use your API key, read http://wiki.bukkit.org/ServerMods_API and place it below." + '\n' + "Some updating systems will not adhere to the disabled value, but these may be turned off in their plugin's configuration.");
 		this.config.addDefault("api-key", "PUT_API_KEY_HERE");
 		this.config.addDefault("disable", false);
 
@@ -472,7 +472,7 @@ public class Updater {
 			if (title.split(delimiter).length == 2) {
 				final String remoteVersion = title.split(delimiter)[1].split(" ")[0]; // Get the newest file's version number
 
-				if (this.hasTag(localVersion) || !this.shouldUpdate(localVersion, remoteVersion)) {
+				if (this.hasTag(localVersion) || this.hasTag(remoteVersion) || !this.shouldUpdate(localVersion, remoteVersion)) {
 					// We already have the latest version, or this build is tagged for no-update
 					this.result = Updater.UpdateResult.NO_UPDATE;
 					return false;
@@ -514,7 +514,10 @@ public class Updater {
 	 * @return true if Updater should consider the remote version an update, false if not.
 	 */
 	public boolean shouldUpdate(String localVersion, String remoteVersion) {
-		return !localVersion.equalsIgnoreCase(remoteVersion);
+		if (localVersion.equalsIgnoreCase(remoteVersion)) return false;
+		String localTag = this.getTag(localVersion);
+		String remoteTag = this.getTag(remoteVersion);
+		return (localTag == null && remoteTag == null) || (localTag != null && remoteTag != null); // update if they both either have or don't have a tag
 	}
 
 	/**
@@ -525,12 +528,16 @@ public class Updater {
 	 * @return true if updating should be disabled.
 	 */
 	private boolean hasTag(String version) {
+		return this.getTag(version) != null;
+	}
+
+	private String getTag(String version) {
 		for (final String string : Updater.NO_UPDATE_TAG) {
 			if (version.contains(string)) {
-				return true;
+				return string;
 			}
 		}
-		return false;
+		return null;
 	}
 
 	/**
@@ -575,7 +582,7 @@ public class Updater {
 			} else {
 				this.plugin.getLogger().severe("The updater could not contact dev.bukkit.org for updating.");
 				this.plugin.getLogger().severe(
-						"If you have not recently modified your configuration and this is the first time you are seeing this message, the site may be experiencing temporary downtime.");
+												"If you have not recently modified your configuration and this is the first time you are seeing this message, the site may be experiencing temporary downtime.");
 				this.result = UpdateResult.FAIL_DBO;
 			}
 			this.plugin.getLogger().log(Level.SEVERE, null, e);
