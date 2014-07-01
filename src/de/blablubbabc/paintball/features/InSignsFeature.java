@@ -17,34 +17,34 @@ public class InSignsFeature {
 	@SuppressWarnings("unused")
 	private final InSigns insigns;
 	private final DecimalFormat format;
-	
+
 	public InSignsFeature(Plugin insignsPlugin, Paintball pbPlugin) {
 		plugin = pbPlugin;
 		insigns = (InSigns) insignsPlugin;
 		format = new DecimalFormat("####.##");
-		
-		//Create changers for all player stats
-		for(final PlayerStat stat : PlayerStat.values()) {
+
+		// Create changers for all player stats
+		for (final PlayerStat stat : PlayerStat.values()) {
 			final String key = stat.getKey();
 			String s = key;
-			if(s.equals("teamattacks")) s = "ta";
-			else if(s.equals("hitquote")) s = "hq";
-			else if(s.equals("airstrikes")) s = "as";
-			else if(s.equals("money_spent")) s = "spent";
-			
-			new SimpleChanger(Paintball.instance, "[PB_"+s.toUpperCase()+"]", "paintball.admin") {
-				
+			if (s.equals("teamattacks")) s = "ta";
+			else if (s.equals("hitquote")) s = "hq";
+			else if (s.equals("airstrikes")) s = "as";
+			else if (s.equals("money_spent")) s = "spent";
+
+			new SimpleChanger(Paintball.instance, "[PB_" + s.toUpperCase() + "]", "paintball.admin") {
+
 				@Override
 				public String getValue(Player player, Location signLocation, String affectedLine) {
 					String playerName = player.getName();
-					if(!plugin.sql.isConnected()) {
+					if (!plugin.sql.isConnected()) {
 						return Translator.getString("NOT_CONNECTED");
 					} else {
 						PlayerStats stats = plugin.playerManager.getPlayerStats(playerName);
-						if(stats != null) {
+						if (stats != null) {
 							Integer statValue = stats.getStat(stat);
-							if(stat == PlayerStat.HITQUOTE || stat == PlayerStat.KD) {
-								float statF = ((float) statValue) / 100;
+							if (stat == PlayerStat.HITQUOTE || stat == PlayerStat.KD) {
+								float statF = statValue / 100F;
 								return format.format(statF);
 							} else return String.valueOf(statValue);
 						} else {
@@ -53,10 +53,10 @@ public class InSignsFeature {
 					}
 				}
 			};
-			
+
 			// rank changers:
-			new SimpleChanger(Paintball.instance, "[PB_R_"+s.toUpperCase()+"]", "paintball.admin") {
-				
+			new SimpleChanger(Paintball.instance, "[PB_R_" + s.toUpperCase() + "]", "paintball.admin") {
+
 				@Override
 				public String getValue(Player player, Location signLocation, String affectedLine) {
 					String playerName = player.getName();
@@ -70,15 +70,14 @@ public class InSignsFeature {
 				}
 			};
 		}
-		
+
 		// Create additional changer for default rank (points):
 		new SimpleChanger(Paintball.instance, "[PB_RANK]", "paintball.admin") {
-			
+
 			@Override
 			public String getValue(Player player, Location signLocation, String affectedLine) {
 				String playerName = player.getName();
-				if (!plugin.sql.isConnected())
-					return Translator.getString("NOT_CONNECTED");
+				if (!plugin.sql.isConnected()) return Translator.getString("NOT_CONNECTED");
 				else if (plugin.playerManager.exists(playerName)) {
 					return String.valueOf(plugin.statsManager.getRank(playerName, PlayerStat.POINTS));
 				} else {

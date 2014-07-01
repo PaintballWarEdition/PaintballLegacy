@@ -202,7 +202,7 @@ public class EventListener implements Listener {
 						vars.put("value", String.valueOf(plugin.statsManager.getRank(player, pStat)));
 					} else {
 						if (pStat == PlayerStat.HITQUOTE|| pStat == PlayerStat.KD) {
-							float statF = (float) stats.getStat(pStat) / 100;
+							float statF = stats.getStat(pStat) / 100F;
 							vars.put("value", Stats.decimalFormat.format(statF));
 						} else {
 							vars.put("value", String.valueOf(stats.getStat(pStat)));
