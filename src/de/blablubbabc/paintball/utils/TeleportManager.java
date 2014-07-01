@@ -43,7 +43,7 @@ public class TeleportManager implements Listener {
 		} else {
 			// workaround: essentials tpaccept command would otherwise allow players to be teleported out of the match/lobby
 			// they use TeleportCause.COMMAND, so we can detect this:
-			if (event.getCause() == TeleportCause.COMMAND && Lobby.LOBBY.isMember(player)) {
+			if (Paintball.instance.blockCommandTeleports && event.getCause() == TeleportCause.COMMAND && Lobby.LOBBY.isMember(player)) {
 				event.setCancelled(true);
 				Log.debug("Cancelled teleport attempt of player '" + playerName + "'.");
 			}
