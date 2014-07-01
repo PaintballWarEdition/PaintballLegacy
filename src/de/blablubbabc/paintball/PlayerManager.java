@@ -143,7 +143,7 @@ public class PlayerManager {
 			player.sendMessage(Translator.getString("NEED_STOP_FLYING"));
 			return false;
 		}
-		// brennt? fällt? taucht?
+		// brennt? fï¿½llt? taucht?
 		if ((player.getFireTicks() > 0 || player.getFallDistance() > 0 || player.getRemainingAir() < player.getMaximumAir()) && Paintball.instance.checkBurning) {
 			player.sendMessage(Translator.getString("NEED_STOP_FALLING_BURNING_DROWNING"));
 			return false;
@@ -272,7 +272,7 @@ public class PlayerManager {
 				// skip airstrikes and grenades count:
 				if (stat == PlayerStat.AIRSTRIKES || stat == PlayerStat.GRENADES) continue;	
 				String scoreName = Translator.getString("SCOREBOARD_LOBBY_" + stat.getKey().toUpperCase());
-				Score score = objective.getScore(Bukkit.getOfflinePlayer(scoreName.length() > 16 ? scoreName.substring(0, 16) : scoreName));
+				Score score = objective.getScore(scoreName.length() > 16 ? scoreName.substring(0, 16) : scoreName);
 				score.setScore(stats.getStat(stat));
 			}
 		}

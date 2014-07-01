@@ -470,16 +470,16 @@ public class Match {
 					// skip airstrikes, grenades and teamattacks count:
 					if (stat == TDMMatchStat.AIRSTRIKES || stat == TDMMatchStat.GRENADES || stat == TDMMatchStat.TEAMATTACKS) continue;	
 					String scoreName = Translator.getString("SCOREBOARD_MATCH_" + stat.getPlayerStat().getKey().toUpperCase());
-					Score score = objective.getScore(Bukkit.getOfflinePlayer(scoreName.length() > 16 ? scoreName.substring(0, 16) : scoreName));
+					Score score = objective.getScore(scoreName.length() > 16 ? scoreName.substring(0, 16) : scoreName);
 					score.setScore(stats.getStat(stat));
 				}
 				// add overall points and cash to scoreboard:
 				String overallPoints = Translator.getString("SCOREBOARD_MATCH_OVERALL_POINTS");
-				Score overallPointsScore = objective.getScore(Bukkit.getOfflinePlayer(overallPoints.length() > 16 ? overallPoints.substring(0, 16) : overallPoints));
+				Score overallPointsScore = objective.getScore(overallPoints.length() > 16 ? overallPoints.substring(0, 16) : overallPoints);
 				overallPointsScore.setScore(stats.getPlayerStats().getStat(PlayerStat.POINTS));
 				
 				String overallCash = Translator.getString("SCOREBOARD_MATCH_OVERALL_MONEY");
-				Score overallCashScore = objective.getScore(Bukkit.getOfflinePlayer(overallCash.length() > 16 ? overallCash.substring(0, 16) : overallCash));
+				Score overallCashScore = objective.getScore(overallCash.length() > 16 ? overallCash.substring(0, 16) : overallCash);
 				overallCashScore.setScore(stats.getPlayerStats().getStat(PlayerStat.MONEY));
 			}
 		}
