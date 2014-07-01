@@ -200,6 +200,7 @@ public class PlayerDataStore {
 		if (player.getWalkSpeed() != 0.2F) player.setWalkSpeed(0.2F);
 		if (player.getFlySpeed() != 0.1F) player.setFlySpeed(0.1F);
 		if (player.getFoodLevel() != 20) player.setFoodLevel(20);
+		if (player.getMaxHealth() != 20) player.setMaxHealth(20);
 		if (player.getHealth() != 20) player.setHealth(20);
 		if (player.getFireTicks() != 0) player.setFireTicks(0);
 		if (Paintball.instance.useXPBar) {
