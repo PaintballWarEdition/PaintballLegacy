@@ -607,7 +607,7 @@ public class EventListener implements Listener {
 				Iterator<Player> iter = recipients.iterator();
 				while (iter.hasNext()) {
 					Player recipient = iter.next();
-					if (Lobby.LOBBY.isMember(player)) {
+					if (Lobby.LOBBY.isMember(recipient)) {
 						iter.remove();
 						recipient.sendMessage(messageToSend);
 					}
