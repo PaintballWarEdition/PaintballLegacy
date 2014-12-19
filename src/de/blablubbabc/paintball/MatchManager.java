@@ -82,8 +82,10 @@ public class MatchManager {
 			//Teleport all remaining players back to lobby:
 			match.resetWeaponStuffEnd();
 			for (Player p : match.getAll()) {
-				if (Lobby.isPlaying(p) || Lobby.isSpectating(p)) {
+				if (Lobby.isPlaying(p)) {
 					match.resetPlayerOnLeave(p);
+					plugin.playerManager.enterLobby(p);
+				} else if (Lobby.isSpectating(p)) {
 					plugin.playerManager.enterLobby(p);
 				}
 			}
@@ -228,6 +230,7 @@ public class MatchManager {
 					}
 					
 					// TELEPORT SURVIVOR TO LOBBY:
+					match.resetPlayerOnLeave(player);
 					plugin.playerManager.enterLobby(player);
 				}
 				
