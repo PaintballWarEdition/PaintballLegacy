@@ -297,13 +297,13 @@ public class PlayerManager {
 	public synchronized void enterLobby(Player player) {
 		PlayerDataStore.clearPlayer(player, true, true);
 		String playerName = player.getName();
-		//set waiting
+		// set waiting:
 		if(Lobby.isPlaying(player) || Lobby.isSpectating(player)) Lobby.getTeam(player).setWaiting(player);
-		//Lobbyteleport
+		// teleport to lobby:
 		player.teleport(Paintball.instance.getNextLobbySpawn());
-		// ASSIGN RANK
+		// assign rank armor:
 		if (Paintball.instance.ranksLobbyArmor) Paintball.instance.rankManager.getRank(playerName).assignArmorToPlayer(player);
-		// ASSIGN SCOREBOARD
+		// assign lobby scoreboard:
 		if (Paintball.instance.scoreboardLobby) {
 			initLobbyScoreboard(player);
 		}

@@ -45,6 +45,7 @@ public class Match {
 	private Set<Player> spec = new HashSet<Player>();
 	private Set<Player> allPlayers = new HashSet<Player>();
 	private Map<Player, Integer> protection = new HashMap<Player, Integer>();
+	private Map<String, Scoreboard> prevScoreboards = new HashMap<String, Scoreboard>();
 	private Map<String, Scoreboard> scoreboards = new HashMap<String, Scoreboard>();
 	private Set<String> justRespawned = new HashSet<String>();
 	// STATS
@@ -429,6 +430,9 @@ public class Match {
 			String playerName = player.getName();
 			Scoreboard matchBoard = scoreboards.get(playerName);
 			if (matchBoard == null) {
+				// remember old scoreboard:
+				prevScoreboards.put(playerName, player.getScoreboard());
+				// create new scoreboard:
 				matchBoard = Bukkit.getScoreboardManager().getNewScoreboard();
 				scoreboards.put(playerName, matchBoard);
 			}
@@ -801,7 +805,7 @@ public class Match {
 			if (plugin.afkDetection) {
 				plugin.afkRemove(player.getName());
 			}
-			resetWeaponStuff(player);
+			resetPlayerOnLeave(player);
 			// survivors?->endGame
 			// math over already?
 			if (matchOver)
@@ -995,6 +999,7 @@ public class Match {
 				// consequences after being afk:
 				plugin.afkRemove(targetName);
 				respawnsLeft.put(target, 0);
+				resetPlayerOnLeave(target);
 				plugin.getServer().getScheduler().runTask(plugin, new Runnable() {
 					@Override
 					public void run() {
@@ -1009,7 +1014,7 @@ public class Match {
 				respawn(target);
 			}
 		} else {
-			resetWeaponStuff(target);
+			resetPlayerOnLeave(target);
 			plugin.getServer().getScheduler().runTask(plugin, new Runnable() {
 				@Override
 				public void run() {
@@ -1092,7 +1097,7 @@ public class Match {
 				// consequences after being afk:
 				plugin.afkRemove(targetName);
 				respawnsLeft.put(target, 0);
-				resetWeaponStuff(target);
+				resetPlayerOnLeave(target);
 				plugin.getServer().getScheduler().runTask(plugin, new Runnable() {
 					@Override
 					public void run() {
@@ -1107,7 +1112,7 @@ public class Match {
 				respawn(target);
 			}
 		} else {
-			resetWeaponStuff(target);
+			resetPlayerOnLeave(target);
 			plugin.getServer().getScheduler().runTask(plugin, new Runnable() {
 				@Override
 				public void run() {
@@ -1150,7 +1155,13 @@ public class Match {
 		}, 1L);
 	}
 
-	public void resetWeaponStuff(Player player) {
+	public void resetPlayerOnLeave(Player player) {
+		// remove match scoreboard again:
+		if (plugin.scoreboardMatch) {
+			Scoreboard prevScoreboard = prevScoreboards.get(player.getName());
+			player.setScoreboard(prevScoreboard != null ? prevScoreboard : Bukkit.getScoreboardManager().getMainScoreboard());
+		}
+		// reset weapon stuff:
 		plugin.weaponManager.cleanUp(this, player.getName());
 	}
 	

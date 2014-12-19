@@ -83,7 +83,7 @@ public class MatchManager {
 			match.resetWeaponStuffEnd();
 			for (Player p : match.getAll()) {
 				if (Lobby.isPlaying(p) || Lobby.isSpectating(p)) {
-					match.resetWeaponStuff(p);
+					match.resetPlayerOnLeave(p);
 					plugin.playerManager.enterLobby(p);
 				}
 			}
