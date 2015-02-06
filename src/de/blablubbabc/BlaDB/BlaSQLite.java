@@ -155,7 +155,7 @@ public class BlaSQLite {
 				// check if we already have player stats for this player in the new database:
 				Map<PlayerStat, Integer> playerStats = sqlPlayers.getPlayerStats(uuid);
 				if (!playerStats.isEmpty()) {
-					Log.warning("Player '" + playerName + "' seems to be know under multiple names. Maybe he has changed his name in the past? Merging statistics now.");
+					Log.warning("Found multiple names for player '" + playerName + "': Merging statistics.");
 					// the player has multiple names (for example because he already changed his name)
 					// merging other old stats:
 					Result oldStatsResult = this.resultQuery("SELECT * FROM oldDB.players WHERE name='" + playerName + "' LIMIT 1;");
