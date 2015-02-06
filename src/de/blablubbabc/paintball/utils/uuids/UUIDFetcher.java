@@ -106,12 +106,15 @@ public class UUIDFetcher implements Callable<Map<String, UUID>> {
 			for (int i = 0; i < requests; i++) {
 				boolean retry = false;
 				JSONArray array = null;
+				int uuidRequsts = 0;
 
 				do {
 					retry = false;
 					array = null;
 					HttpURLConnection connection = createConnection();
-					String body = JSONArray.toJSONString(names.subList(i * PROFILES_PER_REQUEST, Math.min((i + 1) * PROFILES_PER_REQUEST, names.size())));
+					List<String> sublist = names.subList(i * PROFILES_PER_REQUEST, Math.min((i + 1) * PROFILES_PER_REQUEST, names.size()));
+					uuidRequsts = sublist.size();
+					String body = JSONArray.toJSONString(sublist);
 					writeBody(connection, body);
 
 					try {
@@ -146,7 +149,7 @@ public class UUIDFetcher implements Callable<Map<String, UUID>> {
 					UUID uuid = UUIDFetcher.getUUID(id);
 					uuids.put(name, uuid);
 				}
-				counter += array.size();
+				counter += uuidRequsts;
 				Log.info("Progress: " + counter + " / " + remaining);
 				if (rateLimiting) {
 					Thread.sleep(200L);
