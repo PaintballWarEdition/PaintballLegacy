@@ -15,6 +15,7 @@ import de.blablubbabc.paintball.utils.Translator;
 import de.blablubbabc.paintball.utils.Utils;
 
 public class PlayerStats {
+
 	private final UUID playerUUID;
 	private Map<PlayerStat, Integer> stats = null;
 

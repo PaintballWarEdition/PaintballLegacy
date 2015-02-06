@@ -19,7 +19,8 @@ import org.bukkit.plugin.Plugin;
 import de.blablubbabc.paintball.Paintball;
 import de.blablubbabc.paintball.statistics.player.PlayerStat;
 import de.blablubbabc.paintball.utils.Log;
-import de.blablubbabc.paintball.utils.UUIDFetcher;
+import de.blablubbabc.paintball.utils.Utils;
+import de.blablubbabc.paintball.utils.uuids.UUIDFetcher;
 
 public class BlaSQLite {
 
@@ -117,11 +118,13 @@ public class BlaSQLite {
 			}
 
 			Log.info("Importing player statistics ...");
-			StringBuilder oldColBuilder = new StringBuilder("name,");
-			for (String key : PlayerStat.getKeys()) {
-				oldColBuilder.append(key).append(',');
+
+			StringBuilder oldColBuilder = new StringBuilder("name");
+			for (PlayerStat stat : PlayerStat.values()) {
+				String key = stat.getKey();
+				oldColBuilder.append(',').append(key);
 			}
-			String oldPlayerColumns = oldColBuilder.substring(0, oldColBuilder.length() - 1);
+			String oldPlayerColumns = oldColBuilder.toString();
 			String newPlayerColumns = "uuid," + oldPlayerColumns;
 
 			int counter = 0;
@@ -135,9 +138,41 @@ public class BlaSQLite {
 					unconverted.add(playerName);
 					continue;
 				}
+
 				// import player statistics:
-				this.updateQuery("INSERT OR IGNORE INTO players (" + newPlayerColumns + ") SELECT \""
-						+ uuid.toString() + "\"," + oldPlayerColumns + " FROM oldDB.players WHERE name='" + playerName + "';");
+
+				// check if we already have player stats for this player in the new database:
+				Map<PlayerStat, Integer> playerStats = sqlPlayers.getPlayerStats(uuid);
+				if (!playerStats.isEmpty()) {
+					Log.warning("Player '" + playerName + "' seems to be know under multiple names. Maybe he has changed his name in the past? Merging statistics now.");
+					// the player has multiple names (for example because he already changed his name)
+					// merging other old stats:
+					Result oldStatsResult = this.resultQuery("SELECT * FROM oldDB.players WHERE name='" + playerName + "' LIMIT 1;");
+					ResultSet oldStatsRS = oldStatsResult.getResultSet();
+					try {
+						if (oldStatsRS != null && oldStatsRS.next()) {
+							for (PlayerStat stat : PlayerStat.values()) {
+								int curValue = playerStats.get(stat);
+								playerStats.put(stat, curValue + oldStatsRS.getInt(stat.getKey()));
+							}
+						}
+					} catch (SQLException e) {
+						e.printStackTrace();
+					} finally {
+						oldStatsResult.close();
+					}
+
+					// recalculate certain statistic values:
+					playerStats.put(PlayerStat.HITQUOTE, Utils.calculateQuote(playerStats.get(PlayerStat.HITS), playerStats.get(PlayerStat.SHOTS)));
+					playerStats.put(PlayerStat.KD, Utils.calculateQuote(playerStats.get(PlayerStat.KILLS), playerStats.get(PlayerStat.DEATHS)));
+
+					// save merged stats:
+					sqlPlayers.setPlayerStats(uuid, playerStats);
+				} else {
+					// insert old player stats:
+					this.updateQuery("INSERT OR IGNORE INTO players (" + newPlayerColumns + ") SELECT \""
+							+ uuid.toString() + "\"," + oldPlayerColumns + " FROM oldDB.players WHERE name='" + playerName + "';");
+				}
 
 				// giving feedback about the progress, and flushing data:
 				counter++;
@@ -149,6 +184,13 @@ public class BlaSQLite {
 			// commit:
 			Log.info("Saving changes to disk...");
 			this.updateQuery("END TRANSACTION;");
+
+			// some players might have multiple names, because they already changed their name:
+			if (!unconverted.isEmpty()) {
+				Log.warning("Some player statistics couldn't be imported, because we didn't find uuid's for them.", true);
+				Log.warning("Those players either have no Mojang account, or they have already changed their name.", true);
+				Log.warning("Trying to");
+			}
 
 			// detach old db:
 			this.updateQuery("DETACH oldDB;");
@@ -239,20 +281,22 @@ public class BlaSQLite {
 	 * }
 	 */
 
-	public synchronized int updateQuery(String query) {
+	public synchronized int updateQueryRaw(String query) throws SQLException {
 		this.refreshConnection();
-		int row = -1;
-		try
-		{
-			Statement statement = this.connection.createStatement();
-			statement.executeUpdate(query);
-			row = statement.getGeneratedKeys().getInt(1);
-			statement.close();
-		} catch (SQLException e)
-		{
-			e.printStackTrace();
-		}
+		Statement statement = this.connection.createStatement();
+		statement.executeUpdate(query);
+		int row = statement.getGeneratedKeys().getInt(1);
+		statement.close();
 		return row;
+	}
+
+	public synchronized int updateQuery(String query) {
+		try {
+			return this.updateQueryRaw(query);
+		} catch (SQLException e) {
+			e.printStackTrace();
+			return -1;
+		}
 	}
 
 	public synchronized boolean getAutoCommit() {
@@ -286,14 +330,12 @@ public class BlaSQLite {
 
 	public synchronized Result resultQuery(String query) {
 		this.refreshConnection();
-		try
-		{
+		try {
 			Statement statement = this.connection.createStatement();
 			ResultSet result = statement.executeQuery(query);
 
 			return new Result(statement, result);
-		} catch (SQLException e)
-		{
+		} catch (SQLException e) {
 			e.printStackTrace();
 			return null;
 		}

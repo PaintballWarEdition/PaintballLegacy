@@ -1,11 +1,12 @@
 /**
- * Thanks to evilmidget38 for the base of this class.
+ * Thanks to evilmidget38 for this class.
  */
-package de.blablubbabc.paintball.utils;
+package de.blablubbabc.paintball.utils.uuids;
 
 import com.google.common.base.Charsets;
 
 import de.blablubbabc.paintball.Paintball;
+import de.blablubbabc.paintball.utils.Log;
 
 import org.bukkit.Bukkit;
 import org.bukkit.OfflinePlayer;
@@ -21,8 +22,9 @@ import java.net.HttpURLConnection;
 import java.net.URL;
 import java.nio.ByteBuffer;
 import java.util.*;
+import java.util.concurrent.Callable;
 
-public class UUIDFetcher {
+public class UUIDFetcher implements Callable<Map<String, UUID>> {
 
 	private static int PROFILES_PER_REQUEST = 100;
 	private static final String PROFILE_URL = "https://api.mojang.com/profiles/minecraft";
@@ -39,6 +41,7 @@ public class UUIDFetcher {
 		this(names, true);
 	}
 
+	@Override
 	public Map<String, UUID> call() throws Exception {
 		Map<String, UUID> uuids = new HashMap<String, UUID>();
 
@@ -73,6 +76,7 @@ public class UUIDFetcher {
 					String name = names.get(i);
 					List<String> playerUUIDs = uuidCollectorConfig.getStringList(name);
 					if (playerUUIDs == null || playerUUIDs.isEmpty()) continue;
+
 					UUID uuid = null;
 					try {
 						uuid = UUID.fromString(playerUUIDs.get(0)); // prefer first uuid
