@@ -108,9 +108,12 @@ public class BlaSQLite {
 			}
 
 			Log.info("Fetching player uuids...");
-			Map<String, UUID> uuids;
+			Map<String, UUID> localUUIDs;
+			Map<String, UUID> fetchedUUIDs;
 			try {
-				uuids = new UUIDFetcher(playerNames).call();
+				UUIDFetcher fetcher = new UUIDFetcher(playerNames);
+				localUUIDs = fetcher.searchLocal();
+				fetchedUUIDs = fetcher.fetch();
 			} catch (Exception e) {
 				e.printStackTrace();
 				aborted = true;
@@ -133,10 +136,18 @@ public class BlaSQLite {
 			// start transaction:
 			this.updateQuery("BEGIN IMMEDIATE TRANSACTION;");
 			for (String playerName : playerNames) {
-				UUID uuid = uuids.get(playerName);
+				boolean newestName = false;
+				UUID uuid = localUUIDs.get(playerName);
 				if (uuid == null) {
-					unconverted.add(playerName);
-					continue;
+					uuid = fetchedUUIDs.get(playerName);
+					if (uuid == null) {
+						unconverted.add(playerName);
+						continue;
+					} else {
+						// prefer the name, if we got the uuid from mojang servers:
+						// it is probably the most recent name for this player
+						newestName = true;
+					}
 				}
 
 				// import player statistics:
@@ -168,6 +179,11 @@ public class BlaSQLite {
 
 					// save merged stats:
 					sqlPlayers.setPlayerStats(uuid, playerStats);
+
+					if (newestName) {
+						// update player name, because the currently stored one might be not the latest:
+						this.updateQuery("UPDATE OR IGNORE players SET name='" + playerName + "' WHERE uuid='" + uuid.toString() + "';");
+					}
 				} else {
 					// insert old player stats:
 					this.updateQuery("INSERT OR IGNORE INTO players (" + newPlayerColumns + ") SELECT \""

@@ -22,9 +22,8 @@ import java.net.HttpURLConnection;
 import java.net.URL;
 import java.nio.ByteBuffer;
 import java.util.*;
-import java.util.concurrent.Callable;
 
-public class UUIDFetcher implements Callable<Map<String, UUID>> {
+public class UUIDFetcher {
 
 	private static int PROFILES_PER_REQUEST = 100;
 	private static final String PROFILE_URL = "https://api.mojang.com/profiles/minecraft";
@@ -41,8 +40,7 @@ public class UUIDFetcher implements Callable<Map<String, UUID>> {
 		this(names, true);
 	}
 
-	@Override
-	public Map<String, UUID> call() throws Exception {
+	public Map<String, UUID> searchLocal() {
 		Map<String, UUID> uuids = new HashMap<String, UUID>();
 
 		// use available local uuids first:
@@ -96,13 +94,17 @@ public class UUIDFetcher implements Callable<Map<String, UUID>> {
 			Log.info("Not using UUIDCollector.");
 		}
 
-		int remaining = names.size();
-		int counter = 0;
+		return uuids;
+	}
+
+	public Map<String, UUID> fetch() throws Exception {
+		Map<String, UUID> uuids = new HashMap<String, UUID>();
 
 		// for online mode, request remaining uuids from Mojang:
 		if (Paintball.instance.uuidOnlineMode) {
 			Log.info("Requesting remaining online mode uuids from Mojang ...");
 			int requests = (int) Math.ceil(names.size() / PROFILES_PER_REQUEST);
+			int counter = 0;
 			for (int i = 0; i < requests; i++) {
 				boolean retry = false;
 				JSONArray array = null;
@@ -133,7 +135,7 @@ public class UUIDFetcher implements Callable<Map<String, UUID>> {
 								Thread.sleep(30000);
 							}
 						} else {
-							// possibly crucial error.. retrying anyways so the already fetched data isn't wasted in case this is a temporary issue:
+							// possibly crucial error.. retrying anyways so the already fetched data isn't wasted in case this is only a temporary issue:
 							retry = true;
 							Log.info("Error: " + e.getMessage() + ". Trying again in 30 seconds ...");
 							Thread.sleep(30000);
@@ -149,8 +151,11 @@ public class UUIDFetcher implements Callable<Map<String, UUID>> {
 					UUID uuid = UUIDFetcher.getUUID(id);
 					uuids.put(name, uuid);
 				}
+
+				// progress report:
 				counter += uuidRequsts;
-				Log.info("Progress: " + counter + " / " + remaining);
+				Log.info("Progress: " + counter + " / " + names.size());
+
 				if (rateLimiting) {
 					Thread.sleep(200L);
 				}
