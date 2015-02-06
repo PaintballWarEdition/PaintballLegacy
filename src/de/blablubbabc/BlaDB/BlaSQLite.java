@@ -41,7 +41,7 @@ public class BlaSQLite {
 		if (oldDBFile.exists()) {
 			if (Paintball.instance.uuidFirstRun) {
 				Log.warning("Detected first run with old database file: new configuration options were generated.", true);
-				Log.info("Stop the server, open the Paintball config, and make sure the newly added 'UUID Conversion' settings are correctly set.", true);
+				Log.info("Stop the server, open the Paintball config, and make sure that the newly added 'UUID Conversion' settings are correctly set.", true);
 				Log.info("The next time you restart the server, the old paintball data will get imported into a new database file.", true);
 				Log.info("This process will take some while, in which the server will be unresponsive. You will get status reports in the console.", true);
 

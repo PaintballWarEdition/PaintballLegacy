@@ -998,7 +998,6 @@ public class Paintball extends JavaPlugin {
 		sql = new BlaSQLite(this);
 		if (sql.aborted) {
 			Bukkit.getPluginManager().disablePlugin(this);
-			Log.warning("Disabling plugin.");
 			return;
 		}
 
