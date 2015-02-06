@@ -61,13 +61,13 @@ import de.blablubbabc.paintball.utils.Translator;
 public class EventListener implements Listener {
 	private Paintball plugin;
 	private Origin meleeOrigin = new Origin() {
-		
+
 		@Override
 		public String getKillMessage(FragInformations fragInfo) {
 			return Translator.getString("WEAPON_FEED_MELEE", getDefaultVariablesMap(fragInfo));
 		}
 	};
-	
+
 	private long lastSignUpdate = 0;
 
 	public EventListener(Paintball pl) {
@@ -76,7 +76,7 @@ public class EventListener implements Listener {
 
 	// /////////////////////////////////////////
 	// EVENTS
-	
+
 	@EventHandler(priority = EventPriority.NORMAL, ignoreCancelled = true)
 	public void onSignCreate(SignChangeEvent event) {
 		Player player = event.getPlayer();
@@ -84,14 +84,11 @@ public class EventListener implements Listener {
 
 		if (l.startsWith("[PB ")) {
 			for (String key : PlayerStat.getKeys()) {
-				if (key.equals("teamattacks"))
-					key = "ta";
-				else if (key.equals("hitquote"))
-					key = "hq";
-				else if (key.equals("airstrikes"))
-					key = "as";
+				if (key.equals("teamattacks")) key = "ta";
+				else if (key.equals("hitquote")) key = "hq";
+				else if (key.equals("airstrikes")) key = "as";
 				else if (key.equals("money_spent"))
-					key = "spent";
+													key = "spent";
 
 				if (l.equalsIgnoreCase("[PB " + key.toUpperCase() + "]") || l.equalsIgnoreCase("[PB R " + key.toUpperCase() + "]") || l.equalsIgnoreCase("[PB RANK]")) {
 					if (!player.isOp() && !player.hasPermission("paintball.admin")) {
@@ -102,7 +99,7 @@ public class EventListener implements Listener {
 			}
 		}
 	}
-	
+
 	@EventHandler(priority = EventPriority.NORMAL, ignoreCancelled = true)
 	public void onHangingEntityBreak(HangingBreakByEntityEvent event) {
 		Entity remover = event.getRemover();
@@ -112,14 +109,14 @@ public class EventListener implements Listener {
 				remover = (Player) projectile.getShooter();
 			}
 		}
-		
+
 		if (remover instanceof Player) {
 			if (Lobby.LOBBY.isMember((Player) remover)) {
 				event.setCancelled(true);
 			}
 		}
 	}
-	
+
 	@EventHandler(priority = EventPriority.HIGHEST)
 	public void onWorldChange(PlayerChangedWorldEvent event) {
 		if (plugin.worldMode) {
@@ -150,7 +147,7 @@ public class EventListener implements Listener {
 			}
 		}
 	}
-	
+
 	@EventHandler(priority = EventPriority.NORMAL)
 	public void onInteract(PlayerInteractEvent event) {
 		Block block = event.getClickedBlock();
@@ -162,24 +159,21 @@ public class EventListener implements Listener {
 
 				if (l.startsWith("[PB ")) {
 					if (l.equalsIgnoreCase("[PB RANK]")) {
-						changeSign(event.getPlayer().getName(), sign, "points", true);
+						changeSign(event.getPlayer(), sign, "points", true);
 					} else {
 						for (String key : PlayerStat.getKeys()) {
 							String s = key;
-							if (s.equals("teamattacks"))
-								s = "ta";
-							else if (s.equals("hitquote"))
-								s = "hq";
-							else if (s.equals("airstrikes"))
-								s = "as";
+							if (s.equals("teamattacks")) s = "ta";
+							else if (s.equals("hitquote")) s = "hq";
+							else if (s.equals("airstrikes")) s = "as";
 							else if (s.equals("money_spent"))
-								s = "spent";
+																s = "spent";
 
 							if (l.equalsIgnoreCase("[PB " + s.toUpperCase() + "]")) {
-								changeSign(event.getPlayer().getName(), sign, key, false);
+								changeSign(event.getPlayer(), sign, key, false);
 								break;
 							} else if (l.equalsIgnoreCase("[PB R " + s.toUpperCase() + "]")) {
-								changeSign(event.getPlayer().getName(), sign, key, true);
+								changeSign(event.getPlayer(), sign, key, true);
 								break;
 							}
 						}
@@ -189,19 +183,19 @@ public class EventListener implements Listener {
 		}
 	}
 
-	private void changeSign(String player, Sign sign, String stat, boolean rank) {
+	private void changeSign(Player player, Sign sign, String stat, boolean rank) {
 		if ((System.currentTimeMillis() - lastSignUpdate) > (250)) {
 			PlayerStat pStat = PlayerStat.getFromKey(stat);
 			if (pStat != null) {
 				Map<String, String> vars = new HashMap<String, String>();
-				vars.put("player", player);
-				PlayerStats stats = Paintball.instance.playerManager.getPlayerStats(player);
+				vars.put("player", player.getName());
+				PlayerStats stats = Paintball.instance.playerManager.getPlayerStats(player.getUniqueId());
 				// stats for this player even exist ?
 				if (stats != null) {
 					if (rank) {
-						vars.put("value", String.valueOf(plugin.statsManager.getRank(player, pStat)));
+						vars.put("value", String.valueOf(plugin.statsManager.getRank(player.getUniqueId(), pStat)));
 					} else {
-						if (pStat == PlayerStat.HITQUOTE|| pStat == PlayerStat.KD) {
+						if (pStat == PlayerStat.HITQUOTE || pStat == PlayerStat.KD) {
 							float statF = stats.getStat(pStat) / 100F;
 							vars.put("value", Stats.decimalFormat.format(statF));
 						} else {
@@ -215,17 +209,17 @@ public class EventListener implements Listener {
 				sign.setLine(2, Translator.getString("SIGN_LINE_THREE", vars));
 				sign.setLine(3, Translator.getString("SIGN_LINE_FOUR", vars));
 				sign.update();
-				lastSignUpdate = System.currentTimeMillis();	
+				lastSignUpdate = System.currentTimeMillis();
 			}
 		}
 	}
-	
+
 	@EventHandler(priority = EventPriority.NORMAL, ignoreCancelled = false)
 	public void onPlayerHit(EntityDamageByEntityEvent event) {
 		Player attacker = null;
-		
+
 		Entity damager = event.getDamager();
-		
+
 		if (damager instanceof Projectile) {
 			Projectile projectile = (Projectile) damager;
 			if (projectile.getShooter() instanceof Player) {
@@ -234,7 +228,7 @@ public class EventListener implements Listener {
 		} else if (damager instanceof Player) {
 			attacker = (Player) damager;
 		}
-		
+
 		if (attacker != null) {
 			if (Lobby.LOBBY.isMember(attacker)) {
 				Entity damagedEntity = event.getEntity();
@@ -276,18 +270,20 @@ public class EventListener implements Listener {
 		}
 	}
 
-	/*@EventHandler(priority = EventPriority.NORMAL)
-	public void onFireballExplosion(ExplosionPrimeEvent event) {
-		Entity entity = event.getEntity();
-		if (entity != null && entity.getType() == EntityType.FIREBALL) {
-			Fireball fireball = (Fireball) entity;
-			if (fireball.getShooter() instanceof Player) {
-				if (Rocket.getRocket(fireball, ((Player)fireball.getShooter()).getName(), false) != null) {
-					event.setCancelled(true);
-				}
-			}
-		}
-	}*/
+	/*
+	 * @EventHandler(priority = EventPriority.NORMAL)
+	 * public void onFireballExplosion(ExplosionPrimeEvent event) {
+	 * Entity entity = event.getEntity();
+	 * if (entity != null && entity.getType() == EntityType.FIREBALL) {
+	 * Fireball fireball = (Fireball) entity;
+	 * if (fireball.getShooter() instanceof Player) {
+	 * if (Rocket.getRocket(fireball, ((Player)fireball.getShooter()).getName(), false) != null) {
+	 * event.setCancelled(true);
+	 * }
+	 * }
+	 * }
+	 * }
+	 */
 
 	@EventHandler(priority = EventPriority.HIGH, ignoreCancelled = true)
 	public void onPlayerShoot(ProjectileLaunchEvent event) {
@@ -333,7 +329,7 @@ public class EventListener implements Listener {
 			}
 		}
 	}
-	
+
 	@EventHandler(priority = EventPriority.NORMAL, ignoreCancelled = false)
 	public void onPlayerInteractHandleWeapons(PlayerInteractEvent event) {
 		Player player = event.getPlayer();
@@ -345,16 +341,16 @@ public class EventListener implements Listener {
 				ItemStack item = event.getItem();
 				if (item != null && item.getType() != Material.POTION) {
 					event.setUseItemInHand(Result.DENY);
-					
+
 					// shop book:
 					if (plugin.shop && item.isSimilar(plugin.shopManager.item)) {
 						plugin.shopManager.getShopMenu().open(player);
 						return;
 					}
 				}
-				
+
 				if (!match.hasStarted() || match.isJustRespawned(playerName)) return;
-				
+
 				// handle weapons and gadgets:
 				plugin.weaponManager.onInteract(event, match);
 			}
@@ -375,13 +371,13 @@ public class EventListener implements Listener {
 		if (projectile.getShooter() instanceof Player) {
 			Player shooter = (Player) projectile.getShooter();
 			Match match = plugin.matchManager.getMatch(shooter);
-			
+
 			if (match != null) {
 				plugin.weaponManager.onProjectileHit(event, projectile, match, shooter);
 			}
 		}
 	}
-	
+
 	@SuppressWarnings("deprecation")
 	@EventHandler(priority = EventPriority.NORMAL, ignoreCancelled = true)
 	public void onPlayerDamage(EntityDamageEvent event) {
@@ -410,15 +406,15 @@ public class EventListener implements Listener {
 							if (cause == DamageCause.FIRE_TICK && plugin.otherDamage) {
 								target.setFireTicks(fireTicks);
 							}
-							
-							//heal armor
+
+							// heal armor
 							PlayerInventory inventory = target.getInventory();
 							ItemStack[] armor = inventory.getArmorContents();
 
 							for (int i = 0; i < armor.length; i++) {
-							    if(armor[i] != null) {
-							        armor[i].setDurability((short) 0);
-							    }
+								if (armor[i] != null) {
+									armor[i].setDurability((short) 0);
+								}
 							}
 
 							inventory.setArmorContents(armor);
@@ -443,14 +439,14 @@ public class EventListener implements Listener {
 	@EventHandler(priority = EventPriority.LOWEST, ignoreCancelled = false)
 	public void onPlayerPlace(BlockPlaceEvent event) {
 		Player player = event.getPlayer();
-		
+
 		if (player.getGameMode() == GameMode.CREATIVE) return;
-		
+
 		if (Lobby.LOBBY.isMember(player)) {
 			event.setCancelled(true);
 			Match match = plugin.matchManager.getMatch(player);
 			if (match != null && match.hasStarted() && match.isSurvivor(player)) {
-				
+
 				// handle weapons and gadgets:
 				plugin.weaponManager.onBlockPlace(event, match);
 			}
@@ -471,7 +467,7 @@ public class EventListener implements Listener {
 	public void onPlayerItemsI(PlayerPickupItemEvent event) {
 		plugin.weaponManager.onItemPickup(event);
 		if (event.isCancelled()) return;
-		
+
 		Player player = event.getPlayer();
 		if (Lobby.LOBBY.isMember(player)) {
 			event.setCancelled(true);
@@ -524,46 +520,47 @@ public class EventListener implements Listener {
 
 	private boolean isAllowedCommand(String cmd) {
 		if (plugin.allowedCommands.contains(cmd))
-			return true;
+													return true;
 		String[] split = cmd.split(" ");
 		String cmds = "";
 		for (int i = 0; i < split.length; i++) {
 			cmds += split[i];
 			if (plugin.allowedCommands.contains(cmds) || plugin.allowedCommands.contains(cmds + " *"))
-				return true;
+																										return true;
 			cmds += " ";
 		}
 		return false;
 	}
-	
-	/*@EventHandler(priority = EventPriority.LOWEST)
-	public void onPlayerChatEarly(AsyncPlayerChatEvent event) {
-		if (plugin.chatMessageColor) {
-			final Player player = event.getPlayer();
-			if (Lobby.LOBBY.isMember(player)) {
-				ChatColor color = Lobby.LOBBY.color();
-				if (Lobby.isPlaying(player) || Lobby.isSpectating(player)) {
-					Match match = plugin.matchManager.getMatch(player);
-					// colorize message:
-					if (match.isRed(player))
-						color = Lobby.RED.color();
-					else if (match.isBlue(player))
-						color = Lobby.BLUE.color();
-					else if (match.isSpec(player))
-						color = Lobby.SPECTATE.color();
-				}
-				if (plugin.chatMessageColor) event.setMessage(color + event.getMessage());
-			}
-		}
-	}*/
-	
+
+	/*
+	 * @EventHandler(priority = EventPriority.LOWEST)
+	 * public void onPlayerChatEarly(AsyncPlayerChatEvent event) {
+	 * if (plugin.chatMessageColor) {
+	 * final Player player = event.getPlayer();
+	 * if (Lobby.LOBBY.isMember(player)) {
+	 * ChatColor color = Lobby.LOBBY.color();
+	 * if (Lobby.isPlaying(player) || Lobby.isSpectating(player)) {
+	 * Match match = plugin.matchManager.getMatch(player);
+	 * // colorize message:
+	 * if (match.isRed(player))
+	 * color = Lobby.RED.color();
+	 * else if (match.isBlue(player))
+	 * color = Lobby.BLUE.color();
+	 * else if (match.isSpec(player))
+	 * color = Lobby.SPECTATE.color();
+	 * }
+	 * if (plugin.chatMessageColor) event.setMessage(color + event.getMessage());
+	 * }
+	 * }
+	 * }
+	 */
+
 	@EventHandler(priority = EventPriority.HIGHEST, ignoreCancelled = true)
 	public void onPlayerChatLate(AsyncPlayerChatEvent event) {
 		Player player = event.getPlayer();
-		String playerName = player.getName();
 		if (Lobby.LOBBY.isMember(player)) {
 			// determine team color:
-			
+
 			ChatColor color = Lobby.LOBBY.color();
 			if (Lobby.isPlaying(player) || Lobby.isSpectating(player)) {
 				Match match = plugin.matchManager.getMatch(player);
@@ -575,34 +572,33 @@ public class EventListener implements Listener {
 					color = Lobby.SPECTATE.color();
 				}
 			}
-			
+
 			String messageToUse = event.getMessage();
 			String formatToUse = plugin.chatReplaceFormat ? plugin.chatFormat : event.getFormat();
-			
+
 			if (plugin.chatMessageColor) {
 				messageToUse = color + event.getMessage();
 			}
-			
+
 			if (plugin.chatNameColor) {
 				// change name color via format:
 				String displayName = ChatColor.stripColor(player.getDisplayName());
 				formatToUse = formatToUse.replaceFirst(displayName, color + displayName);
 			}
-			
-			if (plugin.ranksChatPrefix ) {
-				Rank rank = plugin.rankManager.getRank(playerName);
+
+			if (plugin.ranksChatPrefix) {
+				Rank rank = plugin.rankManager.getRank(player.getUniqueId());
 				String prefix = rank.getPrefix();
 				if (prefix != null && !prefix.isEmpty()) {
 					formatToUse = prefix + formatToUse;
 				}
 			}
-			
-			
+
 			// chat feature onyl visible for paintballers:
 			if (plugin.chatFeaturesOnlyForPaintballersVisible) {
 				// send chat message to paintballers manually:
 				String messageToSend = String.format(formatToUse, player.getDisplayName(), messageToUse);
-				
+
 				Set<Player> recipients = event.getRecipients();
 				Iterator<Player> iter = recipients.iterator();
 				while (iter.hasNext()) {
@@ -634,27 +630,28 @@ public class EventListener implements Listener {
 	@EventHandler(priority = EventPriority.MONITOR)
 	public void onPlayerJoin(PlayerJoinEvent event) {
 		final Player player = (Player) event.getPlayer();
-		plugin.playerManager.addPlayerAsync(player.getName());
+		plugin.playerManager.addPlayerAsync(player);
 
 		// now done by playerManager directly after player wass added to database..
-		/*plugin.getServer().getScheduler().runTaskLater(plugin, new Runnable() {
-
-			@Override
-			public void run() {
-				if (plugin.autoLobby && plugin.autoTeam)
-					plugin.commandManager.joinTeam(player, false, Lobby.RANDOM);
-				else if (plugin.autoLobby)
-					plugin.commandManager.joinLobbyPre(player, false, null);
-			}
-		}, 1L);*/
+		/*
+		 * plugin.getServer().getScheduler().runTaskLater(plugin, new Runnable() {
+		 * @Override
+		 * public void run() {
+		 * if (plugin.autoLobby && plugin.autoTeam)
+		 * plugin.commandManager.joinTeam(player, false, Lobby.RANDOM);
+		 * else if (plugin.autoLobby)
+		 * plugin.commandManager.joinLobbyPre(player, false, null);
+		 * }
+		 * }, 1L);
+		 */
 
 		// notify admins on update:
 		if (plugin.needsUpdate && player.hasPermission("paintball.admin")) {
 			player.sendMessage(ChatColor.DARK_PURPLE + "There is a new version of Paintball available! Check out the bukkit dev page: ");
 			player.sendMessage(ChatColor.AQUA + "http://dev.bukkit.org/bukkit-mods/paintball_pure_war/");
 		}
-		
-	}	/*
+
+	} /*
 	 * @EventHandler(priority = EventPriority.HIGHEST) public void
 	 * onPbCommands(PlayerCommandPreprocessEvent event) { Player player =
 	 * event.getPlayer(); String[] m = event.getMessage().split(" "); // basic

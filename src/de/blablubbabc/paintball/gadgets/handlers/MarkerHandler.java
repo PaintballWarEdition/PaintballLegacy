@@ -30,10 +30,10 @@ import de.blablubbabc.paintball.utils.Translator;
 import de.blablubbabc.paintball.utils.Utils;
 
 public class MarkerHandler extends WeaponHandler {
-	
+
 	public MarkerHandler(int customItemTypeID, boolean useDefaultType) {
 		super("Marker", customItemTypeID, useDefaultType, new Origin() {
-			
+
 			@Override
 			public String getKillMessage(FragInformations fragInfo) {
 				return Translator.getString("WEAPON_FEED_MARKER", getDefaultVariablesMap(fragInfo));
@@ -53,26 +53,25 @@ public class MarkerHandler extends WeaponHandler {
 		itemStack.setItemMeta(meta);
 		return itemStack;
 	}
-	
+
 	@Override
 	protected void onInteract(PlayerInteractEvent event, Match match) {
 		if (event.getAction() == Action.PHYSICAL) return;
 		Player player = event.getPlayer();
-		String playerName = player.getName();
 		ItemStack itemInHand = player.getItemInHand();
 		if (itemInHand == null) return;
-		
+
 		if (itemInHand.isSimilar(getItem())) {
 			PlayerInventory inv = player.getInventory();
 			if (match.setting_balls == -1 || inv.contains(Material.SNOW_BALL, 1)) {
 				World world = player.getWorld();
 				Vector direction = player.getLocation().getDirection().normalize();
 				Location spawnLoc = Utils.getRightHeadLocation(direction, player.getEyeLocation());
-				
+
 				// SOUND EFFECT
 				player.playSound(spawnLoc, Sound.CLICK, 1.0F, 2F);
 				world.playSound(spawnLoc, Sound.CHICKEN_EGG_POP, 2.0F, 2F);
-				
+
 				// SHOOT SNOWBALL
 				Snowball snowball = (Snowball) world.spawnEntity(spawnLoc, EntityType.SNOWBALL);
 				snowball.setShooter(player);
@@ -82,23 +81,23 @@ public class MarkerHandler extends WeaponHandler {
 				snowball.setVelocity(direction.multiply(Paintball.instance.speedmulti));
 				// STATS
 				// PLAYERSTATS
-				PlayerStats playerStats = Paintball.instance.playerManager.getPlayerStats(playerName);
+				PlayerStats playerStats = Paintball.instance.playerManager.getPlayerStats(player.getUniqueId());
 				playerStats.addStat(PlayerStat.SHOTS, 1);
 				// INFORM MATCH
 				match.onShot(player);
-				
+
 				if (match.setting_balls != -1) {
 					// -1 ball
 					Utils.removeInventoryItems(inv, getItem(), 1);
 				}
-				
+
 			} else {
 				player.playSound(player.getEyeLocation(), Sound.FIRE_IGNITE, 1F, 2F);
 			}
 			Utils.updatePlayerInventoryLater(Paintball.instance, player);
 		}
 	}
-	
+
 	@Override
 	protected void onProjectileHit(ProjectileHitEvent event, Projectile projectile, Match match, Player shooter) {
 		if (projectile.getType() == EntityType.SNOWBALL) {
@@ -107,7 +106,7 @@ public class MarkerHandler extends WeaponHandler {
 			// is paintball ?
 			if (ball != null) {
 				Location location = projectile.getLocation();
-				
+
 				// effect
 				if (Paintball.instance.effects) {
 					if (match.isBlue(shooter)) {
@@ -116,16 +115,16 @@ public class MarkerHandler extends WeaponHandler {
 						location.getWorld().playEffect(location, Effect.POTION_BREAK, 5);
 					}
 				}
-				
+
 				// call event for others:
 				Paintball.instance.getServer().getPluginManager().callEvent(new PaintballHitEvent(event, match, shooter));
-				
+
 				// remove ball from tracking:
 				ball.dispose(true);
 			}
 		}
 	}
-	
+
 	@Override
 	public void cleanUp(Match match, String playerName) {
 		// nothing to do here
@@ -135,5 +134,5 @@ public class MarkerHandler extends WeaponHandler {
 	public void cleanUp(Match match) {
 		// nothing to do here
 	}
-	
+
 }

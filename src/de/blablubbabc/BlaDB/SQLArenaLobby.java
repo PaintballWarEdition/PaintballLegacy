@@ -23,53 +23,51 @@ public class SQLArenaLobby {
 
 	public SQLArenaLobby(BlaSQLite blasql) {
 		sql = blasql;
-		
+
 		createDefaultTables();
 	}
-	
+
 	private void createDefaultTables() {
-		//arenas
+		// arenas
 		String arenasQuery = "name TEXT, active INTEGER";
 		sql.createDefaultTable("arenas", arenasQuery, "name");
-		//arenasettings
+		// arenasettings
 		HashMap<String, String> arenasettings = new HashMap<String, String>();
 		arenasettings.put("name", "TEXT");
 		for (String key : ArenaSetting.getKeys()) {
 			arenasettings.put(key, "INTEGER");
 		}
 		sql.createDefaultTable("arenasettings", arenasettings, "name");
-		
-		//arenastats
+
+		// arenastats
 		HashMap<String, String> arenastats = new HashMap<String, String>();
 		arenastats.put("name", "TEXT");
 		for (String key : ArenaStat.getKeys()) {
 			arenastats.put(key, "INTEGER");
 		}
 		sql.createDefaultTable("arenastats", arenastats, "name");
-		
-		//locations
+
+		// locations
 		String locationsQuery = "id INTEGER PRIMARY KEY, world TEXT, x INTEGER, y INTEGER, z INTEGER, yaw REAL, pitch REAL";
 		sql.createDefaultTable("locations", locationsQuery, null);
-		
-		//red/blue/spec/lobby spawns
+
+		// red/blue/spec/lobby spawns
 		String spawnsQuery = "arena TEXT, location_id INTEGER";
 		sql.createDefaultTable("redspawns", spawnsQuery, null);
 		sql.createDefaultTable("bluespawns", spawnsQuery, null);
 		sql.createDefaultTable("specspawns", spawnsQuery, null);
-		
+
 		String lobbyQuery = "location_id INTEGER";
 		sql.createDefaultTable("lobbyspawns", lobbyQuery, null);
-		
-		//INIT RESET
-		for(String arena : getAllArenaNames()) {
-			sql.updateQuery("UPDATE OR IGNORE arenas SET active=0 WHERE name='"+arena+"';");
-		}	
-	}
-	
-	
 
-	//ARENADATA and LOBBYSPAWNS
-	//GET
+		// INIT RESET
+		for (String arena : this.getAllArenaNames()) {
+			sql.updateQuery("UPDATE OR IGNORE arenas SET active=0 WHERE name='" + arena + "';");
+		}
+	}
+
+	// ARENADATA and LOBBYSPAWNS
+	// GET
 	public List<String> getAllArenaNames() {
 		List<String> arenas = new ArrayList<String>();
 
@@ -106,7 +104,7 @@ public class SQLArenaLobby {
 		}
 		return data;
 	}
-	
+
 	public Map<ArenaSetting, Integer> getArenaSettings(String arena) {
 		Map<ArenaSetting, Integer> data = new LinkedHashMap<ArenaSetting, Integer>();
 		Result r = sql.resultQuery("SELECT * FROM arenasettings WHERE name='" + arena + "' LIMIT 1;");
@@ -130,7 +128,7 @@ public class SQLArenaLobby {
 		if (ids.size() > 0) {
 			String idss = "";
 			for (int id : ids) {
-				idss += "id='"+id+"' OR ";
+				idss += "id='" + id + "' OR ";
 			}
 			idss = idss.substring(0, idss.length() - 4);
 			Result r = sql.resultQuery("SELECT * FROM locations WHERE " + idss + ";");
@@ -141,16 +139,16 @@ public class SQLArenaLobby {
 						String worldName = rs.getString("world");
 						World world = Paintball.instance.getServer().getWorld(worldName);
 						if (world == null) {
-							Log.warning("[!] Paintball tried to load a location from database which is located in an unknown, not yet loaded, or non-existing world ( " 
-									+ worldName + " ).    Please report this warning to blablubbabc on 'http://dev.bukkit.org/server-mods/paintball_pure_war/tickets/'" 
+							Log.warning("[!] Paintball tried to load a location from database which is located in an unknown, not yet loaded, or non-existing world ( "
+									+ worldName + " ).    Please report this warning to blablubbabc on 'http://dev.bukkit.org/server-mods/paintball_pure_war/tickets/'"
 									+ " together with a list of your plugins, especially plugins you know to be related to world creating, loading, managing or teleportation. Thank you!");
 							Log.warning("[!!!] The world '" + worldName + "' will now be loaded, or created if it is not existing. If you want to delete or rename a world, make sure to remove all arena and lobby spawns from it first!");
 							world = Paintball.instance.getServer().createWorld(new WorldCreator(worldName));
 						}
 						Location loc = new Location(world,
-								rs.getDouble("x"), rs.getDouble("y"),
-								rs.getDouble("z"), rs.getFloat("yaw"),
-								rs.getFloat("pitch"));
+													rs.getDouble("x"), rs.getDouble("y"),
+													rs.getDouble("z"), rs.getFloat("yaw"),
+													rs.getFloat("pitch"));
 						locs.add(loc);
 					}
 				}
@@ -162,7 +160,7 @@ public class SQLArenaLobby {
 		}
 		return locs;
 	}
-	
+
 	private void removeLocations(List<Integer> ids) {
 		if (ids.size() > 0) {
 			String idss = "";
@@ -191,7 +189,7 @@ public class SQLArenaLobby {
 		return b;
 
 	}
-	
+
 	public int getRedspawnsSize(String arena) {
 		Result r = sql.resultQuery("SELECT COUNT(*) FROM redspawns WHERE arena = '" + arena + "';");
 		ResultSet rs = r.getResultSet();
@@ -239,7 +237,7 @@ public class SQLArenaLobby {
 		}
 		return a;
 	}
-	
+
 	public int getLobbyspawnsSize() {
 		Result r = sql.resultQuery("SELECT COUNT(*) FROM lobbyspawns;");
 		ResultSet rs = r.getResultSet();
@@ -273,6 +271,7 @@ public class SQLArenaLobby {
 		}
 		return ids;
 	}
+
 	private List<Integer> getBluespawnsIds(String arena) {
 		List<Integer> ids = new ArrayList<Integer>();
 		Result r = sql.resultQuery("SELECT location_id FROM bluespawns WHERE arena = '" + arena + "';");
@@ -290,6 +289,7 @@ public class SQLArenaLobby {
 		}
 		return ids;
 	}
+
 	private List<Integer> getSpecspawnsIds(String arena) {
 		List<Integer> ids = new ArrayList<Integer>();
 		Result r = sql.resultQuery("SELECT location_id FROM specspawns WHERE arena = '" + arena + "';");
@@ -307,6 +307,7 @@ public class SQLArenaLobby {
 		}
 		return ids;
 	}
+
 	private List<Integer> getLobbyspawnsIds() {
 		List<Integer> ids = new ArrayList<Integer>();
 		Result r = sql.resultQuery("SELECT location_id FROM lobbyspawns;");
@@ -324,7 +325,7 @@ public class SQLArenaLobby {
 		}
 		return ids;
 	}
-	
+
 	public List<Location> getRedspawns(String arena) {
 		return getLocations(getRedspawnsIds(arena));
 	}
@@ -336,7 +337,7 @@ public class SQLArenaLobby {
 	public List<Location> getSpecspawns(String arena) {
 		return getLocations(getSpecspawnsIds(arena));
 	}
-	
+
 	public List<Location> getLobbyspawns() {
 		return getLocations(getLobbyspawnsIds());
 	}
@@ -356,15 +357,16 @@ public class SQLArenaLobby {
 		}
 		return active;
 	}
-	
-	//SET
+
+	// SET
 	public void setArenaActive(String arena) {
 		sql.updateQuery("UPDATE OR IGNORE arenas SET active=1 WHERE name='" + arena + "';");
 	}
+
 	public void setArenaNotActive(String arena) {
 		sql.updateQuery("UPDATE OR IGNORE arenas SET active=0 WHERE name='" + arena + "';");
 	}
-	
+
 	public void addArenaStats(String arena, Map<ArenaStat, Integer> stats) {
 		String query = "";
 		for (Entry<ArenaStat, Integer> entry : stats.entrySet()) {
@@ -376,7 +378,7 @@ public class SQLArenaLobby {
 			sql.updateQuery("UPDATE OR IGNORE arenastats SET " + query + " WHERE name='" + arena + "';");
 		}
 	}
-	
+
 	public void setArenaStats(String arena, Map<ArenaStat, Integer> stats) {
 		String query = "";
 		for (Entry<ArenaStat, Integer> entry : stats.entrySet()) {
@@ -388,7 +390,7 @@ public class SQLArenaLobby {
 			sql.updateQuery("UPDATE OR IGNORE arenastats SET " + query + " WHERE name='" + arena + "';");
 		}
 	}
-	
+
 	public void setArenaSettings(String arena, Map<ArenaSetting, Integer> settings) {
 		String query = "";
 		for (Entry<ArenaSetting, Integer> entry : settings.entrySet()) {
@@ -400,7 +402,8 @@ public class SQLArenaLobby {
 			sql.updateQuery("UPDATE OR IGNORE arenasettings SET " + query + " WHERE name='" + arena + "';");
 		}
 	}
-	//REMOVE
+
+	// REMOVE
 	public void removeArena(String arena) {
 		sql.updateQuery("DELETE FROM arenas WHERE name='" + arena + "';");
 		sql.updateQuery("DELETE FROM arenasettings WHERE name='" + arena + "';");
@@ -424,42 +427,42 @@ public class SQLArenaLobby {
 		removeLocations(getSpecspawnsIds(arena));
 		sql.updateQuery("DELETE FROM specspawns WHERE arena='" + arena + "';");
 	}
-	
+
 	public void removeLobbyspawns() {
 		removeLocations(getLobbyspawnsIds());
 		sql.updateQuery("DELETE FROM lobbyspawns;");
 	}
 
-	//ADD NEW
+	// ADD NEW
 	public int addLocation(Location loc) {
 		return sql.updateQuery("INSERT OR IGNORE INTO locations(world, x, y, z, yaw, pitch) VALUES('" + loc.getWorld().getName() + "','" + loc.getX() + "','" + loc.getY() + "','" + loc.getZ() + "','" + loc.getYaw() + "','" + loc.getPitch() + "');");
 	}
 
 	public void addNewArena(String arena) {
-		//ARENAS name TEXT, active INTEGER
+		// ARENAS name TEXT, active INTEGER
 		sql.updateQuery("INSERT OR IGNORE INTO arenas(name, active) VALUES('" + arena + "','0');");
-		//ARENASETTINGS
+		// ARENASETTINGS
 		String settingsQuery = "";
 		String settingsValues = "";
-		for(String key : ArenaSetting.getKeys()) {
+		for (String key : ArenaSetting.getKeys()) {
 			settingsQuery += "," + key;
-			settingsValues += ",'0'"; 
+			settingsValues += ",'0'";
 		}
 		sql.updateQuery("INSERT OR IGNORE INTO arenasettings(name" + settingsQuery + ") VALUES('" + arena + "'" + settingsValues + ");");
-		
-		//ARENASTATS
+
+		// ARENASTATS
 		String statsQuery = "";
 		String statsValues = "";
-		for(String key : ArenaStat.getKeys()) {
+		for (String key : ArenaStat.getKeys()) {
 			statsQuery += "," + key;
-			statsValues += ",'0'"; 
+			statsValues += ",'0'";
 		}
 		sql.updateQuery("INSERT OR IGNORE INTO arenastats(name" + statsQuery + ") VALUES('" + arena + "'" + statsValues + ");");
 	}
 
 	public void addLobbyspawn(Location loc) {
 		int row = this.addLocation(loc);
-		sql.updateQuery("INSERT OR IGNORE INTO lobbyspawns(location_id) VALUES('" +  row + "');");
+		sql.updateQuery("INSERT OR IGNORE INTO lobbyspawns(location_id) VALUES('" + row + "');");
 	}
 
 	public void addRedspawn(Location loc, String arena) {

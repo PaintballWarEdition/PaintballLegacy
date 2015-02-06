@@ -84,7 +84,7 @@ public class Match {
 	public Lobby loose = null;
 
 	public Match(final Paintball plugin, Set<Player> red, Set<Player> blue, Set<Player> spec,
-			Set<Player> random, String arena) {
+					Set<Player> random, String arena) {
 		this.plugin = plugin;
 		this.arena = arena;
 		this.started = false;
@@ -141,11 +141,11 @@ public class Match {
 			respawnsLeft.put(player, setting_respawns);
 			// STATS
 			String playerName = player.getName();
-			playerMatchStats.put(playerName, new TDMMatchStats(plugin.playerManager.getPlayerStats(playerName)));
-			
+			playerMatchStats.put(playerName, new TDMMatchStats(plugin.playerManager.getPlayerStats(player.getUniqueId())));
+
 			PlayerDataStore.clearPlayer(player, true, true);
 			spawnPlayer(player);
-			
+
 			// SCOREBOARD (after spawning/teleporting the player due to compatibility to HealthBar which switches scoreboard during world changes)
 			initMatchScoreboard(player);
 		}
@@ -160,10 +160,10 @@ public class Match {
 
 		// WAITING TIMER:
 		this.started = false;
-		
+
 		if (plugin.countdownStart > 0) {
 			startTimer = new Timer(Paintball.instance, 0L, 20L, plugin.countdownStart, new Runnable() {
-				
+
 				@Override
 				public void run() {
 					for (Player p : getAllPlayer()) {
@@ -175,14 +175,14 @@ public class Match {
 							loc.setPitch(ploc.getPitch());
 							loc.setYaw(ploc.getYaw());
 							TeleportManager.teleport(p, loc);
-						}	
+						}
 					}
-					
+
 					// scoreboard:
 					updateAllMatchScoreboardTimers(startTimer.getTime());
 				}
 			}, new Runnable() {
-				
+
 				@Override
 				public void run() {
 					Map<String, String> vars = new HashMap<String, String>();
@@ -195,7 +195,7 @@ public class Match {
 					}
 				}
 			}, new Runnable() {
-				
+
 				@Override
 				public void run() {
 					startTimer = null;
@@ -206,9 +206,9 @@ public class Match {
 		} else {
 			startMatch();
 		}
-		
+
 	}
-	
+
 	private void startMatch() {
 		// START:
 		started = true;
@@ -232,7 +232,7 @@ public class Match {
 	public TDMMatchStats getMatchStats(String playerName) {
 		return playerMatchStats.get(playerName);
 	}
-	
+
 	private void addToPlayerLists(Player p) {
 		this.allPlayers.add(p);
 		this.bothTeams.add(p);
@@ -242,22 +242,22 @@ public class Match {
 		if (startTimer != null) startTimer.end();
 		if (roundTimer != null) roundTimer.end();
 	}
-	
+
 	private void startRoundTimer() {
 		roundTimer = new Timer(Paintball.instance, 0L, 20L, setting_round_time, new Runnable() {
-			
+
 			@Override
 			public void run() {
 				// Spawn protection:
 				Iterator<Map.Entry<Player, Integer>> iter = protection.entrySet()
-						.iterator();
+																		.iterator();
 				while (iter.hasNext()) {
 					Map.Entry<Player, Integer> entry = iter.next();
 					Player p = entry.getKey();
 					int t = entry.getValue() - 1;
 					if (t <= 0) {
 						if (p.isOnline() && isSurvivor(p))
-							p.sendMessage(Translator.getString("PROTECTION_OVER"));
+															p.sendMessage(Translator.getString("PROTECTION_OVER"));
 						iter.remove();
 					} else {
 						protection.put(p, t);
@@ -269,18 +269,18 @@ public class Match {
 						player.setLevel(roundTimer.getTime());
 					}
 				}
-				
+
 				// scoreboard:
 				updateAllMatchScoreboardTimers(roundTimer.getTime());
 			}
 		}, new Runnable() {
-			
+
 			@Override
 			public void run() {
 				plugin.feeder.roundTime(roundTimer.getTime());
 			}
 		}, new Runnable() {
-			
+
 			@Override
 			public void run() {
 				// level bar
@@ -308,9 +308,9 @@ public class Match {
 	private Set<Player> getWinner() {
 		// compare survivors:
 		if (survivors(redT) > survivors(blueT))
-			return redT;
+												return redT;
 		if (survivors(blueT) > survivors(redT))
-			return blueT;
+												return blueT;
 		// else: survivors(blueT) == survivors(redT)-> DRAW
 		return null;
 	}
@@ -344,51 +344,51 @@ public class Match {
 		// INVENTORY
 
 		Color color = getTeamLobby(player).colorA();
-		
+
 		player.getInventory().setHelmet(Utils.setLeatherArmorColor(new ItemStack(Material.LEATHER_HELMET, 1), color));
 		player.getInventory().setChestplate(Utils.setLeatherArmorColor(new ItemStack(Material.LEATHER_CHESTPLATE, 1), color));
-		player.getInventory().setLeggings(Utils.setLeatherArmorColor(new ItemStack(Material.LEATHER_LEGGINGS, 1),color));
+		player.getInventory().setLeggings(Utils.setLeatherArmorColor(new ItemStack(Material.LEATHER_LEGGINGS, 1), color));
 		player.getInventory().setBoots(Utils.setLeatherArmorColor(new ItemStack(Material.LEATHER_BOOTS, 1), color));
-		
+
 		// SHOP ITEM
 		if (plugin.shop) player.getInventory().setItem(7, plugin.shopManager.item.clone());
-		
+
 		// TEAM WOOL
 		if (red) {
 			player.getInventory().setItem(8, Paintball.instance.weaponManager.setMeta(new ItemStack(Material.WOOL, 1, DyeColor.RED.getWoolData())));
 		} else {
 			player.getInventory().setItem(8, Paintball.instance.weaponManager.setMeta(new ItemStack(Material.WOOL, 1, DyeColor.BLUE.getWoolData())));
 		}
-		
+
 		// if marker is not paintball item:
 		if (plugin.weaponManager.getBallHandler().getItemTypeID() != plugin.weaponManager.getMarkerHandler().getItemTypeID()) {
 			plugin.weaponManager.giveWeapon(player, plugin.weaponManager.getMarkerHandler(), 1);
 		}
-		
+
 		if (setting_balls > 0) {
 			plugin.weaponManager.giveWeapon(player, plugin.weaponManager.getBallHandler(), setting_balls);
-			//player.getInventory().addItem(Paintball.instance.weaponManager.setMeta(new ItemStack(Material.SNOW_BALL, setting_balls)));
+			// player.getInventory().addItem(Paintball.instance.weaponManager.setMeta(new ItemStack(Material.SNOW_BALL, setting_balls)));
 		} else if (setting_balls == -1) {
 			plugin.weaponManager.giveWeapon(player, plugin.weaponManager.getBallHandler(), 10);
-			//player.getInventory().addItem(Paintball.instance.weaponManager.setMeta(new ItemStack(Material.SNOW_BALL, 10)));
+			// player.getInventory().addItem(Paintball.instance.weaponManager.setMeta(new ItemStack(Material.SNOW_BALL, 10)));
 		}
-		
+
 		if (setting_grenades > 0) {
 			plugin.weaponManager.giveWeapon(player, plugin.weaponManager.getGrenadeHandler(), setting_grenades);
-			//player.getInventory().addItem(Paintball.instance.weaponManager.setMeta(new ItemStack(Material.EGG, setting_grenades)));
+			// player.getInventory().addItem(Paintball.instance.weaponManager.setMeta(new ItemStack(Material.EGG, setting_grenades)));
 		} else if (setting_grenades == -1) {
 			plugin.weaponManager.giveWeapon(player, plugin.weaponManager.getGrenadeHandler(), 10);
-			//player.getInventory().addItem(Paintball.instance.weaponManager.setMeta(new ItemStack(Material.EGG, 10)));
+			// player.getInventory().addItem(Paintball.instance.weaponManager.setMeta(new ItemStack(Material.EGG, 10)));
 		}
-		
+
 		if (setting_airstrikes > 0) {
 			plugin.weaponManager.giveWeapon(player, plugin.weaponManager.getAirstrikeHandler(), setting_airstrikes);
-			//player.getInventory().addItem(Paintball.instance.weaponManager.setMeta(new ItemStack(Material.STICK, setting_airstrikes)));
+			// player.getInventory().addItem(Paintball.instance.weaponManager.setMeta(new ItemStack(Material.STICK, setting_airstrikes)));
 		} else if (setting_airstrikes == -1) {
 			plugin.weaponManager.giveWeapon(player, plugin.weaponManager.getAirstrikeHandler(), 10);
-			//player.getInventory().addItem(Paintball.instance.weaponManager.setMeta(new ItemStack(Material.STICK, 10)));
+			// player.getInventory().addItem(Paintball.instance.weaponManager.setMeta(new ItemStack(Material.STICK, 10)));
 		}
-		
+
 		// gifts
 		if (plugin.giftsEnabled) {
 			int r = random.nextInt(1000);
@@ -396,9 +396,9 @@ public class Match {
 				plugin.weaponManager.getGiftManager().giveGift(player, 1, false);
 			}
 		}
-		
+
 		player.updateInventory();
-		
+
 		// MESSAGE
 		Map<String, String> vars = new HashMap<String, String>();
 		vars.put("team_color", getTeamLobby(player).color().toString());
@@ -421,10 +421,10 @@ public class Match {
 			public void run() {
 				justRespawned.remove(name);
 			}
-			
+
 		}, 12L);
 	}
-	
+
 	private void initMatchScoreboard(Player player) {
 		if (plugin.scoreboardMatch) {
 			String playerName = player.getName();
@@ -436,8 +436,8 @@ public class Match {
 				matchBoard = Bukkit.getScoreboardManager().getNewScoreboard();
 				scoreboards.put(playerName, matchBoard);
 			}
-			
-			String header = Translator.getString("SCOREBOARD_MATCH_HEADER", new KeyValuePair("round_time", "0:00")); 
+
+			String header = Translator.getString("SCOREBOARD_MATCH_HEADER", new KeyValuePair("round_time", "0:00"));
 			Objective objective = matchBoard.registerNewObjective(header.length() > 16 ? header.substring(0, 16) : header, "dummy");
 			objective.setDisplaySlot(DisplaySlot.SIDEBAR);
 			updateMatchScoreboard(playerName);
@@ -447,23 +447,23 @@ public class Match {
 			player.setScoreboard(Bukkit.getScoreboardManager().getMainScoreboard());
 		}
 	}
-	
+
 	private void updateAllMatchScoreboardTimers(int timeInSeconds) {
 		if (plugin.scoreboardMatch) {
 			int minutes = (int) (timeInSeconds / 60);
 			int seconds = timeInSeconds % 60;
-			
+
 			String secondsString = String.valueOf(seconds);
-			String header = Translator.getString("SCOREBOARD_MATCH_HEADER", 
-					new KeyValuePair("round_time", String.valueOf(minutes) + ":" + (seconds >= 10 ? secondsString : "0" + secondsString))); 
+			String header = Translator.getString("SCOREBOARD_MATCH_HEADER",
+													new KeyValuePair("round_time", String.valueOf(minutes) + ":" + (seconds >= 10 ? secondsString : "0" + secondsString)));
 			header = header.length() > 16 ? header.substring(0, 16) : header;
-			
+
 			for (Scoreboard scoreboard : scoreboards.values()) {
 				scoreboard.getObjective(DisplaySlot.SIDEBAR).setDisplayName(header);
 			}
 		}
 	}
-	
+
 	public void updateMatchScoreboard(String playerName) {
 		if (plugin.scoreboardMatch) {
 			Scoreboard matchBoard = scoreboards.get(playerName);
@@ -472,7 +472,7 @@ public class Match {
 				TDMMatchStats stats = playerMatchStats.get(playerName);
 				for (TDMMatchStat stat : TDMMatchStat.values()) {
 					// skip airstrikes, grenades and teamattacks count:
-					if (stat == TDMMatchStat.AIRSTRIKES || stat == TDMMatchStat.GRENADES || stat == TDMMatchStat.TEAMATTACKS) continue;	
+					if (stat == TDMMatchStat.AIRSTRIKES || stat == TDMMatchStat.GRENADES || stat == TDMMatchStat.TEAMATTACKS) continue;
 					String scoreName = Translator.getString("SCOREBOARD_MATCH_" + stat.getPlayerStat().getKey().toUpperCase());
 					Score score = objective.getScore(scoreName.length() > 16 ? scoreName.substring(0, 16) : scoreName);
 					score.setScore(stats.getStat(stat));
@@ -481,14 +481,14 @@ public class Match {
 				String overallPoints = Translator.getString("SCOREBOARD_MATCH_OVERALL_POINTS");
 				Score overallPointsScore = objective.getScore(overallPoints.length() > 16 ? overallPoints.substring(0, 16) : overallPoints);
 				overallPointsScore.setScore(stats.getPlayerStats().getStat(PlayerStat.POINTS));
-				
+
 				String overallCash = Translator.getString("SCOREBOARD_MATCH_OVERALL_MONEY");
 				Score overallCashScore = objective.getScore(overallCash.length() > 16 ? overallCash.substring(0, 16) : overallCash);
 				overallCashScore.setScore(stats.getPlayerStats().getStat(PlayerStat.MONEY));
 			}
 		}
 	}
-	
+
 	public boolean isJustRespawned(String playerName) {
 		return justRespawned.contains(playerName);
 	}
@@ -496,21 +496,21 @@ public class Match {
 	@SuppressWarnings("deprecation")
 	public synchronized void spawnSpec(Player player) {
 		if (spawnSpec > (specspawns.size() - 1))
-			spawnSpec = 0;
+												spawnSpec = 0;
 		TeleportManager.teleport(player, specspawns.get(spawnSpec));
 		spawnSpec++;
 		// INVENTORY
 		player.getInventory().setHelmet(
-				Utils.setLeatherArmorColor(new ItemStack(Material.LEATHER_HELMET, 1), Lobby.SPECTATE.colorA()));
+										Utils.setLeatherArmorColor(new ItemStack(Material.LEATHER_HELMET, 1), Lobby.SPECTATE.colorA()));
 		player.getInventory().setChestplate(
-				Utils.setLeatherArmorColor(new ItemStack(Material.LEATHER_CHESTPLATE, 1), Lobby.SPECTATE.colorA()));
+											Utils.setLeatherArmorColor(new ItemStack(Material.LEATHER_CHESTPLATE, 1), Lobby.SPECTATE.colorA()));
 		player.getInventory().setLeggings(
-				Utils.setLeatherArmorColor(new ItemStack(Material.LEATHER_LEGGINGS, 1), Lobby.SPECTATE.colorA()));
+											Utils.setLeatherArmorColor(new ItemStack(Material.LEATHER_LEGGINGS, 1), Lobby.SPECTATE.colorA()));
 		player.getInventory().setBoots(
-				Utils.setLeatherArmorColor(new ItemStack(Material.LEATHER_BOOTS, 1), Lobby.SPECTATE.colorA()));
-		
+										Utils.setLeatherArmorColor(new ItemStack(Material.LEATHER_BOOTS, 1), Lobby.SPECTATE.colorA()));
+
 		player.getInventory().setItem(8, Paintball.instance.weaponManager.setMeta(new ItemStack(Material.WOOL, 1, DyeColor.YELLOW.getWoolData())));
-		
+
 		player.updateInventory();
 		// MESSAGE
 		Map<String, String> vars = new HashMap<String, String>();
@@ -525,27 +525,27 @@ public class Match {
 		// BALLS
 		setting_balls = plugin.balls + settings.get(ArenaSetting.BALLS);
 		if (setting_balls < -1)
-			setting_balls = -1;
+								setting_balls = -1;
 		// GRENADES
 		setting_grenades = plugin.grenadeAmount + settings.get(ArenaSetting.GRENADES);
 		if (setting_grenades < -1)
-			setting_grenades = -1;
+									setting_grenades = -1;
 		// AIRSTRIKES
 		setting_airstrikes = plugin.airstrikeAmount + settings.get(ArenaSetting.AIRSTRIKES);
 		if (setting_airstrikes < -1)
-			setting_airstrikes = -1;
+									setting_airstrikes = -1;
 		// LIVES
 		setting_lives = plugin.lives + settings.get(ArenaSetting.LIVES);
 		if (setting_lives < 1)
-			setting_lives = 1;
+								setting_lives = 1;
 		// RESPAWNS
 		setting_respawns = plugin.respawns + settings.get(ArenaSetting.RESPAWNS);
 		if (setting_respawns < -1)
-			setting_respawns = -1;
+									setting_respawns = -1;
 		// ROUND TIME
 		setting_round_time = plugin.roundTimer + settings.get(ArenaSetting.ROUND_TIME);
 		if (setting_round_time < 30)
-			setting_round_time = 30;
+									setting_round_time = 30;
 	}
 
 	private void makeAllVisible() {
@@ -554,7 +554,7 @@ public class Match {
 			for (Player p : getAll()) {
 				if (!isSurvivor(p)) continue;
 				if (!p.equals(pl))
-					pl.showPlayer(p);
+									pl.showPlayer(p);
 			}
 		}
 	}
@@ -564,7 +564,7 @@ public class Match {
 			// chatnames
 			String n = Lobby.RED.color() + p.getName();
 			if (n.length() > 16)
-				n = (String) n.subSequence(0, n.length() - (n.length() - 16));
+								n = (String) n.subSequence(0, n.length() - (n.length() - 16));
 			/*
 			 * if(plugin.chatnames) { p.setDisplayName(n+white); }
 			 */
@@ -577,7 +577,7 @@ public class Match {
 			// chatnames
 			String n = Lobby.BLUE.color() + p.getName();
 			if (n.length() > 16)
-				n = (String) n.subSequence(0, n.length() - (n.length() - 16));
+								n = (String) n.subSequence(0, n.length() - (n.length() - 16));
 			/*
 			 * if(plugin.chatnames) { p.setDisplayName(n+white); }
 			 */
@@ -611,7 +611,7 @@ public class Match {
 			// listnames
 			if (plugin.listnames) {
 				if (Lobby.isPlaying(p))
-					p.setPlayerListName(null);
+										p.setPlayerListName(null);
 			}
 		}
 	}
@@ -619,11 +619,11 @@ public class Match {
 	public boolean hasStarted() {
 		return started;
 	}
-	
+
 	public boolean isOver() {
 		return matchOver;
 	}
-	
+
 	public int teamSizeRed() {
 		return redT.size();
 	}
@@ -648,83 +648,77 @@ public class Match {
 
 	public synchronized boolean isSurvivor(Player player) {
 		if (spec.contains(player))
-			return true;
+									return true;
 		if (getTeam(player) != null) {
 			// if(setting_respawns == -1) return true;
-			if (respawnsLeft.get(player) != 0)
-				return true;
+			if (respawnsLeft.get(player) != 0) return true;
 			else if (livesLeft.get(player) > 0)
-				return true;
+												return true;
 		}
 		return false;
 	}
 
 	public Lobby getTeamLobby(Player player) {
 		if (redT.contains(player))
-			return Lobby.RED;
+									return Lobby.RED;
 		if (blueT.contains(player))
-			return Lobby.BLUE;
+									return Lobby.BLUE;
 		return null;
 	}
-	
+
 	public Lobby getEnemyTeamLobby(Player player) {
 		if (redT.contains(player))
-			return Lobby.BLUE;
+									return Lobby.BLUE;
 		if (blueT.contains(player))
-			return Lobby.RED;
-		return null;
-	}
-	
-	/*public String getTeamName(Player player) {
-		if (redT.contains(player))
-			return Lobby.RED.getName();
-		if (blueT.contains(player))
-			return Lobby.BLUE.getName();
+									return Lobby.RED;
 		return null;
 	}
 
-	public String getEnemyTeamName(Player player) {
-		if (redT.contains(player))
-			return Lobby.BLUE.getName();
-		if (blueT.contains(player))
-			return Lobby.RED.getName();
-		return null;
-	}*/
+	/*
+	 * public String getTeamName(Player player) {
+	 * if (redT.contains(player))
+	 * return Lobby.RED.getName();
+	 * if (blueT.contains(player))
+	 * return Lobby.BLUE.getName();
+	 * return null;
+	 * }
+	 * public String getEnemyTeamName(Player player) {
+	 * if (redT.contains(player))
+	 * return Lobby.BLUE.getName();
+	 * if (blueT.contains(player))
+	 * return Lobby.RED.getName();
+	 * return null;
+	 * }
+	 */
 
 	public boolean isSpec(Player player) {
-		if (spec.contains(player))
-			return true;
-		else
-			return false;
+		if (spec.contains(player)) return true;
+		else return false;
 	}
 
 	public boolean isRed(Player player) {
-		if (redT.contains(player))
-			return true;
-		else
-			return false;
+		if (redT.contains(player)) return true;
+		else return false;
 	}
 
 	public boolean isBlue(Player player) {
-		if (blueT.contains(player))
-			return true;
-		else
-			return false;
+		if (blueT.contains(player)) return true;
+		else return false;
 	}
 
 	public Set<Player> getTeam(Player player) {
 		if (redT.contains(player))
-			return redT;
+									return redT;
 		if (blueT.contains(player))
-			return blueT;
+									return blueT;
 		return null;
 	}
 
 	public Set<Player> getEnemyTeam(Player player) {
 		if (redT.contains(player))
-			return blueT;
+									return blueT;
 		if (blueT.contains(player))
-			return redT;
+									return redT;
 		return null;
 	}
 
@@ -734,32 +728,33 @@ public class Match {
 
 	public boolean enemys(Player player1, Player player2) {
 		if (redT.contains(player1) && blueT.contains(player2))
-			return true;
+																return true;
 		if (redT.contains(player2) && blueT.contains(player1))
-			return true;
+																return true;
 		return false;
 	}
-	
-	/*public boolean enemys(String playerName1, String playerName2) {
-		if (containsPlayerName(redT, playerName1) && containsPlayerName(blueT, playerName2))
-			return true;
-		if (containsPlayerName(redT, playerName2) && containsPlayerName(blueT, playerName1))
-			return true;
-		return false;
-	}
-	
-	private boolean containsPlayerName(List<Player> playerList, String playerName) {
-		for (Player player : playerList) {
-			if (player.getName().equals(playerName)) return true;
-		}
-		return false;
-	}*/
+
+	/*
+	 * public boolean enemys(String playerName1, String playerName2) {
+	 * if (containsPlayerName(redT, playerName1) && containsPlayerName(blueT, playerName2))
+	 * return true;
+	 * if (containsPlayerName(redT, playerName2) && containsPlayerName(blueT, playerName1))
+	 * return true;
+	 * return false;
+	 * }
+	 * private boolean containsPlayerName(List<Player> playerList, String playerName) {
+	 * for (Player player : playerList) {
+	 * if (player.getName().equals(playerName)) return true;
+	 * }
+	 * return false;
+	 * }
+	 */
 
 	public boolean friendly(Player player1, Player player2) {
 		if (redT.contains(player1) && redT.contains(player2))
-			return true;
+																return true;
 		if (blueT.contains(player1) && blueT.contains(player2))
-			return true;
+																return true;
 		return false;
 	}
 
@@ -809,29 +804,27 @@ public class Match {
 			// survivors?->endGame
 			// math over already?
 			if (matchOver)
-				return;
+							return;
 			if (survivors(getTeam(player)) == 0) {
 				gameEnd(false, getEnemyTeam(player), getTeam(player), getEnemyTeamLobby(player), getTeamLobby(player));
 			}
 		} else if (spec.contains(player))
-			spec.remove(player);
+											spec.remove(player);
 	}
 
 	public int respawnsLeft(Player player) {
 		return respawnsLeft.get(player);
 	}
-	
+
 	private synchronized void respawn(Player player) {
 		livesLeft.put(player, setting_lives);
 		if (setting_respawns != -1)
-			respawnsLeft.put(player, respawnsLeft.get(player) - 1);
+									respawnsLeft.put(player, respawnsLeft.get(player) - 1);
 		// message
 		Map<String, String> vars = new HashMap<String, String>();
 		vars.put("lives", String.valueOf(setting_lives));
-		if (setting_respawns == -1)
-			vars.put("respawns", Translator.getString("INFINITE"));
-		else
-			vars.put("respawns", String.valueOf(respawnsLeft.get(player)));
+		if (setting_respawns == -1) vars.put("respawns", Translator.getString("INFINITE"));
+		else vars.put("respawns", String.valueOf(respawnsLeft.get(player)));
 		player.sendMessage(Translator.getString("RESPAWN", vars));
 		// spawn protection
 		protection.remove(player);
@@ -866,22 +859,22 @@ public class Match {
 		if (target == null || shooter == null || origin == null) {
 			throw new IllegalArgumentException("Something is null. That's not good.");
 		}
-		
+
 		// math over already?
 		if (matchOver)
-			return;
+						return;
 
 		// target already dead?
 		if (livesLeft.get(target) <= 0)
-			return;
-		
+										return;
+
 		String targetName = target.getName();
 		String shooterName = shooter.getName();
-		
+
 		Map<String, String> vars = new HashMap<String, String>();
 		vars.put("target", targetName);
 		vars.put("shooter", shooterName);
-		
+
 		// Teams?
 		if (enemys(target, shooter)) {
 			// player not dead already?
@@ -895,7 +888,7 @@ public class Match {
 					int healthLeft = livesLeft.get(target) - 1;
 					// -1 life
 					livesLeft.put(target, healthLeft);
-					
+
 					// STATS
 					TDMMatchStats matchStats = playerMatchStats.get(shooterName);
 					matchStats.addStat(TDMMatchStat.HITS, 1, true);
@@ -903,7 +896,7 @@ public class Match {
 					matchStats.addStat(TDMMatchStat.MONEY, plugin.cashPerHit, true);
 					matchStats.calculateQuotes();
 					updateMatchScoreboard(shooterName);
-					
+
 					// dead?->frag
 					// message:
 					if (healthLeft <= 0) {
@@ -911,14 +904,14 @@ public class Match {
 					} else {
 						// xp bar
 						if (plugin.useXPBar) {
-							target.setExp((float)healthLeft / setting_lives);
+							target.setExp((float) healthLeft / setting_lives);
 						}
 						Sounds.playHit(shooter, target);
-						
+
 						vars.put("hits_taken", String.valueOf(setting_lives - healthLeft));
 						vars.put("health_left", String.valueOf(healthLeft));
 						vars.put("health", String.valueOf(setting_lives));
-						
+
 						shooter.sendMessage(Translator.getString("YOU_HIT", vars));
 						target.sendMessage(Translator.getString("YOU_WERE_HIT", vars));
 					}
@@ -929,10 +922,10 @@ public class Match {
 			TDMMatchStats matchStats = playerMatchStats.get(shooterName);
 			matchStats.addStat(TDMMatchStat.TEAMATTACKS, 1, true);
 			matchStats.addStat(TDMMatchStat.POINTS, plugin.pointsPerTeamattack, true);
-			
+
 			// SOUND EFFECT
 			Sounds.playTeamattack(shooter);
-			
+
 			if (plugin.pointsPerTeamattack != 0) {
 				vars.put("points", String.valueOf(plugin.pointsPerTeamattack));
 				shooter.sendMessage(Translator.getString("YOU_HIT_MATE_POINTS", vars));
@@ -945,10 +938,10 @@ public class Match {
 	public synchronized void frag(final Player target, Player killer, Origin origin) {
 		// math over already?
 		if (matchOver) return;
-		
+
 		String targetName = target.getName();
 		String killerName = killer.getName();
-		
+
 		Sounds.playFrag(killer, target);
 
 		// STATS
@@ -964,7 +957,7 @@ public class Match {
 		targetStats.addStat(TDMMatchStat.DEATHS, 1, true);
 		targetStats.calculateQuotes();
 		updateMatchScoreboard(targetName);
-		
+
 		// 0 lives = -> out
 		livesLeft.put(target, 0);
 		// spawn protection
@@ -1030,25 +1023,25 @@ public class Match {
 		}
 
 	}
-	
+
 	private void feed(Player target, Player killer, Match match, Origin origin) {
 		FragInformations fragInfo = new FragInformations(killer, target, origin, match.getTeamLobby(killer).color(), match.getTeamLobby(target).color());
-		
+
 		if (match.setting_respawns != -1 && match.setting_respawns != 0) {
 			KeyValuePair livesPair = new KeyValuePair("lives", String.valueOf(match.setting_respawns + 1));
 			KeyValuePair livesLeftPairKiller = new KeyValuePair("lives_left", String.valueOf(match.respawnsLeft(killer)));
 			KeyValuePair livesLeftPairTarget = new KeyValuePair("lives_left", String.valueOf(match.respawnsLeft(target)));
-			
+
 			fragInfo.setAfterKiller(Translator.getString("REMAINING_LIVES", livesPair, livesLeftPairKiller));
 			fragInfo.setAfterTarget(Translator.getString("REMAINING_LIVES", livesPair, livesLeftPairTarget));
 		}
-		
+
 		KeyValuePair pluginPair = new KeyValuePair("plugin", plugin.feeder.getPluginName());
 		KeyValuePair killMessagePair = new KeyValuePair("kill_message", origin.getKillMessage(fragInfo));
-		
+
 		plugin.feeder.text(Translator.getString("KILL_FEED", pluginPair, killMessagePair));
 	}
-	
+
 	public synchronized void onBuying(String playerName, int moneySpent) {
 		TDMMatchStats matchStats = playerMatchStats.get(playerName);
 		if (matchStats != null) {
@@ -1060,17 +1053,17 @@ public class Match {
 	public synchronized void death(final Player target) {
 		// math over already?
 		if (matchOver)
-			return;
+						return;
 
 		String targetName = target.getName();
-		
+
 		// STATS
 		// TARGET:
 		TDMMatchStats targetStats = playerMatchStats.get(targetName);
 		targetStats.addStat(TDMMatchStat.DEATHS, 1, true);
 		targetStats.calculateQuotes();
 		updateMatchScoreboard(targetName);
-		
+
 		// FEED
 		target.sendMessage(Translator.getString("YOU_DIED"));
 		plugin.feeder.death(target, this);
@@ -1128,13 +1121,13 @@ public class Match {
 		}
 	}
 
-	private synchronized void gameEnd(final boolean draw, Set<Player> winnerS, Set<Player> looserS, Lobby winTeam,Lobby looseTeam) {
+	private synchronized void gameEnd(final boolean draw, Set<Player> winnerS, Set<Player> looserS, Lobby winTeam, Lobby looseTeam) {
 		matchOver = true;
 		endTimers();
 		undoAllColors();
-		
+
 		resetWeaponStuffEnd();
-		
+
 		if (!draw) {
 			for (Player p : winnerS) {
 				this.winners.add(p);
@@ -1164,7 +1157,7 @@ public class Match {
 		// reset weapon stuff:
 		plugin.weaponManager.cleanUp(this, player.getName());
 	}
-	
+
 	public void resetWeaponStuffEnd() {
 		plugin.weaponManager.cleanUp(this);
 	}

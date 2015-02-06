@@ -1,6 +1,8 @@
 package de.blablubbabc.paintball.features;
 
 import java.text.DecimalFormat;
+import java.util.UUID;
+
 import de.blablubbabc.insigns.InSigns;
 import de.blablubbabc.insigns.SimpleChanger;
 import de.blablubbabc.paintball.Paintball;
@@ -13,6 +15,7 @@ import org.bukkit.entity.Player;
 import org.bukkit.plugin.Plugin;
 
 public class InSignsFeature {
+
 	private final Paintball plugin;
 	@SuppressWarnings("unused")
 	private final InSigns insigns;
@@ -36,11 +39,11 @@ public class InSignsFeature {
 
 				@Override
 				public String getValue(Player player, Location signLocation, String affectedLine) {
-					String playerName = player.getName();
+					UUID playerUUID = player.getUniqueId();
 					if (!plugin.sql.isConnected()) {
 						return Translator.getString("NOT_CONNECTED");
 					} else {
-						PlayerStats stats = plugin.playerManager.getPlayerStats(playerName);
+						PlayerStats stats = plugin.playerManager.getPlayerStats(playerUUID);
 						if (stats != null) {
 							Integer statValue = stats.getStat(stat);
 							if (stat == PlayerStat.HITQUOTE || stat == PlayerStat.KD) {
@@ -59,11 +62,11 @@ public class InSignsFeature {
 
 				@Override
 				public String getValue(Player player, Location signLocation, String affectedLine) {
-					String playerName = player.getName();
+					UUID playerUUID = player.getUniqueId();
 					if (!plugin.sql.isConnected()) {
 						return Translator.getString("NOT_CONNECTED");
-					} else if (plugin.playerManager.exists(playerName)) {
-						return String.valueOf(plugin.statsManager.getRank(playerName, stat));
+					} else if (plugin.playerManager.exists(playerUUID)) {
+						return String.valueOf(plugin.statsManager.getRank(playerUUID, stat));
 					} else {
 						return Translator.getString("NOT_FOUND");
 					}
@@ -76,10 +79,10 @@ public class InSignsFeature {
 
 			@Override
 			public String getValue(Player player, Location signLocation, String affectedLine) {
-				String playerName = player.getName();
+				UUID playerUUID = player.getUniqueId();
 				if (!plugin.sql.isConnected()) return Translator.getString("NOT_CONNECTED");
-				else if (plugin.playerManager.exists(playerName)) {
-					return String.valueOf(plugin.statsManager.getRank(playerName, PlayerStat.POINTS));
+				else if (plugin.playerManager.exists(playerUUID)) {
+					return String.valueOf(plugin.statsManager.getRank(playerUUID, PlayerStat.POINTS));
 				} else {
 					return Translator.getString("NOT_FOUND");
 				}

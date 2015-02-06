@@ -60,34 +60,36 @@ import de.blablubbabc.paintball.utils.Metrics.Graph;
  * 
  */
 public class Paintball extends JavaPlugin {
+
 	public static Paintball instance;
 	public Thread mainThread;
 
 	public boolean currentlyDisableing = false;
 
-	private Integer asyncDetector = new Integer(0);
+	private final Object asyncLock = new Object();
+	private int asyncTaskCounter = 0;
 
 	public void addAsyncTask() {
-		synchronized (asyncDetector) {
-			asyncDetector++;
+		synchronized (asyncLock) {
+			asyncTaskCounter++;
 		}
 	}
 
 	public void removeAsyncTask() {
-		synchronized (asyncDetector) {
-			asyncDetector--;
+		synchronized (asyncLock) {
+			asyncTaskCounter--;
 		}
 	}
 
 	public int getAsyncTasksCount() {
-		synchronized (asyncDetector) {
-			return asyncDetector.intValue();
+		synchronized (asyncLock) {
+			return asyncTaskCounter;
 		}
 	}
 
 	public boolean isAsyncTaskRunning() {
-		synchronized (asyncDetector) {
-			return asyncDetector > 0;
+		synchronized (asyncLock) {
+			return asyncTaskCounter > 0;
 		}
 	}
 
@@ -127,10 +129,17 @@ public class Paintball extends JavaPlugin {
 	// general:
 	public boolean versioncheck;
 	public boolean metrics;
-	// Language
+	// language:
 	public String local;
 	public String languageFileEncoding;
 
+	// uuid conversion:
+	public boolean uuidFirstRun = false;
+	public boolean uuidOnlineMode;
+	public boolean uuidUseLocalPlayerData;
+	public boolean uuidUseUUIDCollector;
+
+	// paintball:
 	public int countdown;
 	public int countdownInit;
 	public int countdownStart;
@@ -430,6 +439,14 @@ public class Paintball extends JavaPlugin {
 		if (getConfig().get("Paintball.Language.File Name") == null) getConfig().set("Paintball.Language.File Name", "enUS");
 		if (getConfig().get("Paintball.Language.File Encoding") == null) getConfig().set("Paintball.Language.File Encoding", "utf-8");
 
+		// uuid conversion:
+		if (!getConfig().isBoolean("Paintball.UUID Conversion.Online Mode")) {
+			uuidFirstRun = true;
+			getConfig().set("Paintball.UUID Conversion.Online Mode", Bukkit.getOnlineMode());
+		}
+		if (!getConfig().isBoolean("Paintball.UUID Conversion.Use UUIDCollector data")) getConfig().set("Paintball.UUID Conversion.Use UUIDCollector data", new File(this.getDataFolder().getParentFile(), "UUIDCollector").exists());
+		if (!getConfig().isBoolean("Paintball.UUID Conversion.Use local player data")) getConfig().set("Paintball.UUID Conversion.Use local player data", true);
+
 		if (getConfig().get("Paintball.No Permissions") == null) getConfig().set("Paintball.No Permissions", false);
 		if (getConfig().get("Paintball.Debug") == null) getConfig().set("Paintball.Debug", false);
 		if (getConfig().get("Paintball.VoteListener.enabled") == null) getConfig().set("Paintball.VoteListener.enabled", true);
@@ -652,6 +669,11 @@ public class Paintball extends JavaPlugin {
 		// server
 		versioncheck = getConfig().getBoolean("Server.Version Check", true);
 		metrics = getConfig().getBoolean("Server.Metrics", true);
+
+		// uuid conversion:
+		uuidOnlineMode = getConfig().getBoolean("Paintball.UUID Conversion.Online Mode");
+		uuidUseUUIDCollector = getConfig().getBoolean("Paintball.UUID Conversion.Use UUIDCollector data");
+		uuidUseLocalPlayerData = getConfig().getBoolean("Paintball.UUID Conversion.Use local player data");
 
 		// points+cash:
 		pointsPerKill = getConfig().getInt("Paintball.Points per Kill", 2);
@@ -972,10 +994,11 @@ public class Paintball extends JavaPlugin {
 		orbitalstrikeMatchLimit = getConfig().getInt("Paintball.Extras.Orbitalstrike.Match Limit", 3);
 		orbitalstrikePlayerLimit = getConfig().getInt("Paintball.Extras.Orbitalstrike.Player Limit", 1);
 
-		// SQLite with version: 110
-		sql = new BlaSQLite(new File(this.getDataFolder().getPath() + File.separator + "pbdata_110" + ".db"));
+		// SQLite database:
+		sql = new BlaSQLite(this);
+
 		// DB
-		loadDB();
+		loadLobbySpawnsFromDB();
 		// TRANSLATOR
 		translator = new Translator(this, local);
 		if (!Translator.success) {
@@ -1290,7 +1313,7 @@ public class Paintball extends JavaPlugin {
 	}
 
 	// METHODS LOBBYSPAWNS
-	private void loadDB() {
+	private void loadLobbySpawnsFromDB() {
 		lobbyspawns = new ArrayList<Location>();
 		for (Location loc : sql.sqlArenaLobby.getLobbyspawns()) {
 			lobbyspawns.add(loc);

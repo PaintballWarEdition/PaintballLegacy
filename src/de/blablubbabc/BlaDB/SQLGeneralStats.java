@@ -24,7 +24,7 @@ public class SQLGeneralStats {
 		
 		//DEFAULT VALUES:
 		for(String key : GeneralStat.getKeys()) {
-			sql.updateQuery("INSERT OR IGNORE INTO general_stats(key,value) VALUES('" + key + "','0');");
+			sql.updateQuery("INSERT OR IGNORE INTO general_stats (key,value) VALUES('" + key + "','0');");
 		}
 	}
 	
