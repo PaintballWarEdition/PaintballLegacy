@@ -126,6 +126,9 @@ public class BlaSQLite {
 
 			int counter = 0;
 			List<String> unconverted = new ArrayList<String>();
+
+			// start transaction:
+			this.updateQuery("BEGIN IMMEDIATE TRANSACTION;");
 			for (String playerName : playerNames) {
 				UUID uuid = uuids.get(playerName);
 				if (uuid == null) {
@@ -138,13 +141,19 @@ public class BlaSQLite {
 
 				// giving feedback about the progress, and flushing data:
 				counter++;
-				if ((counter % 250) == 0) {
+				if ((counter % 1000) == 0) {
 					Log.info("Progress: " + counter);
 				}
 			}
 
+			// commit:
+			Log.info("Saving changes to disk...");
+			this.updateQuery("END TRANSACTION;");
+
 			// detach old db:
 			this.updateQuery("DETACH oldDB;");
+
+			Log.logColored(ChatColor.GREEN + "Done!");
 
 			// rename old db file:
 			final File backupDBFile = new File(plugin.getDataFolder(), "pbdata_110-backup" + ".db");
