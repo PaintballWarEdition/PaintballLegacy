@@ -996,6 +996,11 @@ public class Paintball extends JavaPlugin {
 
 		// SQLite database:
 		sql = new BlaSQLite(this);
+		if (sql.aborted) {
+			Bukkit.getPluginManager().disablePlugin(this);
+			Log.warning("Disabling plugin.");
+			return;
+		}
 
 		// DB
 		loadLobbySpawnsFromDB();
@@ -1278,7 +1283,10 @@ public class Paintball extends JavaPlugin {
 
 	public void onDisable() {
 		currentlyDisableing = true;
-		matchManager.forceReload();
+		if (!sql.aborted) {
+			matchManager.forceReload();
+		}
+
 		// wait for async tasks to complete:
 		final long start = System.currentTimeMillis();
 		while (this.isAsyncTaskRunning()) {
@@ -1298,7 +1306,7 @@ public class Paintball extends JavaPlugin {
 		if (timeWaited > 0) Log.info("Waited " + timeWaited + "ms for async (probably stats saving) tasks to finish.");
 
 		sql.closeConnection();
-		getServer().getScheduler().cancelTasks(this);
+		Bukkit.getScheduler().cancelTasks(this);
 		Log.info("Disabled!");
 		currentlyDisableing = false;
 		mainThread = null;

@@ -23,6 +23,8 @@ import de.blablubbabc.paintball.utils.UUIDFetcher;
 
 public class BlaSQLite {
 
+	public boolean aborted = false;
+
 	private File databaseFile;
 	private Connection connection;
 
@@ -38,7 +40,7 @@ public class BlaSQLite {
 		File oldDBFile = new File(plugin.getDataFolder(), "pbdata_110" + ".db");
 		if (oldDBFile.exists()) {
 			if (Paintball.instance.uuidFirstRun) {
-				Log.severe("Detected first run with old database file: new configuration options were generated.", true);
+				Log.warning("Detected first run with old database file: new configuration options were generated.", true);
 				Log.info("Stop the server, open the Paintball config, and make sure the newly added 'UUID Conversion' settings are correctly set.", true);
 				Log.info("The next time you restart the server, the old paintball data will get imported into a new database file.", true);
 				Log.info("This process will take some while, in which the server will be unresponsive. You will get status reports in the console.", true);
@@ -50,12 +52,16 @@ public class BlaSQLite {
 						admin.sendMessage(ChatColor.RED + "Please view the server log now for more information.");
 					}
 				}
+
+				aborted = true;
 				return;
 			}
 
 			if (databaseFile.exists()) {
 				Log.severe("Cannot merge data from old database file ('pbdata_110.db') into already existing new database file ('pbdata_130.db').", true);
 				Log.severe("To properly import old data: Stop the server, delete the 'pbdata_130.db' file and then restart the server.", true);
+
+				aborted = true;
 				return;
 			}
 		}
@@ -106,6 +112,7 @@ public class BlaSQLite {
 				uuids = new UUIDFetcher(playerNames).call();
 			} catch (Exception e) {
 				e.printStackTrace();
+				aborted = true;
 				return;
 			}
 
