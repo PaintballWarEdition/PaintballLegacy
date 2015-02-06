@@ -185,13 +185,6 @@ public class BlaSQLite {
 			Log.info("Saving changes to disk...");
 			this.updateQuery("END TRANSACTION;");
 
-			// some players might have multiple names, because they already changed their name:
-			if (!unconverted.isEmpty()) {
-				Log.warning("Some player statistics couldn't be imported, because we didn't find uuid's for them.", true);
-				Log.warning("Those players either have no Mojang account, or they have already changed their name.", true);
-				Log.warning("Trying to");
-			}
-
 			// detach old db:
 			this.updateQuery("DETACH oldDB;");
 
@@ -210,6 +203,7 @@ public class BlaSQLite {
 
 			if (!unconverted.isEmpty()) {
 				Log.warning("Some player statistics couldn't be imported, because we didn't find uuid's for them.", true);
+				Log.warning("Those players either have no Mojang account, or they have already changed their name.", true);
 				Log.warning("Their names were saved to the file '" + unconvertedConfigFile.getName() + "'.", true);
 
 				YamlConfiguration unconvertedConfig = YamlConfiguration.loadConfiguration(unconvertedConfigFile);
