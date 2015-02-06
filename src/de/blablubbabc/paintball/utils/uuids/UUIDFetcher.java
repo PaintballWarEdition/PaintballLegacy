@@ -33,7 +33,7 @@ public class UUIDFetcher implements Callable<Map<String, UUID>> {
 	private final boolean rateLimiting;
 
 	public UUIDFetcher(List<String> names, boolean rateLimiting) {
-		this.names = names;
+		this.names = new ArrayList<String>(names);
 		this.rateLimiting = rateLimiting;
 	}
 

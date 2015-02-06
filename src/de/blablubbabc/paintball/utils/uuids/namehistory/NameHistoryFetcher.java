@@ -26,7 +26,7 @@ public class NameHistoryFetcher implements Callable<Map<UUID, List<NameHistoryEn
 	private final List<UUID> uuids;
 
 	public NameHistoryFetcher(List<UUID> uuids) {
-		this.uuids = uuids;
+		this.uuids = new ArrayList<UUID>(uuids);
 	}
 
 	@Override

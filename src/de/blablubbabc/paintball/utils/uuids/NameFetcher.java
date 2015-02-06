@@ -11,6 +11,7 @@ import de.blablubbabc.paintball.utils.Log;
 import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
 import java.net.URL;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -24,7 +25,7 @@ public class NameFetcher implements Callable<Map<UUID, String>> {
 	private final List<UUID> uuids;
 
 	public NameFetcher(List<UUID> uuids) {
-		this.uuids = uuids;
+		this.uuids = new ArrayList<UUID>(uuids);
 	}
 
 	@Override
