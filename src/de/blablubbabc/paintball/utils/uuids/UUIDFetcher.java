@@ -130,7 +130,11 @@ public class UUIDFetcher implements Callable<Map<String, UUID>> {
 								Thread.sleep(30000);
 							}
 						} else {
-							throw e;
+							// possibly crucial error.. retrying anyways so the already fetched data isn't wasted in case this is a temporary issue:
+							retry = true;
+							Log.info("Error: " + e.getMessage() + ". Trying again in 30 seconds ...");
+							Thread.sleep(30000);
+							// throw e;
 						}
 					}
 				} while (retry);
