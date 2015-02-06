@@ -136,17 +136,12 @@ public class BlaSQLite {
 			// start transaction:
 			this.updateQuery("BEGIN IMMEDIATE TRANSACTION;");
 			for (String playerName : playerNames) {
-				boolean newestName = false;
 				UUID uuid = localUUIDs.get(playerName);
 				if (uuid == null) {
 					uuid = fetchedUUIDs.get(playerName);
 					if (uuid == null) {
 						unconverted.add(playerName);
 						continue;
-					} else {
-						// prefer the name, if we got the uuid from mojang servers:
-						// it is probably the most recent name for this player
-						newestName = true;
 					}
 				}
 
@@ -155,7 +150,7 @@ public class BlaSQLite {
 				// check if we already have player stats for this player in the new database:
 				Map<PlayerStat, Integer> playerStats = sqlPlayers.getPlayerStats(uuid);
 				if (!playerStats.isEmpty()) {
-					Log.warning("Found multiple names for player '" + playerName + "': Merging statistics.");
+					Log.warning("Found multiple names for player '" + playerName + "'. Merging statistics.");
 					// the player has multiple names (for example because he already changed his name)
 					// merging other old stats:
 					Result oldStatsResult = this.resultQuery("SELECT * FROM oldDB.players WHERE name='" + playerName + "' LIMIT 1;");
@@ -180,10 +175,9 @@ public class BlaSQLite {
 					// save merged stats:
 					sqlPlayers.setPlayerStats(uuid, playerStats);
 
-					if (newestName) {
-						// update player name, because the currently stored one might be not the latest:
-						this.updateQuery("UPDATE OR IGNORE players SET name='" + playerName + "' WHERE uuid='" + uuid.toString() + "';");
-					}
+					// update player name, because of the assumption that the name which was added later to the database,
+					// and is therefore at the end of the playerNames list, is the latest anem for the player:
+					this.updateQuery("UPDATE OR IGNORE players SET name='" + playerName + "' WHERE uuid='" + uuid.toString() + "';");
 				} else {
 					// insert old player stats:
 					this.updateQuery("INSERT OR IGNORE INTO players (" + newPlayerColumns + ") SELECT \""
