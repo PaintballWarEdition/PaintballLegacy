@@ -524,28 +524,22 @@ public class Match {
 		Map<ArenaSetting, Integer> settings = plugin.arenaManager.getArenaSettings(arena);
 		// BALLS
 		setting_balls = plugin.balls + settings.get(ArenaSetting.BALLS);
-		if (setting_balls < -1)
-								setting_balls = -1;
+		if (setting_balls < -1) setting_balls = -1;
 		// GRENADES
 		setting_grenades = plugin.grenadeAmount + settings.get(ArenaSetting.GRENADES);
-		if (setting_grenades < -1)
-									setting_grenades = -1;
+		if (setting_grenades < -1) setting_grenades = -1;
 		// AIRSTRIKES
 		setting_airstrikes = plugin.airstrikeAmount + settings.get(ArenaSetting.AIRSTRIKES);
-		if (setting_airstrikes < -1)
-									setting_airstrikes = -1;
+		if (setting_airstrikes < -1) setting_airstrikes = -1;
 		// LIVES
 		setting_lives = plugin.lives + settings.get(ArenaSetting.LIVES);
-		if (setting_lives < 1)
-								setting_lives = 1;
+		if (setting_lives < 1) setting_lives = 1;
 		// RESPAWNS
 		setting_respawns = plugin.respawns + settings.get(ArenaSetting.RESPAWNS);
-		if (setting_respawns < -1)
-									setting_respawns = -1;
+		if (setting_respawns < -1) setting_respawns = -1;
 		// ROUND TIME
 		setting_round_time = plugin.roundTimer + settings.get(ArenaSetting.ROUND_TIME);
-		if (setting_round_time < 30)
-									setting_round_time = 30;
+		if (setting_round_time < 30) setting_round_time = 30;
 	}
 
 	private void makeAllVisible() {
@@ -553,8 +547,7 @@ public class Match {
 			if (!isSurvivor(pl)) continue;
 			for (Player p : getAll()) {
 				if (!isSurvivor(p)) continue;
-				if (!p.equals(pl))
-									pl.showPlayer(p);
+				if (!p.equals(pl)) pl.showPlayer(p);
 			}
 		}
 	}
@@ -563,8 +556,7 @@ public class Match {
 		for (Player p : redT) {
 			// chatnames
 			String n = Lobby.RED.color() + p.getName();
-			if (n.length() > 16)
-								n = (String) n.subSequence(0, n.length() - (n.length() - 16));
+			if (n.length() > 16) n = (String) n.subSequence(0, n.length() - (n.length() - 16));
 			/*
 			 * if(plugin.chatnames) { p.setDisplayName(n+white); }
 			 */
@@ -576,8 +568,7 @@ public class Match {
 		for (Player p : blueT) {
 			// chatnames
 			String n = Lobby.BLUE.color() + p.getName();
-			if (n.length() > 16)
-								n = (String) n.subSequence(0, n.length() - (n.length() - 16));
+			if (n.length() > 16) n = (String) n.subSequence(0, n.length() - (n.length() - 16));
 			/*
 			 * if(plugin.chatnames) { p.setDisplayName(n+white); }
 			 */
@@ -610,8 +601,7 @@ public class Match {
 			 */
 			// listnames
 			if (plugin.listnames) {
-				if (Lobby.isPlaying(p))
-										p.setPlayerListName(null);
+				if (Lobby.isPlaying(p)) p.setPlayerListName(null);
 			}
 		}
 	}
@@ -652,25 +642,20 @@ public class Match {
 		if (getTeam(player) != null) {
 			// if(setting_respawns == -1) return true;
 			if (respawnsLeft.get(player) != 0) return true;
-			else if (livesLeft.get(player) > 0)
-												return true;
+			else if (livesLeft.get(player) > 0) return true;
 		}
 		return false;
 	}
 
 	public Lobby getTeamLobby(Player player) {
-		if (redT.contains(player))
-									return Lobby.RED;
-		if (blueT.contains(player))
-									return Lobby.BLUE;
+		if (redT.contains(player)) return Lobby.RED;
+		if (blueT.contains(player)) return Lobby.BLUE;
 		return null;
 	}
 
 	public Lobby getEnemyTeamLobby(Player player) {
-		if (redT.contains(player))
-									return Lobby.BLUE;
-		if (blueT.contains(player))
-									return Lobby.RED;
+		if (redT.contains(player)) return Lobby.BLUE;
+		if (blueT.contains(player)) return Lobby.RED;
 		return null;
 	}
 
@@ -707,18 +692,14 @@ public class Match {
 	}
 
 	public Set<Player> getTeam(Player player) {
-		if (redT.contains(player))
-									return redT;
-		if (blueT.contains(player))
-									return blueT;
+		if (redT.contains(player)) return redT;
+		if (blueT.contains(player)) return blueT;
 		return null;
 	}
 
 	public Set<Player> getEnemyTeam(Player player) {
-		if (redT.contains(player))
-									return blueT;
-		if (blueT.contains(player))
-									return redT;
+		if (redT.contains(player)) return blueT;
+		if (blueT.contains(player)) return redT;
 		return null;
 	}
 
@@ -727,10 +708,8 @@ public class Match {
 	}
 
 	public boolean enemys(Player player1, Player player2) {
-		if (redT.contains(player1) && blueT.contains(player2))
-																return true;
-		if (redT.contains(player2) && blueT.contains(player1))
-																return true;
+		if (redT.contains(player1) && blueT.contains(player2)) return true;
+		if (redT.contains(player2) && blueT.contains(player1)) return true;
 		return false;
 	}
 
@@ -751,10 +730,8 @@ public class Match {
 	 */
 
 	public boolean friendly(Player player1, Player player2) {
-		if (redT.contains(player1) && redT.contains(player2))
-																return true;
-		if (blueT.contains(player1) && blueT.contains(player2))
-																return true;
+		if (redT.contains(player1) && redT.contains(player2)) return true;
+		if (blueT.contains(player1) && blueT.contains(player2)) return true;
 		return false;
 	}
 
@@ -803,13 +780,11 @@ public class Match {
 			resetPlayerOnLeave(player);
 			// survivors?->endGame
 			// math over already?
-			if (matchOver)
-							return;
+			if (matchOver) return;
 			if (survivors(getTeam(player)) == 0) {
 				gameEnd(false, getEnemyTeam(player), getTeam(player), getEnemyTeamLobby(player), getTeamLobby(player));
 			}
-		} else if (spec.contains(player))
-											spec.remove(player);
+		} else if (spec.contains(player)) spec.remove(player);
 	}
 
 	public int respawnsLeft(Player player) {
@@ -861,12 +836,10 @@ public class Match {
 		}
 
 		// math over already?
-		if (matchOver)
-						return;
+		if (matchOver) return;
 
 		// target already dead?
-		if (livesLeft.get(target) <= 0)
-										return;
+		if (livesLeft.get(target) <= 0) return;
 
 		String targetName = target.getName();
 		String shooterName = shooter.getName();
@@ -1052,8 +1025,7 @@ public class Match {
 
 	public synchronized void death(final Player target) {
 		// math over already?
-		if (matchOver)
-						return;
+		if (matchOver) return;
 
 		String targetName = target.getName();
 
