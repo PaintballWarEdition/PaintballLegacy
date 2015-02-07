@@ -173,7 +173,11 @@ public class SQLPlayers {
 	}
 
 	// ADD NEW
-	public void addNewPlayer(UUID playerUUID, String playerName) {
+	public void initPlayer(UUID playerUUID, String playerName) {
+		// update player name, if already existing:
+		sql.updateQuery("UPDATE OR IGNORE players SET name='" + playerName + "' WHERE uuid='" + playerUUID.toString() + "';");
+
+		// insert player if needed:
 		String query = "";
 		String queryV = "";
 		for (String s : PlayerStat.getKeys()) {

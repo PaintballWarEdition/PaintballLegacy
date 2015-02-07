@@ -630,7 +630,7 @@ public class EventListener implements Listener {
 	@EventHandler(priority = EventPriority.MONITOR)
 	public void onPlayerJoin(PlayerJoinEvent event) {
 		final Player player = (Player) event.getPlayer();
-		plugin.playerManager.addPlayerAsync(player);
+		plugin.playerManager.initPlayerAsync(player);
 
 		// now done by playerManager directly after player wass added to database..
 		/*

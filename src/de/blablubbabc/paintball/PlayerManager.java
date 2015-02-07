@@ -42,7 +42,7 @@ public class PlayerManager {
 
 			@Override
 			public void run() {
-				addAllOnlinePlayers();
+				initAllOnlinePlayers();
 			}
 		}, 1L);
 	}
@@ -411,11 +411,11 @@ public class PlayerManager {
 	// METHODS
 	// SETTER
 	// adding all players on plugin start is done sync, because it reduces possible problems and it's a one-time-thing on plugin start only:
-	private void addAllOnlinePlayers() {
+	private void initAllOnlinePlayers() {
 		// locking is not needed, because it's done sync:
 		for (Player player : Paintball.instance.getServer().getOnlinePlayers()) {
 			// add player to database
-			addPlayer(player);
+			initPlayer(player);
 
 			// autoLobby and worldMode
 			if (Paintball.instance.autoLobby || (Paintball.instance.worldMode && Paintball.instance.worldModeWorlds.contains(player.getWorld().getName()))) {
@@ -428,7 +428,7 @@ public class PlayerManager {
 		}
 	}
 
-	public void addPlayerAsync(final Player player) {
+	public void initPlayerAsync(final Player player) {
 		final UUID playerUUID = player.getUniqueId();
 		// lock player
 		playersToAdd.add(playerUUID);
@@ -438,7 +438,7 @@ public class PlayerManager {
 
 			@Override
 			public void run() {
-				addPlayer(player);
+				initPlayer(player);
 
 				Paintball.instance.getServer().getScheduler().runTask(Paintball.instance, new Runnable() {
 
@@ -479,11 +479,8 @@ public class PlayerManager {
 	 * 
 	 * @param player
 	 */
-	private void addPlayer(Player player) {
-		// TODO is exits check really necessary here ?
-		if (!Paintball.instance.sql.sqlPlayers.isPlayerExisting(player.getUniqueId())) {
-			Paintball.instance.sql.sqlPlayers.addNewPlayer(player.getUniqueId(), player.getName());
-		}
+	private void initPlayer(Player player) {
+		Paintball.instance.sql.sqlPlayers.initPlayer(player.getUniqueId(), player.getName());
 	}
 
 	public void resetAllDataAsync() {
