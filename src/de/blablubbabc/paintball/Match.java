@@ -249,15 +249,13 @@ public class Match {
 			@Override
 			public void run() {
 				// Spawn protection:
-				Iterator<Map.Entry<Player, Integer>> iter = protection.entrySet()
-																		.iterator();
+				Iterator<Map.Entry<Player, Integer>> iter = protection.entrySet().iterator();
 				while (iter.hasNext()) {
 					Map.Entry<Player, Integer> entry = iter.next();
 					Player p = entry.getKey();
 					int t = entry.getValue() - 1;
 					if (t <= 0) {
-						if (p.isOnline() && isSurvivor(p))
-															p.sendMessage(Translator.getString("PROTECTION_OVER"));
+						if (p.isOnline() && isSurvivor(p)) p.sendMessage(Translator.getString("PROTECTION_OVER"));
 						iter.remove();
 					} else {
 						protection.put(p, t);
@@ -500,14 +498,10 @@ public class Match {
 		TeleportManager.teleport(player, specspawns.get(spawnSpec));
 		spawnSpec++;
 		// INVENTORY
-		player.getInventory().setHelmet(
-										Utils.setLeatherArmorColor(new ItemStack(Material.LEATHER_HELMET, 1), Lobby.SPECTATE.colorA()));
-		player.getInventory().setChestplate(
-											Utils.setLeatherArmorColor(new ItemStack(Material.LEATHER_CHESTPLATE, 1), Lobby.SPECTATE.colorA()));
-		player.getInventory().setLeggings(
-											Utils.setLeatherArmorColor(new ItemStack(Material.LEATHER_LEGGINGS, 1), Lobby.SPECTATE.colorA()));
-		player.getInventory().setBoots(
-										Utils.setLeatherArmorColor(new ItemStack(Material.LEATHER_BOOTS, 1), Lobby.SPECTATE.colorA()));
+		player.getInventory().setHelmet(Utils.setLeatherArmorColor(new ItemStack(Material.LEATHER_HELMET, 1), Lobby.SPECTATE.colorA()));
+		player.getInventory().setChestplate(Utils.setLeatherArmorColor(new ItemStack(Material.LEATHER_CHESTPLATE, 1), Lobby.SPECTATE.colorA()));
+		player.getInventory().setLeggings(Utils.setLeatherArmorColor(new ItemStack(Material.LEATHER_LEGGINGS, 1), Lobby.SPECTATE.colorA()));
+		player.getInventory().setBoots(Utils.setLeatherArmorColor(new ItemStack(Material.LEATHER_BOOTS, 1), Lobby.SPECTATE.colorA()));
 
 		player.getInventory().setItem(8, Paintball.instance.weaponManager.setMeta(new ItemStack(Material.WOOL, 1, DyeColor.YELLOW.getWoolData())));
 
