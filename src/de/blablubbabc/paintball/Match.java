@@ -37,17 +37,17 @@ import de.blablubbabc.paintball.utils.Utils;
 public class Match {
 
 	private Paintball plugin;
-	private Map<Player, Integer> livesLeft = new HashMap<Player, Integer>();
-	private Map<Player, Integer> respawnsLeft = new HashMap<Player, Integer>();
-	private Set<Player> redT = new HashSet<Player>();
-	private Set<Player> blueT = new HashSet<Player>();
-	private Set<Player> bothTeams = new HashSet<Player>();
-	private Set<Player> spec = new HashSet<Player>();
-	private Set<Player> allPlayers = new HashSet<Player>();
-	private Map<Player, Integer> protection = new HashMap<Player, Integer>();
-	private Map<String, Scoreboard> prevScoreboards = new HashMap<String, Scoreboard>();
-	private Map<String, Scoreboard> scoreboards = new HashMap<String, Scoreboard>();
-	private Set<String> justRespawned = new HashSet<String>();
+	private final Map<Player, Integer> livesLeft = new HashMap<Player, Integer>();
+	private final Map<Player, Integer> respawnsLeft = new HashMap<Player, Integer>();
+	private final Set<Player> redT = new HashSet<Player>();
+	private final Set<Player> blueT = new HashSet<Player>();
+	private final Set<Player> bothTeams = new HashSet<Player>();
+	private final Set<Player> spec = new HashSet<Player>();
+	private final Set<Player> allPlayers = new HashSet<Player>();
+	private final Map<Player, Integer> protection = new HashMap<Player, Integer>();
+	private final Map<String, Scoreboard> prevScoreboards = new HashMap<String, Scoreboard>();
+	private final Map<String, Scoreboard> scoreboards = new HashMap<String, Scoreboard>();
+	private final Set<String> justRespawned = new HashSet<String>();
 	// STATS
 	private Map<String, TDMMatchStats> playerMatchStats = new HashMap<String, TDMMatchStats>();
 
