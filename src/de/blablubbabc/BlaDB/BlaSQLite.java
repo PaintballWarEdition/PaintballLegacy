@@ -79,17 +79,26 @@ public class BlaSQLite {
 			this.updateQuery("ATTACH '" + oldDBFile.getAbsolutePath() + "' AS oldDB;");
 
 			Log.info("Importing lobby and arenas ...");
-			this.updateQuery("INSERT OR IGNORE INTO arenas SELECT * FROM oldDB.arenas;");
-			this.updateQuery("INSERT OR IGNORE INTO arenasettings SELECT * FROM oldDB.arenasettings;");
-			this.updateQuery("INSERT OR IGNORE INTO arenastats SELECT * FROM oldDB.arenastats;");
-			this.updateQuery("INSERT OR IGNORE INTO locations SELECT * FROM oldDB.locations;");
-			this.updateQuery("INSERT OR IGNORE INTO redspawns SELECT * FROM oldDB.redspawns;");
-			this.updateQuery("INSERT OR IGNORE INTO bluespawns SELECT * FROM oldDB.bluespawns;");
-			this.updateQuery("INSERT OR IGNORE INTO specspawns SELECT * FROM oldDB.specspawns;");
-			this.updateQuery("INSERT OR IGNORE INTO lobbyspawns SELECT * FROM oldDB.lobbyspawns;");
+
+			String arenasColumns = "(name, active)";
+			String arenaSettingsColumns = "(balls, airstrikes, name, lives, respawns, round_time, grenades)";
+			String arenaStatsColumns = "(airstrikes, name, shots, kills, rounds, grenades)";
+			String locationsColumns = "(id, world, x, y, z, yaw, pitch)";
+			String arenaSpawnsColumns = "(arena, location_id)";
+			String lobbySpawnsColumns = "(location_id)";
+			String generalStatsColumns = "(key, value)";
+
+			this.updateQuery("INSERT OR IGNORE INTO arenas " + arenasColumns + " SELECT " + arenasColumns + " FROM oldDB.arenas;");
+			this.updateQuery("INSERT OR IGNORE INTO arenasettings " + arenaSettingsColumns + " SELECT " + arenaSettingsColumns + " FROM oldDB.arenasettings;");
+			this.updateQuery("INSERT OR IGNORE INTO arenastats " + arenaStatsColumns + " SELECT " + arenaStatsColumns + " FROM oldDB.arenastats;");
+			this.updateQuery("INSERT OR IGNORE INTO locations " + locationsColumns + " SELECT " + locationsColumns + " FROM oldDB.locations;");
+			this.updateQuery("INSERT OR IGNORE INTO redspawns " + arenaSpawnsColumns + " SELECT " + arenaSpawnsColumns + " FROM oldDB.redspawns;");
+			this.updateQuery("INSERT OR IGNORE INTO bluespawns " + arenaSpawnsColumns + " SELECT " + arenaSpawnsColumns + " FROM oldDB.bluespawns;");
+			this.updateQuery("INSERT OR IGNORE INTO specspawns " + arenaSpawnsColumns + " SELECT " + arenaSpawnsColumns + " FROM oldDB.specspawns;");
+			this.updateQuery("INSERT OR IGNORE INTO lobbyspawns " + lobbySpawnsColumns + " SELECT " + lobbySpawnsColumns + " FROM oldDB.lobbyspawns;");
 
 			Log.info("Importing general statistics ...");
-			this.updateQuery("INSERT OR REPLACE INTO general_stats SELECT * FROM oldDB.general_stats;");
+			this.updateQuery("INSERT OR REPLACE INTO general_stats " + generalStatsColumns + " SELECT " + generalStatsColumns + " FROM oldDB.general_stats;");
 
 			Log.info("Loading player names ...");
 			List<String> playerNames = new ArrayList<String>();
