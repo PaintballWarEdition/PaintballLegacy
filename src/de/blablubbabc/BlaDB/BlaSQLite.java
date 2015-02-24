@@ -80,7 +80,7 @@ public class BlaSQLite {
 
 			Log.info("Importing lobby and arenas ...");
 
-			String arenasColumns = "(name, active)";
+			String arenasColumns = "name, active";
 			String arenaSettingsColumns = "balls, airstrikes, name, lives, respawns, round_time, grenades";
 			String arenaStatsColumns = "airstrikes, name, shots, kills, rounds, grenades";
 			String locationsColumns = "id, world, x, y, z, yaw, pitch";
