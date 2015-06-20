@@ -340,7 +340,12 @@ public class EventListener implements Listener {
 			if (match != null && Lobby.isPlaying(player) && match.isSurvivor(player)) {
 				ItemStack item = event.getItem();
 				if (item != null && item.getType() != Material.POTION) {
-					event.setUseItemInHand(Result.DENY);
+					// block placement gets denied separately:
+					// TODO this is meant as temporary hack to fix the issue of the BlockPlaceEvent no longer being triggered
+					// if item usage gets denied, due to some latest change in spigot
+					if (!item.getType().isBlock() && item.getType() != Material.FLOWER_POT_ITEM) {
+						event.setUseItemInHand(Result.DENY);
+					}
 
 					// shop book:
 					if (plugin.shop && item.isSimilar(plugin.shopManager.item)) {
@@ -652,14 +657,14 @@ public class EventListener implements Listener {
 		}
 
 	} /*
-	 * @EventHandler(priority = EventPriority.HIGHEST) public void
-	 * onPbCommands(PlayerCommandPreprocessEvent event) { Player player =
-	 * event.getPlayer(); String[] m = event.getMessage().split(" "); // basic
-	 * commands if (m[0].equalsIgnoreCase("/pb")) { if (m.length == 1) {
-	 * plugin.cm.pbhelp(player); } else if (m[1].equalsIgnoreCase("help") ||
-	 * m[1].equalsIgnoreCase("?")) { plugin.cm.pbhelp(player); } else if
-	 * (m[1].equalsIgnoreCase("info")) { plugin.cm.pbinfo(player); } } }
-	 */
+		* @EventHandler(priority = EventPriority.HIGHEST) public void
+		* onPbCommands(PlayerCommandPreprocessEvent event) { Player player =
+		* event.getPlayer(); String[] m = event.getMessage().split(" "); // basic
+		* commands if (m[0].equalsIgnoreCase("/pb")) { if (m.length == 1) {
+		* plugin.cm.pbhelp(player); } else if (m[1].equalsIgnoreCase("help") ||
+		* m[1].equalsIgnoreCase("?")) { plugin.cm.pbhelp(player); } else if
+		* (m[1].equalsIgnoreCase("info")) { plugin.cm.pbinfo(player); } } }
+		*/
 
 	@EventHandler(priority = EventPriority.NORMAL)
 	public void onPlayerQuit(PlayerQuitEvent event) {

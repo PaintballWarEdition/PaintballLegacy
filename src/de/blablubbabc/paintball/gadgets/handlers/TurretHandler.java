@@ -37,38 +37,38 @@ import de.blablubbabc.paintball.utils.Translator;
 import de.blablubbabc.paintball.utils.Utils;
 
 public class TurretHandler extends WeaponHandler implements Listener {
-	
+
 	private GadgetManager gadgetManager = new GadgetManager();
-	
+
 	private static Double[][] table;
 	private static int ySize;
-	
+
 	private Location nextTurretSpawn = null;
-	
+
 	public TurretHandler(int customItemTypeID, boolean useDefaultType) {
 		super("Turret", customItemTypeID, useDefaultType, new Origin() {
-			
+
 			@Override
 			public String getKillMessage(FragInformations fragInfo) {
 				return Translator.getString("WEAPON_FEED_TURRET", getDefaultVariablesMap(fragInfo));
 			}
 		});
-		
+
 		calculateTable(Paintball.instance.turretAngleMin, Paintball.instance.turretAngleMax, Paintball.instance.turretTicks, Paintball.instance.turretXSize, Paintball.instance.turretYSize, Paintball.instance.speedmulti);
 		Paintball.instance.getServer().getPluginManager().registerEvents(this, Paintball.instance);
 	}
-	
+
 	public Turret createTurret(Match match, Player player, LivingEntity entity, Origin origin) {
 		return new Turret(gadgetManager, match, player, entity, origin);
 	}
-	
+
 	@EventHandler(priority = EventPriority.HIGHEST, ignoreCancelled = false)
 	public void onCreatureSpawn(CreatureSpawnEvent event) {
 		if (nextTurretSpawn != null && event.getLocation().equals(nextTurretSpawn)) {
 			event.setCancelled(false);
 		}
 	}
-	
+
 	@EventHandler(priority = EventPriority.NORMAL)
 	public void onSnowmanTrail(EntityBlockFormEvent event) {
 		if (gadgetManager.isGadget(event.getEntity())) {
@@ -76,12 +76,12 @@ public class TurretHandler extends WeaponHandler implements Listener {
 			event.setCancelled(true);
 		}
 	}
-	
+
 	@EventHandler(priority = EventPriority.NORMAL)
 	public void onEntityDeath(EntityDeathEvent event) {
 		Gadget turret = gadgetManager.getGadget(event.getEntity());
 		if (turret != null) {
-			((Turret)turret).die();
+			((Turret) turret).die();
 		}
 	}
 
@@ -110,9 +110,9 @@ public class TurretHandler extends WeaponHandler implements Listener {
 
 	@Override
 	protected void onInteract(PlayerInteractEvent event, Match match) {
-		
+
 	}
-	
+
 	@Override
 	protected void onBlockPlace(BlockPlaceEvent event, Match match) {
 		Block block = event.getBlockPlaced();
@@ -120,24 +120,24 @@ public class TurretHandler extends WeaponHandler implements Listener {
 			Player player = event.getPlayer();
 			ItemStack itemInHand = player.getItemInHand();
 			if (itemInHand == null) return;
-			
+
 			if (itemInHand.isSimilar(getItem())) {
 				String playerName = player.getName();
 				if (gadgetManager.getMatchGadgetCount(match) < Paintball.instance.turretMatchLimit) {
 					if (gadgetManager.getPlayerGadgetCount(match, playerName) < Paintball.instance.turretPlayerLimit) {
-						
+
 						// check space:
 						if (block.getRelative(BlockFace.UP).getType().isSolid()) {
 							player.sendMessage(Translator.getString("GADGET_NOT_ENOUGH_SPACE"));
 							return;
 						}
-						
+
 						Location spawnLoc = block.getLocation();
 						nextTurretSpawn = spawnLoc;
 						Snowman snowman = (Snowman) block.getLocation().getWorld().spawnEntity(spawnLoc, EntityType.SNOWMAN);
 						nextTurretSpawn = null;
 						new Turret(gadgetManager, match, player, snowman, this.getWeaponOrigin());
-						
+
 						if (itemInHand.getAmount() <= 1) {
 							player.setItemInHand(null);
 						} else {
@@ -151,10 +151,10 @@ public class TurretHandler extends WeaponHandler implements Listener {
 				} else {
 					player.sendMessage(Translator.getString("TURRET_MATCH_LIMIT_REACHED"));
 				}
-			}	
+			}
 		}
 	}
-	
+
 	@Override
 	protected void onDamagedByEntity(EntityDamageByEntityEvent event, Match match, Player attacker) {
 		Gadget turretGadget = gadgetManager.getGadget(event.getEntity());
@@ -168,9 +168,9 @@ public class TurretHandler extends WeaponHandler implements Listener {
 			}
 		}
 	}
-	
+
 	private void calculateTable(int angleMin, int angleMax, int ticks,
-			int xSize, int ySize, double speedmulti) {
+								int xSize, int ySize, double speedmulti) {
 		TurretHandler.ySize = ySize;
 
 		// if ySize = 50 -> size = 2*50: y-Size in both directions, up and down:
@@ -201,7 +201,7 @@ public class TurretHandler extends WeaponHandler implements Listener {
 				y += vy;
 				vx = vx * (1 - drag);
 				if (vy > vyMin)
-					vy = vy - g;
+								vy = vy - g;
 				vy = vy * (1 - drag);
 
 				int tx = x.intValue();
@@ -242,13 +242,12 @@ public class TurretHandler extends WeaponHandler implements Listener {
 			}
 		}
 	}
-	
 
 	public class Turret extends Gadget {
 
 		private final LivingEntity entity;
 		private final Player player;
-		
+
 		private int tickTask = -1;
 		private int salveTask = -1;
 
@@ -256,10 +255,10 @@ public class TurretHandler extends WeaponHandler implements Listener {
 		private Player target = null;
 		private int salve;
 		private int lives;
-		
+
 		private Turret(GadgetManager gadgetManager, Match match, Player player, LivingEntity entity, Origin origin) {
 			super(gadgetManager, match, player.getName(), origin);
-			
+
 			this.entity = entity;
 			this.player = player;
 			this.cooldown = Paintball.instance.turretCooldown;
@@ -272,12 +271,12 @@ public class TurretHandler extends WeaponHandler implements Listener {
 		public boolean isSimiliar(Entity entity) {
 			return entity.getEntityId() == this.entity.getEntityId();
 		}
-		
+
 		@Override
 		public boolean isSimiliar(Location location) {
 			return false;
 		}
-		
+
 		private void tick() {
 			tickTask = Paintball.instance.getServer().getScheduler().runTaskLater(Paintball.instance, new Runnable() {
 
@@ -302,7 +301,7 @@ public class TurretHandler extends WeaponHandler implements Listener {
 				}
 			}, 20L).getTaskId();
 		}
-		
+
 		/**
 		 * Returns the creator of this turret.
 		 * 
@@ -312,7 +311,7 @@ public class TurretHandler extends WeaponHandler implements Listener {
 			return player;
 		}
 
-		//TODO less square roots
+		// TODO less square roots
 		private Player searchTarget(int maxRadius, int instantRadius) {
 			Vector entVec = entity.getLocation().toVector();
 			Player nearest = null;
@@ -387,7 +386,7 @@ public class TurretHandler extends WeaponHandler implements Listener {
 						} else {
 							if (!entity.hasLineOfSight(target)
 									|| !canBeShoot(entVec.clone().add(new Vector(0, 2, 0)).add(dir2), targetVec.clone(), dir2.clone()))
-								target = null;
+																																		target = null;
 							salve = Paintball.instance.turretSalve;
 							salveTask = -1;
 							tick();
@@ -401,7 +400,7 @@ public class TurretHandler extends WeaponHandler implements Listener {
 				}
 			}, 5L).getTaskId();
 		}
-		
+
 		public void die() {
 			// some effect here:
 			if (Paintball.instance.effects) {
@@ -413,25 +412,25 @@ public class TurretHandler extends WeaponHandler implements Listener {
 				}
 				world.playEffect(loc, Effect.MOBSPAWNER_FLAMES, 4);
 			}
-			
+
 			dispose(true);
 		}
-		
+
 		@Override
 		public void dispose(boolean removeFromGadgetHandlerTracking) {
 			if (tickTask != -1) {
 				Paintball.instance.getServer().getScheduler().cancelTask(tickTask);
 			}
-			
+
 			if (salveTask != -1) {
 				Paintball.instance.getServer().getScheduler().cancelTask(salveTask);
 			}
-			
+
 			entity.remove();
-			
+
 			super.dispose(removeFromGadgetHandlerTracking);
 		}
-		
+
 		public void hit() {
 			this.lives--;
 			if (this.lives <= 0) {
@@ -501,7 +500,7 @@ public class TurretHandler extends WeaponHandler implements Listener {
 			}
 			return aim.setY(tan).normalize().multiply(Paintball.instance.speedmulti);
 		}
-		
+
 	}
 
 }
