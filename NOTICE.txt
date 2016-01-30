@@ -1,0 +1,12 @@
+This program includes, uses or hooks into the following (partly optional) third-party software components:
+
+- Bukkit
+    http://bukkit.org/
+- Metrics (MCStats usage tracking) by Hidendra
+    http://mcstats.org/
+- Vault
+    http://dev.bukkit.org/bukkit-plugins/vault/
+- Votifier
+    http://dev.bukkit.org/bukkit-plugins/votifier/
+- TagAPI by mbaxter
+    http://dev.bukkit.org/bukkit-plugins/tag/
