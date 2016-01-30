@@ -1,0 +1,162 @@
+buildscript {
+	repositories {
+		jcenter()
+		mavenCentral()
+		maven {
+			url 'https://plugins.gradle.org/m2/'
+		}
+	}
+
+	dependencies {
+		classpath 'gradle.plugin.nl.javadude.gradle.plugins:license-gradle-plugin:0.12.1'
+	}
+}
+
+plugins {
+	// id 'com.github.hierynomus.license' version '0.12.1'
+}
+
+import org.apache.tools.ant.filters.*
+
+apply plugin: 'com.github.hierynomus.license'
+
+apply plugin: 'java'
+apply plugin: 'maven'
+apply plugin: 'eclipse'
+
+// default tasks
+defaultTasks 'licenseFormat', 'check', 'build'
+
+sourceCompatibility = '1.7'
+targetCompatibility = '1.7'
+
+group = 'de.blablubbabc'
+version = projectVersion
+
+ext.projectName = projectName
+ext.url = url
+ext.description = description
+ext.author = author
+ext.authors = authors
+
+repositories {
+	mavenCentral()
+	// bukkit/spigot:
+	maven {
+		url 'http://repo.bukkit.org/content/groups/public'
+	}
+	maven {
+		url 'https://hub.spigotmc.org/nexus/content/groups/public/'
+	}
+	// inofficial, but contains bukkit builds which the above two reposittories don't contain:
+	maven {
+		url 'http://maven.sk89q.com/artifactory/repo/'
+	}
+	// vault:
+	maven {
+		url 'http://nexus.theyeticave.net/content/repositories/pub_releases'
+	}
+	// votifier (not official though):
+	maven {
+		url 'http://repo.howaner.de/'
+	}
+	// TagAPI
+	maven {
+		url 'http://repo.kitteh.org/content/repositories/public/'
+	}
+	mavenLocal()
+}
+
+dependencies {
+	compile 'org.bukkit:bukkit:1.7.10-R0.1-SNAPSHOT'
+	compile ('de.blablubbabc:IndividualSigns:2.3') {
+		transitive = false
+	}
+	compile ('net.milkbowl.vault:VaultAPI:1.5') {
+		transitive = false
+	}
+	compile ('com.vexsoftware:votifier:1.9') {
+		transitive = false
+	}
+	compile ('org.kitteh:tagapi:3.0.6') {
+		transitive = false
+	}
+
+	testCompile group: 'junit', name: 'junit', version: '4.+'
+}
+
+jar {
+	manifest {
+		attributes 'Implementation-Title': project.name,
+					'Implementation-Version': version
+	}
+}
+
+// include and filter resources
+processResources {
+	from ('NOTICE.txt')
+	from ('LICENSE.txt')
+	from(sourceSets.main.resources.srcDirs)
+	filter {
+			line ->
+			line
+			.replace('${name}', project.name)
+			.replace('${version}', project.version)
+			.replace('${author}', project.author)
+			.replace('${authors}', project.authors)
+			.replace('${url}', project.url)
+			.replace('${description}', project.description)
+	}
+}
+
+// license header
+license {
+	ext.name = project.name
+	ext.author = project.author
+	ext.url = project.url
+
+	header file('HEADER.txt')
+
+	include '**/*.java'
+	exclude '**/thirdparty/**'
+
+	ignoreFailures true
+	strictCheck true
+}
+
+// source compiler configuration
+configure([compileJava, compileTestJava]) {
+	// options.compilerArgs += [ '-Xlint:all', '-Xlint:-path' ]
+	options.deprecation = false
+	options.encoding = 'utf8'
+}
+
+task sourceJar(type: Jar) {
+	from sourceSets.main.java
+	from sourceSets.main.resources
+	classifier = 'sources'
+}
+
+javadoc {
+	options.encoding = 'utf8'
+	failOnError = false
+}
+
+task javadocJar(type: Jar, dependsOn: javadoc) {
+	from javadoc.destinationDir
+	classifier = 'javadoc'
+}
+
+artifacts {
+	archives jar
+	archives sourceJar
+	archives javadocJar
+}
+
+uploadArchives {
+	repositories {
+		mavenDeployer {
+			mavenLocal()
+		}
+	}
+}

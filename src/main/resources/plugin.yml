@@ -1,0 +1,20 @@
+name: ${name}
+main: de.blablubbabc.paintball.Paintball
+version: '${version}'
+authors: [${authors}]
+website: '${url}'
+description: '${description}'
+softdepend: [InSigns, TagAPI, Votifier, Vault, Multiverse-Core, My Worlds, Transporter, Multiworld]
+commands:
+    pb:
+      description: 'Base paintball commands.'
+      usage: /<command>
+permissions:
+    paintball.general:
+        description: 'Access to general player commands.'
+        default: true
+    paintball.admin:
+        description: 'Access to admin and arena commands.'
+        default: op
+        children:
+            paintball.general: true
