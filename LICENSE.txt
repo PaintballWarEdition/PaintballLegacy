@@ -43,7 +43,10 @@ Grant of rights:
       You may not use the software, any derivative works or unrelated works, service or content in
       a way related to the software for commercial purposes, with the following exceptions:
         a) Commercial use based on advertising is allowed.
-        b) You are allowed to sell derivative works which you have created.
+        b) You are allowed to sell derivative works ('addons') which you have created.
+      You are not allowed to sell users of the software access to any 'in-game' content, features,
+      abilities or services related to the software, even when that content was created by
+      yourself.
 
    5. No redistributions:
       You may not redistribute any copy or parts of the software you received.
