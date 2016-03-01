@@ -2,6 +2,7 @@ This program includes, uses or hooks into the following (partly optional) third-
 
 - Bukkit
     http://bukkit.org/
+    https://www.spigotmc.org/
 - Metrics (MCStats usage tracking) by Hidendra
     http://mcstats.org/
 - Vault
