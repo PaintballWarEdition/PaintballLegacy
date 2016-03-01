@@ -40,5 +40,4 @@ public class Sounds {
 	public static void playEquipLoadout(Player player) {
 		player.playSound(player.getEyeLocation(), Sound.ENTITY_BAT_TAKEOFF, 1F, 1F);
 	}
-
 }
