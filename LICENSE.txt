@@ -58,7 +58,7 @@ Grant of rights:
    5. No redistributions:
       You may not redistribute any copy or parts of the software you received.
 
-   6. Non Assignable & Non-Transferable:
+   6. Non-Assignable & Non-Transferable:
       You may not assign or transfer your rights and duties under this license.
 
 Liability:
