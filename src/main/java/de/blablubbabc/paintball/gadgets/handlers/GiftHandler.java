@@ -98,7 +98,7 @@ public class GiftHandler extends WeaponHandler {
 	
 	@SuppressWarnings("deprecation")
 	private void unwrapGift(Player player) {
-		player.playSound(player.getEyeLocation(), Sound.LEVEL_UP, 0.5F, 1F);
+		player.playSound(player.getEyeLocation(), Sound.ENTITY_PLAYER_LEVELUP, 0.5F, 1F);
 		//remove chest from hand
 		ItemStack i = player.getItemInHand();
 		if (i.getAmount() <= 1) {

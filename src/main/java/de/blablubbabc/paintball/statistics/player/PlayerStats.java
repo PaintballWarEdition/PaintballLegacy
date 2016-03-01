@@ -73,7 +73,7 @@ public class PlayerStats {
 				Player player = Bukkit.getPlayer(playerUUID);
 				if (player != null && player.isOnline()) {
 
-					player.playSound(player.getEyeLocation(), Sound.LEVEL_UP, 1F, 2F);
+					player.playSound(player.getEyeLocation(), Sound.ENTITY_PLAYER_LEVELUP, 1F, 2F);
 					// highest Rank now?
 					KeyValuePair pluginString = new KeyValuePair("plugin", Translator.getString("PLUGIN"));
 					KeyValuePair newRankName = new KeyValuePair("new_rank", new_rank.getName());

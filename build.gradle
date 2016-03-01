@@ -68,7 +68,7 @@ repositories {
 }
 
 dependencies {
-	compile 'org.bukkit:bukkit:1.7.10-R0.1-SNAPSHOT'
+	compile 'org.bukkit:bukkit:1.9-R0.1-SNAPSHOT'
 	compile ('de.blablubbabc:IndividualSigns:2.3') {
 		transitive = false
 	}

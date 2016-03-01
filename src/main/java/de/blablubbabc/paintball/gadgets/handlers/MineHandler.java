@@ -441,7 +441,7 @@ public class MineHandler extends WeaponHandler implements Listener {
 											double dist = ploc.distance(location);
 											if (dist < 15) {
 												float vol = (float) (0.18 - (dist * 0.012));
-												p.playSound(location, Sound.CLICK, vol, 2F);
+												p.playSound(location, Sound.BLOCK_STONE_BUTTON_CLICK_ON, vol, 2F);
 											}
 										}
 									}

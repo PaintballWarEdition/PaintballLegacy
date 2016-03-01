@@ -90,7 +90,7 @@ public class GrenadeM2Handler extends WeaponHandler implements Listener {
 			Vector direction = player.getLocation().getDirection().normalize();
 			Location spawnLoc = Utils.getRightHeadLocation(direction, player.getEyeLocation());
 			
-			world.playSound(player.getLocation(), Sound.IRONGOLEM_THROW, 2.0F, 1F);
+			world.playSound(player.getLocation(), Sound.ENTITY_IRONGOLEM_ATTACK, 2.0F, 1F);
 			player.sendMessage(Translator.getString("GRENADE_THROW"));
 			
 			ItemStack nadeItem = getItem().clone();

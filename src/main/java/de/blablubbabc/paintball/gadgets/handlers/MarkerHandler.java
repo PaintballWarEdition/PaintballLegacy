@@ -73,8 +73,8 @@ public class MarkerHandler extends WeaponHandler {
 				Location spawnLoc = Utils.getRightHeadLocation(direction, player.getEyeLocation());
 
 				// SOUND EFFECT
-				player.playSound(spawnLoc, Sound.CLICK, 1.0F, 2F);
-				world.playSound(spawnLoc, Sound.CHICKEN_EGG_POP, 2.0F, 2F);
+				player.playSound(spawnLoc, Sound.BLOCK_STONE_BUTTON_CLICK_ON, 1.0F, 2F);
+				world.playSound(spawnLoc, Sound.ENTITY_CHICKEN_EGG, 2.0F, 2F);
 
 				// SHOOT SNOWBALL
 				Snowball snowball = (Snowball) world.spawnEntity(spawnLoc, EntityType.SNOWBALL);
@@ -96,7 +96,7 @@ public class MarkerHandler extends WeaponHandler {
 				}
 
 			} else {
-				player.playSound(player.getEyeLocation(), Sound.FIRE_IGNITE, 1F, 2F);
+				player.playSound(player.getEyeLocation(), Sound.ITEM_FLINTANDSTEEL_USE, 1F, 2F);
 			}
 			Utils.updatePlayerInventoryLater(Paintball.instance, player);
 		}

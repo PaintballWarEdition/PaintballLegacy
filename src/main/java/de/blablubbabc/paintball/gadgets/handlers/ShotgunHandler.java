@@ -45,7 +45,7 @@ public class ShotgunHandler extends WeaponHandler {
 	}
 
 	public void shoot(Player player, Match match, Location location, Vector direction, double speed, Origin origin) {
-		player.getWorld().playSound(location, Sound.FIRE_IGNITE, 2.0F, 0F);
+		player.getWorld().playSound(location, Sound.ITEM_FLINTANDSTEEL_USE, 2.0F, 0F);
 		direction.normalize();
 		
 		Vector dirY = (new Location(location.getWorld(), 0, 0, 0, location.getYaw(), 0)).getDirection().normalize();
@@ -114,7 +114,7 @@ public class ShotgunHandler extends WeaponHandler {
 				shoot(player, match, location, location.getDirection(), Paintball.instance.shotgunSpeedmulti, this.getWeaponOrigin());
 				
 			} else {
-				player.playSound(player.getEyeLocation(), Sound.FIRE_IGNITE, 1F, 2F);
+				player.playSound(player.getEyeLocation(), Sound.ITEM_FLINTANDSTEEL_USE, 1F, 2F);
 			}
 		}
 	}

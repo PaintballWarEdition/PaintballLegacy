@@ -44,7 +44,7 @@ public class SniperHandler extends WeaponHandler {
 	}
 
 	public void shoot(Player player, Match match, Location location, Vector direction, double speed, Origin origin) {
-		player.getWorld().playSound(location, Sound.FIRE_IGNITE, 2.0F, 0F);
+		player.getWorld().playSound(location, Sound.ITEM_FLINTANDSTEEL_USE, 2.0F, 0F);
 		direction.normalize();
 		
 		Snowball snowball = location.getWorld().spawn(location, Snowball.class);
@@ -99,7 +99,7 @@ public class SniperHandler extends WeaponHandler {
 						Utils.updatePlayerInventoryLater(Paintball.instance, player);
 					}
 				} else {
-					player.playSound(player.getEyeLocation(), Sound.FIRE_IGNITE, 1F, 2F);
+					player.playSound(player.getEyeLocation(), Sound.ITEM_FLINTANDSTEEL_USE, 1F, 2F);
 				}
 			}
 		}

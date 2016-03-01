@@ -539,7 +539,7 @@ public class MatchManager {
 
 					if (countdown.getTime() <= 5) {
 						for (Player player : Lobby.LOBBY.getMembers()) {
-							player.playSound(player.getLocation(), Sound.ORB_PICKUP, 0.5F, 1.0F);
+							player.playSound(player.getLocation(), Sound.ENTITY_EXPERIENCE_ORB_PICKUP, 0.5F, 1.0F);
 						}
 					}
 				}
@@ -563,7 +563,7 @@ public class MatchManager {
 					String status = ready();
 					if (status.equalsIgnoreCase(Translator.getString("READY"))) {
 						for (Player player : Lobby.LOBBY.getMembers()) {
-							player.playSound(player.getLocation(), Sound.ORB_PICKUP, 1.0F, 2.0F);
+							player.playSound(player.getLocation(), Sound.ENTITY_EXPERIENCE_ORB_PICKUP, 1.0F, 2.0F);
 						}
 
 						// get next arena, but check for forced or voted arena:
@@ -573,7 +573,7 @@ public class MatchManager {
 						gameStart(selectedArena);
 					} else {
 						for (Player player : Lobby.LOBBY.getMembers()) {
-							player.playSound(player.getLocation(), Sound.ORB_PICKUP, 1.0F, 0.0F);
+							player.playSound(player.getLocation(), Sound.ENTITY_EXPERIENCE_ORB_PICKUP, 1.0F, 0.0F);
 						}
 
 						plugin.feeder.status(status);

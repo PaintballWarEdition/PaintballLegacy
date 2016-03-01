@@ -86,7 +86,7 @@ public class ConcussionHandler extends WeaponHandler implements Listener {
 			Vector direction = player.getLocation().getDirection().normalize();
 			Location spawnLoc = Utils.getRightHeadLocation(direction, player.getEyeLocation());
 			
-			world.playSound(player.getLocation(), Sound.IRONGOLEM_THROW, 2.0F, 1F);
+			world.playSound(player.getLocation(), Sound.ENTITY_IRONGOLEM_ATTACK, 2.0F, 1F);
 			
 			ItemStack nadeItem = getItem().clone();
 			ItemMeta meta = nadeItem.getItemMeta();

@@ -37,7 +37,7 @@ public class PumpgunHandler extends WeaponHandler {
 	}
 	
 	public void shoot(Player player, Match match, Location location, Vector direction, double speed, Origin origin) {
-		player.getWorld().playSound(location, Sound.FIRE_IGNITE, 2.0F, 0F);
+		player.getWorld().playSound(location, Sound.ITEM_FLINTANDSTEEL_USE, 2.0F, 0F);
 		direction.normalize();
 		
 		for (int i = 0; i < Paintball.instance.pumpgunBullets ; i++) {
@@ -84,7 +84,7 @@ public class PumpgunHandler extends WeaponHandler {
 				shoot(player, match, location, location.getDirection(), Paintball.instance.pumpgunSpeedmulti, this.getWeaponOrigin());
 				
 			} else {
-				player.playSound(player.getEyeLocation(), Sound.FIRE_IGNITE, 1F, 2F);
+				player.playSound(player.getEyeLocation(), Sound.ITEM_FLINTANDSTEEL_USE, 1F, 2F);
 			}
 		}
 	}

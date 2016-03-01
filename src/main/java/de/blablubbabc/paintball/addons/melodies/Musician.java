@@ -18,37 +18,37 @@ import org.bukkit.plugin.Plugin;
 public class Musician {
 	private Plugin plugin;
 	private File path;
-	
+
 	public boolean success;
 
 	public Melody winDef;
 	public Melody defeatDef;
 	public Melody drawDef;
-	
+
 	public Melody win;
 	public Melody defeat;
 	public Melody draw;
 
 	public Musician(Plugin plugin, String winFile, boolean winNbs, String defeatFile, boolean defeatNbs,
-			String drawFile, boolean drawNbs) {
+					String drawFile, boolean drawNbs) {
 		// init
 		this.plugin = plugin;
 		success = true;
 		path = new File(plugin.getDataFolder().toString() + "/melodies/");
 		if (!path.exists())
-			path.mkdirs();
-		
+							path.mkdirs();
+
 		// defaults
-		if(!writeDefaultMelodyFile("win")) success = false;
-		if(!writeDefaultMelodyFile("defeat")) success = false;
-		if(!writeDefaultMelodyFile("draw")) success = false;
-		if(!success) return;
+		if (!writeDefaultMelodyFile("win")) success = false;
+		if (!writeDefaultMelodyFile("defeat")) success = false;
+		if (!writeDefaultMelodyFile("draw")) success = false;
+		if (!success) return;
 		winDef = loadMelody("win", false);
 		defeatDef = loadMelody("defeat", false);
 		drawDef = loadMelody("draw", false);
-		if(winDef == null || defeatDef == null || drawDef == null) success = false;
-		if(!success) return;
-		
+		if (winDef == null || defeatDef == null || drawDef == null) success = false;
+		if (!success) return;
+
 		// speziell
 		if (!winFile.equals("win") || winNbs) {
 			win = loadMelody(winFile, winNbs);
@@ -69,17 +69,19 @@ public class Musician {
 			}
 		}
 	}
-	
+
 	public void playWin(Player p) {
-		if (win == null) winDef.play(plugin, p); 
+		if (win == null) winDef.play(plugin, p);
 		else win.play(plugin, p);
 	}
+
 	public void playDefeat(Player p) {
-		if (defeat == null) defeatDef.play(plugin, p); 
+		if (defeat == null) defeatDef.play(plugin, p);
 		else defeat.play(plugin, p);
 	}
+
 	public void playDraw(Player p) {
-		if (draw == null) drawDef.play(plugin, p); 
+		if (draw == null) drawDef.play(plugin, p);
 		else draw.play(plugin, p);
 	}
 
@@ -151,8 +153,7 @@ public class Musician {
 			log("ERROR: Couldn't load the specified melody file!");
 			log("Do you use a valid melody file?");
 			return null;
-		} else
-			return melody;
+		} else return melody;
 	}
 
 	@SuppressWarnings("unused")
@@ -208,7 +209,7 @@ public class Musician {
 				return null;
 			} finally {
 				if (scanner != null)
-					scanner.close();
+									scanner.close();
 			}
 		} else {
 			// ./nbs
@@ -322,17 +323,17 @@ public class Musician {
 			Instrument i = Instrument.valueOf(s.toUpperCase());
 			switch (i) {
 			case PI:
-				return Sound.NOTE_PIANO;
+				return Sound.BLOCK_NOTE_HARP;
 			case BG:
-				return Sound.NOTE_BASS_GUITAR;
+				return Sound.BLOCK_NOTE_BASS;
 			case BD:
-				return Sound.NOTE_BASS_DRUM;
+				return Sound.BLOCK_NOTE_BASEDRUM;
 			case SD:
-				return Sound.NOTE_SNARE_DRUM;
+				return Sound.BLOCK_NOTE_SNARE;
 			case ST:
-				return Sound.NOTE_STICKS;
+				return Sound.BLOCK_NOTE_HAT;
 			case PL:
-				return Sound.NOTE_PLING;
+				return Sound.BLOCK_NOTE_PLING;
 			default:
 				return null;
 			}
@@ -345,15 +346,15 @@ public class Musician {
 		try {
 			switch (b) {
 			case 0:
-				return Sound.NOTE_PIANO;
+				return Sound.BLOCK_NOTE_HARP;
 			case 1:
-				return Sound.NOTE_BASS_GUITAR;
+				return Sound.BLOCK_NOTE_BASS;
 			case 2:
-				return Sound.NOTE_BASS_DRUM;
+				return Sound.BLOCK_NOTE_BASEDRUM;
 			case 3:
-				return Sound.NOTE_SNARE_DRUM;
+				return Sound.BLOCK_NOTE_SNARE;
 			case 4:
-				return Sound.NOTE_STICKS;
+				return Sound.BLOCK_NOTE_HAT;
 			default:
 				return null;
 			}
@@ -365,10 +366,8 @@ public class Musician {
 	private Integer getNoteId(String s) {
 		try {
 			Integer id = Integer.parseInt(s);
-			if (id < 0 || id > 24)
-				return null;
-			else
-				return id;
+			if (id < 0 || id > 24) return null;
+			else return id;
 		} catch (Exception e) {
 			return null;
 		}
