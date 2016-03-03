@@ -19,7 +19,7 @@ public class Sounds {
 	}
 
 	public static void playHit(Player shooter, Player target) {
-		shooter.playSound(shooter.getEyeLocation(), Sound.ENTITY_MAGMACUBE_JUMP, 1F, 1F);
+		shooter.playSound(shooter.getEyeLocation(), Sound.ENTITY_SMALL_MAGMACUBE_SQUISH, 1F, 1F);
 		target.playSound(shooter.getEyeLocation(), Sound.ENTITY_PLAYER_HURT, 1F, 1F);
 	}
 
@@ -33,7 +33,7 @@ public class Sounds {
 	}
 
 	public static void playFrag(Player killer, Player target) {
-		killer.playSound(killer.getEyeLocation(), Sound.ENTITY_MAGMACUBE_JUMP, 1F, 0F);
+		killer.playSound(killer.getEyeLocation(), Sound.ENTITY_SMALL_MAGMACUBE_SQUISH, 1F, 0F);
 		target.playSound(target.getEyeLocation(), Sound.ENTITY_GHAST_SCREAM, 1F, 0F);
 	}
 
