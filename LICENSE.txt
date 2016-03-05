@@ -21,7 +21,7 @@ Grant of rights:
            work from an official source in order to be able to apply your
            modifications.
         d) You cannot sell or charge a fee for sharing your modifications or
-           instructions on how to apply them.
+           tools required to apply them.
         e) By publishing your modifications you automatically agree to grant
            the author(s) and recipients of the original software a perpetual,
            worldwide, non-exclusive, no-charge, royalty-free, irrevocable
@@ -45,15 +45,15 @@ Grant of rights:
            purposes, except in the scope allowed by this license (section 4).
 
    4. Non-Commercial:
-      You may not use the software, any derivative works or unrelated works,
+      You may not use the software, any derivative works, or unrelated works,
       service or content in a way related to the software for commercial
       purposes, with the following exceptions:
         a) Commercial use based on advertising is allowed.
-        b) You are allowed to sell derivative works ('related add-ons') which
-           you have created.
+        b) To the extent permitted by the other terms of this license, you are
+           allowed to sell derivative ('related') works which you have created.
       You are not allowed to sell users of the software access to any 'in-game'
       content, features, abilities or services related to the software, even
-      when that content was created by yourself.
+      if that content was created by yourself.
 
    5. No redistributions:
       You may not redistribute any copy or parts of the software you received.
