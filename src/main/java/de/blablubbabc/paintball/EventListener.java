@@ -52,6 +52,7 @@ import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.event.player.PlayerKickEvent;
 import org.bukkit.event.player.PlayerPickupItemEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
+import org.bukkit.inventory.EquipmentSlot;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.PlayerInventory;
 
@@ -154,6 +155,9 @@ public class EventListener implements Listener {
 
 	@EventHandler(priority = EventPriority.NORMAL)
 	public void onInteract(PlayerInteractEvent event) {
+		// ignore off-hand interactions:
+		if (event.getHand() != EquipmentSlot.HAND) return;
+
 		Block block = event.getClickedBlock();
 		if (block != null) {
 			BlockState state = block.getState();
@@ -336,6 +340,7 @@ public class EventListener implements Listener {
 
 	@EventHandler(priority = EventPriority.NORMAL, ignoreCancelled = false)
 	public void onPlayerInteractHandleWeapons(PlayerInteractEvent event) {
+		// not ignoring off-hand interactions here at first, so item usage gets properly denied:
 		Player player = event.getPlayer();
 		String playerName = player.getName();
 		if (player.getGameMode() == GameMode.CREATIVE) return;
@@ -345,11 +350,15 @@ public class EventListener implements Listener {
 				ItemStack item = event.getItem();
 				if (item != null && item.getType() != Material.POTION) {
 					// block placement gets denied separately:
-					// TODO this is meant as temporary hack to fix the issue of the BlockPlaceEvent no longer being triggered
+					// TODO this is meant as temporary hack to fix the issue of the BlockPlaceEvent no longer being
+					// triggered
 					// if item usage gets denied, due to some latest change in spigot
 					if (!item.getType().isBlock() && item.getType() != Material.FLOWER_POT_ITEM) {
 						event.setUseItemInHand(Result.DENY);
 					}
+
+					// ignore off-hand interactions from this point on:
+					if (event.getHand() != EquipmentSlot.HAND) return;
 
 					// shop book:
 					if (plugin.shop && item.isSimilar(plugin.shopManager.item)) {
@@ -357,6 +366,9 @@ public class EventListener implements Listener {
 						return;
 					}
 				}
+
+				// ignore off-hand interactions from this point on:
+				if (event.getHand() != EquipmentSlot.HAND) return;
 
 				if (!match.hasStarted() || match.isJustRespawned(playerName)) return;
 

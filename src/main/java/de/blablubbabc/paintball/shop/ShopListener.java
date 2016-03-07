@@ -16,20 +16,21 @@ import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.event.inventory.InventoryCloseEvent;
 import org.bukkit.event.inventory.InventoryType.SlotType;
 import org.bukkit.event.player.PlayerInteractEvent;
+import org.bukkit.inventory.EquipmentSlot;
 
 import de.blablubbabc.paintball.Paintball;
 import de.blablubbabc.paintball.utils.Translator;
 
 public class ShopListener implements Listener {
-	
+
 	private Paintball plugin;
 	private String shopSign;
-	
+
 	public ShopListener(Paintball plugin) {
 		this.plugin = plugin;
 		shopSign = Translator.getString("SHOP_SIGN");
 	}
-	
+
 	@SuppressWarnings("deprecation")
 	@EventHandler(priority = EventPriority.NORMAL)
 	public void onInventoryClick(InventoryClickEvent event) {
@@ -47,7 +48,7 @@ public class ShopListener implements Listener {
 			}
 		}
 	}
-	
+
 	@EventHandler(priority = EventPriority.NORMAL)
 	public void onInventoryClose(InventoryCloseEvent event) {
 		String playerName = event.getPlayer().getName();
@@ -56,9 +57,12 @@ public class ShopListener implements Listener {
 			menu.onClose(playerName);
 		}
 	}
-	
+
 	@EventHandler(priority = EventPriority.NORMAL, ignoreCancelled = false)
 	public void onSignClick(PlayerInteractEvent event) {
+		// ignore off-hand interactions:
+		if (event.getHand() != EquipmentSlot.HAND) return;
+
 		Block block = event.getClickedBlock();
 		if (block != null) {
 			BlockState state = block.getState();
