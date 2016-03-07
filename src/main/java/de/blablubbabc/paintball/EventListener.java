@@ -317,6 +317,7 @@ public class EventListener implements Listener {
 
 	@EventHandler(priority = EventPriority.NORMAL)
 	public void onPlayerInteractPlayer(PlayerInteractEntityEvent event) {
+		// not ignoring off-hand interactions here, so that interactions get properly denied
 		Player player = (Player) event.getPlayer();
 		if (Lobby.LOBBY.isMember(player)) {
 			Entity clickedEntity = event.getRightClicked();
@@ -326,6 +327,9 @@ public class EventListener implements Listener {
 				event.setCancelled(true);
 			} else if (clickedType == EntityType.PLAYER) {
 				// gifting others:
+				// ignore off-hand interactions here:
+				if (event.getHand() != EquipmentSlot.HAND) return;
+
 				if (!plugin.giftsEnabled) return;
 				ItemStack itemInHand = player.getItemInHand();
 				if (itemInHand != null && itemInHand.getType() == Material.CHEST) {
