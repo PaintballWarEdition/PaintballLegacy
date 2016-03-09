@@ -22,6 +22,7 @@ import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
+import org.bukkit.inventory.PlayerInventory;
 import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.inventory.meta.LeatherArmorMeta;
 import org.bukkit.plugin.Plugin;
@@ -93,25 +94,24 @@ public class Utils {
 		}
 		return new String(b);
 	}
-	
+
 	public static Location getRightHeadLocation(Vector viewDirection, Location eyeLocation) {
 		return eyeLocation.add(new Vector(-viewDirection.getZ(), 0.0, viewDirection.getX()).normalize().multiply(0.2));
 	}
-	
-	
+
 	// /////////////////////////////////////////////////////////////
-	
+
 	// LOCATIONS TO / FROM STRING
-	
+
 	public static String LocationToString(Location loc) {
 		return loc.getWorld().getName() + ";" + loc.getX() + ";" + loc.getY() + ";" + loc.getZ() + ";" + loc.getYaw() + ";" + loc.getPitch();
 	}
-		
+
 	public static Location StringToLocation(String string) {
 		if (string == null) return null;
 		String[] split = string.split(";");
 		if (split.length != 4 && split.length != 6) return null;
-		
+
 		World world = Bukkit.getWorld(split[0]);
 		if (world == null) return null;
 		Double x = parseDouble(split[1]);
@@ -120,7 +120,7 @@ public class Utils {
 		if (y == null) return null;
 		Double z = parseDouble(split[3]);
 		if (z == null) return null;
-		
+
 		Float yaw = 0.0F;
 		Float pitch = 0.0F;
 		if (split.length == 6) {
@@ -129,10 +129,10 @@ public class Utils {
 			pitch = parseFloat(split[5]);
 			if (pitch == null) pitch = 0.0F;
 		}
-		
+
 		return new Location(world, x, y, z, yaw, pitch);
 	}
-		
+
 	public static List<Location> StringsToLocations(List<String> strings) {
 		List<Location> locs = new ArrayList<Location>();
 		for (String s : strings) {
@@ -141,7 +141,7 @@ public class Utils {
 		}
 		return locs;
 	}
-	
+
 	public static List<String> LocationsToStrings(List<Location> locs) {
 		List<String> strings = new ArrayList<String>();
 		for (Location loc : locs) {
@@ -149,15 +149,15 @@ public class Utils {
 		}
 		return strings;
 	}
-	
+
 	public static Integer parseInteger(String string) {
 		try {
 			return Integer.parseInt(string);
-		} catch(NumberFormatException e) {
+		} catch (NumberFormatException e) {
 			return null;
 		}
 	}
-	
+
 	public static Float parseFloat(String string) {
 		try {
 			return Float.parseFloat(string);
@@ -165,7 +165,7 @@ public class Utils {
 			return null;
 		}
 	}
-	
+
 	public static Double parseDouble(String string) {
 		try {
 			return Double.parseDouble(string);
@@ -176,31 +176,27 @@ public class Utils {
 
 	// /////////////////////////////////////////////////////////////
 
-	public static boolean isEmptyInventory(Player p) {
-		for (ItemStack i : p.getInventory()) {
-			if (i == null)
-				continue;
-			if (i.getTypeId() != 0)
+	public static boolean isEmptyInventory(Player player) {
+		PlayerInventory inv = player.getInventory();
+		int size = inv.getSize();
+		for (int i = 0; i < size; i++) {
+			ItemStack item = inv.getItem(i);
+			if (item == null) continue;
+			if (item.getType() != Material.AIR) {
 				return false;
-		}
-		for (ItemStack i : p.getInventory().getArmorContents()) {
-			if (i == null)
-				continue;
-			if (i.getTypeId() != 0)
-				return false;
+			}
 		}
 		return true;
 	}
 
-	public static void clearInv(Player p) {
-		p.closeInventory();
-		p.getInventory().clear();
-		p.getInventory().setArmorContents(null);
+	public static void clearInv(Player player) {
+		player.closeInventory();
+		player.getInventory().clear();
 	}
-	
+
 	public static void updatePlayerInventoryLater(Plugin plugin, final Player player) {
 		plugin.getServer().getScheduler().runTask(plugin, new Runnable() {
-			
+
 			@SuppressWarnings("deprecation")
 			@Override
 			public void run() {
@@ -214,8 +210,9 @@ public class Utils {
 	 * removeInventoryItems(inv, item, item.getAmount()); }
 	 */
 
+	// removes items from storage slots
 	public static void removeInventoryItems(Inventory inv, ItemStack item, int amount) {
-		for (ItemStack is : inv.getContents()) {
+		for (ItemStack is : inv.getStorageContents()) {
 			if (is != null && is.isSimilar(item)) {
 				int newamount = is.getAmount() - amount;
 				if (newamount > 0) {
@@ -224,8 +221,7 @@ public class Utils {
 				} else {
 					inv.remove(is);
 					amount = -newamount;
-					if (amount == 0)
-						break;
+					if (amount == 0) break;
 				}
 			}
 		}
@@ -245,10 +241,8 @@ public class Utils {
 
 	public static ItemStack setItemMeta(ItemStack item, String name, List<String> description) {
 		ItemMeta meta = item.getItemMeta();
-		if (name != null)
-			meta.setDisplayName(name);
-		if (description != null)
-			meta.setLore(description);
+		if (name != null) meta.setDisplayName(name);
+		if (description != null) meta.setLore(description);
 		item.setItemMeta(meta);
 		return item;
 	}
@@ -278,52 +272,52 @@ public class Utils {
 	}
 
 	// ///////////////////////////
-	
+
 	public static float getLookAtYaw(Vector motion) {
-        double dx = motion.getX();
-        double dz = motion.getZ();
-        double yaw = 0;
-        // Set yaw
-        if (dx != 0) {
-            // Set yaw start value based on dx
-            if (dx < 0) {
-                yaw = 1.5 * Math.PI;
-            } else {
-                yaw = 0.5 * Math.PI;
-            }
-            yaw -= Math.atan(dz / dx);
-        } else if (dz < 0) {
-            yaw = Math.PI;
-        }
-        return (float) (-yaw * 180 / Math.PI);
-    }
-	
+		double dx = motion.getX();
+		double dz = motion.getZ();
+		double yaw = 0;
+		// Set yaw
+		if (dx != 0) {
+			// Set yaw start value based on dx
+			if (dx < 0) {
+				yaw = 1.5 * Math.PI;
+			} else {
+				yaw = 0.5 * Math.PI;
+			}
+			yaw -= Math.atan(dz / dx);
+		} else if (dz < 0) {
+			yaw = Math.PI;
+		}
+		return (float) (-yaw * 180 / Math.PI);
+	}
+
 	public static Vector rotateAxis(Vector dir, Vector n, int angleD) {
 		double angleR = Math.toRadians(angleD);
 		double x = dir.getX();
 		double y = dir.getY();
 		double z = dir.getZ();
-		
+
 		double n1 = n.getX();
 		double n2 = n.getY();
 		double n3 = n.getZ();
-		
+
 		double cos = Math.cos(angleR);
 		double sin = Math.sin(angleR);
-		return new Vector(x*(n1*n1*(1-cos)+cos) + y*(n2*n1*(1-cos)+n3*sin) + z*(n3*n1*(1-cos)-n2*sin), 
-				x*(n1*n2*(1-cos)-n3*sin) + y*(n2*n2*(1-cos)+cos) + z*(n3*n2*(1-cos)+n1*sin),
-				x*(n1*n3*(1-cos)+n2*sin) + y*(n2*n3*(1-cos)-n1*sin) + z*(n3*n3*(1-cos)+cos));
+		return new Vector(x * (n1 * n1 * (1 - cos) + cos) + y * (n2 * n1 * (1 - cos) + n3 * sin) + z * (n3 * n1 * (1 - cos) - n2 * sin),
+				x * (n1 * n2 * (1 - cos) - n3 * sin) + y * (n2 * n2 * (1 - cos) + cos) + z * (n3 * n2 * (1 - cos) + n1 * sin),
+				x * (n1 * n3 * (1 - cos) + n2 * sin) + y * (n2 * n3 * (1 - cos) - n1 * sin) + z * (n3 * n3 * (1 - cos) + cos));
 	}
-	
+
 	public static Vector rotateYAxis(Vector dir, double angleD) {
 		double angleR = Math.toRadians(angleD);
 		double x = dir.getX();
 		double z = dir.getZ();
 		double cos = Math.cos(angleR);
 		double sin = Math.sin(angleR);
-		return (new Vector(x*cos+z*(-sin), 0.0, x*sin+z*cos)).normalize();
+		return (new Vector(x * cos + z * (-sin), 0.0, x * sin + z * cos)).normalize();
 	}
-	
+
 	// loading chunks? if yes -> issues with that?
 	public Set<Entity> getNearbyEntities(Location location, int radius) {
 		int radius2 = radius * radius;
@@ -341,9 +335,8 @@ public class Utils {
 		}
 		return entities;
 	}
-	
-	
-	/////////////////////////////
+
+	// ///////////////////////////
 	public static final BlockFace[] axis = { BlockFace.NORTH, BlockFace.EAST, BlockFace.SOUTH, BlockFace.WEST };
 	public static final BlockFace[] radial = { BlockFace.NORTH, BlockFace.NORTH_EAST, BlockFace.EAST, BlockFace.SOUTH_EAST, BlockFace.SOUTH,
 			BlockFace.SOUTH_WEST, BlockFace.WEST, BlockFace.NORTH_WEST };
