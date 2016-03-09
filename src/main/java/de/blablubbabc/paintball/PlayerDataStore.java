@@ -29,7 +29,6 @@ public class PlayerDataStore {
 	private Location location;
 	// Inventory
 	private ItemStack[] invContent;
-	private ItemStack[] invArmor;
 	// PotionEffects
 	private ArrayList<PotionEffect> potionEffects = new ArrayList<PotionEffect>();
 	// Flying
@@ -90,7 +89,6 @@ public class PlayerDataStore {
 			player.closeInventory();
 			PlayerInventory inv = player.getInventory();
 			invContent = inv.getContents();
-			invArmor = inv.getArmorContents();
 			player.sendMessage(Translator.getString("INVENTORY_SAVED"));
 		}
 		// PotionEffects
@@ -139,9 +137,6 @@ public class PlayerDataStore {
 		if (Paintball.instance.saveInventory) {
 			if (invContent != null) {
 				player.getInventory().setContents(invContent);
-			}
-			if (invArmor != null) {
-				player.getInventory().setArmorContents(invArmor);
 			}
 			player.sendMessage(Translator.getString("INVENTORY_RESTORED"));
 		}
