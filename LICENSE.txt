@@ -76,7 +76,7 @@ Termination:
       your rights under this license.
       The licensor reserves the right to revoke or change this license at any
       time without notice. On continued use, you are expected to regularly (at
-      least every three (3) months) check for licensing changes.
+      least once per month) check for licensing changes.
 
 Acceptance:
       You do not have to accept this license in order to receive or run a copy
