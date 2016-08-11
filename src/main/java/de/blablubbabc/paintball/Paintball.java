@@ -1207,6 +1207,7 @@ public class Paintball extends JavaPlugin {
 		}
 
 		// after all plugins are enabled:
+		this.addAsyncTask();
 		Bukkit.getScheduler().runTaskLaterAsynchronously(this, new Runnable() {
 
 			@Override
@@ -1275,16 +1276,20 @@ public class Paintball extends JavaPlugin {
 					Log.info("-> enable it in the config.");
 					Log.info("--------- ---------------- ----------");
 				}
+				removeAsyncTask();
 
-				Bukkit.getScheduler().runTaskLater(Paintball.this, new Runnable() {
+				synchronized (Paintball.this) {
+					if (instance == null) return; // plugin was disabled in the meantime
+					Bukkit.getScheduler().runTaskLater(Paintball.this, new Runnable() {
 
-					@Override
-					public void run() {
-						Log.printInfo();
-						// stop logging of warnings:
-						Log.logWarnings(false);
-					}
-				}, 20L);
+						@Override
+						public void run() {
+							Log.printInfo();
+							// stop logging of warnings:
+							Log.logWarnings(false);
+						}
+					}, 20L);
+				}
 			}
 		}, 1L);
 
@@ -1321,7 +1326,9 @@ public class Paintball extends JavaPlugin {
 		Log.info("Disabled!");
 		currentlyDisableing = false;
 		mainThread = null;
-		instance = null;
+		synchronized (this) {
+			instance = null;
+		}
 	}
 
 	public void reload(CommandSender sender) {
