@@ -5,6 +5,7 @@
 package de.blablubbabc.paintball;
 
 import java.util.ArrayList;
+import java.util.Collection;
 
 import org.bukkit.Bukkit;
 import org.bukkit.GameMode;
@@ -19,9 +20,8 @@ import org.bukkit.scoreboard.Scoreboard;
 import de.blablubbabc.paintball.utils.TeleportManager;
 import de.blablubbabc.paintball.utils.Translator;
 
-
 public class PlayerDataStore {
-	
+
 	// DATA
 	// Names
 	private String listname;
@@ -61,29 +61,36 @@ public class PlayerDataStore {
 		teleportPlayer(player, to);
 		storeClearPlayer(player);
 	}
-	
+
 	// only store, clear
 	public PlayerDataStore(Player player) {
 		// make sure location is not null..
 		location = player.getLocation();
-		
+
 		storeClearPlayer(player);
 	}
 
 	private void teleportPlayer(Player player, Location to) {
-		// LOCATION +  TELEPORT
+		// LOCATION + TELEPORT
 		location = player.getLocation();
 		TeleportManager.teleport(player, to);
 	}
-	
+
 	private void storeClearPlayer(Player player) {
 		// GAMEMODE
 		gamemode = player.getGameMode();
 		player.setGameMode(GameMode.SURVIVAL);
-		
-		// STORE DATA
+
+		// PotionEffects
+		Collection<PotionEffect> activePotionEffects = player.getActivePotionEffects();
+		potionEffects.addAll(activePotionEffects);
+		for (PotionEffect effect : activePotionEffects) {
+			player.removePotionEffect(effect.getType());
+		}
+
 		// Names
 		listname = player.getPlayerListName();
+
 		// Inventory
 		if (Paintball.instance.saveInventory) {
 			player.closeInventory();
@@ -91,8 +98,7 @@ public class PlayerDataStore {
 			invContent = inv.getContents();
 			player.sendMessage(Translator.getString("INVENTORY_SAVED"));
 		}
-		// PotionEffects
-		potionEffects.addAll(player.getActivePotionEffects());
+
 		// Flying
 		allowFlight = player.getAllowFlight();
 		isFlying = player.isFlying();
@@ -129,20 +135,16 @@ public class PlayerDataStore {
 		// scoreboard will be reset anyway:
 		clearPlayer(player, true, true);
 		// RESTORE PLAYER
-		
+
 		// Names
-		if(Paintball.instance.listnames) player.setPlayerListName(listname);
-		//player.setDisplayName(displayname);
+		if (Paintball.instance.listnames) player.setPlayerListName(listname);
+		// player.setDisplayName(displayname);
 		// Inventory
 		if (Paintball.instance.saveInventory) {
 			if (invContent != null) {
 				player.getInventory().setContents(invContent);
 			}
 			player.sendMessage(Translator.getString("INVENTORY_RESTORED"));
-		}
-		// PotionEffects
-		for (PotionEffect effect : potionEffects) {
-			player.addPotionEffect(effect);
 		}
 		// Flying
 		player.setAllowFlight(allowFlight);
@@ -170,14 +172,19 @@ public class PlayerDataStore {
 		if (Paintball.instance.scoreboardLobby) {
 			player.setScoreboard(scoreboard != null ? scoreboard : Bukkit.getScoreboardManager().getMainScoreboard());
 		}
-		
+
+		// PotionEffects
+		for (PotionEffect effect : potionEffects) {
+			player.addPotionEffect(effect);
+		}
+
 		player.setGameMode(gamemode);
 		player.updateInventory();
-		
+
 		// TELEPORT BACK
 		if (!withoutTeleport) TeleportManager.teleport(player, location);
 	}
-	
+
 	@SuppressWarnings("deprecation")
 	public static void clearPlayer(Player player, boolean checkListname, boolean changeLevel) {
 		// PREPARE
@@ -206,7 +213,7 @@ public class PlayerDataStore {
 			if (changeLevel && player.getLevel() != 0) player.setLevel(0);
 			if (player.getExp() != 1F) player.setExp(1F);
 		}
-		
+
 		player.updateInventory();
 	}
 }
