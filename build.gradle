@@ -27,8 +27,8 @@ apply plugin: 'eclipse'
 // default tasks
 defaultTasks 'licenseFormat', 'check', 'build'
 
-sourceCompatibility = '1.7'
-targetCompatibility = '1.7'
+sourceCompatibility = '1.8'
+targetCompatibility = '1.8'
 
 group = 'de.blablubbabc'
 version = projectVersion
@@ -68,7 +68,7 @@ repositories {
 }
 
 dependencies {
-	compile 'org.bukkit:bukkit:1.9-R0.1-SNAPSHOT'
+	compile 'org.bukkit:bukkit:1.12-pre6-SNAPSHOT'
 	compile ('de.blablubbabc:IndividualSigns:2.3') {
 		transitive = false
 	}

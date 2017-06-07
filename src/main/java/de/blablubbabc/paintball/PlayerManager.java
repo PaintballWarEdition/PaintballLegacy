@@ -404,7 +404,8 @@ public class PlayerManager {
 		if (playerUUID == null) return null;
 		PlayerStats stats = playerStats.get(playerUUID);
 		if (stats == null) {
-			// check if in cache, if not return temporary retrieved PlayerStats or null, if no stats exist (yet) for this player:
+			// check if in cache, if not return temporary retrieved PlayerStats or null, if no stats exist (yet) for
+			// this player:
 			if (!isPlayerStillLocked(playerUUID)) {
 				if (exists(playerUUID)) stats = new PlayerStats(playerUUID);
 			} // else: return null
@@ -414,7 +415,8 @@ public class PlayerManager {
 
 	// METHODS
 	// SETTER
-	// adding all players on plugin start is done sync, because it reduces possible problems and it's a one-time-thing on plugin start only:
+	// adding all players on plugin start is done sync, because it reduces possible problems and it's a one-time-thing
+	// on plugin start only:
 	private void initAllOnlinePlayers() {
 		// locking is not needed, because it's done sync:
 		for (Player player : Paintball.instance.getServer().getOnlinePlayers()) {
@@ -479,7 +481,8 @@ public class PlayerManager {
 	}
 
 	/**
-	 * This method should only be used inside this class and surrounded by locking the player by adding and removing it from the playersToAdd list.
+	 * This method should only be used inside this class and surrounded by locking the player by adding and removing it
+	 * from the playersToAdd list.
 	 * 
 	 * @param player
 	 */
@@ -622,6 +625,7 @@ public class PlayerManager {
 	 * Might be slow! Run async if possible.
 	 * 
 	 * @param playerName
+	 *            the player name
 	 * @return the uuid, or null
 	 */
 	public static UUID getPlayerUUID(String playerName) {
