@@ -15,7 +15,6 @@ import de.blablubbabc.paintball.statistics.arena.ArenaStat;
 import de.blablubbabc.paintball.utils.Translator;
 import de.blablubbabc.paintball.utils.Utils;
 
-
 public class ArenaManager {
 	private Paintball plugin;
 	private String last = null;
@@ -282,7 +281,7 @@ public class ArenaManager {
 		plugin.sql.sqlArenaLobby.removeSpecspawns(arena);
 	}
 
-	public synchronized void remove(String name) {
+	public void remove(String name) {
 		plugin.sql.sqlArenaLobby.removeArena(name);
 	}
 }

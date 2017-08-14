@@ -167,28 +167,28 @@ public class Musician {
 				int line = 0;
 				while (scanner.hasNextLine()) {
 					line++;
-					String text = scanner.nextLine();
-					// Spaces entfernen
-					text.replaceAll(" ", "");
-					// get tones:
-					String[] tones = text.split("-");
-					for (String ts : tones) {
-						if (!ts.isEmpty()) {
-							String[] ton = ts.split(":");
-							if (ton.length != 2) {
+					String songLine = scanner.nextLine();
+					// remove spaces
+					songLine.replaceAll(" ", "");
+					// get notes:
+					String[] notes = songLine.split("-");
+					for (String note : notes) {
+						if (!note.isEmpty()) {
+							String[] noteData = note.split(":");
+							if (noteData.length != 2) {
 								log("ERROR: Couldn't get the note in line: "
 										+ line);
 								return null;
 							}
 							// sound
-							Sound sound = getSound(ton[0]);
+							Sound sound = getSound(noteData[0]);
 							if (sound == null) {
 								log("ERROR: Couldn't get the instrument in line: "
 										+ line);
 								return null;
 							}
 							// note (id between 0-24)
-							Integer id = getNoteId(ton[1]);
+							Integer id = getNoteId(noteData[1]);
 							if (id == null || id < 0 || id > 24) {
 								log("ERROR: Couldn't get a valid note id in line: "
 										+ line);
@@ -197,7 +197,7 @@ public class Musician {
 							// delay in ticks (line * 2 ticks):
 							long delay = (line - 1) * 2;
 							// add note to melodie:
-							melody.addTon(new Note(sound, id, delay));
+							melody.addNote(new Note(sound, id, delay));
 						}
 					}
 				}
@@ -283,7 +283,7 @@ public class Musician {
 						}
 						// System.out.print(sound.toString() + " / " + key +
 						// " / " + tick);
-						melodie.addTon(new Note(sound, key,
+						melodie.addNote(new Note(sound, key,
 								(tick * getDelay(tempo))));
 					}
 				}
