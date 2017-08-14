@@ -43,9 +43,6 @@ repositories {
 	mavenCentral()
 	// bukkit/spigot:
 	maven {
-		url 'http://repo.bukkit.org/content/groups/public'
-	}
-	maven {
 		url 'https://hub.spigotmc.org/nexus/content/groups/public/'
 	}
 	// inofficial, but contains bukkit builds which the above two reposittories don't contain:
@@ -68,7 +65,7 @@ repositories {
 }
 
 dependencies {
-	compile 'org.bukkit:bukkit:1.12-pre6-SNAPSHOT'
+	compile 'org.bukkit:bukkit:1.12.1-R0.1-SNAPSHOT'
 	compile ('de.blablubbabc:IndividualSigns:2.3') {
 		transitive = false
 	}
