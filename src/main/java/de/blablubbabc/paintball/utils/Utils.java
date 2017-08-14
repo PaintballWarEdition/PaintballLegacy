@@ -30,21 +30,21 @@ import org.bukkit.util.Vector;
 
 public class Utils {
 	public static Random random = new Random();
-	private static HashSet<Byte> transparentBlocks = new HashSet<Byte>();
+	private static HashSet<Material> transparentBlocks = new HashSet<Material>();
 
 	public static void init() {
-		transparentBlocks.add((byte) Material.AIR.getId());
-		transparentBlocks.add((byte) Material.WATER.getId());
-		transparentBlocks.add((byte) Material.STATIONARY_WATER.getId());
-		transparentBlocks.add((byte) Material.LAVA.getId());
-		transparentBlocks.add((byte) Material.STATIONARY_LAVA.getId());
-		transparentBlocks.add((byte) Material.FIRE.getId());
-		transparentBlocks.add((byte) Material.PORTAL.getId());
-		transparentBlocks.add((byte) Material.ENDER_PORTAL.getId());
-		transparentBlocks.add((byte) Material.PAINTING.getId());
+		transparentBlocks.add(Material.AIR);
+		transparentBlocks.add(Material.WATER);
+		transparentBlocks.add(Material.STATIONARY_WATER);
+		transparentBlocks.add(Material.LAVA);
+		transparentBlocks.add(Material.STATIONARY_LAVA);
+		transparentBlocks.add(Material.FIRE);
+		transparentBlocks.add(Material.PORTAL);
+		transparentBlocks.add(Material.ENDER_PORTAL);
+		transparentBlocks.add(Material.PAINTING);
 
-		transparentBlocks.add((byte) Material.FENCE.getId());
-		transparentBlocks.add((byte) Material.NETHER_FENCE.getId());
+		transparentBlocks.add(Material.FENCE);
+		transparentBlocks.add(Material.NETHER_FENCE);
 
 		// alle Richtungen
 		upVectors.add(new Vector(1, 0, 0));
@@ -76,7 +76,7 @@ public class Utils {
 		downVectors.add(new Vector(0, -1, 0));
 	}
 
-	public static HashSet<Byte> getTransparentBlocks() {
+	public static HashSet<Material> getTransparentBlocks() {
 		return transparentBlocks;
 	}
 
