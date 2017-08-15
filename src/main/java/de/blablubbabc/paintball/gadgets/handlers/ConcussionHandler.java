@@ -43,7 +43,7 @@ public class ConcussionHandler extends WeaponHandler implements Listener {
 	
 	public ConcussionHandler(int customItemTypeID, boolean useDefaultType) {
 		super("Concussion", customItemTypeID, useDefaultType, null);
-		Paintball.instance.getServer().getPluginManager().registerEvents(this, Paintball.instance);
+		Paintball.getInstance().getServer().getPluginManager().registerEvents(this, Paintball.getInstance());
 	}
 	
 	public Concussion createConcussion(Match match, Player player, Item nade, Origin origin) {
@@ -76,7 +76,7 @@ public class ConcussionHandler extends WeaponHandler implements Listener {
 
 	@Override
 	protected void onInteract(PlayerInteractEvent event, Match match) {
-		if (event.getAction() == Action.PHYSICAL || !Paintball.instance.concussion) return;
+		if (event.getAction() == Action.PHYSICAL || !Paintball.getInstance().concussion) return;
 		Player player = event.getPlayer();
 		ItemStack itemInHand = player.getItemInHand();
 		if (itemInHand == null) return;
@@ -93,7 +93,7 @@ public class ConcussionHandler extends WeaponHandler implements Listener {
 			meta.setDisplayName("Concussion " + getNext());
 			nadeItem.setItemMeta(meta);
 			Item nade = player.getWorld().dropItem(spawnLoc, nadeItem);
-			nade.setVelocity(direction.normalize().multiply(Paintball.instance.concussionSpeed));
+			nade.setVelocity(direction.normalize().multiply(Paintball.getInstance().concussionSpeed));
 			
 			createConcussion(match, player, nade, this.getWeaponOrigin());
 			
@@ -103,7 +103,7 @@ public class ConcussionHandler extends WeaponHandler implements Listener {
 				itemInHand.setAmount(itemInHand.getAmount() - 1);
 				player.setItemInHand(itemInHand);
 			}
-			Utils.updatePlayerInventoryLater(Paintball.instance, player);
+			Utils.updatePlayerInventoryLater(Paintball.getInstance(), player);
 		}
 	}
 	
@@ -134,13 +134,13 @@ public class ConcussionHandler extends WeaponHandler implements Listener {
 			super(gadgetHandler, match, player.getName(), origin);
 			this.entity = nade;
 			
-			Paintball.instance.getServer().getScheduler().runTaskLater(Paintball.instance, new Runnable() {
+			Paintball.getInstance().getServer().getScheduler().runTaskLater(Paintball.getInstance(), new Runnable() {
 				
 				@Override
 				public void run() {
 					explode();
 				}
-			}, 20L * Paintball.instance.concussionTimeUntilExplosion);
+			}, 20L * Paintball.getInstance().concussionTimeUntilExplosion);
 		}
 		
 		public void explode() {
@@ -175,19 +175,19 @@ public class ConcussionHandler extends WeaponHandler implements Listener {
 				
 				
 				// blindness to near enemies:
-				Player player = Paintball.instance.getServer().getPlayerExact(playerName);
+				Player player = Paintball.getInstance().getServer().getPlayerExact(playerName);
 				if (player != null) {
-					Match match = Paintball.instance.matchManager.getMatch(player);
+					Match match = Paintball.getInstance().matchManager.getMatch(player);
 					if (match != null) {
-						List<Entity> near = entity.getNearbyEntities(Paintball.instance.concussionRange, Paintball.instance.concussionRange, Paintball.instance.concussionRange);
+						List<Entity> near = entity.getNearbyEntities(Paintball.getInstance().concussionRange, Paintball.getInstance().concussionRange, Paintball.getInstance().concussionRange);
 						for (Entity e : near) {
 							if (e.getType() == EntityType.PLAYER) {
 								Player p = (Player) e;
-								Match m = Paintball.instance.matchManager.getMatch(p);
+								Match m = Paintball.getInstance().matchManager.getMatch(p);
 								if (match == m && match.enemys(player, p)) {
-									p.addPotionEffect(new PotionEffect(PotionEffectType.SLOW, 20 * Paintball.instance.concussionSlownessDuration, 3), true);
-									p.addPotionEffect(new PotionEffect(PotionEffectType.CONFUSION, 20 * Paintball.instance.concussionConfusionDuration, 3), true);
-									p.addPotionEffect(new PotionEffect(PotionEffectType.BLINDNESS, 20 * Paintball.instance.concussionBlindnessDuration, 3), true);
+									p.addPotionEffect(new PotionEffect(PotionEffectType.SLOW, 20 * Paintball.getInstance().concussionSlownessDuration, 3), true);
+									p.addPotionEffect(new PotionEffect(PotionEffectType.CONFUSION, 20 * Paintball.getInstance().concussionConfusionDuration, 3), true);
+									p.addPotionEffect(new PotionEffect(PotionEffectType.BLINDNESS, 20 * Paintball.getInstance().concussionBlindnessDuration, 3), true);
 								}
 								
 							}

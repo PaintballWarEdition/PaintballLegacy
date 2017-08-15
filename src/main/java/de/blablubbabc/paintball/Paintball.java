@@ -55,10 +55,15 @@ import de.blablubbabc.commandsigns.CommandSignsListener;
 
 public class Paintball extends JavaPlugin {
 
-	public static Paintball instance;
+	private static Paintball instance;
+
+	public static Paintball getInstance() {
+		return instance;
+	}
+
 	public Thread mainThread;
 
-	public boolean currentlyDisableing = false;
+	public boolean currentlyDisabling = false;
 
 	private final Object asyncLock = new Object();
 	private int asyncTaskCounter = 0;
@@ -1267,18 +1272,16 @@ public class Paintball extends JavaPlugin {
 				}
 				removeAsyncTask();
 
-				synchronized (Paintball.this) {
-					if (instance == null) return; // plugin was disabled in the meantime
-					Bukkit.getScheduler().runTaskLater(Paintball.this, new Runnable() {
+				// TODO check if plugin was disabled in meantime
+				Bukkit.getScheduler().runTaskLater(Paintball.this, new Runnable() {
 
-						@Override
-						public void run() {
-							Log.printInfo();
-							// stop logging of warnings:
-							Log.logWarnings(false);
-						}
-					}, 20L);
-				}
+					@Override
+					public void run() {
+						Log.printInfo();
+						// stop logging of warnings:
+						Log.logWarnings(false);
+					}
+				}, 20L);
 			}
 		}, 1L);
 
@@ -1287,7 +1290,7 @@ public class Paintball extends JavaPlugin {
 	}
 
 	public void onDisable() {
-		currentlyDisableing = true;
+		currentlyDisabling = true;
 		if (!sql.aborted) {
 			matchManager.forceReload();
 		}
@@ -1313,11 +1316,9 @@ public class Paintball extends JavaPlugin {
 		sql.closeConnection();
 		Bukkit.getScheduler().cancelTasks(this);
 		Log.info("Disabled!");
-		currentlyDisableing = false;
+		currentlyDisabling = false;
 		mainThread = null;
-		synchronized (this) {
-			instance = null;
-		}
+		instance = null;
 	}
 
 	public void reload(CommandSender sender) {

@@ -30,7 +30,7 @@ public class TeleportManager implements Listener {
 	private final int TELEPORT_FIX_DELAY = 15; // ticks
 
 	public TeleportManager() {
-		Bukkit.getPluginManager().registerEvents(this, Paintball.instance);
+		Bukkit.getPluginManager().registerEvents(this, Paintball.getInstance());
 	}
 
 	@EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = false)
@@ -41,13 +41,13 @@ public class TeleportManager implements Listener {
 		if (teleportRequests.remove(playerName)) {
 			// make sure that the teleport isn't blocked by something:
 			event.setCancelled(false);
-			if (Paintball.instance.teleportFix) {
+			if (Paintball.getInstance().teleportFix) {
 				this.handleTeleportFix(player);
 			}
 		} else {
 			// workaround: essentials tpaccept command would otherwise allow players to be teleported out of the match/lobby
 			// they use TeleportCause.COMMAND, so we can detect this:
-			if (Paintball.instance.blockCommandTeleports && event.getCause() == TeleportCause.COMMAND && Lobby.LOBBY.isMember(player)) {
+			if (Paintball.getInstance().blockCommandTeleports && event.getCause() == TeleportCause.COMMAND && Lobby.LOBBY.isMember(player)) {
 				event.setCancelled(true);
 				Log.debug("Cancelled teleport attempt of player '" + playerName + "'.");
 			}
@@ -57,7 +57,7 @@ public class TeleportManager implements Listener {
 	//TODO Check if this currently is sending unneeded player update stuff on match end and start
 	private void handleTeleportFix(final Player player) {
 		// fix the visibility issue one tick later:
-		Bukkit.getScheduler().runTaskLater(Paintball.instance, new Runnable() {
+		Bukkit.getScheduler().runTaskLater(Paintball.getInstance(), new Runnable() {
 			@Override
 			public void run() {
 				if (!player.isOnline()) return;
@@ -67,7 +67,7 @@ public class TeleportManager implements Listener {
 				// hide every player:
 				updateEntities(player, nearby, false);
 				// then show them again:
-				Bukkit.getScheduler().runTaskLater(Paintball.instance, new Runnable() {
+				Bukkit.getScheduler().runTaskLater(Paintball.getInstance(), new Runnable() {
 					@Override
 					public void run() {
 						if (!player.isOnline()) return;

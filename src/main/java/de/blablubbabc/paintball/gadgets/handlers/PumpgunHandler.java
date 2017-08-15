@@ -40,13 +40,13 @@ public class PumpgunHandler extends WeaponHandler {
 		player.getWorld().playSound(location, Sound.ITEM_FLINTANDSTEEL_USE, 2.0F, 0F);
 		direction.normalize();
 		
-		for (int i = 0; i < Paintball.instance.pumpgunBullets ; i++) {
+		for (int i = 0; i < Paintball.getInstance().pumpgunBullets ; i++) {
 			Snowball snowball = location.getWorld().spawn(location, Snowball.class);
 			snowball.setShooter(player);
-			Paintball.instance.weaponManager.getBallHandler().createBall(match, player, snowball, origin);
-			Vector vel = new Vector(direction.getX() + (Utils.random.nextDouble() - 0.45) / Paintball.instance.pumpgunSpray, 
-					direction.getY() + (Utils.random.nextDouble() - 0.45) / Paintball.instance.pumpgunSpray, 
-					direction.getZ() + (Utils.random.nextDouble() - 0.45) / Paintball.instance.pumpgunSpray).normalize();
+			Paintball.getInstance().weaponManager.getBallHandler().createBall(match, player, snowball, origin);
+			Vector vel = new Vector(direction.getX() + (Utils.random.nextDouble() - 0.45) / Paintball.getInstance().pumpgunSpray, 
+					direction.getY() + (Utils.random.nextDouble() - 0.45) / Paintball.getInstance().pumpgunSpray, 
+					direction.getZ() + (Utils.random.nextDouble() - 0.45) / Paintball.getInstance().pumpgunSpray).normalize();
 			snowball.setVelocity(vel.multiply(speed));
 		}
 		
@@ -67,21 +67,21 @@ public class PumpgunHandler extends WeaponHandler {
 
 	@Override
 	protected void onInteract(PlayerInteractEvent event, Match match) {
-		if (event.getAction() == Action.PHYSICAL || !Paintball.instance.pumpgun) return;
+		if (event.getAction() == Action.PHYSICAL || !Paintball.getInstance().pumpgun) return;
 		Player player = event.getPlayer();
 		ItemStack itemInHand = player.getItemInHand();
 		if (itemInHand == null) return;
 		
 		if (itemInHand.isSimilar(getItem())) {
 			PlayerInventory inv = player.getInventory();
-			if ((match.setting_balls == -1 || inv.containsAtLeast(Paintball.instance.weaponManager.getBallHandler().getItem(), Paintball.instance.pumpgunAmmo))) {
-				Utils.removeInventoryItems(inv, Paintball.instance.weaponManager.getBallHandler().getItem(), Paintball.instance.pumpgunAmmo);
-				Utils.updatePlayerInventoryLater(Paintball.instance, player);
+			if ((match.setting_balls == -1 || inv.containsAtLeast(Paintball.getInstance().weaponManager.getBallHandler().getItem(), Paintball.getInstance().pumpgunAmmo))) {
+				Utils.removeInventoryItems(inv, Paintball.getInstance().weaponManager.getBallHandler().getItem(), Paintball.getInstance().pumpgunAmmo);
+				Utils.updatePlayerInventoryLater(Paintball.getInstance(), player);
 				// INFORM MATCH
 				match.onShot(player);
 				
 				Location location = player.getEyeLocation();
-				shoot(player, match, location, location.getDirection(), Paintball.instance.pumpgunSpeedmulti, this.getWeaponOrigin());
+				shoot(player, match, location, location.getDirection(), Paintball.getInstance().pumpgunSpeedmulti, this.getWeaponOrigin());
 				
 			} else {
 				player.playSound(player.getEyeLocation(), Sound.ITEM_FLINTANDSTEEL_USE, 1F, 2F);

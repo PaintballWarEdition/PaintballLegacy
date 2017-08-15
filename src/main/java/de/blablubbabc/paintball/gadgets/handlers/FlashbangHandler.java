@@ -43,7 +43,7 @@ public class FlashbangHandler extends WeaponHandler implements Listener {
 	
 	public FlashbangHandler(int customItemTypeID, boolean useDefaultType) {
 		super("Flashbang", customItemTypeID, useDefaultType, null);
-		Paintball.instance.getServer().getPluginManager().registerEvents(this, Paintball.instance);
+		Paintball.getInstance().getServer().getPluginManager().registerEvents(this, Paintball.getInstance());
 	}
 	
 	public Flashbang createFlashbang(Match match, Player player, Item nade, Origin origin) {
@@ -76,7 +76,7 @@ public class FlashbangHandler extends WeaponHandler implements Listener {
 
 	@Override
 	protected void onInteract(PlayerInteractEvent event, Match match) {
-		if (event.getAction() == Action.PHYSICAL || !Paintball.instance.flashbang) return;
+		if (event.getAction() == Action.PHYSICAL || !Paintball.getInstance().flashbang) return;
 		Player player = event.getPlayer();
 		ItemStack itemInHand = player.getItemInHand();
 		if (itemInHand == null) return;
@@ -94,7 +94,7 @@ public class FlashbangHandler extends WeaponHandler implements Listener {
 			nadeItem.setItemMeta(meta);
 			
 			Item nade = world.dropItem(spawnLoc, nadeItem);
-			nade.setVelocity(direction.multiply(Paintball.instance.flashbangSpeed));
+			nade.setVelocity(direction.multiply(Paintball.getInstance().flashbangSpeed));
 			
 			createFlashbang(match, player, nade, this.getWeaponOrigin());
 			
@@ -104,7 +104,7 @@ public class FlashbangHandler extends WeaponHandler implements Listener {
 				itemInHand.setAmount(itemInHand.getAmount() - 1);
 				player.setItemInHand(itemInHand);
 			}
-			Utils.updatePlayerInventoryLater(Paintball.instance, player);
+			Utils.updatePlayerInventoryLater(Paintball.getInstance(), player);
 		}
 	}
 	
@@ -135,13 +135,13 @@ public class FlashbangHandler extends WeaponHandler implements Listener {
 			super(gadgetHandler, match, player.getName(), origin);
 			this.entity = nade;
 			
-			Paintball.instance.getServer().getScheduler().runTaskLater(Paintball.instance, new Runnable() {
+			Paintball.getInstance().getServer().getScheduler().runTaskLater(Paintball.getInstance(), new Runnable() {
 				
 				@Override
 				public void run() {
 					explode();
 				}
-			}, 20L * Paintball.instance.flashbangTimeUntilExplosion);
+			}, 20L * Paintball.getInstance().flashbangTimeUntilExplosion);
 		}
 		
 		public void explode() {
@@ -176,19 +176,19 @@ public class FlashbangHandler extends WeaponHandler implements Listener {
 				
 				
 				// blindness to near enemies:
-				Player player = Paintball.instance.getServer().getPlayerExact(playerName);
+				Player player = Paintball.getInstance().getServer().getPlayerExact(playerName);
 				if (player != null) {
-					Match match = Paintball.instance.matchManager.getMatch(player);
+					Match match = Paintball.getInstance().matchManager.getMatch(player);
 					if (match != null) {
-						List<Entity> near = entity.getNearbyEntities(Paintball.instance.flashRange, Paintball.instance.flashRange, Paintball.instance.flashRange);
+						List<Entity> near = entity.getNearbyEntities(Paintball.getInstance().flashRange, Paintball.getInstance().flashRange, Paintball.getInstance().flashRange);
 						for (Entity e : near) {
 							if (e.getType() == EntityType.PLAYER) {
 								Player p = (Player) e;
-								Match m = Paintball.instance.matchManager.getMatch(p);
+								Match m = Paintball.getInstance().matchManager.getMatch(p);
 								if (match == m && match.enemys(player, p)) {
-									p.addPotionEffect(new PotionEffect(PotionEffectType.SLOW, 20 * Paintball.instance.flashSlownessDuration, 3), true);
-									p.addPotionEffect(new PotionEffect(PotionEffectType.CONFUSION, 20 * Paintball.instance.flashConfusionDuration, 3), true);
-									p.addPotionEffect(new PotionEffect(PotionEffectType.BLINDNESS, 20 * Paintball.instance.flashBlindnessDuration, 3), true);
+									p.addPotionEffect(new PotionEffect(PotionEffectType.SLOW, 20 * Paintball.getInstance().flashSlownessDuration, 3), true);
+									p.addPotionEffect(new PotionEffect(PotionEffectType.CONFUSION, 20 * Paintball.getInstance().flashConfusionDuration, 3), true);
+									p.addPotionEffect(new PotionEffect(PotionEffectType.BLINDNESS, 20 * Paintball.getInstance().flashBlindnessDuration, 3), true);
 								}
 								
 							}

@@ -90,7 +90,7 @@ public class BallHandler extends WeaponHandler {
 		private final Snowball entity;
 
 		private Ball(Match match, Player player, Snowball entity, Origin origin) {
-			super(Paintball.instance.weaponManager.getBallHandler().gadgetManager, match, player.getName(), origin);
+			super(Paintball.getInstance().weaponManager.getBallHandler().gadgetManager, match, player.getName(), origin);
 			this.entity = entity;
 		}
 		

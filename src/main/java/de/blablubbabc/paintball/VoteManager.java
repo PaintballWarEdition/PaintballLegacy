@@ -27,7 +27,7 @@ public class VoteManager {
 	public VoteManager(int numberOfOptions, boolean addRandomOption) {
 		if (numberOfOptions < 2) numberOfOptions = 2;
 		// init vote options:
-		List<String> readyArenas = Paintball.instance.arenaManager.getReadyArenas();
+		List<String> readyArenas = Paintball.getInstance().arenaManager.getReadyArenas();
 		
 		if (readyArenas.size() > numberOfOptions) {
 			List<String> remaining = new ArrayList<String>(readyArenas);
@@ -78,7 +78,7 @@ public class VoteManager {
 	public void sendVoteOptions(Player player) {
 		if (isOver) throw new IllegalStateException("Voting is already over, but optiosn shall be send to a player.");
 		
-		Paintball.instance.feeder.text(player, Translator.getString("GAME_VOTE_HEADER"));
+		Paintball.getInstance().feeder.text(player, Translator.getString("GAME_VOTE_HEADER"));
 		
 		int id = 0;
 		KeyValuePair idPair = new KeyValuePair("id", String.valueOf(id));
@@ -92,7 +92,7 @@ public class VoteManager {
 			votesPair.setValue(String.valueOf(option.getVotes()));
 			String arenaName = option.getArena();
 			
-			Paintball.instance.feeder.text(player, Translator.getString("GAME_VOTE_OPTION", idPair, votesPair, new KeyValuePair("arena", arenaName != null ? arenaName : randomOption)));
+			Paintball.getInstance().feeder.text(player, Translator.getString("GAME_VOTE_OPTION", idPair, votesPair, new KeyValuePair("arena", arenaName != null ? arenaName : randomOption)));
 			
 		}
 	}

@@ -50,7 +50,7 @@ public class MineHandler extends WeaponHandler implements Listener {
 			}
 		});
 		
-		Paintball.instance.getServer().getPluginManager().registerEvents(this, Paintball.instance);
+		Paintball.getInstance().getServer().getPluginManager().registerEvents(this, Paintball.getInstance());
 	}
 	
 	public Mine plantMine(Match match, Player player, Block block, Material type, BlockState oldState, Origin origin) {
@@ -59,7 +59,7 @@ public class MineHandler extends WeaponHandler implements Listener {
 	
 	@EventHandler
 	public void onPaintballHit(PaintballHitEvent event) {
-		if (Paintball.instance.mine) {
+		if (Paintball.getInstance().mine) {
 			Player shooter = event.getShooter();
 			Match match = event.getMatch();
 			Projectile ball = event.getProjectileHitEvent().getEntity();
@@ -106,23 +106,23 @@ public class MineHandler extends WeaponHandler implements Listener {
 	@Override
 	protected void onBlockPlace(BlockPlaceEvent event, Match match) {
 		final Block block = event.getBlockPlaced();
-		if (Paintball.instance.mine && block.getType() == Material.FLOWER_POT) {
+		if (Paintball.getInstance().mine && block.getType() == Material.FLOWER_POT) {
 			Player player = event.getPlayer();
 			ItemStack itemInHand = player.getItemInHand();
 			if (itemInHand == null) return;
 			
 			if (itemInHand.isSimilar(getItem())) {
 				String playerName = player.getName();
-				if (gadgetManager.getMatchGadgetCount(match) < Paintball.instance.mineMatchLimit) {
-					if (gadgetManager.getPlayerGadgetCount(match, playerName) < Paintball.instance.minePlayerLimit) {
+				if (gadgetManager.getMatchGadgetCount(match) < Paintball.getInstance().mineMatchLimit) {
+					if (gadgetManager.getPlayerGadgetCount(match, playerName) < Paintball.getInstance().minePlayerLimit) {
 						
 						// check space (hallways)
-						if (Paintball.instance.mineCheckForHallway && blocksHallway(block)) {
+						if (Paintball.getInstance().mineCheckForHallway && blocksHallway(block)) {
 							player.sendMessage(Translator.getString("GADGET_NOT_ENOUGH_SPACE"));
 							return;
 						}
 						
-						Paintball.instance.getServer().getScheduler().runTaskLater(Paintball.instance, new Runnable() {
+						Paintball.getInstance().getServer().getScheduler().runTaskLater(Paintball.getInstance(), new Runnable() {
 
 							@Override
 							public void run() {
@@ -140,7 +140,7 @@ public class MineHandler extends WeaponHandler implements Listener {
 							itemInHand.setAmount(itemInHand.getAmount() - 1);
 							player.setItemInHand(itemInHand);
 						}
-						Utils.updatePlayerInventoryLater(Paintball.instance, player);
+						Utils.updatePlayerInventoryLater(Paintball.getInstance(), player);
 					} else {
 						player.sendMessage(Translator.getString("MINE_PLAYER_LIMIT_REACHED"));
 					}
@@ -369,7 +369,7 @@ public class MineHandler extends WeaponHandler implements Listener {
 
 				World world = location.getWorld();
 				// some effect here:
-				if (Paintball.instance.effects) {
+				if (Paintball.getInstance().effects) {
 					// effect
 					for (int i = 1; i <= 8; i++) {
 						world.playEffect(location, Effect.SMOKE, i);
@@ -382,19 +382,19 @@ public class MineHandler extends WeaponHandler implements Listener {
 				for (Vector v : Utils.getUpVectors()) {
 					final Snowball snowball = world.spawn(spawnLoc, Snowball.class);
 					snowball.setShooter(player);
-					final Ball ball = Paintball.instance.weaponManager.getBallHandler().createBall(match, player, snowball, getGadgetOrigin());
+					final Ball ball = Paintball.getInstance().weaponManager.getBallHandler().createBall(match, player, snowball, getGadgetOrigin());
 					
 					Vector v2 = v.clone();
 					v2.setX(v.getX() + Utils.random.nextDouble() - Utils.random.nextDouble());
 					v2.setY(v.getY() + Utils.random.nextDouble() - Utils.random.nextDouble());
 					v2.setZ(v.getZ() + Utils.random.nextDouble() - Utils.random.nextDouble());
 					snowball.setVelocity(v2.normalize().multiply(0.5));
-					Paintball.instance.getServer().getScheduler().runTaskLater(Paintball.instance, new Runnable() {
+					Paintball.getInstance().getServer().getScheduler().runTaskLater(Paintball.getInstance(), new Runnable() {
 						@Override
 						public void run() {
 							ball.dispose(true);
 						}
-					}, (long) Paintball.instance.mineTime);
+					}, (long) Paintball.getInstance().mineTime);
 				}
 			}
 			
@@ -406,7 +406,7 @@ public class MineHandler extends WeaponHandler implements Listener {
 		@Override
 		public void dispose(boolean removeFromGadgetHandlerTracking) {
 			if (tickTask != -1) {
-				Paintball.instance.getServer().getScheduler().cancelTask(tickTask);
+				Paintball.getInstance().getServer().getScheduler().cancelTask(tickTask);
 			}
 			// reset to old block:
 			if (oldState != null) {
@@ -426,13 +426,13 @@ public class MineHandler extends WeaponHandler implements Listener {
 		}
 
 		private void tick() {
-			tickTask = Paintball.instance.getServer().getScheduler().runTaskLater(Paintball.instance, new Runnable() {
+			tickTask = Paintball.getInstance().getServer().getScheduler().runTaskLater(Paintball.getInstance(), new Runnable() {
 
 				@Override
 				public void run() {
 					if (!exploded) {
 						if (block.getType() == type) {
-							if (Paintball.instance.effects) {
+							if (Paintball.getInstance().effects) {
 								// effect
 								for (Player p : match.getAllPlayer()) {
 									if (match.isSurvivor(p)) {
@@ -463,7 +463,7 @@ public class MineHandler extends WeaponHandler implements Listener {
 		private boolean nearEnemy() {
 			for (Player p : match.getEnemyTeam(getOwner())) {
 				if (match.isSurvivor(p)) {
-					if (location.distance(p.getLocation()) < Paintball.instance.mineRange && canSeeMine(p)) {
+					if (location.distance(p.getLocation()) < Paintball.getInstance().mineRange && canSeeMine(p)) {
 						return true;
 					}
 				}

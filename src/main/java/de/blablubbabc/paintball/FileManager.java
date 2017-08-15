@@ -53,7 +53,7 @@ public class FileManager {
 	// FOLDERS:
 	
 	public static File getPaintballDataFolder() {
-		return Paintball.instance.getDataFolder();
+		return Paintball.getInstance().getDataFolder();
 	}
 	
 	public static File getAddonsFolder() {

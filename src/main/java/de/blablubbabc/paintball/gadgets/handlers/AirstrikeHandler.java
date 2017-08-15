@@ -72,7 +72,7 @@ public class AirstrikeHandler extends WeaponHandler {
 	
 	@Override
 	protected void onInteract(PlayerInteractEvent event, Match match) {
-		if (event.getAction() == Action.PHYSICAL || !Paintball.instance.airstrike) return;
+		if (event.getAction() == Action.PHYSICAL || !Paintball.getInstance().airstrike) return;
 		
 		final Player player = event.getPlayer();
 		String playerName = player.getName();
@@ -82,8 +82,8 @@ public class AirstrikeHandler extends WeaponHandler {
 		if (itemInHand.isSimilar(getItem())) {
 			Block block = marks.get(playerName);
 			if (block != null) {
-				if (gadgetManager.getMatchGadgetCount(match) < Paintball.instance.airstrikeMatchLimit) {
-					if (gadgetManager.getPlayerGadgetCount(match, playerName) < Paintball.instance.airstrikePlayerLimit) {
+				if (gadgetManager.getMatchGadgetCount(match) < Paintball.getInstance().airstrikeMatchLimit) {
+					if (gadgetManager.getPlayerGadgetCount(match, playerName) < Paintball.getInstance().airstrikePlayerLimit) {
 						
 						demark(player);
 						addFinalMark(block, player);
@@ -99,7 +99,7 @@ public class AirstrikeHandler extends WeaponHandler {
 							else {
 								itemInHand.setAmount(itemInHand.getAmount() - 1);
 							}
-							Utils.updatePlayerInventoryLater(Paintball.instance, player);
+							Utils.updatePlayerInventoryLater(Paintball.getInstance(), player);
 						}
 					} else {
 						player.sendMessage(Translator.getString("AIRSTRIKE_PLAYER_LIMIT_REACHED"));
@@ -168,7 +168,7 @@ public class AirstrikeHandler extends WeaponHandler {
 		
 		if (getItem().isSimilar(newItem)) {
 			if (!taskIds.containsKey(name)) {
-				int taskId = Paintball.instance.getServer().getScheduler().runTaskTimer(Paintball.instance, new Runnable() {
+				int taskId = Paintball.getInstance().getServer().getScheduler().runTaskTimer(Paintball.getInstance(), new Runnable() {
 
 					@Override
 					public void run() {
@@ -179,7 +179,7 @@ public class AirstrikeHandler extends WeaponHandler {
 								mark(block, player);
 							}
 						} else {
-							Paintball.instance.getServer().getScheduler().cancelTask(taskIds.get(name));
+							Paintball.getInstance().getServer().getScheduler().cancelTask(taskIds.get(name));
 							taskIds.remove(name);
 							demark(player);
 						}
@@ -190,7 +190,7 @@ public class AirstrikeHandler extends WeaponHandler {
 		} else {
 			Integer id = taskIds.get(name);
 			if (id != null) {
-				Paintball.instance.getServer().getScheduler().cancelTask(id);
+				Paintball.getInstance().getServer().getScheduler().cancelTask(id);
 				taskIds.remove(name);
 				demark(player);
 			}
@@ -213,17 +213,17 @@ public class AirstrikeHandler extends WeaponHandler {
 		private void call(Location location) {
 			Location playerLoc = player.getLocation();
 			//airstrike
-			Vector pv = new Vector(playerLoc.getX(), location.getY() + Paintball.instance.airstrikeHeight, playerLoc.getZ());
-			Vector bv =	new Vector(location.getX(), location.getY() + Paintball.instance.airstrikeHeight, location.getZ());
+			Vector pv = new Vector(playerLoc.getX(), location.getY() + Paintball.getInstance().airstrikeHeight, playerLoc.getZ());
+			Vector bv =	new Vector(location.getX(), location.getY() + Paintball.getInstance().airstrikeHeight, location.getZ());
 			Vector bp = new Vector() ; bp.copy(bv); bp.subtract(pv).normalize();
 			Vector bpr = new Vector(-bp.getZ(), 0, bp.getX()).normalize(); 
 			Location b1 = bv.clone().toLocation(player.getWorld());
-			b1.subtract(bpr.clone().multiply(Paintball.instance.airstrikeRange));
+			b1.subtract(bpr.clone().multiply(Paintball.getInstance().airstrikeRange));
 			//Block b2 = player.getWorld().getBlockAt(block.getLocation().add(bp.multiply(range)));
-			double bombDiff = ( (2*Paintball.instance.airstrikeRange) / Paintball.instance.airstrikeBombs );
+			double bombDiff = ( (2*Paintball.getInstance().airstrikeRange) / Paintball.getInstance().airstrikeBombs );
 			
 			final LinkedList<Location> bombs = new LinkedList<Location>();
-			for (int i = 1; i <= Paintball.instance.airstrikeBombs; i++) {
+			for (int i = 1; i <= Paintball.getInstance().airstrikeBombs; i++) {
 				bombs.add(b1.clone().add(bpr.clone().multiply((bombDiff * i))));
 			}
 			player.sendMessage(Translator.getString("AIRSTRIKE_CALLED"));
@@ -232,9 +232,9 @@ public class AirstrikeHandler extends WeaponHandler {
 			chick = player.getWorld().spawnEntity(lc.add(new Vector(0, 5, 0)), EntityType.CHICKEN);
 			final Vector chickVel = bpr.clone().multiply(bombDiff / 5);
 			
-			final GrenadeHandler grenadeHandler = Paintball.instance.weaponManager.getGrenadeHandler();
+			final GrenadeHandler grenadeHandler = Paintball.getInstance().weaponManager.getGrenadeHandler();
 			
-			task = Paintball.instance.getServer().getScheduler().scheduleSyncRepeatingTask(Paintball.instance, new Runnable() {
+			task = Paintball.getInstance().getServer().getScheduler().scheduleSyncRepeatingTask(Paintball.getInstance(), new Runnable() {
 				int i = 0;
 				@Override
 				public void run() {
@@ -254,7 +254,7 @@ public class AirstrikeHandler extends WeaponHandler {
 		
 		@Override
 		public void dispose(boolean removeFromGadgetHandlerTracking) {
-			if (this.task != -1) Paintball.instance.getServer().getScheduler().cancelTask(task);
+			if (this.task != -1) Paintball.getInstance().getServer().getScheduler().cancelTask(task);
 			if (this.chick != null) chick.remove();
 			
 			super.dispose(removeFromGadgetHandlerTracking);
@@ -288,13 +288,13 @@ public class AirstrikeHandler extends WeaponHandler {
 			player.sendBlockChange(last.getLocation(), Material.TORCH, (byte) 0);
 			
 			// demark after a certain time:
-			Paintball.instance.getServer().getScheduler().runTaskLater(Paintball.instance, new Runnable() {
+			Paintball.getInstance().getServer().getScheduler().runTaskLater(Paintball.getInstance(), new Runnable() {
 				
 				@Override
 				public void run() {
 					demark(player);
 				}
-			}, Paintball.instance.airstrikeBombs * 5L);
+			}, Paintball.getInstance().airstrikeBombs * 5L);
 			
 		}
 		

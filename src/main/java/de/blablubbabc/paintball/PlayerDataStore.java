@@ -92,7 +92,7 @@ public class PlayerDataStore {
 		listname = player.getPlayerListName();
 
 		// Inventory
-		if (Paintball.instance.saveInventory) {
+		if (Paintball.getInstance().saveInventory) {
 			player.closeInventory();
 			PlayerInventory inv = player.getInventory();
 			invContent = inv.getContents();
@@ -137,10 +137,10 @@ public class PlayerDataStore {
 		// RESTORE PLAYER
 
 		// Names
-		if (Paintball.instance.listnames) player.setPlayerListName(listname);
+		if (Paintball.getInstance().listnames) player.setPlayerListName(listname);
 		// player.setDisplayName(displayname);
 		// Inventory
-		if (Paintball.instance.saveInventory) {
+		if (Paintball.getInstance().saveInventory) {
 			if (invContent != null) {
 				player.getInventory().setContents(invContent);
 			}
@@ -169,7 +169,7 @@ public class PlayerDataStore {
 		player.setLevel(level);
 		player.setExp(exp);
 		// scoreboard
-		if (Paintball.instance.scoreboardLobby) {
+		if (Paintball.getInstance().scoreboardLobby) {
 			player.setScoreboard(scoreboard != null ? scoreboard : Bukkit.getScoreboardManager().getMainScoreboard());
 		}
 
@@ -193,7 +193,7 @@ public class PlayerDataStore {
 		player.setGameMode(GameMode.SURVIVAL);
 		// CLEAR PLAYER
 		player.getInventory().clear(-1, -1);
-		if (checkListname && Paintball.instance.listnames) {
+		if (checkListname && Paintball.getInstance().listnames) {
 			player.setPlayerListName(null);
 		}
 		if (player.getActivePotionEffects().size() > 0) {
@@ -209,7 +209,7 @@ public class PlayerDataStore {
 		if (player.getMaxHealth() != 20) player.setMaxHealth(20);
 		if (player.getHealth() != 20) player.setHealth(20);
 		if (player.getFireTicks() != 0) player.setFireTicks(0);
-		if (Paintball.instance.useXPBar) {
+		if (Paintball.getInstance().useXPBar) {
 			if (changeLevel && player.getLevel() != 0) player.setLevel(0);
 			if (player.getExp() != 1F) player.setExp(1F);
 		}

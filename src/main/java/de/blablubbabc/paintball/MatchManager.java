@@ -292,7 +292,7 @@ public class MatchManager {
 		}
 
 		// SAVE PLAYER STATS TO DATABASE
-		Paintball.instance.addAsyncTask();
+		Paintball.getInstance().addAsyncTask();
 		plugin.getServer().getScheduler().runTaskAsynchronously(plugin, new Runnable() {
 
 			@Override
@@ -336,7 +336,7 @@ public class MatchManager {
 						}
 					}
 				});
-				Paintball.instance.removeAsyncTask();
+				Paintball.getInstance().removeAsyncTask();
 			}
 		});
 

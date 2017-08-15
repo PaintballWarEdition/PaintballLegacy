@@ -38,9 +38,9 @@ public class VoteListener implements Listener {
 						Log.warning("Unknown player voted: " + playerName);
 						return;
 					}
-					PlayerStats stats = Paintball.instance.playerManager.getPlayerStats(uuid);
+					PlayerStats stats = Paintball.getInstance().playerManager.getPlayerStats(uuid);
 					if (stats != null) {
-						stats.addStat(PlayerStat.MONEY, Paintball.instance.voteCash);
+						stats.addStat(PlayerStat.MONEY, Paintball.getInstance().voteCash);
 						stats.saveAsync();
 					}
 				}

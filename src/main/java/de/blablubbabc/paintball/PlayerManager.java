@@ -42,7 +42,7 @@ public class PlayerManager {
 		playerStats = new HashMap<UUID, PlayerStats>();
 		playersToAdd = new HashSet<UUID>();
 
-		Paintball.instance.getServer().getScheduler().runTaskLater(Paintball.instance, new Runnable() {
+		Paintball.getInstance().getServer().getScheduler().runTaskLater(Paintball.getInstance(), new Runnable() {
 
 			@Override
 			public void run() {
@@ -87,14 +87,14 @@ public class PlayerManager {
 		if (!spec) {
 			if (!Lobby.inTeam(player) || Lobby.SPECTATE.isMember(player)) {
 				int players = Lobby.RED.number() + Lobby.BLUE.number() + Lobby.RANDOM.number();
-				if (players >= Paintball.instance.maxPlayers) {
+				if (players >= Paintball.getInstance().maxPlayers) {
 					player.sendMessage(Translator.getString("CANNOT_JOIN_TEAM_FULL"));
 					return;
 				}
 			}
-			if (rb && Paintball.instance.onlyRandom) {
+			if (rb && Paintball.getInstance().onlyRandom) {
 				player.sendMessage(Translator.getString("ONLY_RANDOM"));
-				if (!Paintball.instance.autoRandom)
+				if (!Paintball.getInstance().autoRandom)
 													return;
 			}
 		}
@@ -103,7 +103,7 @@ public class PlayerManager {
 			player.sendMessage(Translator.getString("YOU_LEFT_CURRENT_TEAM"));
 		}
 		// only random + auto random
-		if (rb && Paintball.instance.onlyRandom && Paintball.instance.autoRandom) {
+		if (rb && Paintball.getInstance().onlyRandom && Paintball.getInstance().autoRandom) {
 			Lobby.RANDOM.addMember(player);
 			Map<String, String> vars = new HashMap<String, String>();
 			vars.put("color_random", Lobby.RANDOM.color().toString());
@@ -118,61 +118,61 @@ public class PlayerManager {
 			else if (spec) player.sendMessage(Translator.getString("YOU_JOINED_SPECTATORS", vars));
 		}
 		if (!spec) {
-			String ready = Paintball.instance.matchManager.ready();
+			String ready = Paintball.getInstance().matchManager.ready();
 			if (ready.equalsIgnoreCase(Translator.getString("READY"))) {
-				Paintball.instance.matchManager.countdown(Paintball.instance.countdown, Paintball.instance.countdownInit);
+				Paintball.getInstance().matchManager.countdown(Paintball.getInstance().countdown, Paintball.getInstance().countdownInit);
 			} else {
-				Paintball.instance.feeder.status(player, ready);
+				Paintball.getInstance().feeder.status(player, ready);
 			}
 		}
 		// players:
-		Paintball.instance.feeder.players(player);
+		Paintball.getInstance().feeder.players(player);
 	}
 
 	private boolean joinLobbyPreChecks(Player player) {
 		// Lobby vorhanden?
-		if (Paintball.instance.getLobbyspawnsCount() == 0) {
+		if (Paintball.getInstance().getLobbyspawnsCount() == 0) {
 			player.sendMessage(Translator.getString("NO_LOBBY_FOUND"));
 			return false;
 		}
 		// inventory
-		if (!Utils.isEmptyInventory(player) && Paintball.instance.checkInventory) {
+		if (!Utils.isEmptyInventory(player) && Paintball.getInstance().checkInventory) {
 			player.sendMessage(Translator.getString("NEED_CLEAR_INVENTORY"));
 			return false;
 		}
 		// gamemode an?
-		if (!player.getGameMode().equals(GameMode.SURVIVAL) && Paintball.instance.checkGamemode) {
+		if (!player.getGameMode().equals(GameMode.SURVIVAL) && Paintball.getInstance().checkGamemode) {
 			player.sendMessage(Translator.getString("NEED_RIGHT_GAMEMODE"));
 			return false;
 		}
 		// flymode an? (built-in fly mode)
-		if ((player.getAllowFlight() || player.isFlying()) && Paintball.instance.checkFlymode) {
+		if ((player.getAllowFlight() || player.isFlying()) && Paintball.getInstance().checkFlymode) {
 			player.sendMessage(Translator.getString("NEED_STOP_FLYING"));
 			return false;
 		}
 		// brennt? f�llt? taucht?
-		if ((player.getFireTicks() > 0 || player.getFallDistance() > 0 || player.getRemainingAir() < player.getMaximumAir()) && Paintball.instance.checkBurning) {
+		if ((player.getFireTicks() > 0 || player.getFallDistance() > 0 || player.getRemainingAir() < player.getMaximumAir()) && Paintball.getInstance().checkBurning) {
 			player.sendMessage(Translator.getString("NEED_STOP_FALLING_BURNING_DROWNING"));
 			return false;
 		}
 		// wenig leben
-		if (player.getHealth() < player.getMaxHealth() && Paintball.instance.checkHealth) {
+		if (player.getHealth() < player.getMaxHealth() && Paintball.getInstance().checkHealth) {
 			player.sendMessage(Translator.getString("NEED_FULL_HEALTH"));
 			return false;
 		}
 		// hungert
-		if (player.getFoodLevel() < 20 && Paintball.instance.checkFood) {
+		if (player.getFoodLevel() < 20 && Paintball.getInstance().checkFood) {
 			player.sendMessage(Translator.getString("NEED_FULL_FOOD"));
 			return false;
 		}
 		// hat effekte auf sich
-		if (player.getActivePotionEffects().size() > 0 && Paintball.instance.checkEffects) {
+		if (player.getActivePotionEffects().size() > 0 && Paintball.getInstance().checkEffects) {
 			player.sendMessage(Translator.getString("NEED_NO_EFFECTS"));
 			return false;
 		}
 
 		// check, if player-adding is yet finished:
-		if (Paintball.instance.playerManager.isPlayerStillLocked(player.getUniqueId())) {
+		if (Paintball.getInstance().playerManager.isPlayerStillLocked(player.getUniqueId())) {
 			player.sendMessage(Translator.getString("NEED_BE_ADDED_TO_DATABASE_FIRST"));
 			return false;
 		}
@@ -189,12 +189,12 @@ public class PlayerManager {
 		final UUID playerUUID = player.getUniqueId();
 
 		// join delay:
-		if (withDelay && Paintball.instance.joinDelaySeconds > 0) {
+		if (withDelay && Paintball.getInstance().joinDelaySeconds > 0) {
 			// is the player already waiting for join or waiting for stats loading -> ignore:
 			WaitTimer waitTimer = currentlyWaiting.get(playerUUID);
 			if (waitTimer == null && !currentlyLoading.contains(playerUUID)) {
 				// let the player know:
-				player.sendMessage(Translator.getString("DO_NOT_MOVE", new KeyValuePair("seconds", String.valueOf(Paintball.instance.joinDelaySeconds))));
+				player.sendMessage(Translator.getString("DO_NOT_MOVE", new KeyValuePair("seconds", String.valueOf(Paintball.getInstance().joinDelaySeconds))));
 				// wait:
 				joinLater(player, new Runnable() {
 
@@ -231,13 +231,13 @@ public class PlayerManager {
 					if (player.isOnline()) {
 						// join lobby:
 						Lobby.LOBBY.addMember(player);
-						Paintball.instance.feeder.join(player.getName());
-						if (Paintball.instance.worldMode) storeClearPlayer(player, Paintball.instance.getNextLobbySpawn());
-						else teleportStoreClearPlayer(player, Paintball.instance.getNextLobbySpawn());
+						Paintball.getInstance().feeder.join(player.getName());
+						if (Paintball.getInstance().worldMode) storeClearPlayer(player, Paintball.getInstance().getNextLobbySpawn());
+						else teleportStoreClearPlayer(player, Paintball.getInstance().getNextLobbySpawn());
 						// ASSIGN RANK
-						if (Paintball.instance.ranksLobbyArmor) Paintball.instance.rankManager.getRank(playerUUID).assignArmorToPlayer(player);
+						if (Paintball.getInstance().ranksLobbyArmor) Paintball.getInstance().rankManager.getRank(playerUUID).assignArmorToPlayer(player);
 						// ASSIGN SCOREBOARD (after teleport)
-						if (Paintball.instance.scoreboardLobby) {
+						if (Paintball.getInstance().scoreboardLobby) {
 							initLobbyScoreboard(player);
 						}
 
@@ -295,7 +295,7 @@ public class PlayerManager {
 
 	private void joinLater(final Player player, final Runnable runAfterWaiting) {
 		final JoinWaitRunnable waitRunnable = new JoinWaitRunnable(runAfterWaiting, player.getLocation());
-		WaitTimer waitTimer = new WaitTimer(Paintball.instance, player, 0L, 20L, Paintball.instance.joinDelaySeconds, waitRunnable);
+		WaitTimer waitTimer = new WaitTimer(Paintball.getInstance(), player, 0L, 20L, Paintball.getInstance().joinDelaySeconds, waitRunnable);
 		currentlyWaiting.put(player.getUniqueId(), waitTimer);
 	}
 
@@ -304,11 +304,11 @@ public class PlayerManager {
 		// set waiting:
 		if (Lobby.isPlaying(player) || Lobby.isSpectating(player)) Lobby.getTeam(player).setWaiting(player);
 		// teleport to lobby:
-		player.teleport(Paintball.instance.getNextLobbySpawn());
+		player.teleport(Paintball.getInstance().getNextLobbySpawn());
 		// assign rank armor:
-		if (Paintball.instance.ranksLobbyArmor) Paintball.instance.rankManager.getRank(player.getUniqueId()).assignArmorToPlayer(player);
+		if (Paintball.getInstance().ranksLobbyArmor) Paintball.getInstance().rankManager.getRank(player.getUniqueId()).assignArmorToPlayer(player);
 		// assign lobby scoreboard:
-		if (Paintball.instance.scoreboardLobby) {
+		if (Paintball.getInstance().scoreboardLobby) {
 			initLobbyScoreboard(player);
 		}
 	}
@@ -317,33 +317,33 @@ public class PlayerManager {
 		UUID playerUUID = player.getUniqueId();
 		if (Lobby.LOBBY.isMember(player)) {
 			if (Lobby.isPlaying(player) || Lobby.isSpectating(player)) {
-				Paintball.instance.matchManager.getMatch(player).left(player);
+				Paintball.getInstance().matchManager.getMatch(player).left(player);
 			}
 
 			// lobby remove:
 			Lobby.remove(player);
 
 			// undo arena voting:
-			if (Paintball.instance.arenaVoting) Paintball.instance.matchManager.onLobbyLeave(player);
+			if (Paintball.getInstance().arenaVoting) Paintball.getInstance().matchManager.onLobbyLeave(player);
 
 			// restore and teleport back:
-			if (Paintball.instance.worldMode) {
+			if (Paintball.getInstance().worldMode) {
 				clearRestorePlayer(player);
 			} else {
 				clearRestoreTeleportPlayer(player);
 			}
 
 			// if player not in lobby and not in match -> stats no longer needed:
-			if (!Lobby.LOBBY.isMember(player) && Paintball.instance.matchManager.getMatch(player) == null) unloadPlayerStats(playerUUID);
+			if (!Lobby.LOBBY.isMember(player) && Paintball.getInstance().matchManager.getMatch(player) == null) unloadPlayerStats(playerUUID);
 
 			// remove scoreboard for this player
-			if (Paintball.instance.scoreboardLobby) {
+			if (Paintball.getInstance().scoreboardLobby) {
 				lobbyScoreboards.remove(playerUUID);
 			}
 
 			// messages:
 			if (messages) {
-				Paintball.instance.feeder.leave(player.getName());
+				Paintball.getInstance().feeder.leave(player.getName());
 				player.sendMessage(Translator.getString("YOU_LEFT_LOBBY"));
 			}
 
@@ -372,17 +372,17 @@ public class PlayerManager {
 
 	public void loadPlayerStatsAsync(final UUID playerUUID, final Runnable runAfterwards) {
 		if (playerStats.get(playerUUID) == null) {
-			Paintball.instance.addAsyncTask();
-			Paintball.instance.getServer().getScheduler().runTaskAsynchronously(Paintball.instance, new Runnable() {
+			Paintball.getInstance().addAsyncTask();
+			Paintball.getInstance().getServer().getScheduler().runTaskAsynchronously(Paintball.getInstance(), new Runnable() {
 
 				@Override
 				public void run() {
 					playerStats.put(playerUUID, new PlayerStats(playerUUID));
 					if (runAfterwards != null) {
 						// run afterwards-task sync:
-						Paintball.instance.getServer().getScheduler().runTask(Paintball.instance, runAfterwards);
+						Paintball.getInstance().getServer().getScheduler().runTask(Paintball.getInstance(), runAfterwards);
 					}
-					Paintball.instance.removeAsyncTask();
+					Paintball.getInstance().removeAsyncTask();
 				}
 			});
 		} else {
@@ -391,11 +391,11 @@ public class PlayerManager {
 		}
 	}
 
-	// is done sync if Paintball is currently disableing, else async
+	// is done sync if Paintball is currently disabling, else async
 	public void unloadPlayerStats(UUID playerUUID) {
 		PlayerStats stats = playerStats.remove(playerUUID);
 		if (stats != null) {
-			if (!Paintball.instance.currentlyDisableing) stats.saveAsync();
+			if (!Paintball.getInstance().currentlyDisabling) stats.saveAsync();
 			else stats.save();
 		}
 	}
@@ -419,13 +419,13 @@ public class PlayerManager {
 	// on plugin start only:
 	private void initAllOnlinePlayers() {
 		// locking is not needed, because it's done sync:
-		for (Player player : Paintball.instance.getServer().getOnlinePlayers()) {
+		for (Player player : Paintball.getInstance().getServer().getOnlinePlayers()) {
 			// add player to database
 			initPlayer(player);
 
 			// autoLobby and worldMode
-			if (Paintball.instance.autoLobby || (Paintball.instance.worldMode && Paintball.instance.worldModeWorlds.contains(player.getWorld().getName()))) {
-				if (Paintball.instance.autoTeam) {
+			if (Paintball.getInstance().autoLobby || (Paintball.getInstance().worldMode && Paintball.getInstance().worldModeWorlds.contains(player.getWorld().getName()))) {
+				if (Paintball.getInstance().autoTeam) {
 					joinTeam(player, false, Lobby.RANDOM);
 				} else {
 					joinLobbyPre(player, false, null);
@@ -439,14 +439,14 @@ public class PlayerManager {
 		// lock player
 		playersToAdd.add(playerUUID);
 
-		Paintball.instance.addAsyncTask();
-		Paintball.instance.getServer().getScheduler().runTaskAsynchronously(Paintball.instance, new Runnable() {
+		Paintball.getInstance().addAsyncTask();
+		Paintball.getInstance().getServer().getScheduler().runTaskAsynchronously(Paintball.getInstance(), new Runnable() {
 
 			@Override
 			public void run() {
 				initPlayer(player);
 
-				Paintball.instance.getServer().getScheduler().runTask(Paintball.instance, new Runnable() {
+				Paintball.getInstance().getServer().getScheduler().runTask(Paintball.getInstance(), new Runnable() {
 
 					@Override
 					public void run() {
@@ -454,15 +454,15 @@ public class PlayerManager {
 						playersToAdd.remove(playerUUID);
 
 						// autoLobby
-						Paintball.instance.getServer().getScheduler().runTaskLater(Paintball.instance, new Runnable() {
+						Paintball.getInstance().getServer().getScheduler().runTaskLater(Paintball.getInstance(), new Runnable() {
 
 							@Override
 							public void run() {
-								Player player = Paintball.instance.getServer().getPlayer(playerUUID);
+								Player player = Paintball.getInstance().getServer().getPlayer(playerUUID);
 								if (player != null) {
 									// autoLobby and worldMode
-									if (Paintball.instance.autoLobby || (Paintball.instance.worldMode && Paintball.instance.worldModeWorlds.contains(player.getWorld().getName()))) {
-										if (Paintball.instance.autoTeam) {
+									if (Paintball.getInstance().autoLobby || (Paintball.getInstance().worldMode && Paintball.getInstance().worldModeWorlds.contains(player.getWorld().getName()))) {
+										if (Paintball.getInstance().autoTeam) {
 											joinTeam(player, false, Lobby.RANDOM);
 										} else {
 											joinLobbyPre(player, false, null);
@@ -475,7 +475,7 @@ public class PlayerManager {
 						}, 1L);
 					}
 				});
-				Paintball.instance.removeAsyncTask();
+				Paintball.getInstance().removeAsyncTask();
 			}
 		});
 	}
@@ -487,17 +487,17 @@ public class PlayerManager {
 	 * @param player
 	 */
 	private void initPlayer(Player player) {
-		Paintball.instance.sql.sqlPlayers.initPlayer(player.getUniqueId(), player.getName());
+		Paintball.getInstance().sql.sqlPlayers.initPlayer(player.getUniqueId(), player.getName());
 	}
 
 	public void resetAllDataAsync() {
-		Paintball.instance.addAsyncTask();
-		Paintball.instance.getServer().getScheduler().runTaskAsynchronously(Paintball.instance, new Runnable() {
+		Paintball.getInstance().addAsyncTask();
+		Paintball.getInstance().getServer().getScheduler().runTaskAsynchronously(Paintball.getInstance(), new Runnable() {
 
 			@Override
 			public void run() {
 				resetAllData();
-				Paintball.instance.removeAsyncTask();
+				Paintball.getInstance().removeAsyncTask();
 			}
 		});
 	}
@@ -508,7 +508,7 @@ public class PlayerManager {
 			stats.resetStats();
 		}
 		// reset in databse:
-		Paintball.instance.sql.sqlPlayers.resetAllPlayerStats();
+		Paintball.getInstance().sql.sqlPlayers.resetAllPlayerStats();
 	}
 
 	/*
@@ -525,7 +525,7 @@ public class PlayerManager {
 
 	public boolean exists(UUID playerUUID) {
 		if (isPlayerStillLocked(playerUUID)) return true;
-		return Paintball.instance.sql.sqlPlayers.isPlayerExisting(playerUUID);
+		return Paintball.getInstance().sql.sqlPlayers.isPlayerExisting(playerUUID);
 	}
 
 	// STATS
@@ -561,11 +561,11 @@ public class PlayerManager {
 	// GETTER
 
 	public int getPlayersEverPlayedCount() {
-		return Paintball.instance.sql.sqlPlayers.getPlayersEverPlayedCount();
+		return Paintball.getInstance().sql.sqlPlayers.getPlayersEverPlayedCount();
 	}
 
 	public int getPlayerCount() {
-		return Paintball.instance.sql.sqlPlayers.getPlayerCount();
+		return Paintball.getInstance().sql.sqlPlayers.getPlayerCount();
 	}
 
 	/*
@@ -600,7 +600,7 @@ public class PlayerManager {
 	public static void lookupPlayerUUIDForName(final String playerName, final Callback<UUID> runWhenDone) {
 		assert playerName != null;
 		assert runWhenDone != null;
-		assert Paintball.instance != null;
+		assert Paintball.getInstance() != null;
 
 		// fast check for online players:
 		Player player = Bukkit.getPlayerExact(playerName);
@@ -609,14 +609,14 @@ public class PlayerManager {
 			return;
 		}
 
-		Paintball.instance.addAsyncTask();
-		Bukkit.getScheduler().runTaskAsynchronously(Paintball.instance, new Runnable() {
+		Paintball.getInstance().addAsyncTask();
+		Bukkit.getScheduler().runTaskAsynchronously(Paintball.getInstance(), new Runnable() {
 
 			@Override
 			public void run() {
 				UUID uuid = getPlayerUUID(playerName);
-				Paintball.instance.removeAsyncTask();
-				Bukkit.getScheduler().runTask(Paintball.instance, runWhenDone.setResult(uuid));
+				Paintball.getInstance().removeAsyncTask();
+				Bukkit.getScheduler().runTask(Paintball.getInstance(), runWhenDone.setResult(uuid));
 			}
 		});
 	}

@@ -49,9 +49,9 @@ public class SniperHandler extends WeaponHandler {
 		
 		Snowball snowball = location.getWorld().spawn(location, Snowball.class);
 		snowball.setShooter(player);
-		Paintball.instance.weaponManager.getBallHandler().createBall(match, player, snowball, origin);
-		if (Paintball.instance.sniperNoGravity) {
-			Paintball.instance.weaponManager.getNoGravityHandler().addEntity(snowball, direction.multiply(speed), Paintball.instance.sniperNoGravityDuration * 20);
+		Paintball.getInstance().weaponManager.getBallHandler().createBall(match, player, snowball, origin);
+		if (Paintball.getInstance().sniperNoGravity) {
+			Paintball.getInstance().weaponManager.getNoGravityHandler().addEntity(snowball, direction.multiply(speed), Paintball.getInstance().sniperNoGravityDuration * 20);
 		} else {
 			snowball.setVelocity(direction.multiply(speed));
 		}
@@ -73,7 +73,7 @@ public class SniperHandler extends WeaponHandler {
 
 	@Override
 	protected void onInteract(PlayerInteractEvent event, Match match) {
-		if (event.getAction() == Action.PHYSICAL || !Paintball.instance.sniper) return;
+		if (event.getAction() == Action.PHYSICAL || !Paintball.getInstance().sniper) return;
 		Player player = event.getPlayer();
 		ItemStack itemInHand = player.getItemInHand();
 		if (itemInHand == null) return;
@@ -84,19 +84,19 @@ public class SniperHandler extends WeaponHandler {
 				toggleZoom(player);
 			} else if (action == Action.RIGHT_CLICK_AIR) {
 				PlayerInventory inv = player.getInventory();
-				if ((!Paintball.instance.sniperOnlyUseIfZooming || isZooming(player))
-					&& (match.setting_balls == -1 || inv.containsAtLeast(Paintball.instance.weaponManager.getBallHandler().getItem(), 1))) {
+				if ((!Paintball.getInstance().sniperOnlyUseIfZooming || isZooming(player))
+					&& (match.setting_balls == -1 || inv.containsAtLeast(Paintball.getInstance().weaponManager.getBallHandler().getItem(), 1))) {
 					// INFORM MATCH
 					match.onShot(player);
 					
 					Vector direction = player.getLocation().getDirection();
 					Location spawnLoc = Utils.getRightHeadLocation(direction, player.getEyeLocation());
-					shoot(player, match, spawnLoc, direction, Paintball.instance.sniperSpeedmulti, this.getWeaponOrigin());
+					shoot(player, match, spawnLoc, direction, Paintball.getInstance().sniperSpeedmulti, this.getWeaponOrigin());
 					
 					if (match.setting_balls != -1) {
 						// -1 ball
-						Utils.removeInventoryItems(inv, Paintball.instance.weaponManager.getBallHandler().getItem(), 1);
-						Utils.updatePlayerInventoryLater(Paintball.instance, player);
+						Utils.removeInventoryItems(inv, Paintball.getInstance().weaponManager.getBallHandler().getItem(), 1);
+						Utils.updatePlayerInventoryLater(Paintball.getInstance(), player);
 					}
 				} else {
 					player.playSound(player.getEyeLocation(), Sound.ITEM_FLINTANDSTEEL_USE, 1F, 2F);
@@ -114,7 +114,7 @@ public class SniperHandler extends WeaponHandler {
 	
 	private void setZoom(Player player) {
 		player.setWalkSpeed(-0.15F);
-		if(Paintball.instance.sniperRemoveSpeed) player.removePotionEffect(PotionEffectType.SPEED);
+		if(Paintball.getInstance().sniperRemoveSpeed) player.removePotionEffect(PotionEffectType.SPEED);
 	}
 	
 	private void setNoZoom(Player player) {

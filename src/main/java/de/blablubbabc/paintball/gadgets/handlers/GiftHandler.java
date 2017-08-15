@@ -32,7 +32,7 @@ public class GiftHandler extends WeaponHandler {
 	
 	public GiftHandler(int customItemTypeID, boolean useDefaultType) {
 		super("Gift", customItemTypeID, useDefaultType, null);
-		time = 1000 * 60 * Paintball.instance.wishesDelay;
+		time = 1000 * 60 * Paintball.getInstance().wishesDelay;
 	}
 	
 	@Override
@@ -54,8 +54,8 @@ public class GiftHandler extends WeaponHandler {
 		ItemStack itemInHand = player.getItemInHand();
 		if (itemInHand == null) return;
 		
-		if (Paintball.instance.giftsEnabled && itemInHand.isSimilar(getItem())) {
-			Paintball.instance.getServer().getScheduler().runTask(Paintball.instance, new Runnable() {
+		if (Paintball.getInstance().giftsEnabled && itemInHand.isSimilar(getItem())) {
+			Paintball.getInstance().getServer().getScheduler().runTask(Paintball.getInstance(), new Runnable() {
 				
 				@Override
 				public void run() {
@@ -88,7 +88,7 @@ public class GiftHandler extends WeaponHandler {
 		if(all) player.sendMessage(Translator.getString("ALL_RECEIVED_GIFT"));
 		else player.sendMessage(Translator.getString("RECEIVED_GIFT")) ;
 		
-		player.getInventory().addItem(Paintball.instance.weaponManager.setMeta(new ItemStack(getItem().getType(), amount)));
+		player.getInventory().addItem(Paintball.getInstance().weaponManager.setMeta(new ItemStack(getItem().getType(), amount)));
 		/*if(player.getInventory().firstEmpty() != -1) {
 			player.getInventory().addItem(new ItemStack(Material.CHEST, amount));
 		} else {
@@ -107,19 +107,19 @@ public class GiftHandler extends WeaponHandler {
 			i.setAmount(i.getAmount() - 1);
 			player.setItemInHand(i);
 		}
-		if (!Paintball.instance.gifts.isEmpty()) {
+		if (!Paintball.getInstance().gifts.isEmpty()) {
 			//gift:
 			double r = (Utils.random.nextInt(1000) / 10);
 			double chance = 0.0;
-			for (Gift g : Paintball.instance.gifts) {
-				chance += (g.getChance() * Paintball.instance.giftChanceFactor);
+			for (Gift g : Paintball.getInstance().gifts) {
+				chance += (g.getChance() * Paintball.getInstance().giftChanceFactor);
 				if (r < chance) {
 					player.sendMessage(ChatColor.GREEN + g.getMessage());
-					ItemStack item = Paintball.instance.weaponManager.setMeta(g.getItem(true));
+					ItemStack item = Paintball.getInstance().weaponManager.setMeta(g.getItem(true));
 					player.getInventory().addItem(item);
 					
 					// item in hand update
-					Paintball.instance.weaponManager.onItemHeld(player, item);
+					Paintball.getInstance().weaponManager.onItemHeld(player, item);
 					
 					player.updateInventory();
 					break;
@@ -128,8 +128,8 @@ public class GiftHandler extends WeaponHandler {
 		}
 		//wishes
 		String name = player.getName();
-		if (Paintball.instance.bWishes && !alreadyWished(name)) {
-			player.sendMessage(Paintball.instance.wishes);
+		if (Paintball.getInstance().bWishes && !alreadyWished(name)) {
+			player.sendMessage(Paintball.getInstance().wishes);
 			setWishes(name);
 		}
 	}
@@ -141,7 +141,7 @@ public class GiftHandler extends WeaponHandler {
 		receiver.sendMessage(Translator.getString("RECEIVED_GIFT_FROM", vars)) ;
 		goodGuy.sendMessage(Translator.getString("GAVE_GIFT_TO", vars)) ;
 		
-		receiver.getInventory().addItem(Paintball.instance.weaponManager.setMeta(new ItemStack(getItemTypeID(), 1)));
+		receiver.getInventory().addItem(Paintball.getInstance().weaponManager.setMeta(new ItemStack(getItemTypeID(), 1)));
 		
 		ItemStack i = goodGuy.getItemInHand();
 		if (i.getAmount() <= 1) {

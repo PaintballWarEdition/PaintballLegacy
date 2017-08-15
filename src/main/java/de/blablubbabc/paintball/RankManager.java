@@ -176,7 +176,7 @@ public class RankManager {
 	}
 
 	public Rank getRank(UUID uuid) {
-		PlayerStats stats = Paintball.instance.playerManager.getPlayerStats(uuid);
+		PlayerStats stats = Paintball.getInstance().playerManager.getPlayerStats(uuid);
 		// stats even exist for this player ? -> else return lowest rank
 		if (stats == null) return ranks.get(0);
 

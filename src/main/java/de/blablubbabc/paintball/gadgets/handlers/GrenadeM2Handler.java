@@ -47,7 +47,7 @@ public class GrenadeM2Handler extends WeaponHandler implements Listener {
 			}
 		});
 
-		Paintball.instance.getServer().getPluginManager().registerEvents(this, Paintball.instance);
+		Paintball.getInstance().getServer().getPluginManager().registerEvents(this, Paintball.getInstance());
 	}
 	
 	public GrenadeM2 createGrenadeM2(Match match, Player player, Item nade, Origin origin) {
@@ -80,7 +80,7 @@ public class GrenadeM2Handler extends WeaponHandler implements Listener {
 	
 	@Override
 	protected void onInteract(PlayerInteractEvent event, Match match) {
-		if (event.getAction() == Action.PHYSICAL || !Paintball.instance.grenade2) return;
+		if (event.getAction() == Action.PHYSICAL || !Paintball.getInstance().grenade2) return;
 		Player player = event.getPlayer();
 		ItemStack itemInHand = player.getItemInHand();
 		if (itemInHand == null) return;
@@ -98,7 +98,7 @@ public class GrenadeM2Handler extends WeaponHandler implements Listener {
 			meta.setDisplayName("GrenadeM2 " + getNext());
 			nadeItem.setItemMeta(meta);
 			Item nade = world.dropItem(spawnLoc, nadeItem);
-			nade.setVelocity(direction.multiply(Paintball.instance.grenade2Speed));
+			nade.setVelocity(direction.multiply(Paintball.getInstance().grenade2Speed));
 			
 			createGrenadeM2(match, player, nade, this.getWeaponOrigin());
 			
@@ -108,7 +108,7 @@ public class GrenadeM2Handler extends WeaponHandler implements Listener {
 				itemInHand.setAmount(itemInHand.getAmount() - 1);
 				player.setItemInHand(itemInHand);
 			}
-			Utils.updatePlayerInventoryLater(Paintball.instance, player);
+			Utils.updatePlayerInventoryLater(Paintball.getInstance(), player);
 		}
 	}
 	
@@ -132,13 +132,13 @@ public class GrenadeM2Handler extends WeaponHandler implements Listener {
 			super(gadgetHandler, match, player.getName(), origin);
 			this.entity = nade;
 			
-			Paintball.instance.getServer().getScheduler().runTaskLater(Paintball.instance, new Runnable() {
+			Paintball.getInstance().getServer().getScheduler().runTaskLater(Paintball.getInstance(), new Runnable() {
 				
 				@Override
 				public void run() {
 					explode();
 				}
-			}, 20L * Paintball.instance.grenade2TimeUntilExplosion);
+			}, 20L * Paintball.getInstance().grenade2TimeUntilExplosion);
 		}
 		
 		public void explode() {
@@ -146,24 +146,24 @@ public class GrenadeM2Handler extends WeaponHandler implements Listener {
 				exploded = true;
 				Location location = entity.getLocation();
 				location.getWorld().createExplosion(location, -1F);
-				Player player = Paintball.instance.getServer().getPlayerExact(playerName);
+				Player player = Paintball.getInstance().getServer().getPlayerExact(playerName);
 				if (player != null) {
 					for (Vector v : Utils.getDirections()) {
 						final Snowball snowball = location.getWorld().spawn(location, Snowball.class);
 						snowball.setShooter(player);
-						final Ball ball = Paintball.instance.weaponManager.getBallHandler().createBall(match, player, snowball, getGadgetOrigin());
+						final Ball ball = Paintball.getInstance().weaponManager.getBallHandler().createBall(match, player, snowball, getGadgetOrigin());
 						Vector v2 = v.clone();
 						v2.setX(v.getX() + Math.random() - Math.random());
 						v2.setY(v.getY() + Math.random() - Math.random());
 						v2.setZ(v.getZ() + Math.random() - Math.random());
-						snowball.setVelocity(v2.normalize().multiply(Paintball.instance.grenade2ShrapnelSpeed));
-						Paintball.instance.getServer().getScheduler().scheduleSyncDelayedTask(Paintball.instance, new Runnable() {
+						snowball.setVelocity(v2.normalize().multiply(Paintball.getInstance().grenade2ShrapnelSpeed));
+						Paintball.getInstance().getServer().getScheduler().scheduleSyncDelayedTask(Paintball.getInstance(), new Runnable() {
 
 							@Override
 							public void run() {
 								ball.dispose(true);
 							}
-						}, (long) Paintball.instance.grenade2Time);
+						}, (long) Paintball.getInstance().grenade2Time);
 					}
 				}
 			}

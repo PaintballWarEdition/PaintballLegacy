@@ -197,7 +197,7 @@ public class EventListener implements Listener {
 			if (pStat != null) {
 				Map<String, String> vars = new HashMap<String, String>();
 				vars.put("player", player.getName());
-				PlayerStats stats = Paintball.instance.playerManager.getPlayerStats(player.getUniqueId());
+				PlayerStats stats = Paintball.getInstance().playerManager.getPlayerStats(player.getUniqueId());
 				// stats for this player even exist ?
 				if (stats != null) {
 					if (rank) {

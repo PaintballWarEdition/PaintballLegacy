@@ -77,14 +77,14 @@ public class CommandSignsListener implements Listener {
 			plugin.getServer().getPluginManager().callEvent(commandEvent);
 			if (!commandEvent.isCancelled()) {
 				String resultCommand = commandEvent.getMessage();
-				if (Paintball.instance.debug) {
+				if (Paintball.getInstance().debug) {
 					if (!resultCommand.equals(eventCommand)) {
 						player.sendMessage("[PB DEBUG] PlayerCommandPreprocessEvent: Command '" + eventCommand + "' was changed to '" + resultCommand + "'");
 					}
 				}
 				player.performCommand(resultCommand.substring(1));
 			} else {
-				if (Paintball.instance.debug) {
+				if (Paintball.getInstance().debug) {
 					player.sendMessage("[PB DEBUG] PlayerCommandPreprocessEvent was cancelled");
 				}
 			}

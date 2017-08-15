@@ -50,7 +50,7 @@ public class GrenadeHandler extends WeaponHandler implements Listener {
 			}
 		});
 
-		Paintball.instance.getServer().getPluginManager().registerEvents(this, Paintball.instance);
+		Paintball.getInstance().getServer().getPluginManager().registerEvents(this, Paintball.getInstance());
 	}
 
 	public Grenade createGrenade(Match match, Player player, Egg nade, Origin origin) {
@@ -62,7 +62,7 @@ public class GrenadeHandler extends WeaponHandler implements Listener {
 		Egg egg = event.getEgg();
 		if (egg.getShooter() instanceof Player) {
 			Player player = (Player) egg.getShooter();
-			Match match = Paintball.instance.matchManager.getMatch(player);
+			Match match = Paintball.getInstance().matchManager.getMatch(player);
 			if (match != null && gadgetManager.isGadget(egg, match, player.getName())) {
 				event.setHatching(false);
 			}
@@ -84,7 +84,7 @@ public class GrenadeHandler extends WeaponHandler implements Listener {
 
 	@Override
 	protected void onInteract(PlayerInteractEvent event, Match match) {
-		if (event.getAction() == Action.PHYSICAL || !Paintball.instance.grenade) return;
+		if (event.getAction() == Action.PHYSICAL || !Paintball.getInstance().grenade) return;
 		Player player = event.getPlayer();
 		ItemStack itemInHand = player.getItemInHand();
 		if (itemInHand == null) return;
@@ -102,7 +102,7 @@ public class GrenadeHandler extends WeaponHandler implements Listener {
 				Egg egg = (Egg) player.getWorld().spawnEntity(spawnLoc, EntityType.EGG);
 				egg.setShooter(player);
 				// boosting:
-				egg.setVelocity(direction.multiply(Paintball.instance.grenadeSpeed));
+				egg.setVelocity(direction.multiply(Paintball.getInstance().grenadeSpeed));
 				createGrenade(match, player, egg, this.getWeaponOrigin());
 				// INFORM MATCH
 				match.onGrenade(player);
@@ -114,12 +114,12 @@ public class GrenadeHandler extends WeaponHandler implements Listener {
 				player.playSound(player.getEyeLocation(), Sound.ITEM_FLINTANDSTEEL_USE, 1F, 2F);
 			}
 		}
-		Utils.updatePlayerInventoryLater(Paintball.instance, player);
+		Utils.updatePlayerInventoryLater(Paintball.getInstance(), player);
 	}
 
 	@Override
 	protected void onProjectileHit(ProjectileHitEvent event, Projectile projectile, Match match, Player shooter) {
-		if (Paintball.instance.grenade && projectile.getType() == EntityType.EGG) {
+		if (Paintball.getInstance().grenade && projectile.getType() == EntityType.EGG) {
 			Gadget nadeGadget = gadgetManager.getGadget(projectile, match, shooter.getName());
 			if (nadeGadget != null) {
 				Grenade grenade = (Grenade) nadeGadget;
@@ -155,19 +155,19 @@ public class GrenadeHandler extends WeaponHandler implements Listener {
 				for (Vector v : Utils.getDirections()) {
 					final Snowball snowball = location.getWorld().spawn(location, Snowball.class);
 					snowball.setShooter(shooter);
-					final Ball ball = Paintball.instance.weaponManager.getBallHandler().createBall(match, shooter, snowball, getGadgetOrigin());
+					final Ball ball = Paintball.getInstance().weaponManager.getBallHandler().createBall(match, shooter, snowball, getGadgetOrigin());
 					Vector v2 = v.clone();
 					v2.setX(v.getX() + Math.random() - Math.random());
 					v2.setY(v.getY() + Math.random() - Math.random());
 					v2.setZ(v.getZ() + Math.random() - Math.random());
-					snowball.setVelocity(v2.normalize().multiply(Paintball.instance.grenadeShrapnelSpeed));
-					Paintball.instance.getServer().getScheduler().scheduleSyncDelayedTask(Paintball.instance, new Runnable() {
+					snowball.setVelocity(v2.normalize().multiply(Paintball.getInstance().grenadeShrapnelSpeed));
+					Paintball.getInstance().getServer().getScheduler().scheduleSyncDelayedTask(Paintball.getInstance(), new Runnable() {
 
 						@Override
 						public void run() {
 							ball.dispose(true);
 						}
-					}, (long) Paintball.instance.grenadeTime);
+					}, (long) Paintball.getInstance().grenadeTime);
 				}
 			}
 

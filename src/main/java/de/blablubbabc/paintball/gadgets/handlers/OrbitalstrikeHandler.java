@@ -92,7 +92,7 @@ public class OrbitalstrikeHandler extends WeaponHandler {
 	
 	@Override
 	protected void onInteract(PlayerInteractEvent event, Match match) {
-		if (event.getAction() == Action.PHYSICAL || !Paintball.instance.orbitalstrike) return;
+		if (event.getAction() == Action.PHYSICAL || !Paintball.getInstance().orbitalstrike) return;
 		
 		final Player player = event.getPlayer();
 		String playerName = player.getName();
@@ -102,8 +102,8 @@ public class OrbitalstrikeHandler extends WeaponHandler {
 		if (itemInHand.isSimilar(getItem())) {
 			Block block = marks.get(playerName);
 			if (block != null) {
-				if (gadgetManager.getMatchGadgetCount(match) < Paintball.instance.orbitalstrikeMatchLimit) {
-					if (gadgetManager.getPlayerGadgetCount(match, playerName) < Paintball.instance.orbitalstrikePlayerLimit) {
+				if (gadgetManager.getMatchGadgetCount(match) < Paintball.getInstance().orbitalstrikeMatchLimit) {
+					if (gadgetManager.getPlayerGadgetCount(match, playerName) < Paintball.getInstance().orbitalstrikePlayerLimit) {
 						
 						demark(player);
 						FinalMark finalMark = addFinalMark(block, player, match);
@@ -116,7 +116,7 @@ public class OrbitalstrikeHandler extends WeaponHandler {
 						} else {
 							itemInHand.setAmount(itemInHand.getAmount() - 1);
 						}
-						Utils.updatePlayerInventoryLater(Paintball.instance, player);
+						Utils.updatePlayerInventoryLater(Paintball.getInstance(), player);
 					} else {
 						player.sendMessage(Translator.getString("ORBITALSTRIKE_PLAYER_LIMIT_REACHED"));
 					}
@@ -135,7 +135,7 @@ public class OrbitalstrikeHandler extends WeaponHandler {
 		final String name = player.getName();
 		if (getItem().isSimilar(newItem)) {
 			if (!taskIds.containsKey(name)) {
-				int taskId = Paintball.instance.getServer().getScheduler().runTaskTimer(Paintball.instance, new Runnable() {
+				int taskId = Paintball.getInstance().getServer().getScheduler().runTaskTimer(Paintball.getInstance(), new Runnable() {
 
 					@Override
 					public void run() {
@@ -146,7 +146,7 @@ public class OrbitalstrikeHandler extends WeaponHandler {
 								mark(block, player);
 							}
 						} else {
-							Paintball.instance.getServer().getScheduler().cancelTask(taskIds.get(name));
+							Paintball.getInstance().getServer().getScheduler().cancelTask(taskIds.get(name));
 							taskIds.remove(name);
 							demark(player);
 						}
@@ -157,7 +157,7 @@ public class OrbitalstrikeHandler extends WeaponHandler {
 		} else {
 			Integer id = taskIds.get(name);
 			if (id != null) {
-				Paintball.instance.getServer().getScheduler().cancelTask(id);
+				Paintball.getInstance().getServer().getScheduler().cancelTask(id);
 				taskIds.remove(name);
 				demark(player);
 			}
@@ -227,7 +227,7 @@ public class OrbitalstrikeHandler extends WeaponHandler {
 			// orbitalstrike message
 			player.sendMessage(Translator.getString("ORBITALSTRIKE_CALLED"));
 
-			task = Paintball.instance.getServer().getScheduler().scheduleSyncRepeatingTask(Paintball.instance, new Runnable() {
+			task = Paintball.getInstance().getServer().getScheduler().scheduleSyncRepeatingTask(Paintball.getInstance(), new Runnable() {
 				int i = 41;
 				Location oldLoc;
 
@@ -250,7 +250,7 @@ public class OrbitalstrikeHandler extends WeaponHandler {
 						final Location loc3 = location.clone().add(0, 3, 0);
 						final Location loc4 = location.clone().add(0, 4, 0);
 						
-						Paintball.instance.getServer().getScheduler().runTaskLater(Paintball.instance, new Runnable() {
+						Paintball.getInstance().getServer().getScheduler().runTaskLater(Paintball.getInstance(), new Runnable() {
 
 							@Override
 							public void run() {
@@ -261,7 +261,7 @@ public class OrbitalstrikeHandler extends WeaponHandler {
 							}
 						}, 1L);
 						
-						Paintball.instance.getServer().getScheduler().runTaskLater(Paintball.instance, new Runnable() {
+						Paintball.getInstance().getServer().getScheduler().runTaskLater(Paintball.getInstance(), new Runnable() {
 
 							@Override
 							public void run() {
@@ -271,7 +271,7 @@ public class OrbitalstrikeHandler extends WeaponHandler {
 							}
 						}, 2L);
 
-						Paintball.instance.getServer().getScheduler().runTaskLater(Paintball.instance, new Runnable() {
+						Paintball.getInstance().getServer().getScheduler().runTaskLater(Paintball.getInstance(), new Runnable() {
 
 							@Override
 							public void run() {
@@ -281,7 +281,7 @@ public class OrbitalstrikeHandler extends WeaponHandler {
 							}
 						}, 5L);
 
-						Paintball.instance.getServer().getScheduler().runTaskLater(Paintball.instance, new Runnable() {
+						Paintball.getInstance().getServer().getScheduler().runTaskLater(Paintball.getInstance(), new Runnable() {
 
 							@Override
 							public void run() {
@@ -291,7 +291,7 @@ public class OrbitalstrikeHandler extends WeaponHandler {
 							}
 						}, 10L);
 
-						Paintball.instance.getServer().getScheduler().runTaskLater(Paintball.instance, new Runnable() {
+						Paintball.getInstance().getServer().getScheduler().runTaskLater(Paintball.getInstance(), new Runnable() {
 
 							@Override
 							public void run() {
@@ -317,13 +317,13 @@ public class OrbitalstrikeHandler extends WeaponHandler {
 				if (yValue == 0) snowball.setVelocity(direction);
 				else snowball.setVelocity(direction.clone().setY(yValue));
 				
-				Paintball.instance.weaponManager.getBallHandler().createBall(match, player, snowball, getGadgetOrigin());
+				Paintball.getInstance().weaponManager.getBallHandler().createBall(match, player, snowball, getGadgetOrigin());
 			}
 		}
 		
 		@Override
 		public void dispose(boolean removeFromGadgetHandlerTracking) {
-			if (this.task != -1) Paintball.instance.getServer().getScheduler().cancelTask(task);
+			if (this.task != -1) Paintball.getInstance().getServer().getScheduler().cancelTask(task);
 			if (finalMark != null) finalMark.demark(playerName, match);
 			
 			super.dispose(removeFromGadgetHandlerTracking);

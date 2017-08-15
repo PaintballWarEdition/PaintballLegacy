@@ -34,8 +34,8 @@ public class TagAPIListener implements Listener {
 	
 	private void handleAsyncEvent(final AsyncPlayerReceiveNameTagEvent event) {
 		// getting a players name tag can depend on many dynamic, internal things, which are currently not thread safe (yet)
-        if (!Thread.currentThread().equals(Paintball.instance.mainThread)) {
-            final Future<Boolean> future = Bukkit.getScheduler().callSyncMethod(Paintball.instance, new Callable<Boolean>() {
+        if (!Thread.currentThread().equals(Paintball.getInstance().mainThread)) {
+            final Future<Boolean> future = Bukkit.getScheduler().callSyncMethod(Paintball.getInstance(), new Callable<Boolean>() {
                 @Override
                 public Boolean call() throws Exception {
 					handleEventSync(event);
@@ -44,8 +44,8 @@ public class TagAPIListener implements Listener {
             });
             final long start = System.currentTimeMillis();
             while (!future.isCancelled() && !future.isDone()) {
-                if ((Paintball.instance.mainThread == null) || ((System.currentTimeMillis() - start) > 5000)) {
-                    if (Paintball.instance.mainThread != null) {
+                if ((Paintball.getInstance().mainThread == null) || ((System.currentTimeMillis() - start) > 5000)) {
+                    if (Paintball.getInstance().mainThread != null) {
                         Log.severe("Tag handling took too long (limit: 5000ms). Ignoring for " + event.getNamedPlayer().getName() + " as seen by " + event.getPlayer().getName());
                     }
                     return;

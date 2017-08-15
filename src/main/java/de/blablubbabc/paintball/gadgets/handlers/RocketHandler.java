@@ -66,15 +66,15 @@ public class RocketHandler extends WeaponHandler {
 
 	@Override
 	protected void onInteract(PlayerInteractEvent event, Match match) {
-		if (event.getAction() == Action.PHYSICAL || !Paintball.instance.rocket) return;
+		if (event.getAction() == Action.PHYSICAL || !Paintball.getInstance().rocket) return;
 		Player player = event.getPlayer();
 		String playerName = player.getName();
 		ItemStack itemInHand = player.getItemInHand();
 		if (itemInHand == null) return;
 		
 		if (itemInHand.isSimilar(getItem())) {
-			if (gadgetManager.getMatchGadgetCount(match) < Paintball.instance.rocketMatchLimit) {
-				if (gadgetManager.getPlayerGadgetCount(match, playerName) < Paintball.instance.rocketPlayerLimit) {
+			if (gadgetManager.getMatchGadgetCount(match) < Paintball.getInstance().rocketMatchLimit) {
+				if (gadgetManager.getPlayerGadgetCount(match, playerName) < Paintball.getInstance().rocketPlayerLimit) {
 					
 					World world = player.getWorld();
 					Vector direction = player.getLocation().getDirection().normalize();
@@ -85,7 +85,7 @@ public class RocketHandler extends WeaponHandler {
 					rocket.setIsIncendiary(false);
 					rocket.setYield(0F);
 					rocket.setShooter(player);
-					rocket.setVelocity(direction.multiply(Paintball.instance.rocketSpeedMulti));
+					rocket.setVelocity(direction.multiply(Paintball.getInstance().rocketSpeedMulti));
 					
 					createRocket(match, player, rocket, this.getWeaponOrigin());
 					
@@ -95,7 +95,7 @@ public class RocketHandler extends WeaponHandler {
 						itemInHand.setAmount(itemInHand.getAmount() - 1);
 						player.setItemInHand(itemInHand);
 					}
-					Utils.updatePlayerInventoryLater(Paintball.instance, player);
+					Utils.updatePlayerInventoryLater(Paintball.getInstance(), player);
 				} else {
 					player.sendMessage(Translator.getString("ROCKET_PLAYER_LIMIT_REACHED"));
 				}
@@ -106,7 +106,7 @@ public class RocketHandler extends WeaponHandler {
 	}
 	@Override
 	protected void onProjectileHit(ProjectileHitEvent event, Projectile projectile, Match match, Player shooter) {
-		if (Paintball.instance.rocket && projectile.getType() == EntityType.FIREBALL) {
+		if (Paintball.getInstance().rocket && projectile.getType() == EntityType.FIREBALL) {
 			Gadget rocketGadget = gadgetManager.getGadget(projectile, match, shooter.getName());
 			if (rocketGadget != null) {
 				Rocket rocket = (Rocket) rocketGadget;
@@ -139,12 +139,12 @@ public class RocketHandler extends WeaponHandler {
 			
 			this.entity = rocket;
 			this.player = player;
-			this.lives = Paintball.instance.rocketRange * 10;
+			this.lives = Paintball.getInstance().rocketRange * 10;
 			tick();
 		}
 
 		private void tick() {
-			tickTask = Paintball.instance.getServer().getScheduler().runTaskLater(Paintball.instance, new Runnable() {
+			tickTask = Paintball.getInstance().getServer().getScheduler().runTaskLater(Paintball.getInstance(), new Runnable() {
 
 				@Override
 				public void run() {
@@ -152,7 +152,7 @@ public class RocketHandler extends WeaponHandler {
 						lives--;
 
 						// some effects:
-						if (Paintball.instance.effects) {
+						if (Paintball.getInstance().effects) {
 							Location loc = entity.getLocation();
 							World world = entity.getWorld();
 							for (int i = 1; i <= 8; i++) {
@@ -178,7 +178,7 @@ public class RocketHandler extends WeaponHandler {
 					final Snowball snowball = loc.getWorld().spawn(loc, Snowball.class);
 					snowball.setShooter(player);
 
-					final Ball ball = Paintball.instance.weaponManager.getBallHandler().createBall(match, player, snowball, getGadgetOrigin());
+					final Ball ball = Paintball.getInstance().weaponManager.getBallHandler().createBall(match, player, snowball, getGadgetOrigin());
 					
 					Vector v2 = v.clone();
 					v2.setX(v.getX() + Utils.random.nextDouble() - Utils.random.nextDouble());
@@ -186,13 +186,13 @@ public class RocketHandler extends WeaponHandler {
 					v2.setZ(v.getZ() + Utils.random.nextDouble() - Utils.random.nextDouble());
 					snowball.setVelocity(v2.normalize());
 					
-					Paintball.instance.getServer().getScheduler().runTaskLater(Paintball.instance, new Runnable() {
+					Paintball.getInstance().getServer().getScheduler().runTaskLater(Paintball.getInstance(), new Runnable() {
 
 						@Override
 						public void run() {
 							ball.dispose(true);
 						}
-					}, (long) Paintball.instance.rocketTime);
+					}, (long) Paintball.getInstance().rocketTime);
 				}
 			}
 			
@@ -203,11 +203,11 @@ public class RocketHandler extends WeaponHandler {
 		@Override
 		public void dispose(boolean removeFromGadgetHandlerTracking) {
 			if (tickTask != -1) {
-				Paintball.instance.getServer().getScheduler().cancelTask(tickTask);
+				Paintball.getInstance().getServer().getScheduler().cancelTask(tickTask);
 			}
 			
 			// some effect here:
-			if (Paintball.instance.effects) {
+			if (Paintball.getInstance().effects) {
 				Location loc = entity.getLocation();
 				World world = entity.getWorld();
 				for (int i = 1; i <= 8; i++) {

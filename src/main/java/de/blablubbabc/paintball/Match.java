@@ -166,7 +166,7 @@ public class Match {
 		this.started = false;
 
 		if (plugin.countdownStart > 0) {
-			startTimer = new Timer(Paintball.instance, 0L, 20L, plugin.countdownStart, new Runnable() {
+			startTimer = new Timer(Paintball.getInstance(), 0L, 20L, plugin.countdownStart, new Runnable() {
 
 				@Override
 				public void run() {
@@ -248,7 +248,7 @@ public class Match {
 	}
 
 	private void startRoundTimer() {
-		roundTimer = new Timer(Paintball.instance, 0L, 20L, setting_round_time, new Runnable() {
+		roundTimer = new Timer(Paintball.getInstance(), 0L, 20L, setting_round_time, new Runnable() {
 
 			@Override
 			public void run() {
@@ -357,9 +357,9 @@ public class Match {
 
 		// TEAM WOOL
 		if (red) {
-			player.getInventory().setItem(8, Paintball.instance.weaponManager.setMeta(new ItemStack(Material.WOOL, 1, DyeColor.RED.getWoolData())));
+			player.getInventory().setItem(8, Paintball.getInstance().weaponManager.setMeta(new ItemStack(Material.WOOL, 1, DyeColor.RED.getWoolData())));
 		} else {
-			player.getInventory().setItem(8, Paintball.instance.weaponManager.setMeta(new ItemStack(Material.WOOL, 1, DyeColor.BLUE.getWoolData())));
+			player.getInventory().setItem(8, Paintball.getInstance().weaponManager.setMeta(new ItemStack(Material.WOOL, 1, DyeColor.BLUE.getWoolData())));
 		}
 
 		// if marker is not paintball item:
@@ -507,7 +507,7 @@ public class Match {
 		player.getInventory().setLeggings(Utils.setLeatherArmorColor(new ItemStack(Material.LEATHER_LEGGINGS, 1), Lobby.SPECTATE.colorA()));
 		player.getInventory().setBoots(Utils.setLeatherArmorColor(new ItemStack(Material.LEATHER_BOOTS, 1), Lobby.SPECTATE.colorA()));
 
-		player.getInventory().setItem(8, Paintball.instance.weaponManager.setMeta(new ItemStack(Material.WOOL, 1, DyeColor.YELLOW.getWoolData())));
+		player.getInventory().setItem(8, Paintball.getInstance().weaponManager.setMeta(new ItemStack(Material.WOOL, 1, DyeColor.YELLOW.getWoolData())));
 
 		player.updateInventory();
 		// MESSAGE

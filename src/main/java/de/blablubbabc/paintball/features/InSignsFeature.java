@@ -39,7 +39,7 @@ public class InSignsFeature {
 			else if (s.equals("airstrikes")) s = "as";
 			else if (s.equals("money_spent")) s = "spent";
 
-			new SimpleChanger(Paintball.instance, "[PB_" + s.toUpperCase() + "]", "paintball.admin") {
+			new SimpleChanger(Paintball.getInstance(), "[PB_" + s.toUpperCase() + "]", "paintball.admin") {
 
 				@Override
 				public String getValue(Player player, Location signLocation, String affectedLine) {
@@ -62,7 +62,7 @@ public class InSignsFeature {
 			};
 
 			// rank changers:
-			new SimpleChanger(Paintball.instance, "[PB_R_" + s.toUpperCase() + "]", "paintball.admin") {
+			new SimpleChanger(Paintball.getInstance(), "[PB_R_" + s.toUpperCase() + "]", "paintball.admin") {
 
 				@Override
 				public String getValue(Player player, Location signLocation, String affectedLine) {
@@ -79,7 +79,7 @@ public class InSignsFeature {
 		}
 
 		// Create additional changer for default rank (points):
-		new SimpleChanger(Paintball.instance, "[PB_RANK]", "paintball.admin") {
+		new SimpleChanger(Paintball.getInstance(), "[PB_RANK]", "paintball.admin") {
 
 			@Override
 			public String getValue(Player player, Location signLocation, String affectedLine) {

@@ -64,8 +64,8 @@ public class PlayerStats {
 	}
 
 	private void rankupNotification(int oldPoints, int newPoints) {
-		Rank rank = Paintball.instance.rankManager.getRank(playerUUID);
-		Rank new_rank = Paintball.instance.rankManager.getRank(newPoints);
+		Rank rank = Paintball.getInstance().rankManager.getRank(playerUUID);
+		Rank new_rank = Paintball.getInstance().rankManager.getRank(newPoints);
 
 		if (rank != new_rank) {
 			if (newPoints > oldPoints) {
@@ -78,7 +78,7 @@ public class PlayerStats {
 					KeyValuePair pluginString = new KeyValuePair("plugin", Translator.getString("PLUGIN"));
 					KeyValuePair newRankName = new KeyValuePair("new_rank", new_rank.getName());
 
-					Rank next_rank = Paintball.instance.rankManager.getNextRank(new_rank);
+					Rank next_rank = Paintball.getInstance().rankManager.getNextRank(new_rank);
 					// max rank
 					if (next_rank == new_rank) {
 						player.sendMessage(Translator.getString("RANK_UP_NOTIFICATION_MAX", pluginString, newRankName));
@@ -115,32 +115,32 @@ public class PlayerStats {
 
 	public void save() {
 		if (dirty) {
-			Paintball.instance.sql.sqlPlayers.setPlayerStats(playerUUID, stats);
+			Paintball.getInstance().sql.sqlPlayers.setPlayerStats(playerUUID, stats);
 
 			// Paintball.instance.pm.setStats(playerName, stats);
 			dirty = false;
 
 			// update stats on scoreboard, if player is in lobby:
-			Paintball.instance.playerManager.updateLobbyScoreboard(playerUUID);
+			Paintball.getInstance().playerManager.updateLobbyScoreboard(playerUUID);
 		}
 	}
 
 	public void saveAsync() {
 		if (dirty) {
-			Paintball.instance.addAsyncTask();
-			Paintball.instance.getServer().getScheduler().runTaskAsynchronously(Paintball.instance, new Runnable() {
+			Paintball.getInstance().addAsyncTask();
+			Paintball.getInstance().getServer().getScheduler().runTaskAsynchronously(Paintball.getInstance(), new Runnable() {
 
 				@Override
 				public void run() {
 					save();
-					Paintball.instance.removeAsyncTask();
+					Paintball.getInstance().removeAsyncTask();
 				}
 			});
 		}
 	}
 
 	public void load() {
-		stats = Paintball.instance.sql.sqlPlayers.getPlayerStats(playerUUID);
+		stats = Paintball.getInstance().sql.sqlPlayers.getPlayerStats(playerUUID);
 		// stats = Paintball.instance.pm.getStats(playerName);
 		calculateQuotes();
 	}

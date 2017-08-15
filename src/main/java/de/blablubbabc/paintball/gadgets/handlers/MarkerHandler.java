@@ -80,12 +80,12 @@ public class MarkerHandler extends WeaponHandler {
 				Snowball snowball = (Snowball) world.spawnEntity(spawnLoc, EntityType.SNOWBALL);
 				snowball.setShooter(player);
 				// REGISTER:
-				Paintball.instance.weaponManager.getBallHandler().createBall(match, player, snowball, this.getWeaponOrigin());
+				Paintball.getInstance().weaponManager.getBallHandler().createBall(match, player, snowball, this.getWeaponOrigin());
 				// BOOST:
-				snowball.setVelocity(direction.multiply(Paintball.instance.speedmulti));
+				snowball.setVelocity(direction.multiply(Paintball.getInstance().speedmulti));
 				// STATS
 				// PLAYERSTATS
-				PlayerStats playerStats = Paintball.instance.playerManager.getPlayerStats(player.getUniqueId());
+				PlayerStats playerStats = Paintball.getInstance().playerManager.getPlayerStats(player.getUniqueId());
 				playerStats.addStat(PlayerStat.SHOTS, 1);
 				// INFORM MATCH
 				match.onShot(player);
@@ -98,7 +98,7 @@ public class MarkerHandler extends WeaponHandler {
 			} else {
 				player.playSound(player.getEyeLocation(), Sound.ITEM_FLINTANDSTEEL_USE, 1F, 2F);
 			}
-			Utils.updatePlayerInventoryLater(Paintball.instance, player);
+			Utils.updatePlayerInventoryLater(Paintball.getInstance(), player);
 		}
 	}
 
@@ -106,13 +106,13 @@ public class MarkerHandler extends WeaponHandler {
 	protected void onProjectileHit(ProjectileHitEvent event, Projectile projectile, Match match, Player shooter) {
 		if (projectile.getType() == EntityType.SNOWBALL) {
 			String shooterName = shooter.getName();
-			Gadget ball = Paintball.instance.weaponManager.getBallHandler().getBall(projectile, match, shooterName);
+			Gadget ball = Paintball.getInstance().weaponManager.getBallHandler().getBall(projectile, match, shooterName);
 			// is paintball ?
 			if (ball != null) {
 				Location location = projectile.getLocation();
 
 				// effect
-				if (Paintball.instance.effects) {
+				if (Paintball.getInstance().effects) {
 					if (match.isBlue(shooter)) {
 						location.getWorld().playEffect(location, Effect.POTION_BREAK, 0);
 					} else if (match.isRed(shooter)) {
@@ -121,7 +121,7 @@ public class MarkerHandler extends WeaponHandler {
 				}
 
 				// call event for others:
-				Paintball.instance.getServer().getPluginManager().callEvent(new PaintballHitEvent(event, match, shooter));
+				Paintball.getInstance().getServer().getPluginManager().callEvent(new PaintballHitEvent(event, match, shooter));
 
 				// remove ball from tracking:
 				ball.dispose(true);

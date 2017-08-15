@@ -24,7 +24,7 @@ public abstract class WeaponHandler {
 	
 	public WeaponHandler(String weaponName, int customItemTypeID, boolean useDefaultType, Origin origin) {
 		this.weaponName = weaponName;
-		Paintball.instance.weaponManager.registerWeaponHandler(weaponName, this);
+		Paintball.getInstance().weaponManager.registerWeaponHandler(weaponName, this);
 		item = setItemMeta(new ItemStack(useDefaultType ? getDefaultItemTypeID() : customItemTypeID));
 		this.origin = origin != null ? origin : new Origin();
 	}

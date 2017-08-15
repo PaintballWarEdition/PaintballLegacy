@@ -94,7 +94,7 @@ public class Translator {
 			if (!localisationFile.equals(def_file)) {
 				Log.info("Loading the specified language now: "
 						+ localisationFile.getName());
-				translation = loadLanguage(localisationFile, Paintball.instance.languageFileEncoding);
+				translation = loadLanguage(localisationFile, Paintball.getInstance().languageFileEncoding);
 				if (translation == null) {
 					Log.warning("Couldn't load the specified language file!", true);
 					Log.warning("Do you use the right translation?");

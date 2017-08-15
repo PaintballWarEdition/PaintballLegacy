@@ -149,7 +149,7 @@ public class ShopMenu {
 	}
 	
 	private void openPageLater(final Player player, final int page) {
-		Paintball.instance.getServer().getScheduler().runTaskLater(plugin, new Runnable() {
+		Paintball.getInstance().getServer().getScheduler().runTaskLater(plugin, new Runnable() {
 			
 			@Override
 			public void run() {

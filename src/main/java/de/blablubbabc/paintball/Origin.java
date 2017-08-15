@@ -25,7 +25,7 @@ public class Origin {
 		vars.put("target_color", fragInfo.getTargetColor().toString());
 		vars.put("pre_target", fragInfo.getPreTarget());
 		vars.put("after_target", fragInfo.getAfterTarget());
-		vars.put("feed_color", Paintball.instance.feeder.getFeedColor());
+		vars.put("feed_color", Paintball.getInstance().feeder.getFeedColor());
 		
 		return vars;
 	}

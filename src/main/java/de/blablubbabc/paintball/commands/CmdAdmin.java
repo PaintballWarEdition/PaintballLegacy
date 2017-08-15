@@ -212,7 +212,7 @@ public class CmdAdmin {
 		if (args[1].equalsIgnoreCase("reset")) {
 			if (args.length == 3 && args[2].equalsIgnoreCase("all")) {
 				sender.sendMessage(Translator.getString("THIS_NEEDS_TIME"));
-				Paintball.instance.addAsyncTask();
+				Paintball.getInstance().addAsyncTask();
 				plugin.getServer().getScheduler().runTaskAsynchronously(plugin, new Runnable() {
 
 					@Override
@@ -229,7 +229,7 @@ public class CmdAdmin {
 						vars.put("time", String.valueOf(delta));
 						vars.put("amount", String.valueOf(amount));
 						sender.sendMessage(Translator.getString("ALL_STATS_RESET", vars));
-						Paintball.instance.removeAsyncTask();
+						Paintball.getInstance().removeAsyncTask();
 					}
 				});
 				return true;

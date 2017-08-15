@@ -24,7 +24,7 @@ import de.blablubbabc.paintball.utils.Translator;
 
 public class ShopManager {
 
-	public final ItemStack item = Paintball.instance.weaponManager.setMeta(new ItemStack(Material.BOOK));
+	public final ItemStack item = Paintball.getInstance().weaponManager.setMeta(new ItemStack(Material.BOOK));
 
 	private Paintball plugin;
 	private ShopGood[] goods;

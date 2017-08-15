@@ -39,7 +39,7 @@ public class NoGravityHandler {
 	}
 
 	public void run() {
-		taskID = Paintball.instance.getServer().getScheduler().runTaskTimer(Paintball.instance, new Runnable() {
+		taskID = Paintball.getInstance().getServer().getScheduler().runTaskTimer(Paintball.getInstance(), new Runnable() {
 			
 			@Override
 			public void run() {
@@ -54,7 +54,7 @@ public class NoGravityHandler {
 						iterator.remove();
 						// stop task if no longer needed:
 						if (entities.isEmpty()) {
-							Paintball.instance.getServer().getScheduler().cancelTask(taskID);
+							Paintball.getInstance().getServer().getScheduler().cancelTask(taskID);
 							taskID = -1;
 						}
 					} else {

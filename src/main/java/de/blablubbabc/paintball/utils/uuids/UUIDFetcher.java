@@ -48,7 +48,7 @@ public class UUIDFetcher {
 		Map<String, UUID> uuids = new HashMap<String, UUID>();
 
 		// use available local uuids first:
-		if (Paintball.instance.uuidUseLocalPlayerData) {
+		if (Paintball.getInstance().uuidUseLocalPlayerData) {
 			Log.info("Searching player uuids in local server data ...");
 			for (OfflinePlayer offlinePlayer : Bukkit.getServer().getOfflinePlayers()) {
 				if (offlinePlayer.getName() != null && offlinePlayer.getUniqueId() != null) {
@@ -68,9 +68,9 @@ public class UUIDFetcher {
 		}
 
 		// take UUIDCollector into account:
-		if (Paintball.instance.uuidUseUUIDCollector) {
+		if (Paintball.getInstance().uuidUseUUIDCollector) {
 			Log.info("Searching player uuids in UUIDCollector data ...");
-			File uuidCollectorDir = new File(Paintball.instance.getDataFolder().getParentFile(), "UUIDCollector");
+			File uuidCollectorDir = new File(Paintball.getInstance().getDataFolder().getParentFile(), "UUIDCollector");
 			if (uuidCollectorDir.exists()) {
 				File uuidCollectorFile = new File(uuidCollectorDir, "config.yml");
 				YamlConfiguration uuidCollectorConfig = YamlConfiguration.loadConfiguration(uuidCollectorFile);
@@ -105,7 +105,7 @@ public class UUIDFetcher {
 		Map<String, UUID> uuids = new HashMap<String, UUID>();
 
 		// for online mode, request remaining uuids from Mojang:
-		if (Paintball.instance.uuidOnlineMode) {
+		if (Paintball.getInstance().uuidOnlineMode) {
 			Log.info("Requesting remaining online mode uuids from Mojang ...");
 			int requests = (int) Math.ceil(names.size() / PROFILES_PER_REQUEST);
 			int counter = 0;

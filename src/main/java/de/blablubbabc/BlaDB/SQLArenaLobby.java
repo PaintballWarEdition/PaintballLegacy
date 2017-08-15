@@ -141,13 +141,13 @@ public class SQLArenaLobby {
 				if (rs != null) {
 					while (rs.next()) {
 						String worldName = rs.getString("world");
-						World world = Paintball.instance.getServer().getWorld(worldName);
+						World world = Paintball.getInstance().getServer().getWorld(worldName);
 						if (world == null) {
 							Log.warning("[!] Paintball tried to load a location from database which is located in an unknown, not yet loaded, or non-existing world ( "
 									+ worldName + " ).    Please report this warning to blablubbabc on 'http://dev.bukkit.org/server-mods/paintball_pure_war/tickets/'"
 									+ " together with a list of your plugins, especially plugins you know to be related to world creating, loading, managing or teleportation. Thank you!");
 							Log.warning("[!!!] The world '" + worldName + "' will now be loaded, or created if it is not existing. If you want to delete or rename a world, make sure to remove all arena and lobby spawns from it first!");
-							world = Paintball.instance.getServer().createWorld(new WorldCreator(worldName));
+							world = Paintball.getInstance().getServer().createWorld(new WorldCreator(worldName));
 						}
 						Location loc = new Location(world,
 													rs.getDouble("x"), rs.getDouble("y"),
