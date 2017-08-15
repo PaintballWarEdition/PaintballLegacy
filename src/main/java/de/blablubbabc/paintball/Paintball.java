@@ -53,17 +53,6 @@ import de.blablubbabc.paintball.utils.Utils;
 import de.blablubbabc.BlaDB.BlaSQLite;
 import de.blablubbabc.commandsigns.CommandSignsListener;
 
-/**
- * This file is part of blablubbabc's paintball-plugin.
- * Do not redistribute or modify it in any way. Use it as it is.
- * Do not copy, redistribute or give away.
- * Usage on own risk. I give no warranties.
- * Commercial usage in any way is not allowed! Neither direct nor indirect.
- * These terms of use apply to every part of the plugin.
- * 
- * @author blablubbabc
- * 
- */
 public class Paintball extends JavaPlugin {
 
 	public static Paintball instance;
