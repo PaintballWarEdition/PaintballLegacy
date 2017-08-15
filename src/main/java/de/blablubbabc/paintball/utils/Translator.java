@@ -13,6 +13,7 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Scanner;
+
 import org.bukkit.ChatColor;
 import org.bukkit.plugin.Plugin;
 
@@ -20,23 +21,22 @@ import de.blablubbabc.paintball.Paintball;
 
 public class Translator {
 	public static boolean success = false;
-	
-	private static Map<String, String> translation;
+
+	private static Map<String, String> translation = new HashMap<String, String>();
 
 	public Translator(Plugin plugin, String filename) {
 		Translator.success = false;
-		Translator.translation = new HashMap<String, String>();
-		
+
 		File path;
 		File localisationFile;
 		File def_file;
-		
+
 		boolean use_def = false;
 		Map<String, String> def_language = new HashMap<String, String>();
 
 		path = new File(plugin.getDataFolder().toString() + "/languages/");
 		if (!path.exists())
-			path.mkdirs();
+							path.mkdirs();
 
 		// write default language file:
 		// Default language:
@@ -131,12 +131,12 @@ public class Translator {
 			}
 		}
 		Translator.success = true;
-		
+
 		// remove the not needed map:
 		if (use_def) {
 			translation = def_language;
 		}
-		
+
 		def_language = null;
 	}
 
@@ -147,24 +147,24 @@ public class Translator {
 
 	public static String getString(String key, Map<String, String> vars) {
 		if (vars == null) return getString(key);
-		
+
 		KeyValuePair[] values = new KeyValuePair[vars.size()];
 		// vars
 		int i = 0;
 		for (Entry<String, String> entry : vars.entrySet()) {
 			values[i++] = new KeyValuePair(entry.getKey(), entry.getValue());
 		}
-		
+
 		return getString(key, values);
 	}
-	
+
 	public static String getString(String key, KeyValuePair... values) {
 		if (!success) {
 			return "ERROR:couldn't load language!";
 		}
-		
+
 		String value = translation.get(key.toUpperCase());
-		
+
 		if (value == null) {
 			return "ERROR:translation_is_missing!";
 		} else {
@@ -177,7 +177,7 @@ public class Translator {
 				}
 			}
 			// colors should already be done, when loading the langauge file:
-			//value = ChatColor.translateAlternateColorCodes('&', value);
+			// value = ChatColor.translateAlternateColorCodes('&', value);
 			return value;
 		}
 	}
@@ -192,22 +192,19 @@ public class Translator {
 		Scanner scanner = null;
 		try {
 			scanner = new Scanner(file, encoding);
-			// TEST
 			int line_skipped = 0;
 			int line = 0;
 			while (scanner.hasNextLine()) {
 				line++;
 				String text = scanner.nextLine();
-				// Spaces am anfang entfernen:
-				while (text.startsWith(" ")) {
-					text = text.substring(1);
-				}
-				// Leerzeile?
+				// trim:
+				text = text.trim();
+				// empty line?
 				if (text.isEmpty()) {
 					line_skipped++;
 					continue;
 				}
-				// comment-zeile?
+				// comment-line?
 				if (text.startsWith("#")) {
 					line_skipped++;
 					continue;
@@ -232,13 +229,12 @@ public class Translator {
 					Log.warning("No second '\"' found in line " + line);
 					return null;
 				}
-				// too many '"'?
-				int gaense = 0;
+				// too many quotes?
+				int quotes = 0;
 				for (int i = 0; i < value.length(); i++) {
-					if (value.charAt(i) == '"')
-						gaense++;
+					if (value.charAt(i) == '"') quotes++;
 				}
-				if (gaense > 2) {
+				if (quotes > 2) {
 					Log.warning("Too many '\"' found in line " + line);
 					return null;
 				}
@@ -259,7 +255,7 @@ public class Translator {
 				// Add colored value to translation map:
 				language.put(key, ChatColor.translateAlternateColorCodes('&', value));
 			}
-			
+
 			Log.info("Scanned lines: " + line + " | Skipped lines: " + line_skipped);
 			return language;
 		} catch (Exception e) {
@@ -267,8 +263,7 @@ public class Translator {
 			e.printStackTrace();
 			return null;
 		} finally {
-			if(scanner != null) scanner.close();
+			if (scanner != null) scanner.close();
 		}
-
 	}
 }

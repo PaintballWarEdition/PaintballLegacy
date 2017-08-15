@@ -127,13 +127,13 @@ public class PlayerStats {
 
 	public void saveAsync() {
 		if (dirty) {
-			Paintball.getInstance().addAsyncTask();
-			Paintball.getInstance().getServer().getScheduler().runTaskAsynchronously(Paintball.getInstance(), new Runnable() {
+			Paintball.addAsyncTask();
+			Bukkit.getScheduler().runTaskAsynchronously(Paintball.getInstance(), new Runnable() {
 
 				@Override
 				public void run() {
 					save();
-					Paintball.getInstance().removeAsyncTask();
+					Paintball.removeAsyncTask();
 				}
 			});
 		}
@@ -142,7 +142,6 @@ public class PlayerStats {
 	public void load() {
 		stats = Paintball.getInstance().sql.sqlPlayers.getPlayerStats(playerUUID);
 		// stats = Paintball.instance.pm.getStats(playerName);
-		calculateQuotes();
+		this.calculateQuotes();
 	}
-
 }

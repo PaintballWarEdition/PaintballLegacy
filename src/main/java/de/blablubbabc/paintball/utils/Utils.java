@@ -25,6 +25,7 @@ import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.PlayerInventory;
 import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.inventory.meta.LeatherArmorMeta;
+import org.bukkit.plugin.IllegalPluginAccessException;
 import org.bukkit.plugin.Plugin;
 import org.bukkit.util.Vector;
 
@@ -367,6 +368,44 @@ public class Utils {
 			return radial[Math.round(yaw / 45f) & 0x7];
 		} else {
 			return axis[Math.round(yaw / 90f) & 0x3];
+		}
+	}
+
+	// ////////
+
+	// THREAD-SAFE SCHEDULER SHORTCUTS
+
+	public static boolean runTask(Plugin plugin, Runnable task) {
+		return runTaskLater(plugin, task, 0L);
+	}
+
+	public static boolean runTaskLater(Plugin plugin, Runnable task, long delay) {
+		assert plugin != null && task != null;
+		// reduces the change for the following task registration to fail:
+		if (!plugin.isEnabled()) return false;
+		try {
+			Bukkit.getScheduler().runTaskLater(plugin, task, delay);
+			return true;
+		} catch (IllegalPluginAccessException e) {
+			// could't register task: the plugin got disabled just now
+			return false;
+		}
+	}
+
+	public static boolean runAsyncTask(Plugin plugin, Runnable task) {
+		return runAsyncTaskLater(plugin, task, 0L);
+	}
+
+	public static boolean runAsyncTaskLater(Plugin plugin, Runnable task, long delay) {
+		assert plugin != null && task != null;
+		// reduces the change for the following task registration to fail:
+		if (!plugin.isEnabled()) return false;
+		try {
+			Bukkit.getScheduler().runTaskLaterAsynchronously(plugin, task, delay);
+			return true;
+		} catch (IllegalPluginAccessException e) {
+			// could't register task: the plugin got disabled just now
+			return false;
 		}
 	}
 }

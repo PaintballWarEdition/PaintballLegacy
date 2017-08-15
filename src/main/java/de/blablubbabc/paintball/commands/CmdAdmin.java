@@ -9,6 +9,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 
+import org.bukkit.Bukkit;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.EntityType;
@@ -16,7 +17,6 @@ import org.bukkit.entity.Player;
 
 import de.blablubbabc.paintball.Lobby;
 import de.blablubbabc.paintball.Paintball;
-import de.blablubbabc.paintball.PlayerManager;
 import de.blablubbabc.paintball.statistics.player.PlayerStat;
 import de.blablubbabc.paintball.statistics.player.PlayerStats;
 import de.blablubbabc.paintball.utils.Callback;
@@ -112,7 +112,7 @@ public class CmdAdmin {
 					final String key = args[3];
 					final String valueArg = args[4];
 
-					PlayerManager.lookupPlayerUUIDForName(playerName, new Callback<UUID>() {
+					plugin.playerManager.lookupPlayerUUIDForName(playerName, new Callback<UUID>() {
 
 						@Override
 						protected void onComplete(UUID uuid) {
@@ -161,7 +161,7 @@ public class CmdAdmin {
 					final String key = args[3];
 					final String valueArg = args[4];
 
-					PlayerManager.lookupPlayerUUIDForName(playerName, new Callback<UUID>() {
+					plugin.playerManager.lookupPlayerUUIDForName(playerName, new Callback<UUID>() {
 
 						@Override
 						protected void onComplete(UUID uuid) {
@@ -212,8 +212,8 @@ public class CmdAdmin {
 		if (args[1].equalsIgnoreCase("reset")) {
 			if (args.length == 3 && args[2].equalsIgnoreCase("all")) {
 				sender.sendMessage(Translator.getString("THIS_NEEDS_TIME"));
-				Paintball.getInstance().addAsyncTask();
-				plugin.getServer().getScheduler().runTaskAsynchronously(plugin, new Runnable() {
+				Paintball.addAsyncTask();
+				Bukkit.getScheduler().runTaskAsynchronously(plugin, new Runnable() {
 
 					@Override
 					public void run() {
@@ -229,14 +229,14 @@ public class CmdAdmin {
 						vars.put("time", String.valueOf(delta));
 						vars.put("amount", String.valueOf(amount));
 						sender.sendMessage(Translator.getString("ALL_STATS_RESET", vars));
-						Paintball.getInstance().removeAsyncTask();
+						Paintball.removeAsyncTask();
 					}
 				});
 				return true;
 			} else if (args.length == 3) {
 				final String playerName = args[2];
 
-				PlayerManager.lookupPlayerUUIDForName(playerName, new Callback<UUID>() {
+				plugin.playerManager.lookupPlayerUUIDForName(playerName, new Callback<UUID>() {
 
 					@Override
 					protected void onComplete(UUID uuid) {
@@ -264,7 +264,7 @@ public class CmdAdmin {
 				final String playerName = args[2];
 				final String key = args[3];
 
-				PlayerManager.lookupPlayerUUIDForName(playerName, new Callback<UUID>() {
+				plugin.playerManager.lookupPlayerUUIDForName(playerName, new Callback<UUID>() {
 
 					@Override
 					protected void onComplete(UUID uuid) {
@@ -302,7 +302,7 @@ public class CmdAdmin {
 		} else if (args[1].equalsIgnoreCase("stats")) {
 			if (args.length == 3) {
 				final String playerName = args[2];
-				PlayerManager.lookupPlayerUUIDForName(playerName, new Callback<UUID>() {
+				plugin.playerManager.lookupPlayerUUIDForName(playerName, new Callback<UUID>() {
 
 					@Override
 					protected void onComplete(UUID uuid) {
@@ -328,7 +328,7 @@ public class CmdAdmin {
 					return false;
 				}
 
-				PlayerManager.lookupPlayerUUIDForName(playerName, new Callback<UUID>() {
+				plugin.playerManager.lookupPlayerUUIDForName(playerName, new Callback<UUID>() {
 
 					@Override
 					protected void onComplete(UUID uuid) {

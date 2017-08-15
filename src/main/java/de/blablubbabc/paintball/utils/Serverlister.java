@@ -14,53 +14,80 @@ import java.net.InetAddress;
 import java.net.URL;
 import java.net.URLConnection;
 import java.net.URLEncoder;
+import java.util.Map.Entry;
 import java.util.UUID;
 
 import org.bukkit.ChatColor;
+import org.bukkit.configuration.Configuration;
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.plugin.PluginDescriptionFile;
 
 import de.blablubbabc.paintball.Paintball;
 
 public class Serverlister {
+
 	private static final String URL = "http://blablubbabc.de/paintball/serverlist/post.php";
 	private final static String CONFIG_FILE = "plugins/Paintball/serverlist.yml";
-	
+
 	private final Paintball plugin;
-	private final YamlConfiguration defaults;
 	private final YamlConfiguration config;
 	private final File configFile;
-	//private static final int PING_INTERVAL = 10;//unused
-	//CONFIG VALUES
-	
+
+	// private static final int PING_INTERVAL = 10;//unused
+	// CONFIG VALUES
+
 	public Serverlister(Paintball plugin) {
 		this.plugin = plugin;
-		this.defaults = new YamlConfiguration();
+
 		// load the config
-        configFile = new File(CONFIG_FILE);
-        config = YamlConfiguration.loadConfiguration(configFile);
-		// init defaults:
-		initDefaults();
-		// set defaults:
-		for (String node : defaults.getValues(true).keySet()) {
-			//CONFIG
-			if (config.get(node) == null) config.set(node, defaults.get(node));
+		configFile = new File(CONFIG_FILE);
+		config = YamlConfiguration.loadConfiguration(configFile);
+
+		// setup defaults:
+		Configuration defaults = new YamlConfiguration();
+		defaults.set("Server.id", UUID.randomUUID().toString());
+		defaults.set("Server.post enabled", true);
+		defaults.set("Server.show in serverlist", true);
+
+		// apply defaults for missing entries:
+		for (Entry<String, Object> defaultValue : defaults.getValues(true).entrySet()) {
+			String node = defaultValue.getKey();
+			if (!config.isSet(node)) {
+				config.set(node, defaultValue.getValue());
+			}
 		}
-		// correct serverid:
+
+		// correct server-id:
 		String serverid = config.getString("Server.id");
 		if (!isValid(serverid)) {
 			config.set("Server.id", defaults.get("Server.id"));
 		}
+		// save, creates defaults if missing:
 		try {
 			config.save(configFile);
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
-		
+	}
+
+	private static boolean isValid(String uuid) {
+		if (uuid == null) return false;
+		try {
+			// we have to convert to object and back to string because the built in fromString does not have
+			// good validation logic:
+			UUID fromStringUUID = UUID.fromString(uuid);
+			String toStringUUID = fromStringUUID.toString();
+			return toStringUUID.equals(uuid);
+		} catch (IllegalArgumentException e) {
+			return false;
+		}
+	}
+
+	public void post() {
 		// post server:
 		if (config.getBoolean("Server.post enabled", true)) {
 			try {
-				post();
+				doPost();
 			} catch (IOException e) {
 				Log.info("--------- Serverlist ----------");
 				Log.info("Wasn't able to post server: " + e.getMessage());
@@ -69,27 +96,8 @@ public class Serverlister {
 			}
 		}
 	}
-	
-	private void initDefaults() {
-		defaults.set("Server.id", UUID.randomUUID().toString());
-		defaults.set("Server.post enabled", true);
-		defaults.set("Server.show in serverlist", true);
-	}
-	
-	private static boolean isValid(String uuid){
-	    if (uuid == null) return false;
-	    try {
-	        // we have to convert to object and back to string because the built in fromString does not have 
-	        // good validation logic.
-	        UUID fromStringUUID = UUID.fromString(uuid);
-	        String toStringUUID = fromStringUUID.toString();
-	        return toStringUUID.equals(uuid);
-	    } catch (IllegalArgumentException e) {
-	        return false;
-	    }
-	}
-	
-	private void post() throws IOException {
+
+	private void doPost() throws IOException {
 		// The plugin's description file containg all of the plugin data such as name, version, author, etc
 		final PluginDescriptionFile description = plugin.getDescription();
 		final String ip = InetAddress.getLocalHost().toString();
@@ -98,7 +106,7 @@ public class Serverlister {
 		final StringBuilder data = new StringBuilder();
 		String serverid = config.getString("Server.Id", "unknown id");
 		data.append(encode("serverid")).append('=').append(encode(serverid));
-		//Server List Data
+		// Server List Data
 		encodeDataPair(data, "serverip", ip);
 		encodeDataPair(data, "ip", plugin.getServer().getIp());
 		encodeDataPair(data, "port", Integer.toString(plugin.getServer().getPort()));
@@ -110,10 +118,10 @@ public class Serverlister {
 		encodeDataPair(data, "whitelist", Boolean.toString(plugin.getServer().hasWhitelist()));
 		encodeDataPair(data, "pluginversion", description.getVersion());
 		encodeDataPair(data, "nometrics", Boolean.toString(!plugin.metrics));
-		
+
 		int numberp = plugin.playerManager.getPlayersEverPlayedCount();
 		int numberj = plugin.playerManager.getPlayerCount();
-		
+
 		encodeDataPair(data, "everplayed", Integer.toString(numberp));
 		encodeDataPair(data, "everjoined", Integer.toString(numberj));
 		encodeDataPair(data, "autolobby", Boolean.toString(plugin.autoLobby));

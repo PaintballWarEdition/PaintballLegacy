@@ -12,6 +12,7 @@ import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.atomic.AtomicInteger;
 import java.util.regex.Pattern;
 
 import org.bukkit.Bukkit;
@@ -55,42 +56,47 @@ import de.blablubbabc.commandsigns.CommandSignsListener;
 
 public class Paintball extends JavaPlugin {
 
+	// INSTANCE
+
 	private static Paintball instance;
 
 	public static Paintball getInstance() {
 		return instance;
 	}
 
+	public static Paintball getInstanceAsync() {
+		synchronized (Paintball.class) {
+			return instance;
+		}
+	}
+
+	// ASYNC TASKS
+
+	private static final AtomicInteger asyncTaskCounter = new AtomicInteger(0);
+
+	// returns new task count
+	public static int addAsyncTask() {
+		return asyncTaskCounter.incrementAndGet();
+	}
+
+	// returns new task count
+	public static int removeAsyncTask() {
+		return asyncTaskCounter.decrementAndGet();
+	}
+
+	public static int getAsyncTasksCount() {
+		return asyncTaskCounter.get();
+	}
+
+	public static boolean isAsyncTaskRunning() {
+		return (asyncTaskCounter.get() > 0);
+	}
+
+	// ///
+
 	public Thread mainThread;
 
 	public boolean currentlyDisabling = false;
-
-	private final Object asyncLock = new Object();
-	private int asyncTaskCounter = 0;
-
-	public void addAsyncTask() {
-		synchronized (asyncLock) {
-			asyncTaskCounter++;
-		}
-	}
-
-	public void removeAsyncTask() {
-		synchronized (asyncLock) {
-			asyncTaskCounter--;
-		}
-	}
-
-	public int getAsyncTasksCount() {
-		synchronized (asyncLock) {
-			return asyncTaskCounter;
-		}
-	}
-
-	public boolean isAsyncTaskRunning() {
-		synchronized (asyncLock) {
-			return asyncTaskCounter > 0;
-		}
-	}
 
 	public PlayerManager playerManager;
 	public CommandManager commandManager;
@@ -115,7 +121,7 @@ public class Paintball extends JavaPlugin {
 	public boolean active;
 	public boolean happyhour;
 	public boolean softreload;
-	public boolean needsUpdate = false;
+	public volatile boolean needsUpdate = false;
 
 	// LOBBYSPAWNS
 	public int lobbyspawn;
@@ -126,7 +132,7 @@ public class Paintball extends JavaPlugin {
 
 	// CONFIG:
 	// general:
-	public boolean versioncheck;
+	public boolean versionCheck;
 	public boolean metrics;
 	// language:
 	public String local;
@@ -364,7 +370,9 @@ public class Paintball extends JavaPlugin {
 
 	@SuppressWarnings("unchecked")
 	public void onEnable() {
-		instance = this;
+		synchronized (Paintball.class) {
+			instance = this;
+		}
 		mainThread = Thread.currentThread();
 
 		// LOGGER
@@ -666,7 +674,7 @@ public class Paintball extends JavaPlugin {
 		saveConfig();
 
 		// server
-		versioncheck = getConfig().getBoolean("Server.Version Check", true);
+		versionCheck = getConfig().getBoolean("Server.Version Check", true);
 		metrics = getConfig().getBoolean("Server.Metrics", true);
 
 		// uuid conversion:
@@ -1047,7 +1055,7 @@ public class Paintball extends JavaPlugin {
 		// COMMAND SIGNS LISTENER
 		commandSignListener = new CommandSignsListener(this);
 		// PLAYERMANAGER
-		playerManager = new PlayerManager();
+		playerManager = new PlayerManager(this);
 		// Newsfeeder
 		feeder = new Newsfeeder(this);
 		// Listener
@@ -1081,7 +1089,7 @@ public class Paintball extends JavaPlugin {
 		 */
 
 		// METRICS
-		if (this.metrics) {
+		if (metrics) {
 			try {
 				Metrics metrics = new Metrics(this);
 				// Custom Data:
@@ -1154,6 +1162,9 @@ public class Paintball extends JavaPlugin {
 			Log.info("--------- ---------------- ----------");
 		}
 
+		// server list:
+		serverList = new Serverlister(this);
+
 		// InSigns sign changer:
 		Plugin insignsPlugin = getServer().getPluginManager().getPlugin("InSigns");
 		if ((insignsPlugin != null) && insignsPlugin.isEnabled()) {
@@ -1177,7 +1188,7 @@ public class Paintball extends JavaPlugin {
 		if (vote) {
 			Plugin votifierPlugin = getServer().getPluginManager().getPlugin("Votifier");
 			if ((votifierPlugin != null) && votifierPlugin.isEnabled()) {
-				voteListener = new VoteListener();
+				voteListener = new VoteListener(this);
 				getServer().getPluginManager().registerEvents(voteListener, this);
 				Log.info("Plugin 'Votifier' found. Using it now.");
 			} else {
@@ -1201,17 +1212,19 @@ public class Paintball extends JavaPlugin {
 		}
 
 		// after all plugins are enabled:
-		this.addAsyncTask();
+		Paintball.addAsyncTask();
 		Bukkit.getScheduler().runTaskLaterAsynchronously(this, new Runnable() {
+
+			private final Paintball plugin = Paintball.this;
+			private final boolean versionCheck = Paintball.this.versionCheck;
+			private final File pluginFile = Paintball.this.getFile();
+			private final Serverlister serverList = Paintball.this.serverList;
 
 			@Override
 			public void run() {
-				// SERVERLISTER CONFIG:
-				serverList = new Serverlister(Paintball.this);
-
 				// check for updates:
-				if (Paintball.this.versioncheck) {
-					Updater updater = new Updater(Paintball.this, 41489, Paintball.this.getFile(), UpdateType.NO_DOWNLOAD, true);
+				if (versionCheck) {
+					Updater updater = new Updater(plugin, 41489, pluginFile, UpdateType.NO_DOWNLOAD, true);
 					Updater.UpdateResult result = updater.getResult(); // this freezes until the result is available
 					Log.info("--------- Checking version ----------");
 					switch (result)
@@ -1258,7 +1271,7 @@ public class Paintball extends JavaPlugin {
 					case UPDATE_AVAILABLE:
 						// There was an update found, but because you had the UpdateType set to NO_DOWNLOAD, it was not
 						// downloaded.
-						Paintball.this.needsUpdate = true;
+						plugin.needsUpdate = true;
 						Log.info("There is a new version of paintball available: " + updater.getLatestName() + " (" + updater.getLatestType().name() + ")", true);
 						Log.info("Download at the bukkit dev page.");
 					}
@@ -1270,10 +1283,11 @@ public class Paintball extends JavaPlugin {
 					Log.info("-> enable it in the config.");
 					Log.info("--------- ---------------- ----------");
 				}
-				removeAsyncTask();
 
-				// TODO check if plugin was disabled in meantime
-				Bukkit.getScheduler().runTaskLater(Paintball.this, new Runnable() {
+				// run server list post:
+				serverList.post();
+
+				Utils.runTaskLater(plugin, new Runnable() {
 
 					@Override
 					public void run() {
@@ -1282,11 +1296,13 @@ public class Paintball extends JavaPlugin {
 						Log.logWarnings(false);
 					}
 				}, 20L);
+
+				// done:
+				Paintball.removeAsyncTask();
 			}
 		}, 1L);
 
 		Log.info("By blablubbabc enabled.");
-
 	}
 
 	public void onDisable() {
@@ -1318,7 +1334,9 @@ public class Paintball extends JavaPlugin {
 		Log.info("Disabled!");
 		currentlyDisabling = false;
 		mainThread = null;
-		instance = null;
+		synchronized (Paintball.class) {
+			instance = null;
+		}
 	}
 
 	public void reload(CommandSender sender) {

@@ -14,7 +14,6 @@ import com.vexsoftware.votifier.model.Vote;
 import com.vexsoftware.votifier.model.VotifierEvent;
 
 import de.blablubbabc.paintball.Paintball;
-import de.blablubbabc.paintball.PlayerManager;
 import de.blablubbabc.paintball.statistics.player.PlayerStat;
 import de.blablubbabc.paintball.statistics.player.PlayerStats;
 import de.blablubbabc.paintball.utils.Callback;
@@ -22,7 +21,10 @@ import de.blablubbabc.paintball.utils.Log;
 
 public class VoteListener implements Listener {
 
-	public VoteListener() {
+	private final Paintball plugin;
+
+	public VoteListener(Paintball plugin) {
+		this.plugin = plugin;
 	}
 
 	@EventHandler(priority = EventPriority.NORMAL)
@@ -30,7 +32,7 @@ public class VoteListener implements Listener {
 		Vote vote = event.getVote();
 		final String playerName = vote.getUsername();
 		if (playerName != null && !playerName.isEmpty()) {
-			PlayerManager.lookupPlayerUUIDForName(playerName, new Callback<UUID>() {
+			plugin.playerManager.lookupPlayerUUIDForName(playerName, new Callback<UUID>() {
 
 				@Override
 				protected void onComplete(UUID uuid) {
@@ -38,9 +40,9 @@ public class VoteListener implements Listener {
 						Log.warning("Unknown player voted: " + playerName);
 						return;
 					}
-					PlayerStats stats = Paintball.getInstance().playerManager.getPlayerStats(uuid);
+					PlayerStats stats = plugin.playerManager.getPlayerStats(uuid);
 					if (stats != null) {
-						stats.addStat(PlayerStat.MONEY, Paintball.getInstance().voteCash);
+						stats.addStat(PlayerStat.MONEY, plugin.voteCash);
 						stats.saveAsync();
 					}
 				}

@@ -12,6 +12,7 @@ import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
 
+import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.Sound;
 import org.bukkit.entity.Player;
@@ -30,14 +31,13 @@ import de.blablubbabc.paintball.utils.Utils;
 public class MatchManager {
 
 	private final Paintball plugin;
-	private final List<Match> matches;
+	private final List<Match> matches = new ArrayList<Match>();
 
 	private Timer countdown;
 	private VoteManager voteManager;
 
 	public MatchManager(Paintball pl) {
 		plugin = pl;
-		matches = new ArrayList<Match>();
 		if (plugin.arenaVoting) voteManager = new VoteManager(plugin.arenaVotingOptions, plugin.arenaVotingRandomOption);
 	}
 
@@ -292,8 +292,8 @@ public class MatchManager {
 		}
 
 		// SAVE PLAYER STATS TO DATABASE
-		Paintball.getInstance().addAsyncTask();
-		plugin.getServer().getScheduler().runTaskAsynchronously(plugin, new Runnable() {
+		Paintball.addAsyncTask();
+		Bukkit.getScheduler().runTaskAsynchronously(plugin, new Runnable() {
 
 			@Override
 			public void run() {
@@ -301,7 +301,6 @@ public class MatchManager {
 				plugin.sql.setAutoCommit(false);
 
 				for (Player player : match.getAllPlayer()) {
-					String playerName = player.getName();
 					PlayerStats stats = plugin.playerManager.getPlayerStats(player.getUniqueId());
 					stats.save();
 					// if player not in lobby and not in match -> stats no longer needed:
@@ -310,8 +309,8 @@ public class MatchManager {
 				plugin.sql.commit();
 				plugin.sql.setAutoCommit(auto);
 
-				// Finished. Let's go on:
-				plugin.getServer().getScheduler().runTask(plugin, new Runnable() {
+				// sync:
+				Utils.runTask(plugin, new Runnable() {
 					public void run() {
 						// close match
 						plugin.arenaManager.setNotActive(match.getArena());
@@ -336,7 +335,9 @@ public class MatchManager {
 						}
 					}
 				});
-				Paintball.getInstance().removeAsyncTask();
+
+				// done:
+				Paintball.removeAsyncTask();
 			}
 		});
 
