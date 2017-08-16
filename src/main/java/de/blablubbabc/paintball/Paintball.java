@@ -64,12 +64,6 @@ public class Paintball extends JavaPlugin {
 		return instance;
 	}
 
-	public static Paintball getInstanceAsync() {
-		synchronized (Paintball.class) {
-			return instance;
-		}
-	}
-
 	// ASYNC TASKS
 
 	private static final AtomicInteger asyncTaskCounter = new AtomicInteger(0);
@@ -370,9 +364,7 @@ public class Paintball extends JavaPlugin {
 
 	@SuppressWarnings("unchecked")
 	public void onEnable() {
-		synchronized (Paintball.class) {
-			instance = this;
-		}
+		instance = this;
 		mainThread = Thread.currentThread();
 
 		// LOGGER
@@ -1313,7 +1305,7 @@ public class Paintball extends JavaPlugin {
 
 		// wait for async tasks to complete:
 		final long start = System.currentTimeMillis();
-		while (this.isAsyncTaskRunning()) {
+		while (isAsyncTaskRunning()) {
 			try {
 				Thread.sleep(5);
 			} catch (InterruptedException e) {
@@ -1321,7 +1313,7 @@ public class Paintball extends JavaPlugin {
 			}
 			// wait max 5 seconds then disable anyways..:
 			if (System.currentTimeMillis() - start > 5000) {
-				Log.warning("Waited over 5 seconds for " + this.getAsyncTasksCount()
+				Log.warning("Waited over 5 seconds for " + getAsyncTasksCount()
 						+ " remaining async tasks to complete. Disabling Paintball now anyways..");
 				break;
 			}
@@ -1334,9 +1326,7 @@ public class Paintball extends JavaPlugin {
 		Log.info("Disabled!");
 		currentlyDisabling = false;
 		mainThread = null;
-		synchronized (Paintball.class) {
-			instance = null;
-		}
+		instance = null;
 	}
 
 	public void reload(CommandSender sender) {
