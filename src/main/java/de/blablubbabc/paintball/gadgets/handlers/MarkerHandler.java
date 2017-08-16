@@ -4,6 +4,7 @@
  */
 package de.blablubbabc.paintball.gadgets.handlers;
 
+import org.bukkit.Color;
 import org.bukkit.Effect;
 import org.bukkit.Location;
 import org.bukkit.Material;
@@ -114,9 +115,9 @@ public class MarkerHandler extends WeaponHandler {
 				// effect
 				if (Paintball.getInstance().effects) {
 					if (match.isBlue(shooter)) {
-						location.getWorld().playEffect(location, Effect.POTION_BREAK, 0);
+						location.getWorld().playEffect(location, Effect.POTION_BREAK, Color.BLUE.asRGB());
 					} else if (match.isRed(shooter)) {
-						location.getWorld().playEffect(location, Effect.POTION_BREAK, 5);
+						location.getWorld().playEffect(location, Effect.POTION_BREAK, Color.RED.asRGB());
 					}
 				}
 
