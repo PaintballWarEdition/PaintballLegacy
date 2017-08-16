@@ -1312,8 +1312,8 @@ public class Paintball extends JavaPlugin {
 				e.printStackTrace();
 			}
 			// wait max 5 seconds then disable anyways..:
-			if (System.currentTimeMillis() - start > 5000) {
-				Log.warning("Waited over 5 seconds for " + getAsyncTasksCount()
+			if (System.currentTimeMillis() - start > 30000) {
+				Log.warning("Waited over 30 seconds for " + getAsyncTasksCount()
 						+ " remaining async tasks to complete. Disabling Paintball now anyways..");
 				break;
 			}
