@@ -1276,7 +1276,7 @@ public class Paintball extends JavaPlugin {
 					Log.info("--------- ---------------- ----------");
 				}
 
-				// run server list post:
+				// server list post:
 				serverList.post();
 
 				Utils.runTaskLater(plugin, new Runnable() {
