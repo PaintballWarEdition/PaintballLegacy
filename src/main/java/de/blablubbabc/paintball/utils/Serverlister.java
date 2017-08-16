@@ -104,7 +104,7 @@ public class Serverlister {
 
 		// Construct the post data for version checking and server list
 		final StringBuilder data = new StringBuilder();
-		String serverid = config.getString("Server.Id", "unknown id");
+		String serverid = config.getString("Server.id", "unknown id");
 		data.append(encode("serverid")).append('=').append(encode(serverid));
 		// Server List Data
 		encodeDataPair(data, "serverip", ip);
