@@ -6,5 +6,5 @@ Note: In order to build this project, IndividualSigns has to be located in the l
 You can find information on how to manually add a jar to your local maven repository here:  
 https://maven.apache.org/guides/mini/guide-3rd-party-jars-local.html
 
-Alternatively, you can find it download it (https://github.com/blablubbabc/IndividualSigns/) and build  
-it locally via the included gradle scripts. This should install it into your local repository as well.
+Alternatively you can download (https://github.com/blablubbabc/IndividualSigns/) and build the project  
+yourself via the included gradle scripts. This should install it into your local maven repository as well.
