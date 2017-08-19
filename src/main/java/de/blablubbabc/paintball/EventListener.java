@@ -674,7 +674,7 @@ public class EventListener implements Listener {
 		// notify admins on update:
 		if (plugin.needsUpdate && player.hasPermission("paintball.admin")) {
 			player.sendMessage(ChatColor.DARK_PURPLE + "There is a new version of Paintball available! Check out the bukkit dev page: ");
-			player.sendMessage(ChatColor.AQUA + "https://dev.bukkit.org/projects/paintball_pure_war/");
+			player.sendMessage(ChatColor.AQUA + plugin.getDescription().getWebsite());
 		}
 
 	} /*
