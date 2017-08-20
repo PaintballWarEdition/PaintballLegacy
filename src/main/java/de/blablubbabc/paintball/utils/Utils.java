@@ -381,13 +381,13 @@ public class Utils {
 
 	public static boolean runTaskLater(Plugin plugin, Runnable task, long delay) {
 		assert plugin != null && task != null;
-		// reduces the change for the following task registration to fail:
+		// reduces the chance for the following task registration to fail:
 		if (!plugin.isEnabled()) return false;
 		try {
 			Bukkit.getScheduler().runTaskLater(plugin, task, delay);
 			return true;
 		} catch (IllegalPluginAccessException e) {
-			// could't register task: the plugin got disabled just now
+			// couldn't register task: the plugin got disabled just now
 			return false;
 		}
 	}
@@ -398,13 +398,13 @@ public class Utils {
 
 	public static boolean runAsyncTaskLater(Plugin plugin, Runnable task, long delay) {
 		assert plugin != null && task != null;
-		// reduces the change for the following task registration to fail:
+		// reduces the chance for the following task registration to fail:
 		if (!plugin.isEnabled()) return false;
 		try {
 			Bukkit.getScheduler().runTaskLaterAsynchronously(plugin, task, delay);
 			return true;
 		} catch (IllegalPluginAccessException e) {
-			// could't register task: the plugin got disabled just now
+			// couldn't register task: the plugin got disabled just now
 			return false;
 		}
 	}
