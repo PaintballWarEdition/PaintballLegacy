@@ -4,7 +4,7 @@ version: '${version}'
 authors: [${authors}]
 website: '${url}'
 description: '${description}'
-softdepend: [InSigns, TagAPI, Votifier, Vault, Multiverse-Core, My Worlds, Transporter, Multiworld]
+softdepend: [InSigns, TagAPI, Votifier, Vault, Multiverse-Core, My Worlds, Transporter, Multiworld, PerWorldInventory]
 commands:
     pb:
       description: 'Base paintball commands.'
