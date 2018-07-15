@@ -11,6 +11,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.util.Scanner;
+
 import org.bukkit.Sound;
 import org.bukkit.entity.Player;
 import org.bukkit.plugin.Plugin;
@@ -323,17 +324,17 @@ public class Musician {
 			Instrument i = Instrument.valueOf(s.toUpperCase());
 			switch (i) {
 			case PI:
-				return Sound.BLOCK_NOTE_HARP;
+				return Sound.BLOCK_NOTE_BLOCK_HARP;
 			case BG:
-				return Sound.BLOCK_NOTE_BASS;
+				return Sound.BLOCK_NOTE_BLOCK_BASS;
 			case BD:
-				return Sound.BLOCK_NOTE_BASEDRUM;
+				return Sound.BLOCK_NOTE_BLOCK_BASEDRUM;
 			case SD:
-				return Sound.BLOCK_NOTE_SNARE;
+				return Sound.BLOCK_NOTE_BLOCK_SNARE;
 			case ST:
-				return Sound.BLOCK_NOTE_HAT;
+				return Sound.BLOCK_NOTE_BLOCK_HAT;
 			case PL:
-				return Sound.BLOCK_NOTE_PLING;
+				return Sound.BLOCK_NOTE_BLOCK_PLING;
 			default:
 				return null;
 			}
@@ -346,15 +347,15 @@ public class Musician {
 		try {
 			switch (b) {
 			case 0:
-				return Sound.BLOCK_NOTE_HARP;
+				return Sound.BLOCK_NOTE_BLOCK_HARP;
 			case 1:
-				return Sound.BLOCK_NOTE_BASS;
+				return Sound.BLOCK_NOTE_BLOCK_BASS;
 			case 2:
-				return Sound.BLOCK_NOTE_BASEDRUM;
+				return Sound.BLOCK_NOTE_BLOCK_BASEDRUM;
 			case 3:
-				return Sound.BLOCK_NOTE_SNARE;
+				return Sound.BLOCK_NOTE_BLOCK_SNARE;
 			case 4:
-				return Sound.BLOCK_NOTE_HAT;
+				return Sound.BLOCK_NOTE_BLOCK_HAT;
 			default:
 				return null;
 			}

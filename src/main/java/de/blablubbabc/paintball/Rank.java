@@ -16,10 +16,10 @@ public class Rank implements Comparable<Rank> {
 	private final ItemStack chestplate;
 	private final ItemStack leggings;
 	private final ItemStack boots;
-	
+
 	// will be set after sorting of all ranks:
 	private int rankIndex = 0;
-	
+
 	public Rank(String name, int neededPoints, String prefix, ItemStack helmet, ItemStack chestplate, ItemStack leggings, ItemStack boots) {
 		this.name = name;
 		this.neededPoints = neededPoints;
@@ -29,7 +29,7 @@ public class Rank implements Comparable<Rank> {
 		this.leggings = leggings;
 		this.boots = boots;
 	}
-	
+
 	@SuppressWarnings("deprecation")
 	public void assignArmorToPlayer(Player player) {
 		if (player != null) {
@@ -41,23 +41,23 @@ public class Rank implements Comparable<Rank> {
 			player.updateInventory();
 		}
 	}
-	
+
 	public ItemStack getHelmet() {
 		return helmet;
 	}
-	
+
 	public ItemStack getChestplate() {
 		return chestplate;
 	}
-	
+
 	public ItemStack getLeggings() {
 		return leggings;
 	}
-	
+
 	public ItemStack getBoots() {
 		return boots;
 	}
-	
+
 	public String getName() {
 		return name;
 	}
@@ -76,7 +76,7 @@ public class Rank implements Comparable<Rank> {
 			throw new IllegalArgumentException();
 		}
 		return this.getNeededPoints() - other.getNeededPoints();
-		
+
 	}
 
 	public int getRankIndex() {
@@ -86,5 +86,4 @@ public class Rank implements Comparable<Rank> {
 	void setRankIndex(int rankIndex) {
 		this.rankIndex = rankIndex;
 	}
-	
 }

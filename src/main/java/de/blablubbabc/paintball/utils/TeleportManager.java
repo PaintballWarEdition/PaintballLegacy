@@ -19,6 +19,7 @@ import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.bukkit.event.player.PlayerTeleportEvent;
 import org.bukkit.event.player.PlayerTeleportEvent.TeleportCause;
+import org.bukkit.plugin.Plugin;
 
 import de.blablubbabc.paintball.Lobby;
 import de.blablubbabc.paintball.Paintball;
@@ -45,7 +46,8 @@ public class TeleportManager implements Listener {
 				this.handleTeleportFix(player);
 			}
 		} else {
-			// workaround: essentials tpaccept command would otherwise allow players to be teleported out of the match/lobby
+			// workaround: essentials tpaccept command would otherwise allow players to be teleported out of the
+			// match/lobby
 			// they use TeleportCause.COMMAND, so we can detect this:
 			if (Paintball.getInstance().blockCommandTeleports && event.getCause() == TeleportCause.COMMAND && Lobby.LOBBY.isMember(player)) {
 				event.setCancelled(true);
@@ -54,7 +56,9 @@ public class TeleportManager implements Listener {
 		}
 	}
 
-	//TODO Check if this currently is sending unneeded player update stuff on match end and start
+	// TODO Check if this currently is sending unneeded player update stuff on match end and start
+	// TODO this might not work properly during plugin disable, and if the plugin gets disabled before making the
+	// players visible again
 	private void handleTeleportFix(final Player player) {
 		// fix the visibility issue one tick later:
 		Bukkit.getScheduler().runTaskLater(Paintball.getInstance(), new Runnable() {
@@ -81,14 +85,15 @@ public class TeleportManager implements Listener {
 	private void updateEntities(final Player tpedPlayer, final List<Player> players, final boolean visible) {
 		// hide or show every player to tpedPlayer
 		// and hide or show tpedPlayer to every player.
+		Plugin plugin = Paintball.getInstance();
 		for (Player player : players) {
 			if (!player.isOnline()) continue;
 			if (visible) {
-				tpedPlayer.showPlayer(player);
-				player.showPlayer(tpedPlayer);
+				tpedPlayer.showPlayer(plugin, player);
+				player.showPlayer(plugin, tpedPlayer);
 			} else {
-				tpedPlayer.hidePlayer(player);
-				player.hidePlayer(tpedPlayer);
+				tpedPlayer.hidePlayer(plugin, player);
+				player.hidePlayer(plugin, tpedPlayer);
 			}
 		}
 	}

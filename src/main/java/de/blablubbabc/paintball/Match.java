@@ -13,10 +13,10 @@ import java.util.List;
 import java.util.Map;
 import java.util.Random;
 import java.util.Set;
+import java.util.UUID;
 
 import org.bukkit.Bukkit;
 import org.bukkit.Color;
-import org.bukkit.DyeColor;
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
@@ -41,23 +41,23 @@ import de.blablubbabc.paintball.utils.Utils;
 public class Match {
 
 	private Paintball plugin;
-	private final Map<Player, Integer> livesLeft = new HashMap<Player, Integer>();
-	private final Map<Player, Integer> respawnsLeft = new HashMap<Player, Integer>();
-	private final Set<Player> redT = new HashSet<Player>();
-	private final Set<Player> blueT = new HashSet<Player>();
-	private final Set<Player> bothTeams = new HashSet<Player>();
-	private final Set<Player> spec = new HashSet<Player>();
-	private final Set<Player> allPlayers = new HashSet<Player>();
-	private final Map<Player, Integer> protection = new HashMap<Player, Integer>();
-	private final Map<String, Scoreboard> prevScoreboards = new HashMap<String, Scoreboard>();
-	private final Map<String, Scoreboard> scoreboards = new HashMap<String, Scoreboard>();
-	private final Set<String> justRespawned = new HashSet<String>();
+	private final Map<Player, Integer> livesLeft = new HashMap<>();
+	private final Map<Player, Integer> respawnsLeft = new HashMap<>();
+	private final Set<Player> redT = new HashSet<>();
+	private final Set<Player> blueT = new HashSet<>();
+	private final Set<Player> bothTeams = new HashSet<>();
+	private final Set<Player> spec = new HashSet<>();
+	private final Set<Player> allPlayers = new HashSet<>();
+	private final Map<Player, Integer> protection = new HashMap<>();
+	private final Map<UUID, Scoreboard> prevScoreboards = new HashMap<>();
+	private final Map<UUID, Scoreboard> scoreboards = new HashMap<>();
+	private final Set<UUID> justRespawned = new HashSet<>();
 	// STATS
-	private Map<String, TDMMatchStats> playerMatchStats = new HashMap<String, TDMMatchStats>();
+	private Map<UUID, TDMMatchStats> playerMatchStats = new HashMap<>();
 
 	private Random random;
 
-	private Map<String, Location> playersLoc = new HashMap<String, Location>();;
+	private Map<UUID, Location> playersLoc = new HashMap<>();
 	private boolean matchOver = false;
 
 	private String arena;
@@ -87,7 +87,7 @@ public class Match {
 	public Lobby win = null;
 	public Lobby loose = null;
 
-	public Match(final Paintball plugin, Set<Player> red, Set<Player> blue, Set<Player> spec,
+	public Match(	final Paintball plugin, Set<Player> red, Set<Player> blue, Set<Player> spec,
 					Set<Player> random, String arena) {
 		this.plugin = plugin;
 		this.arena = arena;
@@ -144,13 +144,14 @@ public class Match {
 			livesLeft.put(player, setting_lives);
 			respawnsLeft.put(player, setting_respawns);
 			// STATS
-			String playerName = player.getName();
-			playerMatchStats.put(playerName, new TDMMatchStats(plugin.playerManager.getPlayerStats(player.getUniqueId())));
+			UUID playerId = player.getUniqueId();
+			playerMatchStats.put(playerId, new TDMMatchStats(plugin.playerManager.getPlayerStats(playerId)));
 
 			PlayerDataStore.clearPlayer(player, true, true);
 			spawnPlayer(player);
 
-			// SCOREBOARD (after spawning/teleporting the player due to compatibility to HealthBar which switches scoreboard during world changes)
+			// SCOREBOARD (after spawning/teleporting the player due to compatibility to HealthBar which switches
+			// scoreboard during world changes)
 			initMatchScoreboard(player);
 		}
 
@@ -174,7 +175,7 @@ public class Match {
 						// player left (= dead) ?
 						if (!isSurvivor(p)) continue;
 						Location ploc = p.getLocation();
-						Location loc = playersLoc.get(p.getName());
+						Location loc = playersLoc.get(p.getUniqueId());
 						if (ploc.getBlockX() != loc.getBlockX() || ploc.getBlockY() != loc.getBlockY() || ploc.getBlockZ() != loc.getBlockZ()) {
 							loc.setPitch(ploc.getPitch());
 							loc.setYaw(ploc.getYaw());
@@ -233,8 +234,8 @@ public class Match {
 		startRoundTimer();
 	}
 
-	public TDMMatchStats getMatchStats(String playerName) {
-		return playerMatchStats.get(playerName);
+	public TDMMatchStats getMatchStats(UUID playerId) {
+		return playerMatchStats.get(playerId);
 	}
 
 	private void addToPlayerLists(Player p) {
@@ -335,12 +336,13 @@ public class Match {
 		} else {
 			return;
 		}
+		final UUID playerId = player.getUniqueId();
 		player.leaveVehicle();
 		TeleportManager.teleport(player, loc);
 		// sound
 		Sounds.playEquipLoadout(player);
 		// afk Location
-		playersLoc.put(player.getName(), loc);
+		playersLoc.put(playerId, loc);
 		// PLAYER
 		PlayerDataStore.clearPlayer(player, false, false);
 		// INVENTORY
@@ -357,27 +359,30 @@ public class Match {
 
 		// TEAM WOOL
 		if (red) {
-			player.getInventory().setItem(8, Paintball.getInstance().weaponManager.setMeta(new ItemStack(Material.WOOL, 1, DyeColor.RED.getWoolData())));
+			player.getInventory().setItem(8, Paintball.getInstance().weaponManager.setMeta(new ItemStack(Material.RED_WOOL, 1)));
 		} else {
-			player.getInventory().setItem(8, Paintball.getInstance().weaponManager.setMeta(new ItemStack(Material.WOOL, 1, DyeColor.BLUE.getWoolData())));
+			player.getInventory().setItem(8, Paintball.getInstance().weaponManager.setMeta(new ItemStack(Material.BLUE_WOOL, 1)));
 		}
 
 		// if marker is not paintball item:
-		if (plugin.weaponManager.getBallHandler().getItemTypeID() != plugin.weaponManager.getMarkerHandler().getItemTypeID()) {
+		if (plugin.weaponManager.getBallHandler().getItemType() != plugin.weaponManager.getMarkerHandler().getItemType()) {
 			plugin.weaponManager.giveWeapon(player, plugin.weaponManager.getMarkerHandler(), 1);
 		}
 
 		if (setting_balls > 0) {
 			plugin.weaponManager.giveWeapon(player, plugin.weaponManager.getBallHandler(), setting_balls);
-			// player.getInventory().addItem(Paintball.instance.weaponManager.setMeta(new ItemStack(Material.SNOW_BALL, setting_balls)));
+			// player.getInventory().addItem(Paintball.instance.weaponManager.setMeta(new ItemStack(Material.SNOW_BALL,
+			// setting_balls)));
 		} else if (setting_balls == -1) {
 			plugin.weaponManager.giveWeapon(player, plugin.weaponManager.getBallHandler(), 10);
-			// player.getInventory().addItem(Paintball.instance.weaponManager.setMeta(new ItemStack(Material.SNOW_BALL, 10)));
+			// player.getInventory().addItem(Paintball.instance.weaponManager.setMeta(new ItemStack(Material.SNOW_BALL,
+			// 10)));
 		}
 
 		if (setting_grenades > 0) {
 			plugin.weaponManager.giveWeapon(player, plugin.weaponManager.getGrenadeHandler(), setting_grenades);
-			// player.getInventory().addItem(Paintball.instance.weaponManager.setMeta(new ItemStack(Material.EGG, setting_grenades)));
+			// player.getInventory().addItem(Paintball.instance.weaponManager.setMeta(new ItemStack(Material.EGG,
+			// setting_grenades)));
 		} else if (setting_grenades == -1) {
 			plugin.weaponManager.giveWeapon(player, plugin.weaponManager.getGrenadeHandler(), 10);
 			// player.getInventory().addItem(Paintball.instance.weaponManager.setMeta(new ItemStack(Material.EGG, 10)));
@@ -385,10 +390,12 @@ public class Match {
 
 		if (setting_airstrikes > 0) {
 			plugin.weaponManager.giveWeapon(player, plugin.weaponManager.getAirstrikeHandler(), setting_airstrikes);
-			// player.getInventory().addItem(Paintball.instance.weaponManager.setMeta(new ItemStack(Material.STICK, setting_airstrikes)));
+			// player.getInventory().addItem(Paintball.instance.weaponManager.setMeta(new ItemStack(Material.STICK,
+			// setting_airstrikes)));
 		} else if (setting_airstrikes == -1) {
 			plugin.weaponManager.giveWeapon(player, plugin.weaponManager.getAirstrikeHandler(), 10);
-			// player.getInventory().addItem(Paintball.instance.weaponManager.setMeta(new ItemStack(Material.STICK, 10)));
+			// player.getInventory().addItem(Paintball.instance.weaponManager.setMeta(new ItemStack(Material.STICK,
+			// 10)));
 		}
 
 		// gifts
@@ -415,34 +422,32 @@ public class Match {
 		// JUST RESPAWNED TIMER
 		// this will not work that accurate like intended, if the player gets killed, while being justRespawned.
 		// For that reason is the timers delay very short.
-		final String name = player.getName();
-		justRespawned.add(name);
+		justRespawned.add(playerId);
 		plugin.getServer().getScheduler().scheduleSyncDelayedTask(plugin, new Runnable() {
-
 			@Override
 			public void run() {
-				justRespawned.remove(name);
+				justRespawned.remove(playerId);
 			}
-
 		}, 12L);
 	}
 
 	private void initMatchScoreboard(Player player) {
 		if (plugin.scoreboardMatch) {
-			String playerName = player.getName();
-			Scoreboard matchBoard = scoreboards.get(playerName);
+			UUID playerId = player.getUniqueId();
+			Scoreboard matchBoard = scoreboards.get(playerId);
 			if (matchBoard == null) {
 				// remember old scoreboard:
-				prevScoreboards.put(playerName, player.getScoreboard());
+				prevScoreboards.put(playerId, player.getScoreboard());
 				// create new scoreboard:
 				matchBoard = Bukkit.getScoreboardManager().getNewScoreboard();
-				scoreboards.put(playerName, matchBoard);
+				scoreboards.put(playerId, matchBoard);
 			}
 
 			String header = Translator.getString("SCOREBOARD_MATCH_HEADER", new KeyValuePair("round_time", "0:00"));
-			Objective objective = matchBoard.registerNewObjective(header.length() > 16 ? header.substring(0, 16) : header, "dummy");
+			if (header.length() > 32) header = header.substring(0, 32);
+			Objective objective = matchBoard.registerNewObjective("pbMatch", "dummy", header);
 			objective.setDisplaySlot(DisplaySlot.SIDEBAR);
-			updateMatchScoreboard(playerName);
+			updateMatchScoreboard(playerId);
 			player.setScoreboard(matchBoard);
 		} else {
 			// assign default server scoreboard instead then:
@@ -457,8 +462,8 @@ public class Match {
 
 			String secondsString = String.valueOf(seconds);
 			String header = Translator.getString("SCOREBOARD_MATCH_HEADER",
-													new KeyValuePair("round_time", String.valueOf(minutes) + ":" + (seconds >= 10 ? secondsString : "0" + secondsString)));
-			header = header.length() > 16 ? header.substring(0, 16) : header;
+					new KeyValuePair("round_time", String.valueOf(minutes) + ":" + (seconds >= 10 ? secondsString : "0" + secondsString)));
+			if (header.length() > 32) header = header.substring(0, 32);
 
 			for (Scoreboard scoreboard : scoreboards.values()) {
 				scoreboard.getObjective(DisplaySlot.SIDEBAR).setDisplayName(header);
@@ -466,12 +471,12 @@ public class Match {
 		}
 	}
 
-	public void updateMatchScoreboard(String playerName) {
+	public void updateMatchScoreboard(UUID playerId) {
 		if (plugin.scoreboardMatch) {
-			Scoreboard matchBoard = scoreboards.get(playerName);
+			Scoreboard matchBoard = scoreboards.get(playerId);
 			if (matchBoard != null) {
 				Objective objective = matchBoard.getObjective(DisplaySlot.SIDEBAR);
-				TDMMatchStats stats = playerMatchStats.get(playerName);
+				TDMMatchStats stats = playerMatchStats.get(playerId);
 				for (TDMMatchStat stat : TDMMatchStat.values()) {
 					// skip airstrikes, grenades and teamattacks count:
 					if (stat == TDMMatchStat.AIRSTRIKES || stat == TDMMatchStat.GRENADES || stat == TDMMatchStat.TEAMATTACKS) continue;
@@ -491,14 +496,13 @@ public class Match {
 		}
 	}
 
-	public boolean isJustRespawned(String playerName) {
-		return justRespawned.contains(playerName);
+	public boolean isJustRespawned(UUID playerId) {
+		return justRespawned.contains(playerId);
 	}
 
 	@SuppressWarnings("deprecation")
 	public synchronized void spawnSpec(Player player) {
-		if (spawnSpec > (specspawns.size() - 1))
-												spawnSpec = 0;
+		if (spawnSpec > (specspawns.size() - 1)) spawnSpec = 0;
 		TeleportManager.teleport(player, specspawns.get(spawnSpec));
 		spawnSpec++;
 		// INVENTORY
@@ -507,11 +511,11 @@ public class Match {
 		player.getInventory().setLeggings(Utils.setLeatherArmorColor(new ItemStack(Material.LEATHER_LEGGINGS, 1), Lobby.SPECTATE.colorA()));
 		player.getInventory().setBoots(Utils.setLeatherArmorColor(new ItemStack(Material.LEATHER_BOOTS, 1), Lobby.SPECTATE.colorA()));
 
-		player.getInventory().setItem(8, Paintball.getInstance().weaponManager.setMeta(new ItemStack(Material.WOOL, 1, DyeColor.YELLOW.getWoolData())));
+		player.getInventory().setItem(8, Paintball.getInstance().weaponManager.setMeta(new ItemStack(Material.YELLOW_WOOL, 1)));
 
 		player.updateInventory();
 		// MESSAGE
-		Map<String, String> vars = new HashMap<String, String>();
+		Map<String, String> vars = new HashMap<>();
 		vars.put("team_color", Lobby.getTeam(player).color().toString());
 		vars.put("team", Lobby.getTeam(player).getName());
 		player.sendMessage(Translator.getString("BE_SPECTATOR", vars));
@@ -545,7 +549,9 @@ public class Match {
 			if (!isSurvivor(pl)) continue;
 			for (Player p : getAll()) {
 				if (!isSurvivor(p)) continue;
-				if (!p.equals(pl)) pl.showPlayer(p);
+				if (!p.equals(pl)) {
+					Utils.forceShowPlayer(p, pl);
+				}
 			}
 		}
 	}
@@ -773,7 +779,7 @@ public class Match {
 			protection.remove(player);
 			// afk detection-> remove player
 			if (plugin.afkDetection) {
-				plugin.afkRemove(player.getName());
+				plugin.afkRemove(player.getUniqueId());
 			}
 			resetPlayerOnLeave(player);
 			// survivors?->endGame
@@ -806,25 +812,25 @@ public class Match {
 	}
 
 	public void onShot(Player player) {
-		String playerName = player.getName();
+		UUID playerId = player.getUniqueId();
 		// STATS
-		TDMMatchStats matchStats = playerMatchStats.get(playerName);
+		TDMMatchStats matchStats = playerMatchStats.get(playerId);
 		matchStats.addStat(TDMMatchStat.SHOTS, 1, true);
 		matchStats.calculateQuotes();
-		updateMatchScoreboard(playerName);
+		updateMatchScoreboard(playerId);
 	}
 
 	public void onGrenade(Player player) {
-		String playerName = player.getName();
+		UUID playerId = player.getUniqueId();
 		// STATS
-		TDMMatchStats matchStats = playerMatchStats.get(playerName);
+		TDMMatchStats matchStats = playerMatchStats.get(playerId);
 		matchStats.addStat(TDMMatchStat.GRENADES, 1, true);
 	}
 
 	public void onAirstrike(Player player) {
-		String playerName = player.getName();
+		UUID playerId = player.getUniqueId();
 		// STATS
-		TDMMatchStats matchStats = playerMatchStats.get(playerName);
+		TDMMatchStats matchStats = playerMatchStats.get(playerId);
 		matchStats.addStat(TDMMatchStat.AIRSTRIKES, 1, true);
 	}
 
@@ -838,6 +844,8 @@ public class Match {
 
 		// target already dead?
 		if (livesLeft.get(target) <= 0) return;
+
+		UUID shooterId = shooter.getUniqueId();
 
 		String targetName = target.getName();
 		String shooterName = shooter.getName();
@@ -861,12 +869,12 @@ public class Match {
 					livesLeft.put(target, healthLeft);
 
 					// STATS
-					TDMMatchStats matchStats = playerMatchStats.get(shooterName);
+					TDMMatchStats matchStats = playerMatchStats.get(shooterId);
 					matchStats.addStat(TDMMatchStat.HITS, 1, true);
 					matchStats.addStat(TDMMatchStat.POINTS, plugin.pointsPerHit, true);
 					matchStats.addStat(TDMMatchStat.MONEY, plugin.cashPerHit, true);
 					matchStats.calculateQuotes();
-					updateMatchScoreboard(shooterName);
+					updateMatchScoreboard(shooterId);
 
 					// dead?->frag
 					// message:
@@ -890,7 +898,7 @@ public class Match {
 			}
 		} else if (friendly(target, shooter)) {
 			// STATS
-			TDMMatchStats matchStats = playerMatchStats.get(shooterName);
+			TDMMatchStats matchStats = playerMatchStats.get(shooterId);
 			matchStats.addStat(TDMMatchStat.TEAMATTACKS, 1, true);
 			matchStats.addStat(TDMMatchStat.POINTS, plugin.pointsPerTeamattack, true);
 
@@ -910,24 +918,24 @@ public class Match {
 		// math over already?
 		if (matchOver) return;
 
-		String targetName = target.getName();
-		String killerName = killer.getName();
+		UUID targetId = target.getUniqueId();
+		UUID killerId = killer.getUniqueId();
 
 		Sounds.playFrag(killer, target);
 
 		// STATS
 		// KILLER:
-		TDMMatchStats killerStats = playerMatchStats.get(killerName);
+		TDMMatchStats killerStats = playerMatchStats.get(killerId);
 		killerStats.addStat(TDMMatchStat.KILLS, 1, true);
 		killerStats.addStat(TDMMatchStat.POINTS, plugin.pointsPerKill, true);
 		killerStats.addStat(TDMMatchStat.MONEY, plugin.cashPerKill, true);
 		killerStats.calculateQuotes();
-		updateMatchScoreboard(killerName);
+		updateMatchScoreboard(killerId);
 		// TARGET:
-		TDMMatchStats targetStats = playerMatchStats.get(targetName);
+		TDMMatchStats targetStats = playerMatchStats.get(targetId);
 		targetStats.addStat(TDMMatchStat.DEATHS, 1, true);
 		targetStats.calculateQuotes();
-		updateMatchScoreboard(targetName);
+		updateMatchScoreboard(targetId);
 
 		// 0 lives = -> out
 		livesLeft.put(target, 0);
@@ -936,8 +944,8 @@ public class Match {
 
 		// FEED
 		Map<String, String> vars = new HashMap<String, String>();
-		vars.put("target", targetName);
-		vars.put("killer", killerName);
+		vars.put("target", target.getName());
+		vars.put("killer", killer.getName());
 		vars.put("points", String.valueOf(plugin.pointsPerKill));
 		vars.put("money", String.valueOf(plugin.cashPerKill));
 		killer.sendMessage(Translator.getString("YOU_KILLED", vars));
@@ -947,21 +955,21 @@ public class Match {
 
 		// afk detection on frag
 		if (plugin.afkDetection) {
-			if (target.getLocation().getWorld().equals(playersLoc.get(targetName).getWorld())
-					&& target.getLocation().distanceSquared(playersLoc.get(targetName)) <= plugin.afkRadius2
+			if (target.getLocation().getWorld().equals(playersLoc.get(targetId).getWorld())
+					&& target.getLocation().distanceSquared(playersLoc.get(targetId)) <= plugin.afkRadius2
 					&& targetStats.getStat(TDMMatchStat.SHOTS) == 0 && targetStats.getStat(TDMMatchStat.KILLS) == 0) {
-				plugin.afkSet(targetName, plugin.afkGet(targetName) + 1);
+				plugin.afkSet(targetId, plugin.afkGet(targetId) + 1);
 			} else {
-				plugin.afkRemove(targetName);
+				plugin.afkRemove(targetId);
 			}
 		}
 
 		if (isSurvivor(target)) {
 			// respawn(target);
 			// afk check
-			if (plugin.afkDetection && (plugin.afkGet(targetName) >= plugin.afkMatchAmount)) {
+			if (plugin.afkDetection && (plugin.afkGet(targetId) >= plugin.afkMatchAmount)) {
 				// consequences after being afk:
-				plugin.afkRemove(targetName);
+				plugin.afkRemove(targetId);
 				respawnsLeft.put(target, 0);
 				resetPlayerOnLeave(target);
 				plugin.getServer().getScheduler().runTask(plugin, new Runnable() {
@@ -1013,11 +1021,11 @@ public class Match {
 		plugin.feeder.text(Translator.getString("KILL_FEED", pluginPair, killMessagePair));
 	}
 
-	public synchronized void onBuying(String playerName, int moneySpent) {
-		TDMMatchStats matchStats = playerMatchStats.get(playerName);
+	public synchronized void onBuying(UUID playerId, int moneySpent) {
+		TDMMatchStats matchStats = playerMatchStats.get(playerId);
 		if (matchStats != null) {
 			matchStats.addStat(TDMMatchStat.MONEY_SPENT, moneySpent, false);
-			updateMatchScoreboard(playerName);
+			updateMatchScoreboard(playerId);
 		}
 	}
 
@@ -1025,14 +1033,14 @@ public class Match {
 		// math over already?
 		if (matchOver) return;
 
-		String targetName = target.getName();
+		UUID targetId = target.getUniqueId();
 
 		// STATS
 		// TARGET:
-		TDMMatchStats targetStats = playerMatchStats.get(targetName);
+		TDMMatchStats targetStats = playerMatchStats.get(targetId);
 		targetStats.addStat(TDMMatchStat.DEATHS, 1, true);
 		targetStats.calculateQuotes();
-		updateMatchScoreboard(targetName);
+		updateMatchScoreboard(targetId);
 
 		// FEED
 		target.sendMessage(Translator.getString("YOU_DIED"));
@@ -1045,20 +1053,20 @@ public class Match {
 
 		// afk detection on death
 		if (plugin.afkDetection) {
-			if (target.getLocation().getWorld().equals(playersLoc.get(targetName).getWorld())
-					&& target.getLocation().distanceSquared(playersLoc.get(targetName)) <= plugin.afkRadius2
+			if (target.getLocation().getWorld().equals(playersLoc.get(targetId).getWorld())
+					&& target.getLocation().distanceSquared(playersLoc.get(targetId)) <= plugin.afkRadius2
 					&& targetStats.getStat(TDMMatchStat.SHOTS) == 0 && targetStats.getStat(TDMMatchStat.KILLS) == 0) {
-				plugin.afkSet(targetName, plugin.afkGet(targetName) + 1);
+				plugin.afkSet(targetId, plugin.afkGet(targetId) + 1);
 			} else {
-				plugin.afkRemove(targetName);
+				plugin.afkRemove(targetId);
 			}
 		}
 
 		if (isSurvivor(target)) {
 			// afk check
-			if (plugin.afkDetection && (plugin.afkGet(targetName) >= plugin.afkMatchAmount)) {
+			if (plugin.afkDetection && (plugin.afkGet(targetId) >= plugin.afkMatchAmount)) {
 				// consequences after being afk:
-				plugin.afkRemove(targetName);
+				plugin.afkRemove(targetId);
 				respawnsLeft.put(target, 0);
 				resetPlayerOnLeave(target);
 				plugin.getServer().getScheduler().runTask(plugin, new Runnable() {
@@ -1119,13 +1127,14 @@ public class Match {
 	}
 
 	public void resetPlayerOnLeave(Player player) {
+		UUID playerId = player.getUniqueId();
 		// remove match scoreboard again:
 		if (plugin.scoreboardMatch) {
-			Scoreboard prevScoreboard = prevScoreboards.get(player.getName());
+			Scoreboard prevScoreboard = prevScoreboards.get(playerId);
 			player.setScoreboard(prevScoreboard != null ? prevScoreboard : Bukkit.getScoreboardManager().getMainScoreboard());
 		}
 		// reset weapon stuff:
-		plugin.weaponManager.cleanUp(this, player.getName());
+		plugin.weaponManager.cleanUp(this, playerId);
 	}
 
 	public void resetWeaponStuffEnd() {

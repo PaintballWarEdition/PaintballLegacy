@@ -5,6 +5,7 @@ authors: [${authors}]
 website: '${url}'
 description: '${description}'
 softdepend: [InSigns, TagAPI, Votifier, Vault, Multiverse-Core, My Worlds, Transporter, Multiworld, PerWorldInventory]
+api-version: '1.13'
 commands:
     pb:
       description: 'Base paintball commands.'

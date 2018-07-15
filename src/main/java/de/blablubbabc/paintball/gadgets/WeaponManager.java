@@ -7,8 +7,8 @@ package de.blablubbabc.paintball.gadgets;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.UUID;
 
-import org.bukkit.DyeColor;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
 import org.bukkit.entity.Projectile;
@@ -65,25 +65,25 @@ public class WeaponManager {
 	}
 
 	public void initWeaponHandlers() {
-		giftHandler = new GiftHandler(Material.CHEST.getId(), false);
+		giftHandler = new GiftHandler();
 		noGravityHandler = new NoGravityHandler();
 
-		ballHandler = new BallHandler(Material.SNOW_BALL.getId(), false);
+		ballHandler = new BallHandler();
 
 		// init all default weapons and gadgets:
-		markerHandler = new MarkerHandler(Material.SNOW_BALL.getId(), true);
-		airstrikeHandler = new AirstrikeHandler(Material.STICK.getId(), false);
-		flashbangHandler = new FlashbangHandler(Material.GHAST_TEAR.getId(), false);
-		concussionHandler = new ConcussionHandler(Material.SPIDER_EYE.getId(), false);
-		grenadeHandler = new GrenadeHandler(Material.EGG.getId(), false);
-		grenadeM2Handler = new GrenadeM2Handler(Material.SLIME_BALL.getId(), false);
-		turretHandler = new TurretHandler(Material.PUMPKIN.getId(), false);
-		mineHandler = new MineHandler(Material.FLOWER_POT_ITEM.getId(), false);
-		orbitalstrikeHandler = new OrbitalstrikeHandler(Material.BLAZE_ROD.getId(), false);
-		pumpgunHandler = new PumpgunHandler(Material.STONE_AXE.getId(), false);
-		rocketHandler = new RocketHandler(0, true);
-		shotgunHandler = new ShotgunHandler(0, true);
-		sniperHandler = new SniperHandler(0, true);
+		markerHandler = new MarkerHandler();
+		airstrikeHandler = new AirstrikeHandler();
+		flashbangHandler = new FlashbangHandler();
+		concussionHandler = new ConcussionHandler();
+		grenadeHandler = new GrenadeHandler();
+		grenadeM2Handler = new GrenadeM2Handler();
+		turretHandler = new TurretHandler();
+		mineHandler = new MineHandler();
+		orbitalstrikeHandler = new OrbitalstrikeHandler();
+		pumpgunHandler = new PumpgunHandler();
+		rocketHandler = new RocketHandler();
+		shotgunHandler = new ShotgunHandler();
+		sniperHandler = new SniperHandler();
 	}
 
 	// ////// Default weapon handlers /////////////
@@ -254,9 +254,9 @@ public class WeaponManager {
 
 	// /////////////////////////////////////////////////////////////////////////
 
-	public void cleanUp(Match match, String playerName) {
+	public void cleanUp(Match match, UUID playerId) {
 		for (WeaponHandler weaponHandler : weaponHandlers.values()) {
-			weaponHandler.cleanUp(match, playerName);
+			weaponHandler.cleanUp(match, playerId);
 		}
 	}
 
@@ -267,27 +267,28 @@ public class WeaponManager {
 	}
 
 	public ItemStack setMeta(ItemStack itemStack) {
-		int typeID = itemStack.getTypeId();
+		Material type = itemStack.getType();
 
 		// Team colored wool:
-		if (typeID == Material.WOOL.getId()) {
+		if (type == Material.RED_WOOL) {
 			ItemMeta meta = itemStack.getItemMeta();
-			byte data = itemStack.getData().getData();
-			if (data == DyeColor.RED.getWoolData()) {
-				meta.setDisplayName(Translator.getString("TEAM_RED"));
-			} else if (data == DyeColor.BLUE.getWoolData()) {
-				meta.setDisplayName(Translator.getString("TEAM_BLUE"));
-				itemStack.setItemMeta(meta);
-			} else if (data == DyeColor.YELLOW.getWoolData()) {
-				meta.setDisplayName(Translator.getString("TEAM_SPECTATOR"));
-				itemStack.setItemMeta(meta);
-			}
+			meta.setDisplayName(Translator.getString("TEAM_RED"));
+			itemStack.setItemMeta(meta);
+			return itemStack;
+		} else if (type == Material.BLUE_WOOL) {
+			ItemMeta meta = itemStack.getItemMeta();
+			meta.setDisplayName(Translator.getString("TEAM_BLUE"));
+			itemStack.setItemMeta(meta);
+			return itemStack;
+		} else if (type == Material.YELLOW_WOOL) {
+			ItemMeta meta = itemStack.getItemMeta();
+			meta.setDisplayName(Translator.getString("TEAM_SPECTATOR"));
 			itemStack.setItemMeta(meta);
 			return itemStack;
 		}
 
 		// Shop book:
-		if (typeID == Material.BOOK.getId()) {
+		if (type == Material.BOOK) {
 			ItemMeta meta = itemStack.getItemMeta();
 			meta.setDisplayName(Translator.getString("SHOP_ITEM"));
 			itemStack.setItemMeta(meta);
@@ -295,7 +296,7 @@ public class WeaponManager {
 		}
 
 		for (WeaponHandler weaponHandler : weaponHandlers.values()) {
-			if (weaponHandler.getItemTypeID() == typeID) {
+			if (weaponHandler.getItemType() == type) {
 				return weaponHandler.setItemMeta(itemStack);
 			}
 		}

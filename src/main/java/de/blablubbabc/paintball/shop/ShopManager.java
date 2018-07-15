@@ -8,6 +8,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.UUID;
 
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
@@ -61,9 +62,9 @@ public class ShopManager {
 		return shops.get(0);
 	}
 
-	public ShopMenu getShopMenu(String playerName) {
+	public ShopMenu getShopMenu(UUID playerId) {
 		for (ShopMenu shop : shops) {
-			if (shop.isSelecting(playerName)) return shop;
+			if (shop.isSelecting(playerId)) return shop;
 		}
 		return null;
 	}
@@ -73,7 +74,7 @@ public class ShopManager {
 	public boolean handleBuy(Player player, ShopGood good, boolean closeInventory) {
 		if (player == null || good == null) return false;
 
-		String playerName = player.getName();
+		UUID playerId = player.getUniqueId();
 		Match match = plugin.matchManager.getMatch(player);
 		if (match != null && match.isSurvivor(player)) {
 			if (good.isEmpty()) {
@@ -81,7 +82,7 @@ public class ShopManager {
 				return false;
 			}
 			// check rank:
-			Rank rank = plugin.rankManager.getRank(player.getUniqueId());
+			Rank rank = plugin.rankManager.getRank(playerId);
 			boolean admin = (player.isOp() || player.hasPermission("paintball.admin"));
 			if (good.getNeededRank() > rank.getRankIndex() && !(admin && plugin.ranksAdminBypassShop)) {
 				Map<String, String> vars = new HashMap<String, String>();
@@ -95,11 +96,11 @@ public class ShopManager {
 				return false;
 			}
 
-			PlayerStats stats = plugin.playerManager.getPlayerStats(player.getUniqueId());
+			PlayerStats stats = plugin.playerManager.getPlayerStats(playerId);
 			// stats even exist for this player ?
 			if (stats == null) {
 				Map<String, String> vars = new HashMap<String, String>();
-				vars.put("player", playerName);
+				vars.put("player", player.getName());
 				player.sendMessage(Translator.getString("PLAYER_NOT_FOUND", vars));
 				return false;
 			}
@@ -121,7 +122,7 @@ public class ShopManager {
 				stats.saveAsync();
 
 				// let match stats know:
-				match.onBuying(playerName, price);
+				match.onBuying(playerId, price);
 
 				Map<GeneralStat, Integer> gStats = new HashMap<GeneralStat, Integer>();
 				gStats.put(GeneralStat.MONEY_SPENT, price);

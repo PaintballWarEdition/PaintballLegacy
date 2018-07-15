@@ -12,6 +12,7 @@ import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
+import java.util.UUID;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.regex.Pattern;
 
@@ -19,6 +20,7 @@ import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Location;
 import org.bukkit.Material;
+import org.bukkit.OfflinePlayer;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.configuration.ConfigurationSection;
@@ -122,7 +124,7 @@ public class Paintball extends JavaPlugin {
 	private List<Location> lobbyspawns;
 
 	// afk detection
-	private Map<String, Integer> afkMatchCount;
+	private Map<UUID, Integer> afkMatchCount;
 
 	// CONFIG:
 	// general:
@@ -375,40 +377,40 @@ public class Paintball extends JavaPlugin {
 		// CONFIG
 		ArrayList<String> goodsDef = new ArrayList<String>();
 
-		// <amount>-<name>-<id>-<subid>-<price>-<rank>
-		goodsDef.add("10-Balls-" + Material.SNOW_BALL.getId() + "-0-10-0");
-		goodsDef.add("50-Balls-" + Material.SNOW_BALL.getId() + "-0-50-0");
-		goodsDef.add("100-Balls-" + Material.SNOW_BALL.getId() + "-0-100-0");
-		goodsDef.add("1-Grenade Mark 2-" + Material.SLIME_BALL.getId() + "-0-15-1");
-		goodsDef.add("1-Grenade-" + Material.EGG.getId() + "-0-20-2");
-		goodsDef.add("1-Concussion Nade-" + Material.SPIDER_EYE.getId() + "-0-15-2");
-		goodsDef.add("1-Flashbang-" + Material.GHAST_TEAR.getId() + "-0-15-3");
-		goodsDef.add("1-Rocket Launcher-" + Material.DIODE.getId() + "-0-20-3");
-		goodsDef.add("1-Mine-" + Material.FLOWER_POT_ITEM.getId() + "-0-10-4");
-		goodsDef.add("1-Pumpgun-" + Material.STONE_AXE.getId() + "-0-20-4");
-		goodsDef.add("1-Speed-" + Material.POTION.getId() + "-16482-20-5");
-		goodsDef.add("1-Shotgun-" + Material.SPECKLED_MELON.getId() + "-0-20-5");
-		goodsDef.add("1-Airstrike-" + Material.STICK.getId() + "-0-80-6");
-		goodsDef.add("1-Orbitalstrike-" + Material.BLAZE_ROD.getId() + "-0-80-7");
-		goodsDef.add("1-Turret-" + Material.PUMPKIN.getId() + "-0-180-8");
-		goodsDef.add("1-Sniper-" + Material.CARROT_STICK.getId() + "-0-80-9");
+		// <amount>-<name>-<type>-<damage>-<price>-<rank>
+		goodsDef.add("10-Balls-" + Material.SNOWBALL.name() + "-0-10-0");
+		goodsDef.add("50-Balls-" + Material.SNOWBALL.name() + "-0-50-0");
+		goodsDef.add("100-Balls-" + Material.SNOWBALL.name() + "-0-100-0");
+		goodsDef.add("1-Grenade Mark 2-" + Material.SLIME_BALL.name() + "-0-15-1");
+		goodsDef.add("1-Grenade-" + Material.EGG.name() + "-0-20-2");
+		goodsDef.add("1-Concussion Nade-" + Material.SPIDER_EYE.name() + "-0-15-2");
+		goodsDef.add("1-Flashbang-" + Material.GHAST_TEAR.name() + "-0-15-3");
+		goodsDef.add("1-Rocket Launcher-" + Material.REPEATER.name() + "-0-20-3");
+		goodsDef.add("1-Mine-" + Material.FLOWER_POT.name() + "-0-10-4");
+		goodsDef.add("1-Pumpgun-" + Material.STONE_AXE.name() + "-0-20-4");
+		goodsDef.add("1-Speed-" + Material.POTION.name() + "-16482-20-5");
+		goodsDef.add("1-Shotgun-" + Material.GLISTERING_MELON_SLICE.name() + "-0-20-5");
+		goodsDef.add("1-Airstrike-" + Material.STICK.name() + "-0-80-6");
+		goodsDef.add("1-Orbitalstrike-" + Material.BLAZE_ROD.name() + "-0-80-7");
+		goodsDef.add("1-Turret-" + Material.PUMPKIN.name() + "-0-180-8");
+		goodsDef.add("1-Sniper-" + Material.CARROT_ON_A_STICK.name() + "-0-80-9");
 
 		ArrayList<Gift> giftsDef = new ArrayList<Gift>();
-		giftsDef.add(new Gift(Material.SNOW_BALL.getId(), (short) 0, 50, 20.0, "Hope you have luck with these balls!"));
-		giftsDef.add(new Gift(Material.GHAST_TEAR.getId(), (short) 0, 2, 10.0, "Blind them with these!"));
-		giftsDef.add(new Gift(Material.SPIDER_EYE.getId(), (short) 0, 2, 10.0, "Confuse them with these!"));
-		giftsDef.add(new Gift(Material.EGG.getId(), (short) 0, 2, 5.0, "May these grenades be with you!"));
-		giftsDef.add(new Gift(Material.SLIME_BALL.getId(), (short) 0, 2, 5.0, "Some explosives for you!"));
-		giftsDef.add(new Gift(Material.FLOWER_POT_ITEM.getId(), (short) 0, 2, 10.0, "I knew you ever wanted to be a sneaky killer!"));
-		giftsDef.add(new Gift(Material.DIODE.getId(), (short) 0, 2, 10.0, "Give them hell with these rocket launchers!"));
-		giftsDef.add(new Gift(Material.STICK.getId(), (short) 0, 1, 5.0, "I knew you ever wanted to order a airstrike at least once!"));
-		giftsDef.add(new Gift(Material.BLAZE_ROD.getId(), (short) 0, 1, 5.0, "Support from orbit waits for your order!"));
-		giftsDef.add(new Gift(Material.STONE_AXE.getId(), (short) 0, 1, 5.0, "Take this weapon!"));
-		giftsDef.add(new Gift(Material.CHEST.getId(), (short) 0, 2, 5.0, "I got some more gifts for you!"));
-		giftsDef.add(new Gift(Material.PUMPKIN.getId(), (short) 0, 1, 3.0, "This comerade will fight for you!"));
-		giftsDef.add(new Gift(Material.SPECKLED_MELON.getId(), (short) 0, 1, 3.0, "This weapon comes fresh from production!"));
-		giftsDef.add(new Gift(Material.CARROT_STICK.getId(), (short) 0, 1, 2.0, "No one can hide from your view!"));
-		giftsDef.add(new Gift(Material.AIR.getId(), (short) 0, 0, 2.0, "You had no luck this time :("));
+		giftsDef.add(new Gift(Material.SNOWBALL, (short) 0, 50, 20.0, "Hope you have luck with these balls!"));
+		giftsDef.add(new Gift(Material.GHAST_TEAR, (short) 0, 2, 10.0, "Blind them with these!"));
+		giftsDef.add(new Gift(Material.SPIDER_EYE, (short) 0, 2, 10.0, "Confuse them with these!"));
+		giftsDef.add(new Gift(Material.EGG, (short) 0, 2, 5.0, "May these grenades be with you!"));
+		giftsDef.add(new Gift(Material.SLIME_BALL, (short) 0, 2, 5.0, "Some explosives for you!"));
+		giftsDef.add(new Gift(Material.FLOWER_POT, (short) 0, 2, 10.0, "I knew you ever wanted to be a sneaky killer!"));
+		giftsDef.add(new Gift(Material.REPEATER, (short) 0, 2, 10.0, "Give them hell with these rocket launchers!"));
+		giftsDef.add(new Gift(Material.STICK, (short) 0, 1, 5.0, "I knew you ever wanted to order a airstrike at least once!"));
+		giftsDef.add(new Gift(Material.BLAZE_ROD, (short) 0, 1, 5.0, "Support from orbit waits for your order!"));
+		giftsDef.add(new Gift(Material.STONE_AXE, (short) 0, 1, 5.0, "Take this weapon!"));
+		giftsDef.add(new Gift(Material.CHEST, (short) 0, 2, 5.0, "I got some more gifts for you!"));
+		giftsDef.add(new Gift(Material.PUMPKIN, (short) 0, 1, 3.0, "This comerade will fight for you!"));
+		giftsDef.add(new Gift(Material.GLISTERING_MELON_SLICE, (short) 0, 1, 3.0, "This weapon comes fresh from production!"));
+		giftsDef.add(new Gift(Material.CARROT_ON_A_STICK, (short) 0, 1, 2.0, "No one can hide from your view!"));
+		giftsDef.add(new Gift(Material.AIR, (short) 0, 0, 2.0, "You had no luck this time :("));
 
 		allowedCommands = new ArrayList<String>();
 		allowedCommands.add("/list");
@@ -533,13 +535,13 @@ public class Paintball extends JavaPlugin {
 		if (getConfig().get("Paintball.Gifts.enabled") == null) getConfig().set("Paintball.Gifts.enabled", true);
 		if (getConfig().get("Paintball.Gifts.onSpawnChance") == null) getConfig().set("Paintball.Gifts.onSpawnChance", 5.0);
 		if (getConfig().get("Paintball.Gifts.wishes") == null) getConfig().set("Paintball.Gifts.wishes", true);
-		if (getConfig().get("Paintball.Gifts.wishes text") == null) getConfig().set("Paintball.Gifts.wishes text", "&cblablubbabc&5, &cAlphaX &5and &cthe server team &5are wishing you a lot of fun!");
+		if (getConfig().get("Paintball.Gifts.wishes text") == null) getConfig().set("Paintball.Gifts.wishes text", "&cThe server team &5is wishing you a lot of fun!");
 		if (getConfig().get("Paintball.Gifts.wishes delay in minutes") == null) getConfig().set("Paintball.Gifts.wishes delay in minutes", 60);
 		if (getConfig().get("Paintball.Gifts.gifts") == null) {
 			for (Gift g : giftsDef) {
 				getConfig().set("Paintball.Gifts.gifts." + giftsDef.indexOf(g) + ".message", g.getMessage());
-				getConfig().set("Paintball.Gifts.gifts." + giftsDef.indexOf(g) + ".id", g.getItem(false).getTypeId());
-				getConfig().set("Paintball.Gifts.gifts." + giftsDef.indexOf(g) + ".subid", g.getItem(false).getDurability());
+				getConfig().set("Paintball.Gifts.gifts." + giftsDef.indexOf(g) + ".type", g.getItem(false).getType().name());
+				getConfig().set("Paintball.Gifts.gifts." + giftsDef.indexOf(g) + ".damage", g.getItem(false).getDurability());
 				getConfig().set("Paintball.Gifts.gifts." + giftsDef.indexOf(g) + ".amount", g.getItem(false).getAmount());
 				getConfig().set("Paintball.Gifts.gifts." + giftsDef.indexOf(g) + ".chance", g.getChance());
 			}
@@ -662,7 +664,7 @@ public class Paintball extends JavaPlugin {
 		if (getConfig().get("Paintball.Shop.enabled") == null) getConfig().set("Paintball.Shop.enabled", true);
 		if (getConfig().get("Paintball.Shop.Close Inventory Menu On Purchase") == null) getConfig().set("Paintball.Shop.Close Inventory Menu On Purchase", false);
 		if (getConfig().get("Paintball.Shop.Admins bypass rank restrictions") == null) getConfig().set("Paintball.Shop.Admins bypass rank restrictions", false);
-		if (getConfig().get("Paintball.Shop.Goods (amount-name-id-subid-price-rank)") == null) getConfig().set("Paintball.Shop.Goods (amount-name-id-subid-price-rank)", goodsDef);
+		if (getConfig().get("Paintball.Shop.Goods (amount-name-type-damage-price-rank)") == null) getConfig().set("Paintball.Shop.Goods (amount-name-type-damage-price-rank)", goodsDef);
 		saveConfig();
 
 		// server
@@ -830,7 +832,7 @@ public class Paintball extends JavaPlugin {
 		giftOnSpawnChance = (giftOnSpawnChance < 0.0 ? 0.0 : giftOnSpawnChance);
 		giftOnSpawnChance = (giftOnSpawnChance > 100.0 ? 100.0 : giftOnSpawnChance);
 		bWishes = getConfig().getBoolean("Paintball.Gifts.wishes", true);
-		wishes = ChatColor.translateAlternateColorCodes('&', getConfig().getString("Paintball.Gifts.wishes text", "&cblablubbabc&5, &cAlphaX &5and &cthe server team &5are wishing you lot of fun!"));
+		wishes = ChatColor.translateAlternateColorCodes('&', getConfig().getString("Paintball.Gifts.wishes text", "&cThe server team &5are wishing you lot of fun!"));
 		wishesDelay = getConfig().getInt("Paintball.Gifts.wishes delay in minutes", 60);
 		wishesDelay = (wishesDelay < 0 ? 0 : wishesDelay);
 		gifts = new ArrayList<Gift>();
@@ -838,11 +840,15 @@ public class Paintball extends JavaPlugin {
 		ConfigurationSection giftsEntries = getConfig().getConfigurationSection("Paintball.Gifts.gifts");
 		int allChances = 0;
 		for (String key : giftsEntries.getKeys(false)) {
-			int id = giftsEntries.getConfigurationSection(key).getInt("id", 0);
-			id = (id < 0 ? 0 : id);
-			int subI = giftsEntries.getConfigurationSection(key).getInt("subid", 0);
-			subI = (subI < 0 ? 0 : subI);
-			short sub = (subI > Short.MAX_VALUE ? Short.MAX_VALUE : (short) subI);
+			String typeName = giftsEntries.getConfigurationSection(key).getString("type");
+			Material type = Material.matchMaterial(typeName);
+			if (type == null) {
+				Log.warning("Unknown gift item type: " + typeName);
+				continue;
+			}
+			int damageI = giftsEntries.getConfigurationSection(key).getInt("damage", 0);
+			damageI = (damageI < 0 ? 0 : damageI);
+			short damage = (damageI > Short.MAX_VALUE ? Short.MAX_VALUE : (short) damageI);
 			int amount = giftsEntries.getConfigurationSection(key).getInt("amount", 0);
 			amount = (amount < 0 ? 0 : amount);
 			double chance = giftsEntries.getConfigurationSection(key).getDouble("chance", 0.0);
@@ -850,7 +856,7 @@ public class Paintball extends JavaPlugin {
 			chance = (chance > 100.0 ? 100.0 : chance);
 			allChances += chance;
 			String message = giftsEntries.getConfigurationSection(key).getString("message", "Have fun with this!");
-			gifts.add(new Gift(id, sub, amount, chance, message));
+			gifts.add(new Gift(type, damage, amount, chance, message));
 		}
 		giftChanceFactor = (100 / allChances);
 
@@ -858,7 +864,7 @@ public class Paintball extends JavaPlugin {
 		shop = getConfig().getBoolean("Paintball.Shop.enabled", true);
 		shopCloseMenuOnPurchase = getConfig().getBoolean("Paintball.Shop.Close Inventory Menu On Purchase", false);
 		ranksAdminBypassShop = getConfig().getBoolean("Paintball.Shop.Admins bypass rank restrictions", false);
-		shopGoods = (ArrayList<String>) getConfig().getList("Paintball.Shop.Goods (amount-name-id-subid-price-rank)", goodsDef);
+		shopGoods = (ArrayList<String>) getConfig().getList("Paintball.Shop.Goods (amount-name-type-damage-price-rank)", goodsDef);
 
 		// disabled arenas
 		disabledArenas = (List<String>) getConfig().getList("Paintball.Arena.Disabled Arenas", new ArrayList<String>());
@@ -1065,7 +1071,7 @@ public class Paintball extends JavaPlugin {
 		happyhour = false;
 		softreload = false;
 		lobbyspawn = 0;
-		afkMatchCount = new HashMap<String, Integer>();
+		afkMatchCount = new HashMap<>();
 
 		// autoLobby -> now done by PlayerManager during addAllOnlinePlayers
 		/*
@@ -1219,8 +1225,7 @@ public class Paintball extends JavaPlugin {
 					Updater updater = new Updater(plugin, 41489, pluginFile, UpdateType.NO_DOWNLOAD, true);
 					Updater.UpdateResult result = updater.getResult(); // this freezes until the result is available
 					Log.info("--------- Checking version ----------");
-					switch (result)
-					{
+					switch (result) {
 					case SUCCESS:
 						// Success: The updater found an update, and has readied it to be loaded the next time the
 						// server restarts/reloads
@@ -1369,8 +1374,8 @@ public class Paintball extends JavaPlugin {
 	// //////////////////////////////////
 
 	// vault reward feature:
-	public void givePlayerVaultMoneyInstant(String playerName, double moneyToAdd) {
-		if (vaultRewardsEnabled && vaultRewardsFeature != null) vaultRewardsFeature.givePlayerMoneyInstant(playerName, moneyToAdd);
+	public void givePlayerVaultMoneyInstant(OfflinePlayer player, double moneyToAdd) {
+		if (vaultRewardsEnabled && vaultRewardsFeature != null) vaultRewardsFeature.givePlayerMoneyInstant(player, moneyToAdd);
 	}
 
 	/*
@@ -1379,31 +1384,30 @@ public class Paintball extends JavaPlugin {
 	 * }
 	 */
 
-	public void afkRemove(String player) {
+	public void afkRemove(UUID playerId) {
 		synchronized (afkMatchCount) {
-			afkMatchCount.remove(player);
+			afkMatchCount.remove(playerId);
 		}
 	}
 
-	public int afkGet(String player) {
+	public int afkGet(UUID playerId) {
 		synchronized (afkMatchCount) {
 			int amount = 0;
-			if (afkMatchCount.get(player) != null) amount = afkMatchCount.get(player);
+			if (afkMatchCount.get(playerId) != null) amount = afkMatchCount.get(playerId);
 			return amount;
 		}
 	}
 
-	public void afkSet(String player, int amount) {
+	public void afkSet(UUID playerId, int amount) {
 		synchronized (afkMatchCount) {
-			afkMatchCount.put(player, amount);
+			afkMatchCount.put(playerId, amount);
 		}
 	}
 
-	public List<String> afkGetEntries() {
+	public List<UUID> afkGetEntries() {
 		synchronized (afkMatchCount) {
-			List<String> entries = new ArrayList<String>(afkMatchCount.keySet());
+			List<UUID> entries = new ArrayList<>(afkMatchCount.keySet());
 			return entries;
 		}
 	}
-
 }

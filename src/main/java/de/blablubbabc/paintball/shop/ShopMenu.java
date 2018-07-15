@@ -8,6 +8,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.UUID;
 
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
@@ -21,23 +22,23 @@ import de.blablubbabc.paintball.utils.Translator;
 import de.blablubbabc.paintball.utils.Utils;
 
 public class ShopMenu {
-	private static final ItemStack nextIcon = new ItemStack(Material.BOOK_AND_QUILL);
-	private static final ItemStack prevIcon = new ItemStack(Material.BOOK_AND_QUILL);
+	private static final ItemStack nextIcon = new ItemStack(Material.WRITABLE_BOOK);
+	private static final ItemStack prevIcon = new ItemStack(Material.WRITABLE_BOOK);
 	private static final ItemStack pageIcon = new ItemStack(Material.PAPER, 0);
-	
+
 	private final Paintball plugin;
 	private final ShopGood[] goods;
-	
+
 	private final int contentSlots;
 
 	private final int nextSlot;
 	private final int previousSlot;
-	
+
 	private final boolean singlePage;
-	
+
 	private final Inventory[] inventories;
-	private final Map<String, Integer> viewers = new HashMap<String, Integer>();
-	
+	private final Map<UUID, Integer> viewers = new HashMap<>();
+
 	public ShopMenu(Paintball plugin, ShopGood[] goods) {
 		this.plugin = plugin;
 		this.goods = goods;
@@ -52,10 +53,10 @@ public class ShopMenu {
 			singlePage = false;
 			int neededPages = (int) Math.ceil(neededRows / 5D);
 			contentSlots = 45; // (9*5)
-			nextSlot = 53; //(9*6 - 1)
+			nextSlot = 53; // (9*6 - 1)
 			previousSlot = nextSlot - 8;
 			int pageSlot = previousSlot + 4;
-			
+
 			inventories = new Inventory[neededPages];
 			// init pages:
 			int left = goods.length;
@@ -76,14 +77,14 @@ public class ShopMenu {
 				inventories[i].setItem(pageSlot, pageItem);
 				inventories[i].setItem(nextSlot, nextIcon);
 			}
-			
+
 		} else {
 			singlePage = true;
 			contentSlots = neededRows * 9;
 			// un-needed but final:
 			nextSlot = 0;
 			previousSlot = 0;
-			
+
 			inventories = new Inventory[1];
 			// init single page:
 			Inventory inventory = Bukkit.createInventory(null, contentSlots, Translator.getString("SHOP_NAME"));
@@ -94,11 +95,12 @@ public class ShopMenu {
 			}
 		}
 	}
-	
+
 	public void onClick(Player player, int slot) {
-		if (isSelecting(player.getName())) {
+		UUID playerId = player.getUniqueId();
+		if (isSelecting(playerId)) {
 			if (singlePage || slot < previousSlot) {
-				int page = viewers.get(player.getName());
+				int page = viewers.get(playerId);
 				int goodNumber = getGoodNumber(page, slot);
 				buy(player, getGood(goodNumber), page);
 			} else {
@@ -110,25 +112,24 @@ public class ShopMenu {
 			}
 		}
 	}
-	
+
 	private int getGoodNumber(int page, int slot) {
 		return (page * contentSlots) + slot;
 	}
-	
+
 	private ShopGood getGood(int goodNumber) {
 		if (goodNumber >= 0 && goodNumber < goods.length) return goods[goodNumber];
 		else return null;
 	}
-	
+
 	private void buy(final Player player, ShopGood good, final int page) {
 		if (good != null) {
 			plugin.shopManager.handleBuy(player, good, false);
 		}
 	}
-	
-	private void openNextPage(final Player player) {
-		String name = player.getName();
-		Integer vPage = viewers.get(name);
+
+	private void openNextPage(Player player) {
+		Integer vPage = viewers.get(player.getUniqueId());
 		if (vPage != null) {
 			final int page = Math.min(vPage + 1, inventories.length - 1);
 			if (page != vPage) {
@@ -136,10 +137,9 @@ public class ShopMenu {
 			}
 		}
 	}
-	
-	private void openPreviousPage(final Player player) {
-		String name = player.getName();
-		Integer vPage = viewers.get(name);
+
+	private void openPreviousPage(Player player) {
+		Integer vPage = viewers.get(player.getUniqueId());
 		if (vPage != null) {
 			final int page = Math.max(vPage - 1, 0);
 			if (page != vPage) {
@@ -147,48 +147,47 @@ public class ShopMenu {
 			}
 		}
 	}
-	
+
 	private void openPageLater(final Player player, final int page) {
 		Paintball.getInstance().getServer().getScheduler().runTaskLater(plugin, new Runnable() {
-			
+
 			@Override
 			public void run() {
 				openPage(player, page);
 			}
 		}, 1L);
 	}
-	
+
 	private void openPage(Player player, int page) {
 		player.closeInventory();
 		if (player.openInventory(inventories[page]) != null) {
-			viewers.put(player.getName(), page);
+			viewers.put(player.getUniqueId(), page);
 		}
 	}
-	
+
 	public void open(Player player) {
 		openPage(player, 0);
 	}
-	
-	public void onClose(String playerName) {
-		viewers.remove(playerName);
+
+	public void onClose(UUID playerId) {
+		viewers.remove(playerId);
 	}
-	
-	public boolean isSelecting(String playerName) {
-		return viewers.containsKey(playerName);
+
+	public boolean isSelecting(UUID playerId) {
+		return viewers.containsKey(playerId);
 	}
-	
+
 	void shutdown() {
-		List<String> viewerNames = new ArrayList<String>(viewers.keySet());
-		for (String playerName : viewerNames) {
-			Player player = Bukkit.getPlayerExact(playerName);
+		List<UUID> viewerIds = new ArrayList<>(viewers.keySet());
+		for (UUID viewId : viewerIds) {
+			Player player = Bukkit.getPlayer(viewId);
 			assert player != null;
 			if (player != null) {
 				player.closeInventory();
 			}
 		}
-		// theoretically clear shouldn't be necessarry..
+		// theoretically clear shouldn't be necessary..
 		assert viewers.isEmpty();
 		viewers.clear();
 	}
-	
 }

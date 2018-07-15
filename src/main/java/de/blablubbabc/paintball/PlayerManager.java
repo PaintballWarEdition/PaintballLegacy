@@ -16,6 +16,7 @@ import org.bukkit.Bukkit;
 import org.bukkit.GameMode;
 import org.bukkit.Location;
 import org.bukkit.OfflinePlayer;
+import org.bukkit.attribute.Attribute;
 import org.bukkit.entity.Player;
 import org.bukkit.scoreboard.DisplaySlot;
 import org.bukkit.scoreboard.Objective;
@@ -155,7 +156,7 @@ public class PlayerManager {
 			return false;
 		}
 		// no full health?
-		if (player.getHealth() < player.getMaxHealth() && plugin.checkHealth) {
+		if (player.getHealth() < player.getAttribute(Attribute.GENERIC_MAX_HEALTH).getValue() && plugin.checkHealth) {
 			player.sendMessage(Translator.getString("NEED_FULL_HEALTH"));
 			return false;
 		}
@@ -259,7 +260,8 @@ public class PlayerManager {
 			lobbyScoreboards.put(playerUUID, lobbyBoard);
 
 			String header = Translator.getString("SCOREBOARD_LOBBY_HEADER");
-			Objective objective = lobbyBoard.registerNewObjective(header.length() > 16 ? header.substring(0, 16) : header, "dummy");
+			if (header.length() > 32) header = header.substring(0, 32);
+			Objective objective = lobbyBoard.registerNewObjective("pbLobby", "dummy", header);
 			objective.setDisplaySlot(DisplaySlot.SIDEBAR);
 		}
 

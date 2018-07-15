@@ -4,6 +4,8 @@
  */
 package de.blablubbabc.paintball.gadgets.handlers;
 
+import java.util.UUID;
+
 import org.bukkit.Effect;
 import org.bukkit.Location;
 import org.bukkit.Material;
@@ -21,6 +23,7 @@ import org.bukkit.event.Listener;
 import org.bukkit.event.block.BlockPlaceEvent;
 import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.inventory.ItemStack;
+import org.bukkit.inventory.PlayerInventory;
 import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.util.BlockIterator;
 import org.bukkit.util.Vector;
@@ -38,25 +41,29 @@ import de.blablubbabc.paintball.utils.Translator;
 import de.blablubbabc.paintball.utils.Utils;
 
 public class MineHandler extends WeaponHandler implements Listener {
-	
+
 	private GadgetManager gadgetManager = new GadgetManager();
-	
-	public MineHandler(int customItemTypeID, boolean useDefaultType) {
-		super("Mine", customItemTypeID, useDefaultType, new Origin() {
-			
+
+	public MineHandler() {
+		this(null);
+	}
+
+	public MineHandler(Material customItemType) {
+		super("Mine", customItemType, new Origin() {
+
 			@Override
 			public String getKillMessage(FragInformations fragInfo) {
 				return Translator.getString("WEAPON_FEED_MINE", getDefaultVariablesMap(fragInfo));
 			}
 		});
-		
+
 		Paintball.getInstance().getServer().getPluginManager().registerEvents(this, Paintball.getInstance());
 	}
-	
+
 	public Mine plantMine(Match match, Player player, Block block, Material type, BlockState oldState, Origin origin) {
 		return new Mine(gadgetManager, match, player, block, type, oldState, origin);
 	}
-	
+
 	@EventHandler
 	public void onPaintballHit(PaintballHitEvent event) {
 		if (Paintball.getInstance().mine) {
@@ -64,7 +71,7 @@ public class MineHandler extends WeaponHandler implements Listener {
 			Match match = event.getMatch();
 			Projectile ball = event.getProjectileHitEvent().getEntity();
 			Location location = ball.getLocation();
-			
+
 			checkAndExplode(location, match, shooter);
 
 			BlockIterator iterator = new BlockIterator(location.getWorld(), location.toVector(), ball.getVelocity().normalize(), 0, 2);
@@ -73,7 +80,7 @@ public class MineHandler extends WeaponHandler implements Listener {
 			}
 		}
 	}
-	
+
 	private void checkAndExplode(Location location, Match match, Player shooter) {
 		Gadget mineGadget = gadgetManager.getGadget(location, match);
 		if (mineGadget != null && match == mineGadget.getMatch()) {
@@ -84,10 +91,10 @@ public class MineHandler extends WeaponHandler implements Listener {
 			}
 		}
 	}
-	
+
 	@Override
-	protected int getDefaultItemTypeID() {
-		return Material.FLOWER_POT_ITEM.getId();
+	protected Material getDefaultItemType() {
+		return Material.FLOWER_POT;
 	}
 
 	@Override
@@ -100,45 +107,43 @@ public class MineHandler extends WeaponHandler implements Listener {
 
 	@Override
 	protected void onInteract(PlayerInteractEvent event, Match match) {
-		
+
 	}
-	
+
 	@Override
 	protected void onBlockPlace(BlockPlaceEvent event, Match match) {
 		final Block block = event.getBlockPlaced();
 		if (Paintball.getInstance().mine && block.getType() == Material.FLOWER_POT) {
 			Player player = event.getPlayer();
-			ItemStack itemInHand = player.getItemInHand();
+			PlayerInventory playerInventory = player.getInventory();
+			ItemStack itemInHand = playerInventory.getItemInMainHand();
 			if (itemInHand == null) return;
-			
+
 			if (itemInHand.isSimilar(getItem())) {
-				String playerName = player.getName();
 				if (gadgetManager.getMatchGadgetCount(match) < Paintball.getInstance().mineMatchLimit) {
-					if (gadgetManager.getPlayerGadgetCount(match, playerName) < Paintball.getInstance().minePlayerLimit) {
-						
+					if (gadgetManager.getPlayerGadgetCount(match, player.getUniqueId()) < Paintball.getInstance().minePlayerLimit) {
+
 						// check space (hallways)
 						if (Paintball.getInstance().mineCheckForHallway && blocksHallway(block)) {
 							player.sendMessage(Translator.getString("GADGET_NOT_ENOUGH_SPACE"));
 							return;
 						}
-						
+
 						Paintball.getInstance().getServer().getScheduler().runTaskLater(Paintball.getInstance(), new Runnable() {
 
 							@Override
 							public void run() {
-								
-								block.setType(Material.FLOWER_POT);
-								block.setData((byte) 0);
+								block.setBlockData(Material.FLOWER_POT.createBlockData());
 							}
 						}, 1L);
-						
+
 						plantMine(match, player, block, Material.FLOWER_POT, event.getBlockReplacedState(), this.getWeaponOrigin());
-						
+
 						if (itemInHand.getAmount() <= 1) {
-							player.setItemInHand(null);
+							playerInventory.setItemInMainHand(null);
 						} else {
 							itemInHand.setAmount(itemInHand.getAmount() - 1);
-							player.setItemInHand(itemInHand);
+							playerInventory.setItemInMainHand(itemInHand);
 						}
 						Utils.updatePlayerInventoryLater(Paintball.getInstance(), player);
 					} else {
@@ -147,53 +152,53 @@ public class MineHandler extends WeaponHandler implements Listener {
 				} else {
 					player.sendMessage(Translator.getString("MINE_MATCH_LIMIT_REACHED"));
 				}
-			}	
+			}
 		}
 	}
-	
+
 	private boolean blocksHallway(Block block) {
 		if (block.getRelative(BlockFace.UP).isEmpty()) {
 			boolean roofed = isRoofed(block);
-			
+
 			Block northB = block.getRelative(BlockFace.NORTH);
 			Block southB = block.getRelative(BlockFace.SOUTH);
 			Block westB = block.getRelative(BlockFace.WEST);
 			Block eastB = block.getRelative(BlockFace.EAST);
-			
+
 			boolean north = isWall(northB);
 			boolean south = isWall(southB);
 			boolean west = isWall(westB);
 			boolean east = isWall(eastB);
-			
+
 			boolean northRoofed = isRoofed(northB);
 			boolean southRoofed = isRoofed(southB);
 			boolean westRoofed = isRoofed(westB);
 			boolean eastRoofed = isRoofed(eastB);
-			
-			// | H |    | X |
-			// X o X    H o H
-			// | H |    | X |
+
+			// | H | | X |
+			// X o X H o H
+			// | H | | X |
 			if (west && east && !north && !south && (roofed || northRoofed || southRoofed)) return true;
 			if (north && south && !west && !east && (roofed || westRoofed || eastRoofed)) return true;
-			
+
 			Block northWestB = block.getRelative(BlockFace.NORTH_WEST);
 			Block southEastB = block.getRelative(BlockFace.SOUTH_EAST);
 			Block northEastB = block.getRelative(BlockFace.NORTH_EAST);
 			Block southWestB = block.getRelative(BlockFace.SOUTH_WEST);
-			
+
 			boolean northWest = isWall(northWestB);
 			boolean southEast = isWall(southEastB);
 			boolean northEast = isWall(northEastB);
 			boolean southWest = isWall(southWestB);
-			
+
 			/*boolean northWestRoofed = isRoofed(northWestB);
 			boolean southEastRoofed = isRoofed(southEastB);
 			boolean northEastRoofed = isRoofed(northEastB);
 			boolean southWestRoofed = isRoofed(southWestB);*/
 
-			// X H X    X h |   | h |   | h X
-			// h o h    H o h   h o h   h o H
-			// | h |    X h |   X H X   | h X
+			// X H X X h | | h | | h X
+			// h o h H o h h o h h o H
+			// | h | X h | X H X | h X
 			if (northWest) {
 				if (northEast && !north) {
 					if (roofed || northRoofed) {
@@ -230,10 +235,10 @@ public class MineHandler extends WeaponHandler implements Listener {
 					if (!west && westRoofed && (north || northRoofed) && (south || southRoofed)) return true;
 				}
 			}
-			
-			// X H |    | h |
-			// h o X    h o X
-			// | h |    X H |
+
+			// X H | | h |
+			// h o X h o X
+			// | h | X H |
 			if (east) {
 				if (northWest && !north) {
 					if (roofed || northRoofed) {
@@ -250,10 +255,10 @@ public class MineHandler extends WeaponHandler implements Listener {
 					if (!west && westRoofed && (north || northRoofed)) return true;
 				}
 			}
-			
-			// | X |    | X |
-			// h o H    H o h
-			// | h X    X h |
+
+			// | X | | X |
+			// h o H H o h
+			// | h X X h |
 			if (north) {
 				if (southEast && !east) {
 					if (roofed || eastRoofed) {
@@ -270,10 +275,10 @@ public class MineHandler extends WeaponHandler implements Listener {
 					if (!east && eastRoofed && (south || southRoofed)) return true;
 				}
 			}
-			
-			// | h |    | H X
-			// X o h    X o h
-			// | H X    | h |
+
+			// | h | | H X
+			// X o h X o h
+			// | H X | h |
 			if (west) {
 				if (southEast && !south) {
 					if (roofed || southRoofed) {
@@ -290,10 +295,10 @@ public class MineHandler extends WeaponHandler implements Listener {
 					if (!south && southRoofed && (east || eastRoofed)) return true;
 				}
 			}
-			
-			// | h X    X h |
-			// h o H    H o h
-			// | X |    | X |
+
+			// | h X X h |
+			// h o H H o h
+			// | X | | X |
 			if (south) {
 				if (northEast && !east) {
 					if (roofed || eastRoofed) {
@@ -310,30 +315,30 @@ public class MineHandler extends WeaponHandler implements Listener {
 					if (!north && northRoofed && (east || eastRoofed)) return true;
 				}
 			}
-			
-			// X | |    | | X
-			// | o |    | o |
-			// | | X    X | |
+
+			// X | | | | X
+			// | o | | o |
+			// | | X X | |
 			if (northWest && southEast && ((roofed && !(west && south) && !(north && east)) || (westRoofed && southRoofed && !(west && south)) || (northRoofed && eastRoofed && !(north && east)))) return true;
 			if (northEast && southWest && ((roofed && !(west && north) && !(south && east)) || (westRoofed && northRoofed && !(west && north)) || (southRoofed && eastRoofed && !(east && south)))) return true;
-			
+
 		}
 		return false;
 	}
-	
+
 	private boolean isWall(Block bottom) {
 		Block top = bottom.getRelative(BlockFace.UP);
 		return bottom.getType().isSolid() || top.getType().isSolid();
 	}
-	
+
 	private boolean isRoofed(Block bottom) {
 		Block top = bottom.getRelative(BlockFace.UP, 2);
 		return top.getType().isSolid();
 	}
-	
+
 	@Override
-	public void cleanUp(Match match, String playerName) {
-		gadgetManager.cleanUp(match, playerName);
+	public void cleanUp(Match match, UUID playerId) {
+		gadgetManager.cleanUp(match, playerId);
 	}
 
 	@Override
@@ -342,7 +347,7 @@ public class MineHandler extends WeaponHandler implements Listener {
 	}
 
 	public class Mine extends Gadget {
-		
+
 		private final Player player;
 		private final Block block;
 		private final Material type;
@@ -351,10 +356,10 @@ public class MineHandler extends WeaponHandler implements Listener {
 
 		private int tickTask = -1;
 		private boolean exploded = false;
-		
+
 		private Mine(GadgetManager gadgetManager, Match match, Player player, Block block, Material type, BlockState oldState, Origin origin) {
-			super(gadgetManager, match, player.getName(), origin);
-			
+			super(gadgetManager, match, player, origin);
+
 			this.player = player;
 			this.block = block;
 			this.type = type;
@@ -362,7 +367,7 @@ public class MineHandler extends WeaponHandler implements Listener {
 			this.location = block.getLocation();
 			tick();
 		}
-		
+
 		public void explode() {
 			if (!exploded) {
 				exploded = true;
@@ -383,7 +388,7 @@ public class MineHandler extends WeaponHandler implements Listener {
 					final Snowball snowball = world.spawn(spawnLoc, Snowball.class);
 					snowball.setShooter(player);
 					final Ball ball = Paintball.getInstance().weaponManager.getBallHandler().createBall(match, player, snowball, getGadgetOrigin());
-					
+
 					Vector v2 = v.clone();
 					v2.setX(v.getX() + Utils.random.nextDouble() - Utils.random.nextDouble());
 					v2.setY(v.getY() + Utils.random.nextDouble() - Utils.random.nextDouble());
@@ -397,12 +402,11 @@ public class MineHandler extends WeaponHandler implements Listener {
 					}, (long) Paintball.getInstance().mineTime);
 				}
 			}
-			
-			
+
 			// remove from tracking:
 			dispose(true);
 		}
-		
+
 		@Override
 		public void dispose(boolean removeFromGadgetHandlerTracking) {
 			if (tickTask != -1) {
@@ -412,10 +416,10 @@ public class MineHandler extends WeaponHandler implements Listener {
 			if (oldState != null) {
 				oldState.update(true);
 			}
-			
+
 			super.dispose(removeFromGadgetHandlerTracking);
 		}
-		
+
 		/**
 		 * Returns the creator of this mine.
 		 * 
@@ -474,14 +478,14 @@ public class MineHandler extends WeaponHandler implements Listener {
 		private boolean canSeeMine(Player player) {
 			Vector dir = (player.getEyeLocation().toVector().subtract(location.toVector())).normalize();
 			BlockIterator iterator = new BlockIterator(location.getWorld(), location.toVector(), dir, 0, (int) Math.ceil(player.getEyeLocation().distance(location)));
-			
-			while(iterator.hasNext()) {
+
+			while (iterator.hasNext()) {
 				Block b = iterator.next();
-				if(!b.equals(block) && b.getType() != Material.AIR) return false;
+				if (!b.equals(block) && b.getType() != Material.AIR) return false;
 			}
 			return true;
 		}
-		
+
 		/*private boolean canSee(Player player, Location loc2) {
 			Location loc1 = player.getLocation();
 			return ((CraftWorld) loc1.getWorld()).getHandle().a(
@@ -494,12 +498,10 @@ public class MineHandler extends WeaponHandler implements Listener {
 		public boolean isSimiliar(Entity entity) {
 			return false;
 		}
-		
+
 		@Override
 		public boolean isSimiliar(Location location) {
 			return location.equals(this.location);
 		}
-		
 	}
-
 }

@@ -4,6 +4,8 @@
  */
 package de.blablubbabc.paintball.gadgets.handlers;
 
+import java.util.UUID;
+
 import org.bukkit.Color;
 import org.bukkit.Effect;
 import org.bukkit.Location;
@@ -36,8 +38,12 @@ import de.blablubbabc.paintball.utils.Utils;
 
 public class MarkerHandler extends WeaponHandler {
 
-	public MarkerHandler(int customItemTypeID, boolean useDefaultType) {
-		super("Marker", customItemTypeID, useDefaultType, new Origin() {
+	public MarkerHandler() {
+		this(null);
+	}
+
+	public MarkerHandler(Material customItemType) {
+		super("Marker", customItemType, new Origin() {
 
 			@Override
 			public String getKillMessage(FragInformations fragInfo) {
@@ -47,8 +53,8 @@ public class MarkerHandler extends WeaponHandler {
 	}
 
 	@Override
-	protected int getDefaultItemTypeID() {
-		return Material.SNOW_BALL.getId();
+	protected Material getDefaultItemType() {
+		return Material.SNOWBALL;
 	}
 
 	@Override
@@ -63,12 +69,13 @@ public class MarkerHandler extends WeaponHandler {
 	protected void onInteract(PlayerInteractEvent event, Match match) {
 		if (event.getAction() == Action.PHYSICAL) return;
 		Player player = event.getPlayer();
-		ItemStack itemInHand = player.getItemInHand();
+		PlayerInventory playerInventory = player.getInventory();
+		ItemStack itemInHand = playerInventory.getItemInMainHand();
 		if (itemInHand == null) return;
 
 		if (itemInHand.isSimilar(getItem())) {
 			PlayerInventory inv = player.getInventory();
-			if (match.setting_balls == -1 || inv.contains(Material.SNOW_BALL, 1)) {
+			if (match.setting_balls == -1 || inv.contains(Material.SNOWBALL, 1)) {
 				World world = player.getWorld();
 				Vector direction = player.getLocation().getDirection().normalize();
 				Location spawnLoc = Utils.getRightHeadLocation(direction, player.getEyeLocation());
@@ -106,8 +113,7 @@ public class MarkerHandler extends WeaponHandler {
 	@Override
 	protected void onProjectileHit(ProjectileHitEvent event, Projectile projectile, Match match, Player shooter) {
 		if (projectile.getType() == EntityType.SNOWBALL) {
-			String shooterName = shooter.getName();
-			Gadget ball = Paintball.getInstance().weaponManager.getBallHandler().getBall(projectile, match, shooterName);
+			Gadget ball = Paintball.getInstance().weaponManager.getBallHandler().getBall(projectile, match, shooter.getUniqueId());
 			// is paintball ?
 			if (ball != null) {
 				Location location = projectile.getLocation();
@@ -131,7 +137,7 @@ public class MarkerHandler extends WeaponHandler {
 	}
 
 	@Override
-	public void cleanUp(Match match, String playerName) {
+	public void cleanUp(Match match, UUID playerId) {
 		// nothing to do here
 	}
 
@@ -139,5 +145,4 @@ public class MarkerHandler extends WeaponHandler {
 	public void cleanUp(Match match) {
 		// nothing to do here
 	}
-
 }

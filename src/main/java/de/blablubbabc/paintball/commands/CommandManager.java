@@ -221,7 +221,6 @@ public class CommandManager implements CommandExecutor {
 
 						// //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 					} else if (args[0].equalsIgnoreCase("rank")) {
-						String playerName = player.getName();
 						player.sendMessage(Translator.getString("RANK_HEADER"));
 						// send next rank information:
 						Rank rank = plugin.rankManager.getRank(player.getUniqueId());

@@ -4,6 +4,8 @@
  */
 package de.blablubbabc.paintball.gadgets.handlers;
 
+import java.util.UUID;
+
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.Sound;
@@ -24,19 +26,23 @@ import de.blablubbabc.paintball.gadgets.WeaponHandler;
 import de.blablubbabc.paintball.utils.Translator;
 import de.blablubbabc.paintball.utils.Utils;
 
-public class ShotgunHandler extends WeaponHandler {	
-	
+public class ShotgunHandler extends WeaponHandler {
+
 	private int[] angles = new int[5];
-	
-	public ShotgunHandler(int customItemTypeID, boolean useDefaultType) {
-		super("Shotgun", customItemTypeID, useDefaultType, new Origin() {
-			
+
+	public ShotgunHandler() {
+		this(null);
+	}
+
+	public ShotgunHandler(Material customItemType) {
+		super("Shotgun", customItemType, new Origin() {
+
 			@Override
 			public String getKillMessage(FragInformations fragInfo) {
 				return Translator.getString("WEAPON_FEED_SHOTGUN", getDefaultVariablesMap(fragInfo));
 			}
 		});
-		
+
 		angles[0] = Paintball.getInstance().shotgunAngle2;
 		angles[1] = Paintball.getInstance().shotgunAngle1;
 		angles[2] = 0;
@@ -47,10 +53,10 @@ public class ShotgunHandler extends WeaponHandler {
 	public void shoot(Player player, Match match, Location location, Vector direction, double speed, Origin origin) {
 		player.getWorld().playSound(location, Sound.ITEM_FLINTANDSTEEL_USE, 2.0F, 0F);
 		direction.normalize();
-		
+
 		Vector dirY = (new Location(location.getWorld(), 0, 0, 0, location.getYaw(), 0)).getDirection().normalize();
 		Vector n = new Vector(dirY.getZ(), 0.0, -dirY.getX());
-		
+
 		boolean alreadyAngleNull = false;
 		for (int angle : angles) {
 			Vector vec;
@@ -65,7 +71,7 @@ public class ShotgunHandler extends WeaponHandler {
 					vec = direction.clone();
 				}
 			}
-			
+
 			if (Paintball.getInstance().shotgunAngleVert == 0) {
 				Snowball snowball = location.getWorld().spawn(location, Snowball.class);
 				snowball.setShooter(player);
@@ -81,10 +87,10 @@ public class ShotgunHandler extends WeaponHandler {
 			}
 		}
 	}
-	
+
 	@Override
-	protected int getDefaultItemTypeID() {
-		return Material.SPECKLED_MELON.getId();
+	protected Material getDefaultItemType() {
+		return Material.GLISTERING_MELON_SLICE;
 	}
 
 	@Override
@@ -99,9 +105,10 @@ public class ShotgunHandler extends WeaponHandler {
 	protected void onInteract(PlayerInteractEvent event, Match match) {
 		if (event.getAction() == Action.PHYSICAL || !Paintball.getInstance().shotgun) return;
 		Player player = event.getPlayer();
-		ItemStack itemInHand = player.getItemInHand();
+		PlayerInventory playerInventory = player.getInventory();
+		ItemStack itemInHand = playerInventory.getItemInMainHand();
 		if (itemInHand == null) return;
-		
+
 		if (itemInHand.isSimilar(getItem())) {
 			PlayerInventory inv = player.getInventory();
 			if ((match.setting_balls == -1 || inv.containsAtLeast(Paintball.getInstance().weaponManager.getBallHandler().getItem(), Paintball.getInstance().shotgunAmmo))) {
@@ -109,18 +116,18 @@ public class ShotgunHandler extends WeaponHandler {
 				Utils.updatePlayerInventoryLater(Paintball.getInstance(), player);
 				// INFORM MATCH
 				match.onShot(player);
-				
+
 				Location location = player.getEyeLocation();
 				shoot(player, match, location, location.getDirection(), Paintball.getInstance().shotgunSpeedmulti, this.getWeaponOrigin());
-				
+
 			} else {
 				player.playSound(player.getEyeLocation(), Sound.ITEM_FLINTANDSTEEL_USE, 1F, 2F);
 			}
 		}
 	}
-	
+
 	@Override
-	public void cleanUp(Match match, String playerName) {
+	public void cleanUp(Match match, UUID playerId) {
 		// nothing to do here
 	}
 
@@ -128,5 +135,5 @@ public class ShotgunHandler extends WeaponHandler {
 	public void cleanUp(Match match) {
 		// nothing to do here
 	}
-	
+
 }

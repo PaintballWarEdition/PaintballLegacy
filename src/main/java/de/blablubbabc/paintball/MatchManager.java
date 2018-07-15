@@ -11,6 +11,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
+import java.util.UUID;
 
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
@@ -168,7 +169,7 @@ public class MatchManager {
 		matches.add(match);
 	}
 
-	public synchronized void gameEnd(final Match match, boolean draw, Map<String, Location> playersLoc, Set<Player> specs, Map<String, TDMMatchStats> matchStats) {
+	public synchronized void gameEnd(final Match match, boolean draw, Map<UUID, Location> playersLoc, Set<Player> specs, Map<UUID, TDMMatchStats> matchStats) {
 		// TIME
 		final long time1 = System.nanoTime();
 
@@ -176,7 +177,7 @@ public class MatchManager {
 		Map<Player, String> vaultRewards = new HashMap<Player, String>();
 
 		for (Player player : match.getAll()) {
-			String playerName = player.getName();
+			UUID playerId = player.getUniqueId();
 
 			// player ?
 			if (match.getAllPlayer().contains(player)) {
@@ -189,7 +190,7 @@ public class MatchManager {
 
 				double vaultReward = plugin.vaultRewardRound;
 
-				TDMMatchStats mStats = matchStats.get(playerName);
+				TDMMatchStats mStats = matchStats.get(playerId);
 				vaultReward += mStats.getStat(TDMMatchStat.HITS) * plugin.vaultRewardHit;
 				vaultReward += mStats.getStat(TDMMatchStat.KILLS) * plugin.vaultRewardKill;
 
@@ -219,21 +220,21 @@ public class MatchManager {
 				 * }
 				 */
 
-				plugin.givePlayerVaultMoneyInstant(playerName, vaultReward);
+				plugin.givePlayerVaultMoneyInstant(player, vaultReward);
 				// inform player later:
 				vaultRewards.put(player, String.valueOf(vaultReward));
 
 				// AFK DETECTION
 				if (Lobby.isPlaying(player)) {
 					// afk detection update on match end
-					TDMMatchStats playerMatchStats = matchStats.get(playerName);
+					TDMMatchStats playerMatchStats = matchStats.get(playerId);
 					if (plugin.afkDetection && !match.isSpec(player)) {
-						if (player.getLocation().getWorld().equals(playersLoc.get(playerName).getWorld())
-								&& player.getLocation().distanceSquared(playersLoc.get(playerName)) <= plugin.afkRadius2
+						if (player.getLocation().getWorld().equals(playersLoc.get(playerId).getWorld())
+								&& player.getLocation().distanceSquared(playersLoc.get(playerId)) <= plugin.afkRadius2
 								&& playerMatchStats.getStat(TDMMatchStat.SHOTS) == 0 && playerMatchStats.getStat(TDMMatchStat.KILLS) == 0) {
-							plugin.afkSet(playerName, plugin.afkGet(playerName) + 1);
+							plugin.afkSet(playerId, plugin.afkGet(playerId) + 1);
 						} else {
-							plugin.afkRemove(playerName);
+							plugin.afkRemove(playerId);
 						}
 					}
 
@@ -254,22 +255,22 @@ public class MatchManager {
 		// afk detection clean up and consequences:
 		if (plugin.afkDetection) {
 			// clearing players from map which didn't play the during the last match or can't be found
-			List<String> entries = plugin.afkGetEntries();
+			List<UUID> afkPlayerIds = plugin.afkGetEntries();
 
-			for (String afkP : entries) {
-				Player player = plugin.getServer().getPlayerExact(afkP);
+			for (UUID afkPlayerId : afkPlayerIds) {
+				Player player = plugin.getServer().getPlayer(afkPlayerId);
 				if (player != null) {
-					if (!playersLoc.containsKey(afkP)) {
-						plugin.afkRemove(afkP);
-					} else if (plugin.afkGet(afkP) >= plugin.afkMatchAmount) {
+					if (!playersLoc.containsKey(afkPlayerId)) {
+						plugin.afkRemove(afkPlayerId);
+					} else if (plugin.afkGet(afkPlayerId) >= plugin.afkMatchAmount) {
 						// afk detection consequences after being afk:
-						plugin.afkRemove(afkP);
+						plugin.afkRemove(afkPlayerId);
 						Lobby.getTeam(player).removeMember(player);
 						plugin.feeder.afkLeave(player, match);
 						player.sendMessage(Translator.getString("YOU_LEFT_TEAM"));
 					}
 				} else {
-					plugin.afkRemove(afkP);
+					plugin.afkRemove(afkPlayerId);
 				}
 			}
 		}
@@ -586,5 +587,4 @@ public class MatchManager {
 			});
 		}
 	}
-
 }

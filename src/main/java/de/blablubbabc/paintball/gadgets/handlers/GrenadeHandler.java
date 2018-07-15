@@ -4,6 +4,8 @@
  */
 package de.blablubbabc.paintball.gadgets.handlers;
 
+import java.util.UUID;
+
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.Sound;
@@ -41,8 +43,12 @@ public class GrenadeHandler extends WeaponHandler implements Listener {
 
 	private GadgetManager gadgetManager = new GadgetManager();
 
-	public GrenadeHandler(int customItemTypeID, boolean useDefaultType) {
-		super("Grenade", customItemTypeID, useDefaultType, new Origin() {
+	public GrenadeHandler() {
+		this(null);
+	}
+
+	public GrenadeHandler(Material customItemType) {
+		super("Grenade", customItemType, new Origin() {
 
 			@Override
 			public String getKillMessage(FragInformations fragInfo) {
@@ -63,15 +69,15 @@ public class GrenadeHandler extends WeaponHandler implements Listener {
 		if (egg.getShooter() instanceof Player) {
 			Player player = (Player) egg.getShooter();
 			Match match = Paintball.getInstance().matchManager.getMatch(player);
-			if (match != null && gadgetManager.isGadget(egg, match, player.getName())) {
+			if (match != null && gadgetManager.isGadget(egg, match, player.getUniqueId())) {
 				event.setHatching(false);
 			}
 		}
 	}
 
 	@Override
-	protected int getDefaultItemTypeID() {
-		return Material.EGG.getId();
+	protected Material getDefaultItemType() {
+		return Material.EGG;
 	}
 
 	@Override
@@ -86,7 +92,8 @@ public class GrenadeHandler extends WeaponHandler implements Listener {
 	protected void onInteract(PlayerInteractEvent event, Match match) {
 		if (event.getAction() == Action.PHYSICAL || !Paintball.getInstance().grenade) return;
 		Player player = event.getPlayer();
-		ItemStack itemInHand = player.getItemInHand();
+		PlayerInventory playerInventory = player.getInventory();
+		ItemStack itemInHand = playerInventory.getItemInMainHand();
 		if (itemInHand == null) return;
 
 		if (itemInHand.isSimilar(getItem())) {
@@ -120,7 +127,7 @@ public class GrenadeHandler extends WeaponHandler implements Listener {
 	@Override
 	protected void onProjectileHit(ProjectileHitEvent event, Projectile projectile, Match match, Player shooter) {
 		if (Paintball.getInstance().grenade && projectile.getType() == EntityType.EGG) {
-			Gadget nadeGadget = gadgetManager.getGadget(projectile, match, shooter.getName());
+			Gadget nadeGadget = gadgetManager.getGadget(projectile, match, shooter.getUniqueId());
 			if (nadeGadget != null) {
 				Grenade grenade = (Grenade) nadeGadget;
 				grenade.explode(projectile.getLocation(), shooter);
@@ -129,8 +136,8 @@ public class GrenadeHandler extends WeaponHandler implements Listener {
 	}
 
 	@Override
-	public void cleanUp(Match match, String playerName) {
-		gadgetManager.cleanUp(match, playerName);
+	public void cleanUp(Match match, UUID playerId) {
+		gadgetManager.cleanUp(match, playerId);
 	}
 
 	@Override
@@ -144,7 +151,7 @@ public class GrenadeHandler extends WeaponHandler implements Listener {
 		private boolean exploded = false;
 
 		private Grenade(GadgetManager gadgetHandler, Match match, Player player, Egg nade, Origin origin) {
-			super(gadgetHandler, match, player.getName(), origin);
+			super(gadgetHandler, match, player, origin);
 			this.entity = nade;
 		}
 
@@ -190,7 +197,5 @@ public class GrenadeHandler extends WeaponHandler implements Listener {
 		public boolean isSimiliar(Location location) {
 			return false;
 		}
-
 	}
-
 }

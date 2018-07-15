@@ -10,6 +10,7 @@ import java.util.Collection;
 import org.bukkit.Bukkit;
 import org.bukkit.GameMode;
 import org.bukkit.Location;
+import org.bukkit.attribute.Attribute;
 import org.bukkit.entity.Player;
 import org.bukkit.event.entity.EntityDamageEvent;
 import org.bukkit.inventory.ItemStack;
@@ -41,7 +42,7 @@ public class PlayerDataStore {
 	private float saturation;
 	private int foodlevel;
 	private double health;
-	private double maxHealth;
+	private double maxHealthBaseValue;
 	private int fireTicks;
 	private int remainingAir;
 	private int ticksLived;
@@ -109,7 +110,7 @@ public class PlayerDataStore {
 		saturation = player.getSaturation();
 		foodlevel = player.getFoodLevel();
 		health = player.getHealth();
-		maxHealth = player.getMaxHealth();
+		maxHealthBaseValue = player.getAttribute(Attribute.GENERIC_MAX_HEALTH).getBaseValue();
 		fireTicks = player.getFireTicks();
 		remainingAir = player.getRemainingAir();
 		ticksLived = player.getTicksLived();
@@ -155,7 +156,7 @@ public class PlayerDataStore {
 		player.setExhaustion(exhaustion);
 		player.setSaturation(saturation);
 		player.setFoodLevel(foodlevel);
-		player.setMaxHealth(maxHealth);
+		player.getAttribute(Attribute.GENERIC_MAX_HEALTH).setBaseValue(maxHealthBaseValue);
 		player.setHealth(health);
 		player.setFireTicks(fireTicks);
 		player.setRemainingAir(remainingAir);
@@ -192,7 +193,7 @@ public class PlayerDataStore {
 		player.leaveVehicle();
 		player.setGameMode(GameMode.SURVIVAL);
 		// CLEAR PLAYER
-		player.getInventory().clear(-1, -1);
+		player.getInventory().clear();
 		if (checkListname && Paintball.getInstance().listnames) {
 			player.setPlayerListName(null);
 		}

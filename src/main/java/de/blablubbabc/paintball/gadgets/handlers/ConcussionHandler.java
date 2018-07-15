@@ -5,6 +5,7 @@
 package de.blablubbabc.paintball.gadgets.handlers;
 
 import java.util.List;
+import java.util.UUID;
 
 import org.bukkit.Location;
 import org.bukkit.Material;
@@ -22,6 +23,7 @@ import org.bukkit.event.entity.EntityPickupItemEvent;
 import org.bukkit.event.inventory.InventoryPickupItemEvent;
 import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.inventory.ItemStack;
+import org.bukkit.inventory.PlayerInventory;
 import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.potion.PotionEffect;
 import org.bukkit.potion.PotionEffectType;
@@ -41,8 +43,12 @@ public class ConcussionHandler extends WeaponHandler implements Listener {
 	private GadgetManager gadgetManager = new GadgetManager();
 	private int next = 0;
 
-	public ConcussionHandler(int customItemTypeID, boolean useDefaultType) {
-		super("Concussion", customItemTypeID, useDefaultType, null);
+	public ConcussionHandler() {
+		this(null);
+	}
+
+	public ConcussionHandler(Material customItemType) {
+		super("Concussion", customItemType, null);
 		Paintball.getInstance().getServer().getPluginManager().registerEvents(this, Paintball.getInstance());
 	}
 
@@ -62,8 +68,8 @@ public class ConcussionHandler extends WeaponHandler implements Listener {
 	}
 
 	@Override
-	protected int getDefaultItemTypeID() {
-		return Material.SPIDER_EYE.getId();
+	protected Material getDefaultItemType() {
+		return Material.SPIDER_EYE;
 	}
 
 	@Override
@@ -78,7 +84,8 @@ public class ConcussionHandler extends WeaponHandler implements Listener {
 	protected void onInteract(PlayerInteractEvent event, Match match) {
 		if (event.getAction() == Action.PHYSICAL || !Paintball.getInstance().concussion) return;
 		Player player = event.getPlayer();
-		ItemStack itemInHand = player.getItemInHand();
+		PlayerInventory playerInventory = player.getInventory();
+		ItemStack itemInHand = playerInventory.getItemInMainHand();
 		if (itemInHand == null) return;
 
 		if (itemInHand.isSimilar(getItem())) {
@@ -86,7 +93,7 @@ public class ConcussionHandler extends WeaponHandler implements Listener {
 			Vector direction = player.getLocation().getDirection().normalize();
 			Location spawnLoc = Utils.getRightHeadLocation(direction, player.getEyeLocation());
 
-			world.playSound(player.getLocation(), Sound.ENTITY_IRONGOLEM_ATTACK, 2.0F, 1F);
+			world.playSound(player.getLocation(), Sound.ENTITY_IRON_GOLEM_ATTACK, 2.0F, 1F);
 
 			ItemStack nadeItem = getItem().clone();
 			ItemMeta meta = nadeItem.getItemMeta();
@@ -98,10 +105,10 @@ public class ConcussionHandler extends WeaponHandler implements Listener {
 			createConcussion(match, player, nade, this.getWeaponOrigin());
 
 			if (itemInHand.getAmount() <= 1) {
-				player.setItemInHand(null);
+				playerInventory.setItemInMainHand(null);
 			} else {
 				itemInHand.setAmount(itemInHand.getAmount() - 1);
-				player.setItemInHand(itemInHand);
+				playerInventory.setItemInMainHand(itemInHand);
 			}
 			Utils.updatePlayerInventoryLater(Paintball.getInstance(), player);
 		}
@@ -115,8 +122,8 @@ public class ConcussionHandler extends WeaponHandler implements Listener {
 	}
 
 	@Override
-	public void cleanUp(Match match, String playerName) {
-		gadgetManager.cleanUp(match, playerName);
+	public void cleanUp(Match match, UUID playerId) {
+		gadgetManager.cleanUp(match, playerId);
 	}
 
 	@Override
@@ -131,7 +138,7 @@ public class ConcussionHandler extends WeaponHandler implements Listener {
 		private boolean exploded = false;
 
 		private Concussion(GadgetManager gadgetHandler, Match match, Player player, Item nade, Origin origin) {
-			super(gadgetHandler, match, player.getName(), origin);
+			super(gadgetHandler, match, player, origin);
 			this.entity = nade;
 
 			Paintball.getInstance().getServer().getScheduler().runTaskLater(Paintball.getInstance(), new Runnable() {
@@ -174,22 +181,19 @@ public class ConcussionHandler extends WeaponHandler implements Listener {
 				}*/
 
 				// blindness to near enemies:
-				Player player = Paintball.getInstance().getServer().getPlayerExact(playerName);
-				if (player != null) {
-					Match match = Paintball.getInstance().matchManager.getMatch(player);
-					if (match != null) {
-						List<Entity> near = entity.getNearbyEntities(Paintball.getInstance().concussionRange, Paintball.getInstance().concussionRange, Paintball.getInstance().concussionRange);
-						for (Entity e : near) {
-							if (e.getType() == EntityType.PLAYER) {
-								Player p = (Player) e;
-								Match m = Paintball.getInstance().matchManager.getMatch(p);
-								if (match == m && match.enemys(player, p)) {
-									p.addPotionEffect(new PotionEffect(PotionEffectType.SLOW, 20 * Paintball.getInstance().concussionSlownessDuration, 3), true);
-									p.addPotionEffect(new PotionEffect(PotionEffectType.CONFUSION, 20 * Paintball.getInstance().concussionConfusionDuration, 3), true);
-									p.addPotionEffect(new PotionEffect(PotionEffectType.BLINDNESS, 20 * Paintball.getInstance().concussionBlindnessDuration, 3), true);
-								}
-
+				Match match = Paintball.getInstance().matchManager.getMatch(player);
+				if (match != null) {
+					List<Entity> near = entity.getNearbyEntities(Paintball.getInstance().concussionRange, Paintball.getInstance().concussionRange, Paintball.getInstance().concussionRange);
+					for (Entity e : near) {
+						if (e.getType() == EntityType.PLAYER) {
+							Player p = (Player) e;
+							Match m = Paintball.getInstance().matchManager.getMatch(p);
+							if (match == m && match.enemys(player, p)) {
+								p.addPotionEffect(new PotionEffect(PotionEffectType.SLOW, 20 * Paintball.getInstance().concussionSlownessDuration, 3), true);
+								p.addPotionEffect(new PotionEffect(PotionEffectType.CONFUSION, 20 * Paintball.getInstance().concussionConfusionDuration, 3), true);
+								p.addPotionEffect(new PotionEffect(PotionEffectType.BLINDNESS, 20 * Paintball.getInstance().concussionBlindnessDuration, 3), true);
 							}
+
 						}
 					}
 				}
@@ -214,7 +218,5 @@ public class ConcussionHandler extends WeaponHandler implements Listener {
 		public boolean isSimiliar(Location location) {
 			return false;
 		}
-
 	}
-
 }

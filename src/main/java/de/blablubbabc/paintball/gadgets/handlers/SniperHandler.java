@@ -6,6 +6,7 @@ package de.blablubbabc.paintball.gadgets.handlers;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.UUID;
 
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
@@ -30,12 +31,16 @@ import de.blablubbabc.paintball.utils.Translator;
 import de.blablubbabc.paintball.utils.Utils;
 
 public class SniperHandler extends WeaponHandler {
-	
+
 	private List<String> zooming = new ArrayList<String>();
-	
-	public SniperHandler(int customItemTypeID, boolean useDefaultType) {
-		super("Sniper", customItemTypeID, useDefaultType, new Origin() {
-			
+
+	public SniperHandler() {
+		this(null);
+	}
+
+	public SniperHandler(Material customItemType) {
+		super("Sniper", customItemType, new Origin() {
+
 			@Override
 			public String getKillMessage(FragInformations fragInfo) {
 				return Translator.getString("WEAPON_FEED_SNIPER", getDefaultVariablesMap(fragInfo));
@@ -46,7 +51,7 @@ public class SniperHandler extends WeaponHandler {
 	public void shoot(Player player, Match match, Location location, Vector direction, double speed, Origin origin) {
 		player.getWorld().playSound(location, Sound.ITEM_FLINTANDSTEEL_USE, 2.0F, 0F);
 		direction.normalize();
-		
+
 		Snowball snowball = location.getWorld().spawn(location, Snowball.class);
 		snowball.setShooter(player);
 		Paintball.getInstance().weaponManager.getBallHandler().createBall(match, player, snowball, origin);
@@ -57,10 +62,10 @@ public class SniperHandler extends WeaponHandler {
 		}
 
 	}
-	
+
 	@Override
-	protected int getDefaultItemTypeID() {
-		return Material.CARROT_STICK.getId();
+	protected Material getDefaultItemType() {
+		return Material.CARROT_ON_A_STICK;
 	}
 
 	@Override
@@ -75,9 +80,10 @@ public class SniperHandler extends WeaponHandler {
 	protected void onInteract(PlayerInteractEvent event, Match match) {
 		if (event.getAction() == Action.PHYSICAL || !Paintball.getInstance().sniper) return;
 		Player player = event.getPlayer();
-		ItemStack itemInHand = player.getItemInHand();
+		PlayerInventory playerInventory = player.getInventory();
+		ItemStack itemInHand = playerInventory.getItemInMainHand();
 		if (itemInHand == null) return;
-		
+
 		if (itemInHand.isSimilar(getItem())) {
 			Action action = event.getAction();
 			if (action == Action.LEFT_CLICK_AIR) {
@@ -85,14 +91,14 @@ public class SniperHandler extends WeaponHandler {
 			} else if (action == Action.RIGHT_CLICK_AIR) {
 				PlayerInventory inv = player.getInventory();
 				if ((!Paintball.getInstance().sniperOnlyUseIfZooming || isZooming(player))
-					&& (match.setting_balls == -1 || inv.containsAtLeast(Paintball.getInstance().weaponManager.getBallHandler().getItem(), 1))) {
+						&& (match.setting_balls == -1 || inv.containsAtLeast(Paintball.getInstance().weaponManager.getBallHandler().getItem(), 1))) {
 					// INFORM MATCH
 					match.onShot(player);
-					
+
 					Vector direction = player.getLocation().getDirection();
 					Location spawnLoc = Utils.getRightHeadLocation(direction, player.getEyeLocation());
 					shoot(player, match, spawnLoc, direction, Paintball.getInstance().sniperSpeedmulti, this.getWeaponOrigin());
-					
+
 					if (match.setting_balls != -1) {
 						// -1 ball
 						Utils.removeInventoryItems(inv, Paintball.getInstance().weaponManager.getBallHandler().getItem(), 1);
@@ -104,23 +110,23 @@ public class SniperHandler extends WeaponHandler {
 			}
 		}
 	}
-	
+
 	@Override
 	protected void onItemHeld(Player player, ItemStack newItem) {
 		if (isZooming(player)) {
 			setNotZooming(player);
 		}
 	}
-	
+
 	private void setZoom(Player player) {
 		player.setWalkSpeed(-0.15F);
-		if(Paintball.getInstance().sniperRemoveSpeed) player.removePotionEffect(PotionEffectType.SPEED);
+		if (Paintball.getInstance().sniperRemoveSpeed) player.removePotionEffect(PotionEffectType.SPEED);
 	}
-	
+
 	private void setNoZoom(Player player) {
 		player.setWalkSpeed(0.2F);
 	}
-	
+
 	public void toggleZoom(Player player) {
 		if (isZooming(player)) {
 			zooming.remove(player.getName());
@@ -139,7 +145,7 @@ public class SniperHandler extends WeaponHandler {
 		if (!isZooming(player)) {
 			zooming.add(player.getName());
 		}
-		
+
 		setZoom(player);
 	}
 
@@ -147,13 +153,13 @@ public class SniperHandler extends WeaponHandler {
 		if (isZooming(player)) {
 			zooming.remove(player.getName());
 		}
-		
+
 		setNoZoom(player);
 	}
-	
+
 	@Override
-	public void cleanUp(Match match, String playerName) {
-		Player player = Bukkit.getPlayerExact(playerName);
+	public void cleanUp(Match match, UUID playerId) {
+		Player player = Bukkit.getPlayer(playerId);
 		if (player != null && isZooming(player)) {
 			setNotZooming(player);
 		}

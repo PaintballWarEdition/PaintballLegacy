@@ -8,6 +8,7 @@ import net.milkbowl.vault.economy.Economy;
 import net.milkbowl.vault.economy.EconomyResponse;
 
 import org.bukkit.Bukkit;
+import org.bukkit.OfflinePlayer;
 import org.bukkit.plugin.Plugin;
 import org.bukkit.plugin.RegisteredServiceProvider;
 
@@ -51,14 +52,14 @@ public class VaultRewardsFeature {
 		return current != null && givePlayerMoneyInstant(playerName, current);
 	}*/
 	
-	// return true if successfull
-	public boolean givePlayerMoneyInstant(String playerName, double moneyToAdd) {
-		if (economy != null && playerName != null && moneyToAdd > 0) {
-			EconomyResponse response = economy.depositPlayer(playerName, moneyToAdd);
+	// return true if successful
+	public boolean givePlayerMoneyInstant(OfflinePlayer player, double moneyToAdd) {
+		if (economy != null && player != null && moneyToAdd > 0) {
+			EconomyResponse response = economy.depositPlayer(player, moneyToAdd);
 			if (response.transactionSuccess()) {
 				return true;
 			} else {
-				Log.warning("Depositing money to '" + playerName + "'s account via vault wasn't successfully: " + response.errorMessage);
+				Log.warning("Depositing money to '" + player.getName() + "'s account via vault wasn't successful: " + response.errorMessage);
 				return false;
 			}
 		} else {

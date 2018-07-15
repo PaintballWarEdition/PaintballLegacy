@@ -4,6 +4,8 @@
  */
 package de.blablubbabc.paintball.gadgets.handlers;
 
+import java.util.UUID;
+
 import org.bukkit.Effect;
 import org.bukkit.Location;
 import org.bukkit.Material;
@@ -27,6 +29,7 @@ import org.bukkit.event.entity.EntityDamageByEntityEvent;
 import org.bukkit.event.entity.EntityDeathEvent;
 import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.inventory.ItemStack;
+import org.bukkit.inventory.PlayerInventory;
 import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.util.Vector;
 
@@ -49,8 +52,12 @@ public class TurretHandler extends WeaponHandler implements Listener {
 
 	private Location nextTurretSpawn = null;
 
-	public TurretHandler(int customItemTypeID, boolean useDefaultType) {
-		super("Turret", customItemTypeID, useDefaultType, new Origin() {
+	public TurretHandler() {
+		this(null);
+	}
+
+	public TurretHandler(Material customItemType) {
+		super("Turret", customItemType, new Origin() {
 
 			@Override
 			public String getKillMessage(FragInformations fragInfo) {
@@ -90,8 +97,8 @@ public class TurretHandler extends WeaponHandler implements Listener {
 	}
 
 	@Override
-	protected int getDefaultItemTypeID() {
-		return Material.PUMPKIN.getId();
+	protected Material getDefaultItemType() {
+		return Material.PUMPKIN;
 	}
 
 	@Override
@@ -103,8 +110,8 @@ public class TurretHandler extends WeaponHandler implements Listener {
 	}
 
 	@Override
-	public void cleanUp(Match match, String playerName) {
-		gadgetManager.cleanUp(match, playerName);
+	public void cleanUp(Match match, UUID playerId) {
+		gadgetManager.cleanUp(match, playerId);
 	}
 
 	@Override
@@ -122,13 +129,13 @@ public class TurretHandler extends WeaponHandler implements Listener {
 		Block block = event.getBlockPlaced();
 		if (Paintball.getInstance().turret && block.getType() == Material.PUMPKIN) {
 			Player player = event.getPlayer();
-			ItemStack itemInHand = player.getItemInHand();
+			PlayerInventory playerInventory = player.getInventory();
+			ItemStack itemInHand = playerInventory.getItemInMainHand();
 			if (itemInHand == null) return;
 
 			if (itemInHand.isSimilar(getItem())) {
-				String playerName = player.getName();
 				if (gadgetManager.getMatchGadgetCount(match) < Paintball.getInstance().turretMatchLimit) {
-					if (gadgetManager.getPlayerGadgetCount(match, playerName) < Paintball.getInstance().turretPlayerLimit) {
+					if (gadgetManager.getPlayerGadgetCount(match, player.getUniqueId()) < Paintball.getInstance().turretPlayerLimit) {
 
 						// check space:
 						if (block.getRelative(BlockFace.UP).getType().isSolid()) {
@@ -143,10 +150,10 @@ public class TurretHandler extends WeaponHandler implements Listener {
 						new Turret(gadgetManager, match, player, snowman, this.getWeaponOrigin());
 
 						if (itemInHand.getAmount() <= 1) {
-							player.setItemInHand(null);
+							playerInventory.setItemInMainHand(null);
 						} else {
 							itemInHand.setAmount(itemInHand.getAmount() - 1);
-							player.setItemInHand(itemInHand);
+							playerInventory.setItemInMainHand(itemInHand);
 						}
 						Utils.updatePlayerInventoryLater(Paintball.getInstance(), player);
 					} else {
@@ -261,7 +268,7 @@ public class TurretHandler extends WeaponHandler implements Listener {
 		private int lives;
 
 		private Turret(GadgetManager gadgetManager, Match match, Player player, LivingEntity entity, Origin origin) {
-			super(gadgetManager, match, player.getName(), origin);
+			super(gadgetManager, match, player, origin);
 
 			this.entity = entity;
 			this.player = player;
@@ -375,7 +382,7 @@ public class TurretHandler extends WeaponHandler implements Listener {
 							changed.setPitch(90 - (float) Math.toDegrees(Math.acos(y)));
 							entity.teleport(changed);
 
-							entity.getWorld().playSound(entity.getEyeLocation(), Sound.ENTITY_IRONGOLEM_ATTACK, 2.0F, 1F);
+							entity.getWorld().playSound(entity.getEyeLocation(), Sound.ENTITY_IRON_GOLEM_ATTACK, 2.0F, 1F);
 							entity.getWorld().playSound(entity.getEyeLocation(), Sound.ENTITY_CHICKEN_EGG, 2.0F, 1F);
 							Snowball ball = (Snowball) entity.getLocation().getWorld().spawnEntity(entity.getLocation().add(new Vector(0, 2, 0)).add(dir2), EntityType.SNOWBALL);
 							Player player = getOwner();
@@ -410,7 +417,7 @@ public class TurretHandler extends WeaponHandler implements Listener {
 			if (Paintball.getInstance().effects) {
 				Location loc = entity.getLocation().add(0, 1, 0);
 				World world = entity.getWorld();
-				world.playSound(loc, Sound.ENTITY_IRONGOLEM_DEATH, 3L, 2L);
+				world.playSound(loc, Sound.ENTITY_IRON_GOLEM_DEATH, 3L, 2L);
 				for (int i = 1; i <= 8; i++) {
 					world.playEffect(loc, Effect.SMOKE, i);
 				}
@@ -440,7 +447,7 @@ public class TurretHandler extends WeaponHandler implements Listener {
 			if (this.lives <= 0) {
 				die();
 			} else {
-				entity.getWorld().playSound(entity.getEyeLocation(), Sound.ENTITY_IRONGOLEM_HURT, 3L, 2L);
+				entity.getWorld().playSound(entity.getEyeLocation(), Sound.ENTITY_IRON_GOLEM_HURT, 3L, 2L);
 			}
 		}
 

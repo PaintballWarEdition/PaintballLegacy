@@ -6,6 +6,7 @@ package de.blablubbabc.paintball.gadgets;
 
 import org.bukkit.Location;
 import org.bukkit.entity.Entity;
+import org.bukkit.entity.Player;
 
 import de.blablubbabc.paintball.Match;
 import de.blablubbabc.paintball.Origin;
@@ -13,43 +14,49 @@ import de.blablubbabc.paintball.Origin;
 public abstract class Gadget {
 
 	private final GadgetManager gadgetManager;
-	
+
 	protected final Origin origin;
 	protected final Match match;
-	protected final String playerName;
+	protected final Player player;
 	protected boolean valid = true;
-	
-	protected Gadget(GadgetManager gadgetManager, Match match, String playerName, Origin origin) {
+
+	protected Gadget(GadgetManager gadgetManager, Match match, Player player, Origin origin) {
 		this.gadgetManager = gadgetManager;
 		this.match = match;
-		this.playerName = playerName;
+		this.player = player;
 		this.origin = origin;
-		gadgetManager.addGadget(match, playerName, this);
+		gadgetManager.addGadget(match, player.getUniqueId(), this);
 	}
-	
+
 	/**
 	 * Returns false, if this gadget was already removed from the underlying gadgetManager via the dispose-method
+	 * 
 	 * @return false, if this gadget was already removed from the underlying gadgetManager via the dispose-method
 	 */
 	protected boolean isValid() {
 		return valid;
 	}
-	
+
 	public Match getMatch() {
 		return match;
 	}
-	
-	public String getPlayerName() {
-		return playerName;
+
+	public Player getPlayer() {
+		return player;
 	}
-	
+
+	/*public UUID getPlayerId() {
+		return player.getUniqueId();
+	}*/
+
 	public abstract boolean isSimiliar(Entity entity);
+
 	public abstract boolean isSimiliar(Location location);
-	
+
 	public Origin getGadgetOrigin() {
 		return origin;
 	}
-	
+
 	/**
 	 * Used to remove this gadget from the underlying GadgetManager's tracking
 	 * and lets WeaponHandlers handle removal.
@@ -61,8 +68,7 @@ public abstract class Gadget {
 	public void dispose(boolean removeFromGadgetHandlerTracking) {
 		if (removeFromGadgetHandlerTracking && valid) {
 			valid = false;
-			gadgetManager.removeGadget(match, playerName, this);
+			gadgetManager.removeGadget(match, player.getUniqueId(), this);
 		}
 	}
-
 }

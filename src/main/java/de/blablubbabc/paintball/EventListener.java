@@ -258,7 +258,7 @@ public class EventListener implements Listener {
 						if (event.getCause() == DamageCause.PROJECTILE) {
 							// Paintball hit?
 							if (damager instanceof Snowball) {
-								Gadget ball = plugin.weaponManager.getBallHandler().getBall(event.getDamager(), matchA, attacker.getName());
+								Gadget ball = plugin.weaponManager.getBallHandler().getBall(event.getDamager(), matchA, attacker.getUniqueId());
 								if (ball != null) {
 									matchA.onHitByBall(target, attacker, ball.getGadgetOrigin());
 								}
@@ -332,7 +332,7 @@ public class EventListener implements Listener {
 				if (event.getHand() != EquipmentSlot.HAND) return;
 
 				if (!plugin.giftsEnabled) return;
-				ItemStack itemInHand = player.getItemInHand();
+				ItemStack itemInHand = player.getInventory().getItemInMainHand();
 				if (itemInHand != null && itemInHand.getType() == Material.CHEST) {
 					Player receiver = (Player) event.getRightClicked();
 					if (Lobby.getTeam(receiver) != null) {
@@ -347,7 +347,6 @@ public class EventListener implements Listener {
 	public void onPlayerInteractHandleWeapons(PlayerInteractEvent event) {
 		// not ignoring off-hand interactions here at first, so item usage gets properly denied:
 		Player player = event.getPlayer();
-		String playerName = player.getName();
 		if (player.getGameMode() == GameMode.CREATIVE) return;
 		if (Lobby.LOBBY.isMember(player)) {
 			Match match = plugin.matchManager.getMatch(player);
@@ -358,7 +357,7 @@ public class EventListener implements Listener {
 					// TODO this is meant as temporary hack to fix the issue of the BlockPlaceEvent no longer being
 					// triggered
 					// if item usage gets denied, due to some latest change in spigot
-					if (!item.getType().isBlock() && item.getType() != Material.FLOWER_POT_ITEM) {
+					if (!item.getType().isBlock() && item.getType() != Material.FLOWER_POT) {
 						event.setUseItemInHand(Result.DENY);
 					}
 
@@ -375,7 +374,7 @@ public class EventListener implements Listener {
 				// ignore off-hand interactions from this point on:
 				if (event.getHand() != EquipmentSlot.HAND) return;
 
-				if (!match.hasStarted() || match.isJustRespawned(playerName)) return;
+				if (!match.hasStarted() || match.isJustRespawned(player.getUniqueId())) return;
 
 				// handle weapons and gadgets:
 				plugin.weaponManager.onInteract(event, match);

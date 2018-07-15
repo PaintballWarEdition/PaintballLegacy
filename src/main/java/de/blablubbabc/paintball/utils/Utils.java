@@ -36,16 +36,15 @@ public class Utils {
 	public static void init() {
 		transparentBlocks.add(Material.AIR);
 		transparentBlocks.add(Material.WATER);
-		transparentBlocks.add(Material.STATIONARY_WATER);
 		transparentBlocks.add(Material.LAVA);
-		transparentBlocks.add(Material.STATIONARY_LAVA);
 		transparentBlocks.add(Material.FIRE);
-		transparentBlocks.add(Material.PORTAL);
-		transparentBlocks.add(Material.ENDER_PORTAL);
+		transparentBlocks.add(Material.NETHER_PORTAL);
+		transparentBlocks.add(Material.END_PORTAL);
 		transparentBlocks.add(Material.PAINTING);
 
-		transparentBlocks.add(Material.FENCE);
-		transparentBlocks.add(Material.NETHER_FENCE);
+		// used by airstrike and orbital strike:
+		transparentBlocks.add(Material.OAK_FENCE);
+		transparentBlocks.add(Material.NETHER_BRICK_FENCE);
 
 		// alle Richtungen
 		upVectors.add(new Vector(1, 0, 0));
@@ -98,6 +97,15 @@ public class Utils {
 
 	public static Location getRightHeadLocation(Vector viewDirection, Location eyeLocation) {
 		return eyeLocation.add(new Vector(-viewDirection.getZ(), 0.0, viewDirection.getX()).normalize().multiply(0.2));
+	}
+
+	public static void forceShowPlayer(Player player, Player to) {
+		to.showPlayer(player); // legacy: no plugin argument
+		for (Plugin plugin : Bukkit.getPluginManager().getPlugins()) {
+			to.showPlayer(plugin, player);
+		}
+		// TODO this might not work if there are unloaded plugins which have hidden the player and for which a reference
+		// still exist somewhere
 	}
 
 	// /////////////////////////////////////////////////////////////

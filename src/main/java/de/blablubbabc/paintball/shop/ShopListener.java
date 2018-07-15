@@ -4,6 +4,8 @@
  */
 package de.blablubbabc.paintball.shop;
 
+import java.util.UUID;
+
 import org.bukkit.ChatColor;
 import org.bukkit.block.Block;
 import org.bukkit.block.BlockState;
@@ -36,8 +38,7 @@ public class ShopListener implements Listener {
 	public void onInventoryClick(InventoryClickEvent event) {
 		if (event.getWhoClicked() instanceof Player) {
 			Player player = (Player) event.getWhoClicked();
-			String playerName = player.getName();
-			ShopMenu menu = plugin.shopManager.getShopMenu(playerName);
+			ShopMenu menu = plugin.shopManager.getShopMenu(player.getUniqueId());
 			if (menu != null) {
 				event.setCancelled(true);
 				if (event.getSlotType() == SlotType.CONTAINER && event.isLeftClick() && event.getRawSlot() < event.getView().getTopInventory().getSize()) {
@@ -51,10 +52,10 @@ public class ShopListener implements Listener {
 
 	@EventHandler(priority = EventPriority.NORMAL)
 	public void onInventoryClose(InventoryCloseEvent event) {
-		String playerName = event.getPlayer().getName();
-		ShopMenu menu = plugin.shopManager.getShopMenu(playerName);
+		UUID playerId = event.getPlayer().getUniqueId();
+		ShopMenu menu = plugin.shopManager.getShopMenu(playerId);
 		if (menu != null) {
-			menu.onClose(playerName);
+			menu.onClose(playerId);
 		}
 	}
 

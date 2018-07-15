@@ -4,6 +4,9 @@
  */
 package de.blablubbabc.paintball.gadgets;
 
+import java.util.UUID;
+
+import org.bukkit.Material;
 import org.bukkit.entity.Player;
 import org.bukkit.entity.Projectile;
 import org.bukkit.event.block.BlockPlaceEvent;
@@ -22,10 +25,14 @@ public abstract class WeaponHandler {
 	protected final ItemStack item;
 	protected final Origin origin;
 
-	public WeaponHandler(String weaponName, int customItemTypeID, boolean useDefaultType, Origin origin) {
+	public WeaponHandler(String weaponName, Origin origin) {
+		this(weaponName, null, origin);
+	}
+
+	public WeaponHandler(String weaponName, Material customItemType, Origin origin) {
 		this.weaponName = weaponName;
 		Paintball.getInstance().weaponManager.registerWeaponHandler(weaponName, this);
-		item = setItemMeta(new ItemStack(useDefaultType ? getDefaultItemTypeID() : customItemTypeID));
+		item = setItemMeta(new ItemStack(customItemType == null ? getDefaultItemType() : customItemType));
 		this.origin = origin != null ? origin : new Origin();
 	}
 
@@ -33,12 +40,12 @@ public abstract class WeaponHandler {
 		return weaponName;
 	}
 
-	protected abstract int getDefaultItemTypeID();
+	protected abstract Material getDefaultItemType();
 
 	protected abstract ItemStack setItemMeta(ItemStack itemStack);
 
-	public int getItemTypeID() {
-		return item.getTypeId();
+	public Material getItemType() {
+		return item.getType();
 	}
 
 	public ItemStack getItem() {
@@ -49,7 +56,7 @@ public abstract class WeaponHandler {
 		return origin;
 	}
 
-	public abstract void cleanUp(Match match, String playerName);
+	public abstract void cleanUp(Match match, UUID playerId);
 
 	public abstract void cleanUp(Match match);
 

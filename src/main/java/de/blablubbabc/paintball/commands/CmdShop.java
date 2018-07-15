@@ -38,7 +38,6 @@ public class CmdShop {
 			}
 
 			Player player = (Player) sender;
-			String playerName = player.getName();
 
 			if (!plugin.shop && !ignoreShopDisabled) {
 				player.sendMessage(Translator.getString("SHOP_INACTIVE"));
@@ -60,7 +59,8 @@ public class CmdShop {
 					String msg = Translator.getString("SHOP_ENTRY", vars);
 					// check rank:
 					if (goods[i].getNeededRank() > rank.getRankIndex() && !(admin && plugin.ranksAdminBypassShop)) msg = msg.concat(" " + mark);
-					// if(player.hasPermission("paintball.shop.not"+String.valueOf(i)) && !admin) msg = msg.concat(" "+plugin.red+"X");
+					// if(player.hasPermission("paintball.shop.not"+String.valueOf(i)) && !admin) msg = msg.concat("
+					// "+plugin.red+"X");
 					player.sendMessage(msg);
 				}
 				player.sendMessage("");
