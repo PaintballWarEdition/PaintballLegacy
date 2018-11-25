@@ -100,12 +100,13 @@ public class Log {
 		Log.logColored(" ");
 		Log.logColored(ChatColor.RED + " License stuff:");
 		Log.logColored(ChatColor.GOLD + "   - Usage on own risk. I give no warranties for anything.");
-		Log.logColored(ChatColor.GOLD + "   - Do not modify. Use it as it is!");
 		Log.logColored(ChatColor.GOLD + "   - Do not redistribute/upload/use parts of it/copy/give away.");
 		Log.logColored(ChatColor.GOLD + "   - Do not use for commercial purposes!");
+		Log.logColored(ChatColor.GOLD + "     -> No selling of paintball currency!");
 		Log.logColored(ChatColor.GOLD + "     -> No benefits for paying players/donors!");
 		Log.logColored(ChatColor.GOLD + "     -> This also applies to any kind of add-on you are using");
-		Log.logColored(ChatColor.GOLD + "        related to this plugin!");
+		Log.logColored(ChatColor.GOLD + "        in a way related to this plugin!");
+		Log.logColored(ChatColor.GOLD + " The complete list of license terms can be found on the project page.");
 		Log.logColored(" ");
 		Log.logColored(ChatColor.DARK_GREEN + " If you like this plugin: Give feedback and donate at");
 		Log.logColored(ChatColor.DARK_GREEN + " ->http://dev.bukkit.org/projects/paintball_pure_war/ ");
