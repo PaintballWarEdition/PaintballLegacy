@@ -291,7 +291,7 @@ public class CommandManager implements CommandExecutor {
 		sender.sendMessage(blablubbabc);
 		sender.sendMessage(ChatColor.DARK_GREEN + "Permission: " + ChatColor.GOLD + (hasGeneralPerm(sender) ? Translator.getString("ALLOWED_TO_PLAY_PAINTBALL") : Translator.getString("NOT_ALLOWED_TO_PLAY_PAINTBALL")));
 		sender.sendMessage(ChatColor.DARK_GREEN + "Version: " + ChatColor.GOLD + plugin.getDescription().getVersion());
-		sender.sendMessage(ChatColor.DARK_GREEN + "Website: " + ChatColor.GOLD + "dev.bukkit.org/server-mods/paintball_pure_war/");
+		sender.sendMessage(ChatColor.DARK_GREEN + "Website: " + ChatColor.GOLD + "dev.bukkit.org/projects/paintball_pure_war/");
 		sender.sendMessage(ChatColor.DARK_RED + "Basic license hints: ");
 		sender.sendMessage(ChatColor.RED + "* Commercial usage of this plugin in any kind is not allowed.");
 		sender.sendMessage(ChatColor.RED + "* Example: No benefits for payed ranks/vip and donors.");
