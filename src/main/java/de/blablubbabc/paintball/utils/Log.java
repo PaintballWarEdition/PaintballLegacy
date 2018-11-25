@@ -108,7 +108,7 @@ public class Log {
 		Log.logColored(ChatColor.GOLD + "        related to this plugin!");
 		Log.logColored(" ");
 		Log.logColored(ChatColor.DARK_GREEN + " If you like this plugin: Give feedback and donate at");
-		Log.logColored(ChatColor.DARK_GREEN + " ->http://dev.bukkit.org/server-mods/paintball_pure_war/ ");
+		Log.logColored(ChatColor.DARK_GREEN + " ->http://dev.bukkit.org/projects/paintball_pure_war/ ");
 		Log.logColored(" ");
 		Log.logColored(ChatColor.GREEN + " Thank you and good shooting!");
 		Log.logColored(ChatColor.GREEN + "   - blablubbabc :)");
