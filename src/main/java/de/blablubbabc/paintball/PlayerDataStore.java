@@ -6,10 +6,17 @@ package de.blablubbabc.paintball;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.EnumMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Map.Entry;
 
 import org.bukkit.Bukkit;
 import org.bukkit.GameMode;
 import org.bukkit.Location;
+import org.bukkit.attribute.Attribute;
+import org.bukkit.attribute.AttributeInstance;
+import org.bukkit.attribute.AttributeModifier;
 import org.bukkit.entity.Player;
 import org.bukkit.event.entity.EntityDamageEvent;
 import org.bukkit.inventory.ItemStack;
@@ -22,6 +29,17 @@ import de.blablubbabc.paintball.utils.Translator;
 
 public class PlayerDataStore {
 
+	private static class AttributeData {
+
+		public final double baseValue;
+		public final Collection<AttributeModifier> modifiers;
+
+		public AttributeData(double baseValue, Collection<AttributeModifier> modifiers) {
+			this.baseValue = baseValue;
+			this.modifiers = modifiers;
+		}
+	}
+
 	// DATA
 	// Names
 	private String listname;
@@ -30,7 +48,9 @@ public class PlayerDataStore {
 	// Inventory
 	private ItemStack[] invContent;
 	// PotionEffects
-	private ArrayList<PotionEffect> potionEffects = new ArrayList<PotionEffect>();
+	private List<PotionEffect> potionEffects = new ArrayList<PotionEffect>();
+	// attributes:
+	private Map<Attribute, AttributeData> attributes = new EnumMap<>(Attribute.class);
 	// Flying
 	private boolean allowFlight;
 	private boolean isFlying;
@@ -41,7 +61,6 @@ public class PlayerDataStore {
 	private float saturation;
 	private int foodlevel;
 	private double health;
-	private double maxHealth;
 	private int fireTicks;
 	private int remainingAir;
 	private int ticksLived;
@@ -83,6 +102,7 @@ public class PlayerDataStore {
 
 		// PotionEffects
 		Collection<PotionEffect> activePotionEffects = player.getActivePotionEffects();
+		potionEffects.clear();
 		potionEffects.addAll(activePotionEffects);
 		for (PotionEffect effect : activePotionEffects) {
 			player.removePotionEffect(effect.getType());
@@ -99,9 +119,19 @@ public class PlayerDataStore {
 			player.sendMessage(Translator.getString("INVENTORY_SAVED"));
 		}
 
+		// attributes:
+		attributes.clear();
+		for (Attribute attribute : Attribute.values()) {
+			AttributeInstance attributeInstance = player.getAttribute(attribute);
+			if (attributeInstance != null) {
+				attributes.put(attribute, new AttributeData(attributeInstance.getBaseValue(), attributeInstance.getModifiers()));
+			}
+		}
+
 		// Flying
 		allowFlight = player.getAllowFlight();
 		isFlying = player.isFlying();
+
 		// Status
 		walkspeed = player.getWalkSpeed();
 		flyspeed = player.getFlySpeed();
@@ -109,7 +139,6 @@ public class PlayerDataStore {
 		saturation = player.getSaturation();
 		foodlevel = player.getFoodLevel();
 		health = player.getHealth();
-		maxHealth = player.getMaxHealth();
 		fireTicks = player.getFireTicks();
 		remainingAir = player.getRemainingAir();
 		ticksLived = player.getTicksLived();
@@ -146,16 +175,29 @@ public class PlayerDataStore {
 			}
 			player.sendMessage(Translator.getString("INVENTORY_RESTORED"));
 		}
+
 		// Flying
 		player.setAllowFlight(allowFlight);
 		player.setFlying(isFlying);
+
+		// restore attributes:
+		for (Entry<Attribute, AttributeData> entry : attributes.entrySet()) {
+			AttributeInstance attributeInstance = player.getAttribute(entry.getKey());
+			if (attributeInstance != null) {
+				AttributeData attributeData = entry.getValue();
+				attributeInstance.setBaseValue(attributeData.baseValue);
+				for (AttributeModifier modifier : attributeData.modifiers) {
+					attributeInstance.addModifier(modifier);
+				}
+			}
+		}
+
 		// Status
 		player.setWalkSpeed(walkspeed);
 		player.setFlySpeed(flyspeed);
 		player.setExhaustion(exhaustion);
 		player.setSaturation(saturation);
 		player.setFoodLevel(foodlevel);
-		player.setMaxHealth(maxHealth);
 		player.setHealth(health);
 		player.setFireTicks(fireTicks);
 		player.setRemainingAir(remainingAir);
@@ -203,10 +245,21 @@ public class PlayerDataStore {
 		}
 		if (player.getAllowFlight()) player.setAllowFlight(false);
 		if (player.isFlying()) player.setFlying(false);
+
+		// reset attributes:
+		for (Attribute attribute : Attribute.values()) {
+			AttributeInstance attributeInstance = player.getAttribute(attribute);
+			if (attributeInstance != null) {
+				for (AttributeModifier modifier : attributeInstance.getModifiers()) {
+					attributeInstance.removeModifier(modifier);
+				}
+				attributeInstance.setBaseValue(attributeInstance.getDefaultValue());
+			}
+		}
+
 		if (player.getWalkSpeed() != 0.2F) player.setWalkSpeed(0.2F);
 		if (player.getFlySpeed() != 0.1F) player.setFlySpeed(0.1F);
 		if (player.getFoodLevel() != 20) player.setFoodLevel(20);
-		if (player.getMaxHealth() != 20) player.setMaxHealth(20);
 		if (player.getHealth() != 20) player.setHealth(20);
 		if (player.getFireTicks() != 0) player.setFireTicks(0);
 		if (Paintball.getInstance().useXPBar) {
