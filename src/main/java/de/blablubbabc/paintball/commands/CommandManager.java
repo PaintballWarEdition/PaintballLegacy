@@ -294,9 +294,9 @@ public class CommandManager implements CommandExecutor {
 		sender.sendMessage(ChatColor.DARK_GREEN + "Website: " + ChatColor.GOLD + "dev.bukkit.org/projects/paintball_pure_war/");
 		sender.sendMessage(ChatColor.DARK_RED + "Basic license hints: ");
 		sender.sendMessage(ChatColor.RED + "* Commercial usage of this plugin in any kind is not allowed.");
+		sender.sendMessage(ChatColor.RED + "* Example: No selling of paintball currency.");
 		sender.sendMessage(ChatColor.RED + "* Example: No benefits for payed ranks/vip and donors.");
-		sender.sendMessage(ChatColor.RED + "* Modifying code is not allowed.");
-		sender.sendMessage(ChatColor.GOLD + "You can find a complete list of usage condition on the bukkit dev page.");
+		sender.sendMessage(ChatColor.GOLD + "You can find the complete list of license terms on the project page.");
 	}
 
 	public void pbhelp(CommandSender sender) {
