@@ -17,28 +17,22 @@ import org.bukkit.Location;
 import org.bukkit.attribute.Attribute;
 import org.bukkit.attribute.AttributeInstance;
 import org.bukkit.attribute.AttributeModifier;
+import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
 import org.bukkit.event.entity.EntityDamageEvent;
+import org.bukkit.inventory.EntityEquipment;
+import org.bukkit.inventory.EquipmentSlot;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.PlayerInventory;
 import org.bukkit.potion.PotionEffect;
 import org.bukkit.scoreboard.Scoreboard;
 
+import com.google.common.collect.Multimap;
+
 import de.blablubbabc.paintball.utils.TeleportManager;
 import de.blablubbabc.paintball.utils.Translator;
 
 public class PlayerDataStore {
-
-	private static class AttributeData {
-
-		public final double baseValue;
-		public final Collection<AttributeModifier> modifiers;
-
-		public AttributeData(double baseValue, Collection<AttributeModifier> modifiers) {
-			this.baseValue = baseValue;
-			this.modifiers = modifiers;
-		}
-	}
 
 	// DATA
 	// Names
@@ -50,7 +44,7 @@ public class PlayerDataStore {
 	// PotionEffects
 	private List<PotionEffect> potionEffects = new ArrayList<PotionEffect>();
 	// attributes:
-	private Map<Attribute, AttributeData> attributes = new EnumMap<>(Attribute.class);
+	private Map<Attribute, Double> attributeBaseValues = new EnumMap<>(Attribute.class);
 	// Flying
 	private boolean allowFlight;
 	private boolean isFlying;
@@ -120,11 +114,11 @@ public class PlayerDataStore {
 		}
 
 		// attributes:
-		attributes.clear();
+		attributeBaseValues.clear();
 		for (Attribute attribute : Attribute.values()) {
 			AttributeInstance attributeInstance = player.getAttribute(attribute);
 			if (attributeInstance != null) {
-				attributes.put(attribute, new AttributeData(attributeInstance.getBaseValue(), attributeInstance.getModifiers()));
+				attributeBaseValues.put(attribute, attributeInstance.getBaseValue());
 			}
 		}
 
@@ -181,16 +175,15 @@ public class PlayerDataStore {
 		player.setFlying(isFlying);
 
 		// restore attributes:
-		for (Entry<Attribute, AttributeData> entry : attributes.entrySet()) {
+		// base values:
+		for (Entry<Attribute, Double> entry : attributeBaseValues.entrySet()) {
 			AttributeInstance attributeInstance = player.getAttribute(entry.getKey());
 			if (attributeInstance != null) {
-				AttributeData attributeData = entry.getValue();
-				attributeInstance.setBaseValue(attributeData.baseValue);
-				for (AttributeModifier modifier : attributeData.modifiers) {
-					attributeInstance.addModifier(modifier);
-				}
+				attributeInstance.setBaseValue(entry.getValue());
 			}
 		}
+		// apply item attribute modifiers:
+		updateItemAttributes(player);
 
 		// Status
 		player.setWalkSpeed(walkspeed);
@@ -225,6 +218,53 @@ public class PlayerDataStore {
 
 		// TELEPORT BACK
 		if (!withoutTeleport) TeleportManager.teleport(player, location);
+	}
+
+	private static void updateItemAttributes(LivingEntity entity) {
+		if (entity == null) return;
+		EntityEquipment equipment = entity.getEquipment();
+		if (equipment == null) return;
+
+		for (EquipmentSlot slot : EquipmentSlot.values()) {
+			// get item by slot:
+			ItemStack item = null;
+			switch (slot) {
+			case HAND:
+				item = equipment.getItemInMainHand();
+				break;
+			case OFF_HAND:
+				item = equipment.getItemInOffHand();
+				break;
+			case FEET:
+				item = equipment.getBoots();
+				break;
+			case LEGS:
+				item = equipment.getLeggings();
+				break;
+			case CHEST:
+				item = equipment.getChestplate();
+				break;
+			case HEAD:
+				item = equipment.getHelmet();
+				break;
+			default:
+				break;
+			}
+			if (item == null || !item.hasItemMeta()) continue;
+
+			Multimap<Attribute, AttributeModifier> modifiers = item.getItemMeta().getAttributeModifiers(slot);
+			if (modifiers == null) continue;
+			for (Entry<Attribute, Collection<AttributeModifier>> entry : modifiers.asMap().entrySet()) {
+				AttributeInstance attributeInstance = entity.getAttribute(entry.getKey());
+				if (attributeInstance == null) continue;
+				for (AttributeModifier modifier : entry.getValue()) {
+					// duplicate modifiers are not allowed and there is no method to check if the modifier is
+					// already applied, so: remove first, in case the modifier is already active:
+					attributeInstance.removeModifier(modifier);
+					attributeInstance.addModifier(modifier);
+				}
+			}
+		}
 	}
 
 	@SuppressWarnings("deprecation")
