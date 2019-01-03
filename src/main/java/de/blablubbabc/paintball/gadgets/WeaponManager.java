@@ -269,24 +269,6 @@ public class WeaponManager {
 	public ItemStack setMeta(ItemStack itemStack) {
 		Material type = itemStack.getType();
 
-		// Team colored wool:
-		if (type == Material.RED_WOOL) {
-			ItemMeta meta = itemStack.getItemMeta();
-			meta.setDisplayName(Translator.getString("TEAM_RED"));
-			itemStack.setItemMeta(meta);
-			return itemStack;
-		} else if (type == Material.BLUE_WOOL) {
-			ItemMeta meta = itemStack.getItemMeta();
-			meta.setDisplayName(Translator.getString("TEAM_BLUE"));
-			itemStack.setItemMeta(meta);
-			return itemStack;
-		} else if (type == Material.YELLOW_WOOL) {
-			ItemMeta meta = itemStack.getItemMeta();
-			meta.setDisplayName(Translator.getString("TEAM_SPECTATOR"));
-			itemStack.setItemMeta(meta);
-			return itemStack;
-		}
-
 		// Shop book:
 		if (type == Material.BOOK) {
 			ItemMeta meta = itemStack.getItemMeta();

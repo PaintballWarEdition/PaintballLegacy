@@ -21,6 +21,7 @@ import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
+import org.bukkit.inventory.meta.LeatherArmorMeta;
 import org.bukkit.scoreboard.DisplaySlot;
 import org.bukkit.scoreboard.Objective;
 import org.bukkit.scoreboard.Score;
@@ -357,12 +358,20 @@ public class Match {
 		// SHOP ITEM
 		if (plugin.shop) player.getInventory().setItem(7, plugin.shopManager.item.clone());
 
-		// TEAM WOOL
+		// TEAM ITEM
+		ItemStack teamItem = new ItemStack(Material.LEATHER_CHESTPLATE, 1);
 		if (red) {
-			player.getInventory().setItem(8, Paintball.getInstance().weaponManager.setMeta(new ItemStack(Material.RED_WOOL, 1)));
+			LeatherArmorMeta teamItemMeta = (LeatherArmorMeta) teamItem.getItemMeta();
+			teamItemMeta.setColor(Lobby.RED.colorA());
+			teamItemMeta.setDisplayName(Translator.getString("TEAM_RED"));
+			teamItem.setItemMeta(teamItemMeta);
 		} else {
-			player.getInventory().setItem(8, Paintball.getInstance().weaponManager.setMeta(new ItemStack(Material.BLUE_WOOL, 1)));
+			LeatherArmorMeta teamItemMeta = (LeatherArmorMeta) teamItem.getItemMeta();
+			teamItemMeta.setColor(Lobby.BLUE.colorA());
+			teamItemMeta.setDisplayName(Translator.getString("TEAM_BLUE"));
+			teamItem.setItemMeta(teamItemMeta);
 		}
+		player.getInventory().setItem(8, teamItem);
 
 		// if marker is not paintball item:
 		if (plugin.weaponManager.getBallHandler().getItemType() != plugin.weaponManager.getMarkerHandler().getItemType()) {
@@ -511,7 +520,12 @@ public class Match {
 		player.getInventory().setLeggings(Utils.setLeatherArmorColor(new ItemStack(Material.LEATHER_LEGGINGS, 1), Lobby.SPECTATE.colorA()));
 		player.getInventory().setBoots(Utils.setLeatherArmorColor(new ItemStack(Material.LEATHER_BOOTS, 1), Lobby.SPECTATE.colorA()));
 
-		player.getInventory().setItem(8, Paintball.getInstance().weaponManager.setMeta(new ItemStack(Material.YELLOW_WOOL, 1)));
+		ItemStack teamItem = new ItemStack(Material.LEATHER_CHESTPLATE, 1);
+		LeatherArmorMeta teamItemMeta = (LeatherArmorMeta) teamItem.getItemMeta();
+		teamItemMeta.setColor(Lobby.SPECTATE.colorA());
+		teamItemMeta.setDisplayName(Translator.getString("TEAM_SPECTATOR"));
+		teamItem.setItemMeta(teamItemMeta);
+		player.getInventory().setItem(8, teamItem);
 
 		player.updateInventory();
 		// MESSAGE
