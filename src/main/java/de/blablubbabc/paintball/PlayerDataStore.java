@@ -148,7 +148,7 @@ public class PlayerDataStore {
 		scoreboard = player.getScoreboard();
 
 		// CLEAR COMPLETE
-		// the scoreboard will be set by the lobby / match if necesarry
+		// the scoreboard will be set by the lobby / match if necessary
 		clearPlayer(player, true, true);
 	}
 
