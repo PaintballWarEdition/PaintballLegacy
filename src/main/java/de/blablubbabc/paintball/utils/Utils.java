@@ -23,6 +23,7 @@ import org.bukkit.entity.Player;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.PlayerInventory;
+import org.bukkit.inventory.meta.Damageable;
 import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.inventory.meta.LeatherArmorMeta;
 import org.bukkit.plugin.IllegalPluginAccessException;
@@ -46,7 +47,7 @@ public class Utils {
 		transparentBlocks.add(Material.OAK_FENCE);
 		transparentBlocks.add(Material.NETHER_BRICK_FENCE);
 
-		// alle Richtungen
+		// all directions
 		upVectors.add(new Vector(1, 0, 0));
 		upVectors.add(new Vector(0, 1, 0));
 		upVectors.add(new Vector(0, 0, 1));
@@ -106,6 +107,30 @@ public class Utils {
 		}
 		// TODO this might not work if there are unloaded plugins which have hidden the player and for which a reference
 		// still exist somewhere
+	}
+
+	public static boolean isSign(Material material) {
+		if (material == null) return false;
+		return material.data == org.bukkit.block.data.type.Sign.class || material.data == org.bukkit.block.data.type.WallSign.class;
+	}
+
+	public static void setDamage(ItemStack item, int damage) {
+		ItemMeta itemMeta = item.getItemMeta();
+		if (itemMeta instanceof Damageable) {
+			((Damageable) itemMeta).setDamage(damage);
+			item.setItemMeta(itemMeta);
+		}
+	}
+
+	public static int getDamage(ItemStack item) {
+		int damage = 0;
+		if (item.hasItemMeta()) {
+			ItemMeta itemMeta = item.getItemMeta();
+			if (itemMeta instanceof Damageable) {
+				damage = ((Damageable) itemMeta).getDamage();
+			}
+		}
+		return damage;
 	}
 
 	// /////////////////////////////////////////////////////////////
@@ -256,18 +281,18 @@ public class Utils {
 		return item;
 	}
 
-	private static ArrayList<Vector> upVectors = new ArrayList<Vector>();
-	private static ArrayList<Vector> downVectors = new ArrayList<Vector>();
+	private static List<Vector> upVectors = new ArrayList<Vector>();
+	private static List<Vector> downVectors = new ArrayList<Vector>();
 
-	public static ArrayList<Vector> getUpVectors() {
+	public static List<Vector> getUpVectors() {
 		return upVectors;
 	}
 
-	public static ArrayList<Vector> getDownVectors() {
+	public static List<Vector> getDownVectors() {
 		return downVectors;
 	}
 
-	public static ArrayList<Vector> getDirections() {
+	public static List<Vector> getDirections() {
 		ArrayList<Vector> vectors = new ArrayList<Vector>();
 		vectors.addAll(upVectors);
 		vectors.addAll(downVectors);

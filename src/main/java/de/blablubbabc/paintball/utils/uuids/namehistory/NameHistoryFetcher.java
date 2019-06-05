@@ -15,9 +15,9 @@ import java.util.Map;
 import java.util.UUID;
 import java.util.concurrent.Callable;
 
-import org.json.simple.JSONArray;
-import org.json.simple.JSONObject;
-import org.json.simple.parser.JSONParser;
+import com.google.gson.JsonArray;
+import com.google.gson.JsonObject;
+import com.google.gson.JsonParser;
 
 import de.blablubbabc.paintball.utils.Log;
 
@@ -26,7 +26,7 @@ public class NameHistoryFetcher implements Callable<Map<UUID, List<NameHistoryEn
 	private final static String BASE_URL = "https://api.mojang.com/user/profiles/";
 	private final static String URL_SUFFIX = "/names";
 
-	private final JSONParser jsonParser = new JSONParser();
+	private final JsonParser jsonParser = new JsonParser();
 	private final List<UUID> uuids;
 
 	public NameHistoryFetcher(List<UUID> uuids) {
@@ -40,24 +40,24 @@ public class NameHistoryFetcher implements Callable<Map<UUID, List<NameHistoryEn
 			List<NameHistoryEntry> nameHistory = new ArrayList<NameHistoryEntry>();
 
 			HttpURLConnection connection = (HttpURLConnection) new URL(BASE_URL + uuid.toString().replace("-", "") + URL_SUFFIX).openConnection();
-			JSONArray response = null;
+			JsonArray response = null;
 			try {
-				response = (JSONArray) jsonParser.parse(new InputStreamReader(connection.getInputStream()));
+				response = jsonParser.parse(new InputStreamReader(connection.getInputStream())).getAsJsonArray();
 			} catch (Exception e) {
 				Log.warning(e.getMessage());
 			}
 			if (response == null) continue;
 
 			for (int i = 0; i < response.size(); i++) {
-				JSONObject entry = (JSONObject) response.get(i);
-				String name = (String) entry.get("name");
+				JsonObject entry = (JsonObject) response.get(i).getAsJsonObject();
+				String name = entry.get("name").getAsString();
 				if (name == null) {
 					continue;
 				}
 
 				Date date = null;
-				if (entry.containsKey("changedToAt")) {
-					date = new Date(((Number) entry.get("changedToAt")).longValue());
+				if (entry.has("changedToAt")) {
+					date = new Date(entry.get("changedToAt").getAsLong());
 				}
 				nameHistory.add(new NameHistoryEntry(name, date));
 			}

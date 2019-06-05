@@ -110,7 +110,7 @@ public class Serverlister {
 		encodeDataPair(data, "serverip", ip);
 		encodeDataPair(data, "ip", plugin.getServer().getIp());
 		encodeDataPair(data, "port", Integer.toString(plugin.getServer().getPort()));
-		encodeDataPair(data, "name", plugin.getServer().getServerName());
+		encodeDataPair(data, "name", "Unkown server name"); // TODO this property no longer exists, remove it?
 		encodeDataPair(data, "motd", plugin.getServer().getMotd());
 		encodeDataPair(data, "bukkitversion", plugin.getServer().getBukkitVersion());
 		encodeDataPair(data, "slots", Integer.toString(plugin.getServer().getMaxPlayers()));

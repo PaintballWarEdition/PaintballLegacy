@@ -18,6 +18,7 @@ import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.inventory.EquipmentSlot;
 
 import de.blablubbabc.paintball.Paintball;
+import de.blablubbabc.paintball.utils.Utils;
 
 public class CommandSignsListener implements Listener {
 
@@ -36,7 +37,7 @@ public class CommandSignsListener implements Listener {
 		Block block = event.getClickedBlock();
 		if (block == null) return;
 		Material type = block.getType();
-		if (type != Material.WALL_SIGN && type != Material.SIGN) return;
+		if (!Utils.isSign(type)) return;
 
 		BlockState state = block.getState();
 		Sign sign = (Sign) state;

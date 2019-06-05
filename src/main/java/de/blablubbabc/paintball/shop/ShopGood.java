@@ -41,7 +41,7 @@ public class ShopGood {
 			this.name = split[1];
 			int amount = isInteger(split[0]);
 			Material type = Material.matchMaterial(split[2]);
-			short damage = isShort(isInteger(split[3]));
+			int damage = isInteger(split[3]);
 			this.price = isInteger(split[4]);
 
 			if (split.length == 6) {
@@ -52,7 +52,11 @@ public class ShopGood {
 			if (amount <= 0 || type == null || damage < 0 || price < 0 || this.name == null || this.name.isEmpty()) {
 				this.empty = true;
 			} else {
-				this.itemstack = Paintball.getInstance().weaponManager.setMeta(new ItemStack(type, amount, damage));
+				ItemStack item = new ItemStack(type, amount);
+				if (damage != 0) {
+					Utils.setDamage(item, damage);
+				}
+				this.itemstack = Paintball.getInstance().weaponManager.setMeta(item);
 
 				Map<String, String> vars = new HashMap<String, String>();
 				vars.put("amount", split[0]);
@@ -67,7 +71,7 @@ public class ShopGood {
 		// ICON:
 		if (this.empty) {
 			this.slot = Translator.getString("SHOP_EMPTY");
-			this.icon = new ItemStack(Material.SIGN);
+			this.icon = new ItemStack(Material.OAK_SIGN);
 			List<String> desc = new ArrayList<String>();
 			desc.add(ChatColor.RED + this.slot);
 
@@ -92,12 +96,11 @@ public class ShopGood {
 				KeyValuePair item_name = new KeyValuePair("item_name", itemstack.getType().toString());
 				desc.add(Translator.getString("SHOP_MENU_ITEM_OTHER", item_amount, item_name,
 						new KeyValuePair("item_type", itemstack.getType().name()),
-						new KeyValuePair("item_damage", String.valueOf(itemstack.getDurability()))));
+						new KeyValuePair("item_damage", String.valueOf(Utils.getDamage(itemstack)))));
 			}
 
 			this.icon = Utils.setItemMeta(this.icon, name, desc);
 		}
-
 	}
 
 	private int isInteger(String s) {
@@ -107,12 +110,6 @@ public class ShopGood {
 		} catch (Exception e) {
 			return 0;
 		}
-	}
-
-	private short isShort(int i) {
-		if (i > Short.MAX_VALUE) return Short.MAX_VALUE;
-		if (i < Short.MIN_VALUE) return Short.MIN_VALUE;
-		return (short) i;
 	}
 
 	public boolean isEmpty() {

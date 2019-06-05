@@ -148,7 +148,7 @@ public class EventListener implements Listener {
 	public void onInventoryOpen(InventoryOpenEvent event) {
 		Player player = (Player) event.getPlayer();
 		if (Lobby.LOBBY.isMember(player)) {
-			if (!event.getInventory().getName().equalsIgnoreCase(Translator.getString("SHOP_NAME"))) {
+			if (!event.getView().getTitle().equalsIgnoreCase(Translator.getString("SHOP_NAME"))) {
 				event.setCancelled(true);
 			}
 		}

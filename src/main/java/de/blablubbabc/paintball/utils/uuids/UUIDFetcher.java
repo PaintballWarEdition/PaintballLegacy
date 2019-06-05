@@ -7,31 +7,38 @@
  */
 package de.blablubbabc.paintball.utils.uuids;
 
-import com.google.common.base.Charsets;
-
-import de.blablubbabc.paintball.Paintball;
-import de.blablubbabc.paintball.utils.Log;
-
-import org.bukkit.Bukkit;
-import org.bukkit.OfflinePlayer;
-import org.bukkit.configuration.file.YamlConfiguration;
-import org.json.simple.JSONArray;
-import org.json.simple.JSONObject;
-import org.json.simple.parser.JSONParser;
-
 import java.io.File;
 import java.io.InputStreamReader;
 import java.io.OutputStream;
 import java.net.HttpURLConnection;
 import java.net.URL;
 import java.nio.ByteBuffer;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.UUID;
+
+import org.bukkit.Bukkit;
+import org.bukkit.OfflinePlayer;
+import org.bukkit.configuration.file.YamlConfiguration;
+
+import com.google.common.base.Charsets;
+import com.google.gson.Gson;
+import com.google.gson.JsonArray;
+import com.google.gson.JsonElement;
+import com.google.gson.JsonObject;
+import com.google.gson.JsonParser;
+
+import de.blablubbabc.paintball.Paintball;
+import de.blablubbabc.paintball.utils.Log;
 
 public class UUIDFetcher {
 
 	private static int PROFILES_PER_REQUEST = 100;
 	private static final String PROFILE_URL = "https://api.mojang.com/profiles/minecraft";
-	private final JSONParser jsonParser = new JSONParser();
+	private final JsonParser jsonParser = new JsonParser();
+	private final Gson gson = new Gson();
 	private final List<String> names;
 	private final boolean rateLimiting;
 
@@ -111,7 +118,7 @@ public class UUIDFetcher {
 			int counter = 0;
 			for (int i = 0; i < requests; i++) {
 				boolean retry = false;
-				JSONArray array = null;
+				JsonArray array = null;
 				int uuidRequsts = 0;
 
 				do {
@@ -120,11 +127,12 @@ public class UUIDFetcher {
 					HttpURLConnection connection = createConnection();
 					List<String> sublist = names.subList(i * PROFILES_PER_REQUEST, Math.min((i + 1) * PROFILES_PER_REQUEST, names.size()));
 					uuidRequsts = sublist.size();
-					String body = JSONArray.toJSONString(sublist);
+
+					String body = gson.toJson(sublist);
 					writeBody(connection, body);
 
 					try {
-						array = (JSONArray) jsonParser.parse(new InputStreamReader(connection.getInputStream()));
+						array = jsonParser.parse(new InputStreamReader(connection.getInputStream())).getAsJsonArray();
 					} catch (Exception e) {
 						// check if we have run into Mojang's rate limit:
 						if (e.getMessage().contains("429")) {
@@ -139,7 +147,8 @@ public class UUIDFetcher {
 								Thread.sleep(30000);
 							}
 						} else {
-							// possibly crucial error.. retrying anyways so the already fetched data isn't wasted in case this is only a temporary issue:
+							// possibly crucial error.. retrying anyways so the already fetched data isn't wasted in
+							// case this is only a temporary issue:
 							retry = true;
 							Log.info("Error: " + e.getMessage() + ". Trying again in 30 seconds ...");
 							Thread.sleep(30000);
@@ -148,10 +157,10 @@ public class UUIDFetcher {
 					}
 				} while (retry);
 
-				for (Object profile : array) {
-					JSONObject jsonProfile = (JSONObject) profile;
-					String id = (String) jsonProfile.get("id");
-					String name = (String) jsonProfile.get("name");
+				for (JsonElement profile : array) {
+					JsonObject jsonProfile = profile.getAsJsonObject();
+					String id = jsonProfile.get("id").getAsString();
+					String name = jsonProfile.get("name").getAsString();
 					UUID uuid = UUIDFetcher.getUUID(id);
 					uuids.put(name, uuid);
 				}

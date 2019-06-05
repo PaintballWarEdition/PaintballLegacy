@@ -396,21 +396,21 @@ public class Paintball extends JavaPlugin {
 		goodsDef.add("1-Sniper-" + Material.CARROT_ON_A_STICK.name() + "-0-80-9");
 
 		ArrayList<Gift> giftsDef = new ArrayList<Gift>();
-		giftsDef.add(new Gift(Material.SNOWBALL, (short) 0, 50, 20.0, "Hope you have luck with these balls!"));
-		giftsDef.add(new Gift(Material.GHAST_TEAR, (short) 0, 2, 10.0, "Blind them with these!"));
-		giftsDef.add(new Gift(Material.SPIDER_EYE, (short) 0, 2, 10.0, "Confuse them with these!"));
-		giftsDef.add(new Gift(Material.EGG, (short) 0, 2, 5.0, "May these grenades be with you!"));
-		giftsDef.add(new Gift(Material.SLIME_BALL, (short) 0, 2, 5.0, "Some explosives for you!"));
-		giftsDef.add(new Gift(Material.FLOWER_POT, (short) 0, 2, 10.0, "I knew you ever wanted to be a sneaky killer!"));
-		giftsDef.add(new Gift(Material.REPEATER, (short) 0, 2, 10.0, "Give them hell with these rocket launchers!"));
-		giftsDef.add(new Gift(Material.STICK, (short) 0, 1, 5.0, "I knew you ever wanted to order a airstrike at least once!"));
-		giftsDef.add(new Gift(Material.BLAZE_ROD, (short) 0, 1, 5.0, "Support from orbit waits for your order!"));
-		giftsDef.add(new Gift(Material.STONE_AXE, (short) 0, 1, 5.0, "Take this weapon!"));
-		giftsDef.add(new Gift(Material.CHEST, (short) 0, 2, 5.0, "I got some more gifts for you!"));
-		giftsDef.add(new Gift(Material.PUMPKIN, (short) 0, 1, 3.0, "This comerade will fight for you!"));
-		giftsDef.add(new Gift(Material.GLISTERING_MELON_SLICE, (short) 0, 1, 3.0, "This weapon comes fresh from production!"));
-		giftsDef.add(new Gift(Material.CARROT_ON_A_STICK, (short) 0, 1, 2.0, "No one can hide from your view!"));
-		giftsDef.add(new Gift(Material.AIR, (short) 0, 0, 2.0, "You had no luck this time :("));
+		giftsDef.add(new Gift(Material.SNOWBALL, 0, 50, 20.0, "Hope you have luck with these balls!"));
+		giftsDef.add(new Gift(Material.GHAST_TEAR, 0, 2, 10.0, "Blind them with these!"));
+		giftsDef.add(new Gift(Material.SPIDER_EYE, 0, 2, 10.0, "Confuse them with these!"));
+		giftsDef.add(new Gift(Material.EGG, 0, 2, 5.0, "May these grenades be with you!"));
+		giftsDef.add(new Gift(Material.SLIME_BALL, 0, 2, 5.0, "Some explosives for you!"));
+		giftsDef.add(new Gift(Material.FLOWER_POT, 0, 2, 10.0, "I knew you ever wanted to be a sneaky killer!"));
+		giftsDef.add(new Gift(Material.REPEATER, 0, 2, 10.0, "Give them hell with these rocket launchers!"));
+		giftsDef.add(new Gift(Material.STICK, 0, 1, 5.0, "I knew you ever wanted to order a airstrike at least once!"));
+		giftsDef.add(new Gift(Material.BLAZE_ROD, 0, 1, 5.0, "Support from orbit waits for your order!"));
+		giftsDef.add(new Gift(Material.STONE_AXE, 0, 1, 5.0, "Take this weapon!"));
+		giftsDef.add(new Gift(Material.CHEST, 0, 2, 5.0, "I got some more gifts for you!"));
+		giftsDef.add(new Gift(Material.PUMPKIN, 0, 1, 3.0, "This comerade will fight for you!"));
+		giftsDef.add(new Gift(Material.GLISTERING_MELON_SLICE, 0, 1, 3.0, "This weapon comes fresh from production!"));
+		giftsDef.add(new Gift(Material.CARROT_ON_A_STICK, 0, 1, 2.0, "No one can hide from your view!"));
+		giftsDef.add(new Gift(Material.AIR, 0, 0, 2.0, "You had no luck this time :("));
 
 		allowedCommands = new ArrayList<String>();
 		allowedCommands.add("/list");
@@ -541,7 +541,7 @@ public class Paintball extends JavaPlugin {
 			for (Gift g : giftsDef) {
 				getConfig().set("Paintball.Gifts.gifts." + giftsDef.indexOf(g) + ".message", g.getMessage());
 				getConfig().set("Paintball.Gifts.gifts." + giftsDef.indexOf(g) + ".type", g.getItem(false).getType().name());
-				getConfig().set("Paintball.Gifts.gifts." + giftsDef.indexOf(g) + ".damage", g.getItem(false).getDurability());
+				getConfig().set("Paintball.Gifts.gifts." + giftsDef.indexOf(g) + ".damage", Utils.getDamage(g.getItem(false)));
 				getConfig().set("Paintball.Gifts.gifts." + giftsDef.indexOf(g) + ".amount", g.getItem(false).getAmount());
 				getConfig().set("Paintball.Gifts.gifts." + giftsDef.indexOf(g) + ".chance", g.getChance());
 			}
@@ -846,9 +846,8 @@ public class Paintball extends JavaPlugin {
 				Log.warning("Unknown gift item type: " + typeName);
 				continue;
 			}
-			int damageI = giftsEntries.getConfigurationSection(key).getInt("damage", 0);
-			damageI = (damageI < 0 ? 0 : damageI);
-			short damage = (damageI > Short.MAX_VALUE ? Short.MAX_VALUE : (short) damageI);
+			int damage = giftsEntries.getConfigurationSection(key).getInt("damage", 0);
+			damage = (damage < 0 ? 0 : damage);
 			int amount = giftsEntries.getConfigurationSection(key).getInt("amount", 0);
 			amount = (amount < 0 ? 0 : amount);
 			double chance = giftsEntries.getConfigurationSection(key).getDouble("chance", 0.0);
