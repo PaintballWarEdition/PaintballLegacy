@@ -93,8 +93,7 @@ public class EventListener implements Listener {
 				if (key.equals("teamattacks")) key = "ta";
 				else if (key.equals("hitquote")) key = "hq";
 				else if (key.equals("airstrikes")) key = "as";
-				else if (key.equals("money_spent"))
-													key = "spent";
+				else if (key.equals("money_spent")) key = "spent";
 
 				if (l.equalsIgnoreCase("[PB " + key.toUpperCase() + "]") || l.equalsIgnoreCase("[PB R " + key.toUpperCase() + "]") || l.equalsIgnoreCase("[PB RANK]")) {
 					if (!player.isOp() && !player.hasPermission("paintball.admin")) {
@@ -175,8 +174,7 @@ public class EventListener implements Listener {
 							if (s.equals("teamattacks")) s = "ta";
 							else if (s.equals("hitquote")) s = "hq";
 							else if (s.equals("airstrikes")) s = "as";
-							else if (s.equals("money_spent"))
-																s = "spent";
+							else if (s.equals("money_spent")) s = "spent";
 
 							if (l.equalsIgnoreCase("[PB " + s.toUpperCase() + "]")) {
 								changeSign(event.getPlayer(), sign, key, false);
@@ -544,14 +542,12 @@ public class EventListener implements Listener {
 	}
 
 	private boolean isAllowedCommand(String cmd) {
-		if (plugin.allowedCommands.contains(cmd))
-													return true;
+		if (plugin.allowedCommands.contains(cmd)) return true;
 		String[] split = cmd.split(" ");
 		String cmds = "";
 		for (int i = 0; i < split.length; i++) {
 			cmds += split[i];
-			if (plugin.allowedCommands.contains(cmds) || plugin.allowedCommands.contains(cmds + " *"))
-																										return true;
+			if (plugin.allowedCommands.contains(cmds) || plugin.allowedCommands.contains(cmds + " *")) return true;
 			cmds += " ";
 		}
 		return false;
@@ -699,5 +695,4 @@ public class EventListener implements Listener {
 	private void onPlayerDisconnect(Player player) {
 		plugin.playerManager.leaveLobby(player, true);
 	}
-
 }
