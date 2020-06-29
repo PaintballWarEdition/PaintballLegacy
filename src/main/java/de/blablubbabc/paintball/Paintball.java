@@ -27,7 +27,6 @@ import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.plugin.Plugin;
 import org.bukkit.plugin.java.JavaPlugin;
 
-import de.blablubbabc.paintball.addons.melodies.Instrument;
 import de.blablubbabc.paintball.addons.melodies.Musician;
 import de.blablubbabc.paintball.commands.CommandManager;
 import de.blablubbabc.paintball.features.InSignsFeature;
@@ -37,18 +36,13 @@ import de.blablubbabc.paintball.features.VoteListener;
 import de.blablubbabc.paintball.gadgets.Gift;
 import de.blablubbabc.paintball.gadgets.WeaponManager;
 import de.blablubbabc.paintball.shop.ShopManager;
-import de.blablubbabc.paintball.statistics.arena.ArenaSetting;
-import de.blablubbabc.paintball.statistics.arena.ArenaStat;
-import de.blablubbabc.paintball.statistics.general.GeneralStat;
-import de.blablubbabc.paintball.statistics.player.PlayerStat;
-import de.blablubbabc.paintball.statistics.player.match.tdm.TDMMatchStat;
 import de.blablubbabc.paintball.thirdparty.util.Metrics;
 import de.blablubbabc.paintball.thirdparty.util.Metrics.Graph;
 import de.blablubbabc.paintball.thirdparty.util.Updater;
 import de.blablubbabc.paintball.thirdparty.util.Updater.UpdateType;
 import de.blablubbabc.paintball.utils.Log;
+import de.blablubbabc.paintball.utils.PluginUtils;
 import de.blablubbabc.paintball.utils.Serverlister;
-import de.blablubbabc.paintball.utils.Sounds;
 import de.blablubbabc.paintball.utils.TeleportManager;
 import de.blablubbabc.paintball.utils.Translator;
 import de.blablubbabc.paintball.utils.Utils;
@@ -998,6 +992,9 @@ public class Paintball extends JavaPlugin {
 		orbitalstrikeMatchLimit = getConfig().getInt("Paintball.Extras.Orbitalstrike.Match Limit", 3);
 		orbitalstrikePlayerLimit = getConfig().getInt("Paintball.Extras.Orbitalstrike.Player Limit", 1);
 
+		// Load all plugin classes up front. This helps with hot reloads.
+		this.loadAllPluginClasses();
+
 		// SQLite database:
 		sql = new BlaSQLite(this);
 		if (sql.aborted) {
@@ -1026,16 +1023,6 @@ public class Paintball extends JavaPlugin {
 		Utils.init();
 		// Log is already init above
 		// Translator will be init below
-		Sounds.init();
-
-		// init enums:
-		Instrument.values();
-		Lobby.values();
-		ArenaStat.values();
-		ArenaSetting.values();
-		GeneralStat.values();
-		TDMMatchStat.values();
-		PlayerStat.values();
 
 		// WEAPON MANAGER
 		weaponManager = new WeaponManager();
@@ -1299,6 +1286,19 @@ public class Paintball extends JavaPlugin {
 		}, 1L);
 
 		Log.info("By blablubbabc enabled.");
+	}
+
+	private void loadAllPluginClasses() {
+		File pluginFile = this.getFile();
+		long start = System.nanoTime();
+		boolean success = PluginUtils.loadAllPluginClasses(pluginFile, className -> {
+			// Skip classes which interact with optional dependencies:
+			return !className.startsWith("de.blablubbabc.paintball.features.");
+		});
+		if (success) {
+			long durationMillis = (System.nanoTime() - start) / 1000000L;
+			Log.info("Loaded all plugin classes (" + durationMillis + " ms)");
+		}
 	}
 
 	public void onDisable() {
