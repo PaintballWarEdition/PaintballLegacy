@@ -293,11 +293,17 @@ public class PlayerDataStore {
 				for (AttributeModifier modifier : attributeInstance.getModifiers()) {
 					attributeInstance.removeModifier(modifier);
 				}
+				// TODO This doesn't actually return the entity type specific default attribute value (i.e. the default
+				// attribute base value for players), the the global attribute default value.
+				// See https://hub.spigotmc.org/jira/browse/SPIGOT-5890
 				attributeInstance.setBaseValue(attributeInstance.getDefaultValue());
 			}
 		}
 
-		if (player.getWalkSpeed() != 0.2F) player.setWalkSpeed(0.2F);
+		// TODO Since MC 1.16 the walk speed is determined by the movement speed attribute as well. Since our code above
+		// does not set the correct default value for this attribute, we also always set the walk speed here. This will
+		// then also automatically update the movement speed attribute accordingly.
+		player.setWalkSpeed(0.2F);
 		if (player.getFlySpeed() != 0.1F) player.setFlySpeed(0.1F);
 		if (player.getFoodLevel() != 20) player.setFoodLevel(20);
 		if (player.getHealth() != 20) player.setHealth(20);
