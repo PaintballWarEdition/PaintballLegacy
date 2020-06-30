@@ -13,76 +13,80 @@ import org.bukkit.entity.Player;
 
 import de.blablubbabc.paintball.utils.Translator;
 
-
 public enum Lobby {
-	
-	RED			("red", Color.RED, ChatColor.RED),
-	BLUE		("blue", Color.BLUE, ChatColor.BLUE),
-	RANDOM		("random", Color.GREEN, ChatColor.GREEN),
-	SPECTATE	("spectator", Color.YELLOW, ChatColor.YELLOW),
-	LOBBY		("lobby", Color.WHITE, ChatColor.WHITE);
-	
+
+	RED("red", Color.RED, ChatColor.RED),
+	BLUE("blue", Color.BLUE, ChatColor.BLUE),
+	RANDOM("random", Color.GREEN, ChatColor.GREEN),
+	SPECTATE("spectator", Color.YELLOW, ChatColor.YELLOW),
+	LOBBY("lobby", Color.WHITE, ChatColor.WHITE);
+
 	// for statistics:
 	private static int maxPlayersInLobby = 0;
-	
+
 	public static int maxPlayersInLobby() {
 		return maxPlayersInLobby;
 	}
-	
+
 	public synchronized static void resetMaxPlayersInLobby() {
 		maxPlayersInLobby = Lobby.LOBBY.players.size();
 	}
-	
-	private Map<Player, Boolean> players;	//members of a team: true: playing, false: waiting; Lobby: true/false toggle messages
-	private String name;
+
+	// members of a team: true: playing, false: waiting; Lobby: true/false toggle messages
+	private Map<Player, Boolean> players;
+	private String nameKey;
 	private ChatColor color;
-	//private int colorA;
+	// private int colorA;
 	private Color colorA;
-	
-	private Lobby(String name, Color colorA, ChatColor color) {
-		this.name = Translator.getString(name);
+
+	private Lobby(String nameKey, Color colorA, ChatColor color) {
+		this.nameKey = nameKey;
 		this.color = color;
 		this.colorA = colorA;
 		this.players = new HashMap<Player, Boolean>();
 	}
 
-	//METHODS
-	//SETTER
+	// METHODS
+	// SETTER
 	public synchronized void addMember(Player player) {
 		if (!players.containsKey(player)) {
 			players.put(player, false);
-			//max Players since last metrics submit-try
+			// max Players since last metrics submit-try
 			if (this == Lobby.LOBBY) {
 				if (players.size() > maxPlayersInLobby) maxPlayersInLobby = players.size();
 			}
 		}
 	}
+
 	public synchronized void removeMember(Player player) {
 		if (players.containsKey(player)) players.remove(player);
 	}
+
 	public synchronized void setPlaying(Player player) {
 		if (players.containsKey(player)) players.put(player, true);
 	}
+
 	public synchronized void setWaiting(Player player) {
 		if (players.containsKey(player)) players.put(player, false);
 	}
-	//GETTER
+
+	// GETTER
 	public synchronized Set<Player> getMembers() {
 		return players.keySet();
 	}
-	
+
 	public synchronized boolean isMember(Player player) {
 		return players.containsKey(player);
 	}
-	
+
 	public synchronized int numberInGame() {
 		int number = 0;
 		for (Player player : players.keySet()) {
-			if(players.get(player)) number++;
+			if (players.get(player)) number++;
 		}
 		return number;
 	}
-	
+
 	public synchronized int numberWaiting() {
 		int number = 0;
 		for (Player player : players.keySet()) {
@@ -90,24 +94,25 @@ public enum Lobby {
 		}
 		return number;
 	}
-	
+
 	public synchronized int number() {
 		return players.size();
 	}
-	
+
 	public String getName() {
-		return name;
+		return Translator.getString(nameKey);
 	}
-	
+
 	public ChatColor color() {
 		return color;
 	}
-	
+
 	public Color colorA() {
 		return colorA;
 	}
-	//STATIC
-	//GETTER
+
+	// STATIC
+	// GETTER
 	/*public synchronized static Lobby getTeam(String team) {
 		for (Lobby t : Lobby.values()) {
 			if (t.getName().equalsIgnoreCase(team)) return t;
@@ -121,30 +126,36 @@ public enum Lobby {
 		if (Lobby.LOBBY.isMember(player)) return Lobby.LOBBY;
 		return null;
 	}
+
 	public synchronized static boolean toggledFeed(Player player) {
 		return Lobby.LOBBY.players.get(player);
 	}
+
 	public synchronized static void toggleFeed(Player player) {
 		if (toggledFeed(player)) Lobby.LOBBY.players.put(player, false);
 		else Lobby.LOBBY.players.put(player, true);
 	}
+
 	public synchronized static boolean inTeam(Player player) {
 		Lobby team = getTeam(player);
 		return team == Lobby.RED || team == Lobby.BLUE || team == Lobby.RANDOM;
 	}
+
 	public synchronized static boolean isPlaying(Player player) {
 		if (inTeam(player)) {
 			if (getTeam(player).players.get(player)) return true;
 		}
 		return false;
 	}
+
 	public synchronized static boolean isSpectating(Player player) {
 		if (getTeam(player) == Lobby.SPECTATE) {
 			if (Lobby.SPECTATE.players.get(player)) return true;
 		}
 		return false;
 	}
-	//SETTER
+
+	// SETTER
 	public synchronized static void remove(Player player) {
 		for (Lobby l : Lobby.values()) {
 			l.removeMember(player);
