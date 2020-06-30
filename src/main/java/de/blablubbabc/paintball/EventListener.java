@@ -342,7 +342,7 @@ public class EventListener implements Listener {
 			Match match = plugin.matchManager.getMatch(player);
 			if (match != null && Lobby.isPlaying(player) && match.isSurvivor(player)) {
 				ItemStack item = event.getItem();
-				if (item != null && item.getType() != Material.POTION) {
+				if (item != null && item.getType() != Material.POTION && item.getType() != Material.SPLASH_POTION) {
 					// block placement gets denied separately:
 					// TODO this is meant as temporary hack to fix the issue of the BlockPlaceEvent no longer being
 					// triggered if item usage gets denied, due to some latest change in spigot
