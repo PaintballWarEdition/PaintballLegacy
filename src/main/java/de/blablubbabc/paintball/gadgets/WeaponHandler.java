@@ -14,6 +14,7 @@ import org.bukkit.event.entity.EntityDamageByEntityEvent;
 import org.bukkit.event.entity.EntityPickupItemEvent;
 import org.bukkit.event.entity.ProjectileHitEvent;
 import org.bukkit.event.player.PlayerInteractEvent;
+import org.bukkit.event.player.PlayerToggleSneakEvent;
 import org.bukkit.inventory.ItemStack;
 
 import de.blablubbabc.paintball.Match;
@@ -61,10 +62,14 @@ public abstract class WeaponHandler {
 	public abstract void cleanUp(Match match);
 
 	// Events
+
+	// This is only called for main hand interactions, and not for LEFT_CLICK_AIR interactions
 	protected abstract void onInteract(PlayerInteractEvent event, Match match);
 
-	protected void onBlockPlace(BlockPlaceEvent event, Match match) {
+	protected void onToggleSneak(PlayerToggleSneakEvent event, Match match) {
+	}
 
+	protected void onBlockPlace(BlockPlaceEvent event, Match match) {
 	}
 
 	/**
@@ -74,19 +79,14 @@ public abstract class WeaponHandler {
 	 *            the EntityPickupItemEvent
 	 */
 	protected void onItemPickup(EntityPickupItemEvent event) {
-
 	}
 
 	protected void onItemHeld(Player player, ItemStack newItem) {
-
 	}
 
 	protected void onDamagedByEntity(EntityDamageByEntityEvent event, Match match, Player attacker) {
-
 	}
 
 	protected void onProjectileHit(ProjectileHitEvent event, Projectile projectile, Match match, Player shooter) {
-
 	}
-
 }

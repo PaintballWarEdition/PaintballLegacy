@@ -17,6 +17,7 @@ import org.bukkit.event.entity.EntityDamageByEntityEvent;
 import org.bukkit.event.entity.EntityPickupItemEvent;
 import org.bukkit.event.entity.ProjectileHitEvent;
 import org.bukkit.event.player.PlayerInteractEvent;
+import org.bukkit.event.player.PlayerToggleSneakEvent;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 
@@ -219,6 +220,12 @@ public class WeaponManager {
 	public void onInteract(PlayerInteractEvent event, Match match) {
 		for (WeaponHandler weaponHandler : weaponHandlers.values()) {
 			weaponHandler.onInteract(event, match);
+		}
+	}
+
+	public void onToggleSneak(PlayerToggleSneakEvent event, Match match) {
+		for (WeaponHandler weaponHandler : weaponHandlers.values()) {
+			weaponHandler.onToggleSneak(event, match);
 		}
 	}
 

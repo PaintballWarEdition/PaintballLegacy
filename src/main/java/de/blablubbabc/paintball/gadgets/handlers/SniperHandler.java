@@ -16,6 +16,7 @@ import org.bukkit.entity.Player;
 import org.bukkit.entity.Snowball;
 import org.bukkit.event.block.Action;
 import org.bukkit.event.player.PlayerInteractEvent;
+import org.bukkit.event.player.PlayerToggleSneakEvent;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.PlayerInventory;
 import org.bukkit.inventory.meta.ItemMeta;
@@ -78,36 +79,50 @@ public class SniperHandler extends WeaponHandler {
 
 	@Override
 	protected void onInteract(PlayerInteractEvent event, Match match) {
-		if (event.getAction() == Action.PHYSICAL || !Paintball.getInstance().sniper) return;
+		if (event.getAction() != Action.RIGHT_CLICK_AIR || !Paintball.getInstance().sniper) return;
 		Player player = event.getPlayer();
 		PlayerInventory playerInventory = player.getInventory();
 		ItemStack itemInHand = playerInventory.getItemInMainHand();
-		if (itemInHand == null) return;
+		if (itemInHand == null || !itemInHand.isSimilar(getItem())) return;
 
-		if (itemInHand.isSimilar(getItem())) {
-			Action action = event.getAction();
-			if (action == Action.LEFT_CLICK_AIR) {
-				toggleZoom(player);
-			} else if (action == Action.RIGHT_CLICK_AIR) {
-				PlayerInventory inv = player.getInventory();
-				if ((!Paintball.getInstance().sniperOnlyUseIfZooming || isZooming(player))
-						&& (match.setting_balls == -1 || inv.containsAtLeast(Paintball.getInstance().weaponManager.getBallHandler().getItem(), 1))) {
-					// INFORM MATCH
-					match.onShot(player);
+		boolean canShoot = true;
+		if (Paintball.getInstance().sniperOnlyUseIfZooming && !isZooming(player)) {
+			canShoot = false;
+		} else if (match.setting_balls != -1 && !playerInventory.containsAtLeast(Paintball.getInstance().weaponManager.getBallHandler().getItem(), 1)) {
+			canShoot = false;
+		}
 
-					Vector direction = player.getLocation().getDirection();
-					Location spawnLoc = Utils.getRightHeadLocation(direction, player.getEyeLocation());
-					shoot(player, match, spawnLoc, direction, Paintball.getInstance().sniperSpeedmulti, this.getWeaponOrigin());
+		if (!canShoot) {
+			player.playSound(player.getEyeLocation(), Sound.ITEM_FLINTANDSTEEL_USE, 1F, 2F);
+			return;
+		}
 
-					if (match.setting_balls != -1) {
-						// -1 ball
-						Utils.removeInventoryItems(inv, Paintball.getInstance().weaponManager.getBallHandler().getItem(), 1);
-						Utils.updatePlayerInventoryLater(Paintball.getInstance(), player);
-					}
-				} else {
-					player.playSound(player.getEyeLocation(), Sound.ITEM_FLINTANDSTEEL_USE, 1F, 2F);
-				}
-			}
+		// INFORM MATCH
+		match.onShot(player);
+
+		Vector direction = player.getLocation().getDirection();
+		Location spawnLoc = Utils.getRightHeadLocation(direction, player.getEyeLocation());
+		shoot(player, match, spawnLoc, direction, Paintball.getInstance().sniperSpeedmulti, this.getWeaponOrigin());
+
+		if (match.setting_balls != -1) {
+			// -1 ball
+			Utils.removeInventoryItems(playerInventory, Paintball.getInstance().weaponManager.getBallHandler().getItem(), 1);
+			Utils.updatePlayerInventoryLater(Paintball.getInstance(), player);
+		}
+	}
+
+	@Override
+	protected void onToggleSneak(PlayerToggleSneakEvent event, Match match) {
+		if (!Paintball.getInstance().sniper) return;
+		Player player = event.getPlayer();
+		ItemStack itemInHand = player.getInventory().getItemInMainHand();
+		if (itemInHand == null || !itemInHand.isSimilar(getItem())) return;
+
+		boolean sneaking = event.isSneaking();
+		if (sneaking) {
+			setZooming(player);
+		} else {
+			setNotZooming(player);
 		}
 	}
 
@@ -125,16 +140,6 @@ public class SniperHandler extends WeaponHandler {
 
 	private void setNoZoom(Player player) {
 		player.setWalkSpeed(0.2F);
-	}
-
-	public void toggleZoom(Player player) {
-		if (isZooming(player)) {
-			zooming.remove(player.getName());
-			setNoZoom(player);
-		} else {
-			zooming.add(player.getName());
-			setZoom(player);
-		}
 	}
 
 	public boolean isZooming(Player player) {

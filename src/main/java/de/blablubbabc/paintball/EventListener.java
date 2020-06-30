@@ -28,6 +28,7 @@ import org.bukkit.event.Event.Result;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
+import org.bukkit.event.block.Action;
 import org.bukkit.event.block.BlockBreakEvent;
 import org.bukkit.event.block.BlockPlaceEvent;
 import org.bukkit.event.block.SignChangeEvent;
@@ -53,6 +54,7 @@ import org.bukkit.event.player.PlayerItemHeldEvent;
 import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.event.player.PlayerKickEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
+import org.bukkit.event.player.PlayerToggleSneakEvent;
 import org.bukkit.inventory.EquipmentSlot;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.PlayerInventory;
@@ -353,24 +355,23 @@ public class EventListener implements Listener {
 				if (item != null && item.getType() != Material.POTION) {
 					// block placement gets denied separately:
 					// TODO this is meant as temporary hack to fix the issue of the BlockPlaceEvent no longer being
-					// triggered
-					// if item usage gets denied, due to some latest change in spigot
+					// triggered if item usage gets denied, due to some latest change in spigot
 					if (!item.getType().isBlock() && item.getType() != Material.FLOWER_POT) {
 						event.setUseItemInHand(Result.DENY);
-					}
-
-					// ignore off-hand interactions from this point on:
-					if (event.getHand() != EquipmentSlot.HAND) return;
-
-					// shop book:
-					if (plugin.shop && item.isSimilar(plugin.shopManager.item)) {
-						plugin.shopManager.getShopMenu().open(player);
-						return;
 					}
 				}
 
 				// ignore off-hand interactions from this point on:
 				if (event.getHand() != EquipmentSlot.HAND) return;
+				// Since MC 1.15 the interact event with action LEFT_CLICK_AIR is called for every arm swing
+				// animation, which occurs in various circumstances now, eg. when dropping items, or right clicking
+				// with interactable item, etc.)
+				if (event.getAction() == Action.LEFT_CLICK_AIR) return;
+
+				if (item != null && plugin.shop && item.isSimilar(plugin.shopManager.item)) {
+					plugin.shopManager.getShopMenu().open(player);
+					return;
+				}
 
 				if (!match.hasStarted() || match.isJustRespawned(player.getUniqueId())) return;
 
@@ -378,6 +379,21 @@ public class EventListener implements Listener {
 				plugin.weaponManager.onInteract(event, match);
 			}
 		}
+	}
+
+	@EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
+	public void onPlayerToggleSneak(PlayerToggleSneakEvent event) {
+		Player player = event.getPlayer();
+		if (player.getGameMode() == GameMode.CREATIVE) return;
+		Match match = plugin.matchManager.getMatch(player);
+		if (match == null || !Lobby.isPlaying(player) || !match.isSurvivor(player)) return;
+		ItemStack itemInHand = player.getInventory().getItemInMainHand();
+		if (itemInHand == null) return;
+
+		if (!match.hasStarted() || match.isJustRespawned(player.getUniqueId())) return;
+
+		// handle weapons and gadgets:
+		plugin.weaponManager.onToggleSneak(event, match);
 	}
 
 	@EventHandler(priority = EventPriority.NORMAL, ignoreCancelled = true)
@@ -401,7 +417,6 @@ public class EventListener implements Listener {
 		}
 	}
 
-	@SuppressWarnings("deprecation")
 	@EventHandler(priority = EventPriority.NORMAL, ignoreCancelled = true)
 	public void onPlayerDamage(EntityDamageEvent event) {
 		if (event.getEntity() instanceof Player) {
