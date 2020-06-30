@@ -6,18 +6,14 @@ package de.blablubbabc.paintball.gadgets.handlers;
 
 import java.util.UUID;
 
-import org.bukkit.Color;
-import org.bukkit.Effect;
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.Sound;
 import org.bukkit.World;
 import org.bukkit.entity.EntityType;
 import org.bukkit.entity.Player;
-import org.bukkit.entity.Projectile;
 import org.bukkit.entity.Snowball;
 import org.bukkit.event.block.Action;
-import org.bukkit.event.entity.ProjectileHitEvent;
 import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.PlayerInventory;
@@ -28,9 +24,7 @@ import de.blablubbabc.paintball.FragInformations;
 import de.blablubbabc.paintball.Match;
 import de.blablubbabc.paintball.Origin;
 import de.blablubbabc.paintball.Paintball;
-import de.blablubbabc.paintball.gadgets.Gadget;
 import de.blablubbabc.paintball.gadgets.WeaponHandler;
-import de.blablubbabc.paintball.gadgets.events.PaintballHitEvent;
 import de.blablubbabc.paintball.statistics.player.PlayerStat;
 import de.blablubbabc.paintball.statistics.player.PlayerStats;
 import de.blablubbabc.paintball.utils.Translator;
@@ -107,32 +101,6 @@ public class MarkerHandler extends WeaponHandler {
 				player.playSound(player.getEyeLocation(), Sound.ITEM_FLINTANDSTEEL_USE, 1F, 2F);
 			}
 			Utils.updatePlayerInventoryLater(Paintball.getInstance(), player);
-		}
-	}
-
-	@Override
-	protected void onProjectileHit(ProjectileHitEvent event, Projectile projectile, Match match, Player shooter) {
-		if (projectile.getType() == EntityType.SNOWBALL) {
-			Gadget ball = Paintball.getInstance().weaponManager.getBallHandler().getBall(projectile, match, shooter.getUniqueId());
-			// is paintball ?
-			if (ball != null) {
-				Location location = projectile.getLocation();
-
-				// effect
-				if (Paintball.getInstance().effects) {
-					if (match.isBlue(shooter)) {
-						location.getWorld().playEffect(location, Effect.POTION_BREAK, Color.BLUE.asRGB());
-					} else if (match.isRed(shooter)) {
-						location.getWorld().playEffect(location, Effect.POTION_BREAK, Color.RED.asRGB());
-					}
-				}
-
-				// call event for others:
-				Paintball.getInstance().getServer().getPluginManager().callEvent(new PaintballHitEvent(event, match, shooter));
-
-				// remove ball from tracking:
-				ball.dispose(true);
-			}
 		}
 	}
 

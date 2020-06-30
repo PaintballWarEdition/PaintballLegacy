@@ -23,7 +23,6 @@ import org.bukkit.entity.EntityType;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
 import org.bukkit.entity.Projectile;
-import org.bukkit.entity.Snowball;
 import org.bukkit.event.Event.Result;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
@@ -59,7 +58,6 @@ import org.bukkit.inventory.EquipmentSlot;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.PlayerInventory;
 
-import de.blablubbabc.paintball.gadgets.Gadget;
 import de.blablubbabc.paintball.statistics.player.PlayerStat;
 import de.blablubbabc.paintball.statistics.player.PlayerStats;
 import de.blablubbabc.paintball.utils.Log;
@@ -254,16 +252,8 @@ public class EventListener implements Listener {
 					Match matchB = plugin.matchManager.getMatch(target);
 					if (matchB == null || matchA != matchB) return;
 					if (!matchA.isSpec(attacker) && !matchA.isSpec(target) && matchA.isSurvivor(attacker) && matchA.isSurvivor(target) && matchA.hasStarted()) {
-						// damage cause?
-						if (event.getCause() == DamageCause.PROJECTILE) {
-							// Paintball hit?
-							if (damager instanceof Snowball) {
-								Gadget ball = plugin.weaponManager.getBallHandler().getBall(event.getDamager(), matchA, attacker.getUniqueId());
-								if (ball != null) {
-									matchA.onHitByBall(target, attacker, ball.getGadgetOrigin());
-								}
-							}
-						} else if (plugin.allowMelee && event.getCause() == DamageCause.ENTITY_ATTACK) {
+						// Handle melee attack:
+						if (plugin.allowMelee && event.getCause() == DamageCause.ENTITY_ATTACK) {
 							if (matchA.enemys(target, attacker)) {
 								if (target.getHealth() > plugin.meleeDamage) {
 									target.setHealth(target.getHealth() - plugin.meleeDamage);
@@ -410,7 +400,6 @@ public class EventListener implements Listener {
 		if (projectile.getShooter() instanceof Player) {
 			Player shooter = (Player) projectile.getShooter();
 			Match match = plugin.matchManager.getMatch(shooter);
-
 			if (match != null) {
 				plugin.weaponManager.onProjectileHit(event, projectile, match, shooter);
 			}
