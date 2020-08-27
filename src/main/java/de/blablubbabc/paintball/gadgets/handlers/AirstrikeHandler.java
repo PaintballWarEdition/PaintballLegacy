@@ -171,7 +171,10 @@ public class AirstrikeHandler extends WeaponHandler {
 							Block block = player.getTargetBlock(Utils.getTransparentBlocks(), 120);
 							if (!isBlock(block, playerId)) {
 								demark(player);
-								mark(block, player);
+								Material blockType = block.getType();
+								if (blockType != Material.AIR && blockType != Material.VOID_AIR && blockType != Material.CAVE_AIR) {
+									mark(block, player);
+								}
 							}
 						} else {
 							Paintball.getInstance().getServer().getScheduler().cancelTask(taskIds.get(playerId));
@@ -257,7 +260,7 @@ public class AirstrikeHandler extends WeaponHandler {
 			if (this.task != -1) Paintball.getInstance().getServer().getScheduler().cancelTask(task);
 			if (this.chick != null) chick.remove();
 			assert finalMark != null;
-			finalMark.demark(player);
+			finalMark.demark();
 
 			super.dispose(removeFromGadgetHandlerTracking);
 		}

@@ -144,7 +144,10 @@ public class OrbitalstrikeHandler extends WeaponHandler {
 							Block block = player.getTargetBlock(Utils.getTransparentBlocks(), 120);
 							if (!isBlock(block, playerId)) {
 								demark(player);
-								mark(block, player);
+								Material blockType = block.getType();
+								if (blockType != Material.AIR && blockType != Material.VOID_AIR && blockType != Material.CAVE_AIR) {
+									mark(block, player);
+								}
 							}
 						} else {
 							Paintball.getInstance().getServer().getScheduler().cancelTask(taskIds.get(playerId));
