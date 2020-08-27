@@ -4,12 +4,15 @@
  */
 package de.blablubbabc.paintball.gadgets;
 
+import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
+import org.bukkit.plugin.Plugin;
 
 import de.blablubbabc.paintball.Match;
 import de.blablubbabc.paintball.Origin;
+import de.blablubbabc.paintball.Paintball;
 
 public abstract class Gadget {
 
@@ -68,7 +71,22 @@ public abstract class Gadget {
 	public void dispose(boolean removeFromGadgetHandlerTracking) {
 		if (removeFromGadgetHandlerTracking && valid) {
 			valid = false;
-			gadgetManager.removeGadget(match, player.getUniqueId(), this);
+			Plugin plugin = Paintball.getInstance();
+			if (plugin.isEnabled()) {
+				// Remove delayed:
+				// This resolves some issue with the order of the ProjectileHitEvent (which cleans up the gadget) and
+				// other events, which also try to check if the involved entity is a gadget, having changed in MC 1.16.
+				// The delayed removal allows those other events, after the ProjectileHitEvent, to check if the entity
+				// is a gadget.
+				// TODO Improve this to not create and schedule a new task for every gadget removal. Maybe use one
+				// cleanup task.
+				Bukkit.getScheduler().runTask(plugin, () -> {
+					gadgetManager.removeGadget(match, player.getUniqueId(), this);
+				});
+			} else {
+				// If the plugin is currently getting disabled, remove immediately:
+				gadgetManager.removeGadget(match, player.getUniqueId(), this);
+			}
 		}
 	}
 }
