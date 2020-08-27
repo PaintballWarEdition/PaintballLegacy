@@ -168,7 +168,7 @@ public class AirstrikeHandler extends WeaponHandler {
 						PlayerInventory playerInventory = player.getInventory();
 						ItemStack itemInHand = playerInventory.getItemInMainHand();
 						if (getItem().isSimilar(itemInHand)) {
-							Block block = player.getTargetBlock(Utils.getTransparentBlocks(), 1000);
+							Block block = player.getTargetBlock(Utils.getTransparentBlocks(), 120);
 							if (!isBlock(block, playerId)) {
 								demark(player);
 								mark(block, player);
