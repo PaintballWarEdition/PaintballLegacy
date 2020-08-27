@@ -4,12 +4,9 @@
  */
 package de.blablubbabc.paintball.gadgets.handlers;
 
-import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 import java.util.UUID;
-import java.util.concurrent.ConcurrentHashMap;
 
 import org.bukkit.Location;
 import org.bukkit.Material;
@@ -40,9 +37,8 @@ public class OrbitalstrikeHandler extends WeaponHandler {
 
 	private GadgetManager gadgetManager = new GadgetManager();
 
-	private ConcurrentHashMap<UUID, Integer> taskIds = new ConcurrentHashMap<>();
+	private Map<UUID, Integer> taskIds = new HashMap<>();
 	private Map<UUID, Block> marks = new HashMap<>();
-	private Map<UUID, List<FinalMark>> finalMarks = new HashMap<>();
 
 	private final Vector[] directions = new Vector[36];
 
@@ -67,11 +63,7 @@ public class OrbitalstrikeHandler extends WeaponHandler {
 	}
 
 	public Orbitalstrike orderOrbitalstrike(Match match, Player player, Location location, Origin origin) {
-		return orderOrbitalstrike(match, player, location, origin, null);
-	}
-
-	private Orbitalstrike orderOrbitalstrike(Match match, Player player, Location location, Origin origin, FinalMark finalMark) {
-		return new Orbitalstrike(gadgetManager, player, match, location, origin, finalMark);
+		return new Orbitalstrike(gadgetManager, player, match, location, origin);
 	}
 
 	@Override
@@ -114,9 +106,8 @@ public class OrbitalstrikeHandler extends WeaponHandler {
 					if (gadgetManager.getPlayerGadgetCount(match, playerId) < Paintball.getInstance().orbitalstrikePlayerLimit) {
 
 						demark(player);
-						FinalMark finalMark = addFinalMark(block, player, match);
 
-						orderOrbitalstrike(match, player, block.getLocation(), this.getWeaponOrigin(), finalMark);
+						orderOrbitalstrike(match, player, block.getLocation(), this.getWeaponOrigin());
 
 						// remove item
 						if (itemInHand.getAmount() <= 1) {
@@ -174,19 +165,6 @@ public class OrbitalstrikeHandler extends WeaponHandler {
 		}
 	}
 
-	private FinalMark addFinalMark(Block block, Player player, Match match) {
-		UUID playerId = player.getUniqueId();
-		List<FinalMark> playerFinalMarks = finalMarks.get(playerId);
-		if (playerFinalMarks == null) {
-			playerFinalMarks = new ArrayList<FinalMark>();
-			finalMarks.put(playerId, playerFinalMarks);
-		}
-		FinalMark finalMark = new FinalMark(block, player, match);
-		playerFinalMarks.add(finalMark);
-
-		return finalMark;
-	}
-
 	private void mark(Block markedBlock, Player player) {
 		UUID playerId = player.getUniqueId();
 		marks.put(playerId, markedBlock);
@@ -219,18 +197,18 @@ public class OrbitalstrikeHandler extends WeaponHandler {
 	}
 
 	public class Orbitalstrike extends Gadget {
-		private final FinalMark finalMark;
-
+		private FinalMark finalMark;
 		private int task = -1;
 
-		private Orbitalstrike(GadgetManager gadgetManager, Player player, Match match, Location location, Origin origin, FinalMark finalMark) {
+		private Orbitalstrike(GadgetManager gadgetManager, Player player, Match match, Location location, Origin origin) {
 			super(gadgetManager, match, player, origin);
-			this.finalMark = finalMark;
-
 			order(location);
 		}
 
 		private void order(final Location location) {
+			// Place final marker:
+			this.finalMark = new FinalMark(location.getBlock(), player, match);
+
 			// orbitalstrike message
 			player.sendMessage(Translator.getString("ORBITALSTRIKE_CALLED"));
 
@@ -332,7 +310,8 @@ public class OrbitalstrikeHandler extends WeaponHandler {
 		@Override
 		public void dispose(boolean removeFromGadgetHandlerTracking) {
 			if (this.task != -1) Paintball.getInstance().getServer().getScheduler().cancelTask(task);
-			if (finalMark != null) finalMark.demark(player.getUniqueId(), match);
+			assert finalMark != null;
+			finalMark.demark(player.getUniqueId(), match);
 
 			super.dispose(removeFromGadgetHandlerTracking);
 		}
@@ -376,11 +355,6 @@ public class OrbitalstrikeHandler extends WeaponHandler {
 					p.sendBlockChange(loc, last.getBlockData());
 				}
 			}
-
-			// remove from map:
-			List<FinalMark> playerFinalMarks = finalMarks.get(playerId);
-			playerFinalMarks.remove(this);
-			if (playerFinalMarks.size() == 0) finalMarks.remove(playerId);
 		}
 	}
 }

@@ -4,13 +4,10 @@
  */
 package de.blablubbabc.paintball.gadgets.handlers;
 
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.LinkedList;
-import java.util.List;
 import java.util.Map;
 import java.util.UUID;
-import java.util.concurrent.ConcurrentHashMap;
 
 import org.bukkit.Location;
 import org.bukkit.Material;
@@ -42,9 +39,8 @@ public class AirstrikeHandler extends WeaponHandler {
 
 	private GadgetManager gadgetManager = new GadgetManager();
 
-	private ConcurrentHashMap<UUID, Integer> taskIds = new ConcurrentHashMap<>();
+	private Map<UUID, Integer> taskIds = new HashMap<>();
 	private Map<UUID, Block> marks = new HashMap<>();
-	private Map<UUID, List<FinalMark>> finalMarks = new HashMap<>();
 
 	public AirstrikeHandler() {
 		this(null);
@@ -94,7 +90,6 @@ public class AirstrikeHandler extends WeaponHandler {
 					if (gadgetManager.getPlayerGadgetCount(match, playerId) < Paintball.getInstance().airstrikePlayerLimit) {
 
 						demark(player);
-						addFinalMark(markedBlock, player);
 
 						callAirstrike(match, player, markedBlock.getLocation(), this.getWeaponOrigin());
 
@@ -129,16 +124,6 @@ public class AirstrikeHandler extends WeaponHandler {
 	@Override
 	public void cleanUp(Match match) {
 		gadgetManager.cleanUp(match);
-	}
-
-	private void addFinalMark(Block block, Player player) {
-		UUID playerId = player.getUniqueId();
-		List<FinalMark> playerFinalMarks = finalMarks.get(playerId);
-		if (playerFinalMarks == null) {
-			playerFinalMarks = new ArrayList<FinalMark>();
-			finalMarks.put(playerId, playerFinalMarks);
-		}
-		playerFinalMarks.add(new FinalMark(block, player));
 	}
 
 	private void mark(Block markedBlock, Player player) {
@@ -211,16 +196,20 @@ public class AirstrikeHandler extends WeaponHandler {
 
 		private Entity chick = null;
 		private int task = -1;
+		private FinalMark finalMark;
 
 		private Airstrike(GadgetManager gadgetHandler, Match match, Player player, Location location, Origin origin) {
 			super(gadgetHandler, match, player, origin);
-
 			call(location);
 		}
 
 		private void call(Location location) {
+			// Place marker:
+			Block block = location.getBlock();
+			finalMark = new FinalMark(block, player);
+
+			// Spawn airstrike:
 			Location playerLoc = player.getLocation();
-			// airstrike
 			Vector pv = new Vector(playerLoc.getX(), location.getY() + Paintball.getInstance().airstrikeHeight, playerLoc.getZ());
 			Vector bv = new Vector(location.getX(), location.getY() + Paintball.getInstance().airstrikeHeight, location.getZ());
 			Vector bp = new Vector();
@@ -267,6 +256,8 @@ public class AirstrikeHandler extends WeaponHandler {
 		public void dispose(boolean removeFromGadgetHandlerTracking) {
 			if (this.task != -1) Paintball.getInstance().getServer().getScheduler().cancelTask(task);
 			if (this.chick != null) chick.remove();
+			assert finalMark != null;
+			finalMark.demark(player);
 
 			super.dispose(removeFromGadgetHandlerTracking);
 		}
@@ -285,9 +276,11 @@ public class AirstrikeHandler extends WeaponHandler {
 
 	private class FinalMark {
 		private final Block block;
+		private final Player player;
 
 		private FinalMark(Block block, final Player player) {
 			this.block = block;
+			this.player = player;
 
 			// mark:
 			BlockData blockData = Material.OAK_FENCE.createBlockData();
@@ -310,6 +303,10 @@ public class AirstrikeHandler extends WeaponHandler {
 
 		}
 
+		private void demark() {
+			this.demark(player);
+		}
+
 		private void demark(Player player) {
 			Block last = block;
 			for (int i = 0; i < 11; i++) {
@@ -317,12 +314,6 @@ public class AirstrikeHandler extends WeaponHandler {
 				Location loc = last.getLocation();
 				player.sendBlockChange(loc, last.getBlockData());
 			}
-
-			// remove from map:
-			UUID playerId = player.getUniqueId();
-			List<FinalMark> playerFinalMarks = finalMarks.get(playerId);
-			playerFinalMarks.remove(this);
-			if (playerFinalMarks.size() == 0) finalMarks.remove(playerId);
 		}
 	}
 }
