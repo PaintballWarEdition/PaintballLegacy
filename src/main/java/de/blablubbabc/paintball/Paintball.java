@@ -24,6 +24,7 @@ import org.bukkit.OfflinePlayer;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.configuration.ConfigurationSection;
+import org.bukkit.event.HandlerList;
 import org.bukkit.plugin.Plugin;
 import org.bukkit.plugin.java.JavaPlugin;
 
@@ -369,6 +370,7 @@ public class Paintball extends JavaPlugin {
 		Log.logWarnings(true);
 
 		// CONFIG
+		this.reloadConfig();
 		ArrayList<String> goodsDef = new ArrayList<String>();
 
 		// <amount>-<name>-<type>-<damage>-<price>-<rank>
@@ -1316,6 +1318,7 @@ public class Paintball extends JavaPlugin {
 
 		sql.closeConnection();
 		Bukkit.getScheduler().cancelTasks(this);
+		HandlerList.unregisterAll(this);
 		Log.info("Disabled!");
 		currentlyDisabling = false;
 		mainThread = null;
@@ -1323,10 +1326,12 @@ public class Paintball extends JavaPlugin {
 	}
 
 	public void reload(CommandSender sender) {
+		this.onDisable();
+		this.onEnable();
 		reloadConfig();
-		getServer().getPluginManager().disablePlugin(this);
-		getServer().getPluginManager().enablePlugin(this);
-		if (sender != null) sender.sendMessage(Translator.getString("REALOAD_FINISHED"));
+		if (sender != null) {
+			sender.sendMessage(Translator.getString("REALOAD_FINISHED")); // TODO Fix the message key
+		}
 	}
 
 	// METHODS LOBBYSPAWNS
