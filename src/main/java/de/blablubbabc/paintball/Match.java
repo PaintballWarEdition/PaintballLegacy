@@ -26,7 +26,6 @@ import org.bukkit.scoreboard.DisplaySlot;
 import org.bukkit.scoreboard.Objective;
 import org.bukkit.scoreboard.Score;
 import org.bukkit.scoreboard.Scoreboard;
-import org.kitteh.tag.TagAPI;
 
 import de.blablubbabc.paintball.statistics.arena.ArenaSetting;
 import de.blablubbabc.paintball.statistics.player.PlayerStat;
@@ -598,18 +597,7 @@ public class Match {
 	}
 
 	public void updateTags() {
-		// player tags:
-		if (plugin.tagAPI != null && plugin.tags) {
-			for (Player p : plugin.getServer().getOnlinePlayers()) {
-				Set<Player> set = new HashSet<Player>();
-				for (Player pl : getAll()) {
-					if (pl != p) {
-						set.add(pl);
-					}
-				}
-				TagAPI.refreshPlayer(p, set);
-			}
-		}
+		// TODO This feature has been removed (TagAPI) and needs to be replaced with a scoreboard based solution.
 	}
 
 	public void undoAllColors() {

@@ -49,10 +49,6 @@ repositories {
 	maven {
 		url 'http://repo.howaner.de/'
 	}
-	// TagAPI
-	maven {
-		url 'http://repo.kitteh.org/content/repositories/public/'
-	}
 	mavenLocal()
 }
 
@@ -65,9 +61,6 @@ dependencies {
 		transitive = false
 	}
 	compile ('com.vexsoftware:votifier:1.9') {
-		transitive = false
-	}
-	compile ('org.kitteh:tagapi:3.0.6') {
 		transitive = false
 	}
 

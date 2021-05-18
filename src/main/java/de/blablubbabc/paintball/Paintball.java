@@ -30,7 +30,6 @@ import org.bukkit.plugin.java.JavaPlugin;
 import de.blablubbabc.paintball.addons.melodies.Musician;
 import de.blablubbabc.paintball.commands.CommandManager;
 import de.blablubbabc.paintball.features.InSignsFeature;
-import de.blablubbabc.paintball.features.TagAPIListener;
 import de.blablubbabc.paintball.features.VaultRewardsFeature;
 import de.blablubbabc.paintball.features.VoteListener;
 import de.blablubbabc.paintball.gadgets.Gift;
@@ -94,7 +93,6 @@ public class Paintball extends JavaPlugin {
 	public EventListener listener;
 	public CommandSignsListener commandSignListener;
 	public ShopManager shopManager;
-	public TagAPIListener tagAPI;
 	public VoteListener voteListener;
 	public Newsfeeder feeder;
 	public ArenaManager arenaManager;
@@ -227,6 +225,8 @@ public class Paintball extends JavaPlugin {
 	public int wishesDelay;
 
 	// player tags
+	// TODO These are not working currently. This feature (TagAPI) has been removed. THis needs to be replaced with some
+	// scoreboard based solution.
 	public boolean tags;
 	public boolean tagsColor;
 	public boolean tagsInvis;
@@ -1156,17 +1156,6 @@ public class Paintball extends JavaPlugin {
 			Log.info("Plugin 'InSigns' found. Using it now.");
 		} else {
 			Log.info("Plugin 'InSigns' not found. Additional sign features disabled.");
-		}
-		// TagAPI:
-		if (tags) {
-			Plugin tagAPIPlugin = getServer().getPluginManager().getPlugin("TagAPI");
-			if ((tagAPIPlugin != null) && tagAPIPlugin.isEnabled()) {
-				tagAPI = new TagAPIListener(this);
-				getServer().getPluginManager().registerEvents(tagAPI, this);
-				Log.info("Plugin 'TagAPI' found. Using it now.");
-			} else {
-				Log.info("Plugin 'TagAPI' not found. Additional tag features disabled.");
-			}
 		}
 		// Votifier VoteListener:
 		if (vote) {
