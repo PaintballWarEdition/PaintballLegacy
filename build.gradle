@@ -1,14 +1,11 @@
 plugins {
-	id 'com.github.hierynomus.license' version '0.15.0'
+	id 'java-library'
+	id 'eclipse'
+	id 'com.github.hierynomus.license' version '0.16.1'
+	id 'maven-publish'
 }
 
 import org.apache.tools.ant.filters.*
-
-apply plugin: 'com.github.hierynomus.license'
-
-apply plugin: 'java'
-apply plugin: 'maven'
-apply plugin: 'eclipse'
 
 eclipse {
 	project {
@@ -16,11 +13,7 @@ eclipse {
 	}
 }
 
-// default tasks
 defaultTasks 'licenseFormat', 'clean', 'build', 'install'
-
-sourceCompatibility = '1.8'
-targetCompatibility = '1.8'
 
 group = 'de.blablubbabc'
 version = projectVersion
@@ -32,53 +25,43 @@ ext.authors = authors
 ext.author = authors.split(',//s*')[0]
 
 repositories {
-	mavenCentral()
-	// bukkit/spigot:
-	maven {
-		url 'https://hub.spigotmc.org/nexus/content/groups/public/'
-	}
-	// inofficial, but contains bukkit builds which the above two reposittories don't contain:
-	maven {
-		url 'http://maven.sk89q.com/artifactory/repo/'
-	}
-	// vault:
-	maven {
-		url 'http://nexus.hc.to/content/repositories/pub_releases'
-	}
-	// votifier (not official though):
-	maven {
-		url 'http://repo.howaner.de/'
-	}
 	mavenLocal()
+	mavenCentral()
+
+	// Bukkit/Spigot API
+	maven { url 'https://hub.spigotmc.org/nexus/content/groups/public/' }
+	// VaultAPI
+	maven { url 'https://nexus.hc.to/content/repositories/pub_releases' }
+	// IndividualSigns, NuVotifier
+	maven { url 'https://jitpack.io' }
 }
 
 dependencies {
-	compile 'org.bukkit:bukkit:1.14.2-R0.1-SNAPSHOT'
-	compile ('de.blablubbabc:IndividualSigns:2.3') {
-		transitive = false
-	}
-	compile ('net.milkbowl.vault:VaultAPI:1.6') {
-		transitive = false
-	}
-	compile ('com.vexsoftware:votifier:1.9') {
-		transitive = false
-	}
+	compileOnly 'org.bukkit:bukkit:1.14.2-R0.1-SNAPSHOT'
+	compileOnly 'com.github.blablubbabc:IndividualSigns:2.7.0'
+	compileOnly 'net.milkbowl.vault:VaultAPI:1.6'
+	compileOnly 'com.github.NuVotifier:NuVotifier:2.7.2'
 
-	testCompile group: 'junit', name: 'junit', version: '4.+'
+	testImplementation 'org.bukkit:bukkit:1.14.2-R0.1-SNAPSHOT'
+	testImplementation 'junit:junit:4.13.1'
+}
+
+java
+{
+	sourceCompatibility = JavaVersion.VERSION_1_8
 }
 
 jar {
 	manifest {
 		attributes 'Implementation-Title': project.name,
-					'Implementation-Version': version
+					'Implementation-Version': project.version
 	}
 }
 
-// include and filter resources
 processResources {
 	from ('NOTICE.txt')
 	from ('LICENSE.txt')
-	from(sourceSets.main.resources.srcDirs)
+	from project.sourceSets.main.resources.srcDirs
 	filter {
 			line ->
 			line
@@ -89,9 +72,11 @@ processResources {
 			.replace('${url}', project.url)
 			.replace('${description}', project.description)
 	}
+	// TODO Some plugins might add resource directories twice.
+	// See https://github.com/gradle/gradle/issues/17236
+	duplicatesStrategy = DuplicatesStrategy.EXCLUDE
 }
 
-// license header
 license {
 	ext.name = project.name
 	ext.author = project.author
@@ -107,7 +92,6 @@ license {
 	strictCheck true
 }
 
-// source compiler configuration
 configure([compileJava, compileTestJava]) {
 	// options.compilerArgs += [ '-Xlint:all', '-Xlint:-path' ]
 	options.deprecation = false
@@ -122,6 +106,7 @@ task sourceJar(type: Jar) {
 
 javadoc {
 	options.encoding = 'utf8'
+	options.addStringOption('Xdoclint:none', '-quiet')
 	failOnError = false
 }
 
@@ -136,10 +121,8 @@ artifacts {
 	archives javadocJar
 }
 
-uploadArchives {
-	repositories {
-		mavenDeployer {
-			mavenLocal()
-		}
+publishing {
+	publications {
+		mavenJava(MavenPublication)
 	}
 }
