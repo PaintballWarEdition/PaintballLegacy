@@ -2,10 +2,11 @@ plugins {
 	id 'java-library'
 	id 'eclipse'
 	id 'com.github.hierynomus.license' version '0.16.1'
+	id 'com.github.johnrengelman.shadow' version '7.1.2'
 	id 'maven-publish'
 }
 
-import org.apache.tools.ant.filters.*
+defaultTasks 'licenseFormat', 'clean', 'build', 'install'
 
 eclipse {
 	project {
@@ -13,19 +14,27 @@ eclipse {
 	}
 }
 
-defaultTasks 'licenseFormat', 'clean', 'build', 'install'
+ext.getGitHash = { ->
+	def stdout = new ByteArrayOutputStream()
+	exec {
+		commandLine 'git', 'rev-parse', '--short', 'HEAD'
+		standardOutput = stdout
+	}
+	return stdout.toString().trim()
+}
 
-group = 'de.blablubbabc'
-version = projectVersion
+// We embed the git hash into jar files, and also use it for the plugin version of snapshot builds.
+ext.buildVersion = version + '+' + getGitHash()
+ext.isSnapshot = version.contains('-SNAPSHOT')
+ext.pluginVersion = isSnapshot ? buildVersion : version
 
-ext.projectName = projectName
-ext.url = url
-ext.description = description
-ext.authors = authors
-ext.author = authors.split(',//s*')[0]
+println 'Project version: ' + version
+println 'Build version: ' + buildVersion
+println 'Plugin version: ' + pluginVersion
 
 repositories {
 	mavenLocal()
+	// Also includes: bStats
 	mavenCentral()
 
 	// Bukkit/Spigot API
@@ -41,67 +50,26 @@ dependencies {
 	compileOnly 'com.github.blablubbabc:IndividualSigns:2.7.0'
 	compileOnly 'net.milkbowl.vault:VaultAPI:1.6'
 	compileOnly 'com.github.NuVotifier:NuVotifier:2.7.2'
+	compileOnly 'org.bstats:bstats-bukkit:3.0.0'
 
 	testImplementation 'org.bukkit:bukkit:1.14.2-R0.1-SNAPSHOT'
 	testImplementation 'junit:junit:4.13.1'
 }
 
-java
-{
-	sourceCompatibility = JavaVersion.VERSION_1_8
-}
-
-jar {
-	manifest {
-		attributes 'Implementation-Title': project.name,
-					'Implementation-Version': project.version
-	}
-}
-
-processResources {
-	from ('NOTICE.txt')
-	from ('LICENSE.txt')
-	from project.sourceSets.main.resources.srcDirs
-	filter {
-			line ->
-			line
-			.replace('${name}', project.name)
-			.replace('${version}', project.version)
-			.replace('${author}', project.author)
-			.replace('${authors}', project.authors)
-			.replace('${url}', project.url)
-			.replace('${description}', project.description)
-	}
-	// TODO Some plugins might add resource directories twice.
-	// See https://github.com/gradle/gradle/issues/17236
-	duplicatesStrategy = DuplicatesStrategy.EXCLUDE
-}
-
 license {
-	ext.name = project.name
-	ext.author = project.author
-	ext.authors = project.authors
-	ext.url = project.url
-
 	header file('HEADER.txt')
 
 	include '**/*.java'
 	exclude '**/thirdparty/**'
 
-	ignoreFailures true
+	//ignoreFailures true
 	strictCheck true
 }
 
-configure([compileJava, compileTestJava]) {
-	// options.compilerArgs += [ '-Xlint:all', '-Xlint:-path' ]
-	options.deprecation = false
-	options.encoding = 'utf8'
-}
-
-task sourceJar(type: Jar) {
-	from sourceSets.main.java
-	from sourceSets.main.resources
-	classifier = 'sources'
+java
+{
+	sourceCompatibility = JavaVersion.VERSION_1_8
+	withJavadocJar()
 }
 
 javadoc {
@@ -110,19 +78,73 @@ javadoc {
 	failOnError = false
 }
 
-task javadocJar(type: Jar, dependsOn: javadoc) {
-	from javadoc.destinationDir
-	classifier = 'javadoc'
+// Configure all JavaCompile tasks (compileJava, compileTestJava, etc):
+tasks.withType(JavaCompile) {
+	options.encoding = 'utf8'
+	options.deprecation = false
+	//options.compilerArgs += ['-Xmaxerrs', '10000', '-Xmaxwarns', '10000']
+}
+
+processResources {
+	inputs.property 'pluginVersion', pluginVersion
+	inputs.property 'dboUrl', dboUrl
+	inputs.property 'pluginDescription', pluginDescription
+
+	from ('NOTICE.txt')
+	from ('LICENSE.txt')
+	from project.sourceSets.main.resources.srcDirs
+
+	filesMatching('plugin.yml') {
+		expand([
+			'pluginVersion': pluginVersion,
+			'dboUrl': dboUrl,
+			'pluginDescription': pluginDescription
+		])
+	}
+
+	// TODO Some plugins might add resource directories twice.
+	// See https://github.com/gradle/gradle/issues/17236
+	duplicatesStrategy = DuplicatesStrategy.EXCLUDE
+}
+
+jar {
+	// We only require the output of the shadowJar task.
+	enabled false
+}
+
+shadowJar {
+	// No classifier: Replaces the normal classifier-less jar file (if there is one).
+	archiveClassifier = ''
+	configurations = [project.configurations.compileClasspath]
+	dependencies {
+		include(dependency('org.bstats:bstats-base:3.0.0'))
+		include(dependency('org.bstats:bstats-bukkit:3.0.0'))
+	}
+	relocate 'org.bstats', "${project.group}.thirdparty.bstats"
+	manifest {
+		attributes 'Implementation-Title': "${project.group}:${project.name}",
+					'Implementation-Version': project.buildVersion
+	}
 }
 
 artifacts {
-	archives jar
-	archives sourceJar
-	archives javadocJar
+	// Similar to the regular jar, declare the shadow jar as output of the project for any projects
+	// that depend on it.
+	archives shadowJar
+	apiElements shadowJar
+	runtimeElements shadowJar
 }
 
 publishing {
 	publications {
-		mavenJava(MavenPublication)
+		mavenJava(MavenPublication) {
+			// Adding the java component here, instead of the shadow component, ensures that we
+			// generate the default pom contents, including entries for all dependencies. The shadow
+			// component would omit all dependencies (except those of the 'shadow' configuration),
+			// even if we configure the shadowJar task to only include some of the dependencies.
+			// However, the published artifacts are overridden to only publish the shadow jar instead.
+			from components.java
+			artifact shadowJar
+		}
 	}
 }

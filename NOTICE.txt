@@ -1,14 +1,14 @@
-This program includes, uses or hooks into the following (partly optional) third-party software components:
+This program includes or uses the following (partially optional) third-party software components:
 
-- Bukkit
+- Bukkit / Spigot
     http://bukkit.org/
-- Spigot
     https://www.spigotmc.org/
-- Metrics (MCStats usage tracking) by Hidendra
-    http://mcstats.org/
+- bStats
+    https://bstats.org/
 - Vault
     http://dev.bukkit.org/projects/vault/
-- Votifier
+- Votifier / NuVotifier
     http://dev.bukkit.org/projects/votifier/
+    https://github.com/NuVotifier/NuVotifier
 - TagAPI by mbaxter
     http://dev.bukkit.org/projects/tag/

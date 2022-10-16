@@ -1,11 +1,13 @@
-name: ${name}
+name: Paintball
+version: '${pluginVersion}'
+authors: [blablubbabc]
+website: '${dboUrl}'
+description: '${pluginDescription}'
+
 main: de.blablubbabc.paintball.Paintball
-version: '${version}'
-authors: [${authors}]
-website: '${url}'
-description: '${description}'
-softdepend: [InSigns, TagAPI, Votifier, Vault, Multiverse-Core, My Worlds, Transporter, Multiworld, PerWorldInventory]
 api-version: '1.14'
+softdepend: [InSigns, TagAPI, Votifier, Vault, Multiverse-Core, My Worlds, Transporter, Multiworld, PerWorldInventory]
+
 commands:
     pb:
       description: 'Base paintball commands.'

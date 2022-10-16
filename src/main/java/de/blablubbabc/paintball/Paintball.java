@@ -5,7 +5,6 @@
 package de.blablubbabc.paintball;
 
 import java.io.File;
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
@@ -35,9 +34,8 @@ import de.blablubbabc.paintball.features.VaultRewardsFeature;
 import de.blablubbabc.paintball.features.VoteListener;
 import de.blablubbabc.paintball.gadgets.Gift;
 import de.blablubbabc.paintball.gadgets.WeaponManager;
+import de.blablubbabc.paintball.metrics.PluginMetrics;
 import de.blablubbabc.paintball.shop.ShopManager;
-import de.blablubbabc.paintball.thirdparty.util.Metrics;
-import de.blablubbabc.paintball.thirdparty.util.Metrics.Graph;
 import de.blablubbabc.paintball.thirdparty.util.Updater;
 import de.blablubbabc.paintball.thirdparty.util.Updater.UpdateType;
 import de.blablubbabc.paintball.utils.Log;
@@ -86,6 +84,8 @@ public class Paintball extends JavaPlugin {
 	public Thread mainThread;
 
 	public boolean currentlyDisabling = false;
+
+	private final PluginMetrics pluginMetrics = new PluginMetrics(this);
 
 	public PlayerManager playerManager;
 	public CommandManager commandManager;
@@ -1073,78 +1073,7 @@ public class Paintball extends JavaPlugin {
 		 */
 
 		// METRICS
-		if (metrics) {
-			try {
-				Metrics metrics = new Metrics(this);
-				// Custom Data:
-
-				// Default graph:
-				// Actual playing players (Lobby)
-				Graph defaultGraph = metrics.createGraph("Default");
-
-				defaultGraph.addPlotter(new Metrics.Plotter("Actual playing (lobby)") {
-
-					@Override
-					public int getValue() {
-						try {
-							return Lobby.LOBBY.number();
-						} catch (Exception e) {
-							// Failed to get the value :(
-							return 0;
-						}
-					}
-				});
-
-				// Maximum playing (lobby) since last update
-				defaultGraph.addPlotter(new Metrics.Plotter("Maximum playing (lobby) since last update") {
-
-					@Override
-					public int getValue() {
-						try {
-							// get max:
-							int max = Lobby.maxPlayersInLobby();
-							// reset max:
-							Lobby.resetMaxPlayersInLobby();
-							return max;
-						} catch (Exception e) {
-							// Failed to get the value :(
-							// reset max:
-							Lobby.resetMaxPlayersInLobby();
-							return 0;
-						}
-					}
-				});
-
-				// Graph 2
-				Graph graph = metrics.createGraph("Players ever played Paintball");
-
-				// Players ever played Paintball Plotter
-				graph.addPlotter(new Metrics.Plotter("Ever played Paintball") {
-
-					@Override
-					public int getValue() {
-						try {
-							return playerManager.getPlayersEverPlayedCount();
-						} catch (Exception e) {
-							// Failed to get the value :(
-							return 0;
-						}
-					}
-				});
-
-				metrics.start();
-			} catch (IOException e) {
-				Lobby.resetMaxPlayersInLobby();
-				// Failed to submit the stats :-(
-			}
-		} else {
-			Log.info("--------- MCStats Tracking ----------");
-			Log.info("You denied stats tracking via metrics. :(");
-			Log.info("If you want to help me out to measure how many people are using paintball");
-			Log.info("and to give me confirmation that this plugin is worth it's development");
-			Log.info("-> enable it in the config with the setting 'metrics'. Thanks!");
-			Log.info("--------- ---------------- ----------");
-		}
+		pluginMetrics.onEnable();
 
 		// InSigns sign changer:
 		Plugin insignsPlugin = getServer().getPluginManager().getPlugin("InSigns");
@@ -1288,6 +1217,8 @@ public class Paintball extends JavaPlugin {
 		if (!sql.aborted) {
 			matchManager.forceReload();
 		}
+
+		pluginMetrics.onDisable();
 
 		// wait for async tasks to complete:
 		final long start = System.currentTimeMillis();

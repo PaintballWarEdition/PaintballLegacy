@@ -7,6 +7,8 @@ package de.blablubbabc.paintball;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
+import java.util.concurrent.atomic.AtomicInteger;
+
 import org.bukkit.ChatColor;
 import org.bukkit.Color;
 import org.bukkit.entity.Player;
@@ -21,15 +23,22 @@ public enum Lobby {
 	SPECTATE("spectator", Color.YELLOW, ChatColor.YELLOW),
 	LOBBY("lobby", Color.WHITE, ChatColor.WHITE);
 
-	// for statistics:
-	private static int maxPlayersInLobby = 0;
+	// Statistics:
+	private static volatile int playersInLobby = 0;
+	private static final AtomicInteger maxPlayersInLobby = new AtomicInteger();
 
-	public static int maxPlayersInLobby() {
-		return maxPlayersInLobby;
+	private static void onPlayersInLobbyChanged(int newPlayersInLobby) {
+		int oldPlayersInLobby = playersInLobby;
+		playersInLobby = newPlayersInLobby;
+
+		if (newPlayersInLobby > oldPlayersInLobby) {
+			maxPlayersInLobby.updateAndGet(value -> Math.max(value, newPlayersInLobby));
+		}
 	}
 
-	public synchronized static void resetMaxPlayersInLobby() {
-		maxPlayersInLobby = Lobby.LOBBY.players.size();
+	// Can be called from a different thread.
+	public static int getAndResetMaxPlayersInLobby() {
+		return maxPlayersInLobby.getAndSet(playersInLobby);
 	}
 
 	// members of a team: true: playing, false: waiting; Lobby: true/false toggle messages
@@ -49,17 +58,19 @@ public enum Lobby {
 	// METHODS
 	// SETTER
 	public synchronized void addMember(Player player) {
-		if (!players.containsKey(player)) {
-			players.put(player, false);
-			// max Players since last metrics submit-try
+		if (players.putIfAbsent(player, false) == null) {
 			if (this == Lobby.LOBBY) {
-				if (players.size() > maxPlayersInLobby) maxPlayersInLobby = players.size();
+				onPlayersInLobbyChanged(players.size());
 			}
 		}
 	}
 
 	public synchronized void removeMember(Player player) {
-		if (players.containsKey(player)) players.remove(player);
+		if (players.remove(player) != null) {
+			if (this == Lobby.LOBBY) {
+				onPlayersInLobbyChanged(players.size());
+			}
+		}
 	}
 
 	public synchronized void setPlaying(Player player) {
