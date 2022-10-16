@@ -9,9 +9,11 @@ api-version: '1.14'
 softdepend: [InSigns, TagAPI, Votifier, Vault, Multiverse-Core, My Worlds, Transporter, Multiworld, PerWorldInventory]
 
 commands:
-    pb:
+    paintball:
       description: 'Base paintball commands.'
-      usage: /<command>
+      aliases: [pb]
+      usage: '/<command>'
+
 permissions:
     paintball.general:
         description: 'Access to general player commands.'

@@ -20,7 +20,6 @@ import org.bukkit.ChatColor;
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.OfflinePlayer;
-import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.event.HandlerList;
@@ -1034,8 +1033,7 @@ public class Paintball extends JavaPlugin {
 		shopManager = new ShopManager(this);
 		// COMMANDS
 		commandManager = new CommandManager(this);
-		CommandExecutor ce = commandManager;
-		getCommand("pb").setExecutor(ce);
+		getCommand("paintball").setExecutor(commandManager);
 		// COMMAND SIGNS LISTENER
 		commandSignListener = new CommandSignsListener(this);
 		// PLAYERMANAGER

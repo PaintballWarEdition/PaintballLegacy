@@ -36,251 +36,248 @@ public class CommandManager implements CommandExecutor {
 
 	@Override
 	public boolean onCommand(CommandSender sender, Command cmd, String label, String[] args) {
-		if (label.equalsIgnoreCase("pb")) {
-			if (args.length == 0) {
-				pbhelp(sender);
-				return true;
-			} else if (args[0].equalsIgnoreCase("help") || args[0].equalsIgnoreCase("?")) {
-				pbhelp(sender);
-				return true;
-			} else if (args[0].equalsIgnoreCase("info")) {
-				pbinfo(sender);
-				return true;
-			} else {
+		if (args.length == 0) {
+			pbhelp(sender);
+			return true;
+		} else if (args[0].equalsIgnoreCase("help") || args[0].equalsIgnoreCase("?")) {
+			pbhelp(sender);
+			return true;
+		} else if (args[0].equalsIgnoreCase("info")) {
+			pbinfo(sender);
+			return true;
+		} else {
 
-				// PERMISSION CHECK
-				// /pb, pb help, and pb info is allowed for anyone.
-				if (!hasGeneralPerm(sender)) {
+			// PERMISSION CHECK
+			// /pb, pb help, and pb info is allowed for anyone.
+			if (!hasGeneralPerm(sender)) {
+				sender.sendMessage(Translator.getString("NO_PERMISSION"));
+				return true;
+			}
+
+			if (args[0].equalsIgnoreCase("arena")) {
+				// if(!sender.isOp() && !sender.hasPermission("paintball.arena")) {
+				if (!sender.isOp() && !sender.hasPermission("paintball.admin")) {
 					sender.sendMessage(Translator.getString("NO_PERMISSION"));
 					return true;
 				}
-
-				if (args[0].equalsIgnoreCase("arena")) {
-					// if(!sender.isOp() && !sender.hasPermission("paintball.arena")) {
-					if (!sender.isOp() && !sender.hasPermission("paintball.admin")) {
-						sender.sendMessage(Translator.getString("NO_PERMISSION"));
-						return true;
-					}
-					if (args.length == 1) {
-						arenahelp(sender);
-						return true;
-					} else {
-						// executor:
-						return cmdArena.command(sender, args);
-					}
-				} else if (args[0].equalsIgnoreCase("admin")) {
-					if (!sender.isOp() && !sender.hasPermission("paintball.admin")) {
-						sender.sendMessage(Translator.getString("NO_PERMISSION"));
-						return true;
-					}
-					if (args.length == 1) {
-						adminhelp(sender);
-						return true;
-					} else {
-						// executor:
-						return cmdAdmin.command(sender, args);
-					}
-				} else if (sender instanceof Player) {
-					Player player = (Player) sender;
-					// //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-					if (args[0].equalsIgnoreCase("lobby")) {
-						if (Lobby.LOBBY.isMember(player)) {
-							if (Lobby.isPlaying(player)) {
-								player.sendMessage(Translator.getString("CANNOT_JOIN_LOBBY_PLAYING"));
-								return true;
-							}
-							/*
-							 * if(Lobby.isSpectating(player)) {
-							 * //Lobbyteleport
-							 * player.teleport(plugin.transformLocation(plugin.getLobbySpawns().get(0)));
-							 * Lobby.SPECTATE.setWaiting(player);
-							 * player.getInventory().clear();
-							 * player.getInventory().setHelmet(null);
-							 * player.sendMessage(plugin.green + "You enteplugin.red the lobby!");
-							 * return true;
-							 * }
-							 */
-							player.sendMessage(Translator.getString("ALREADY_IN_LOBBY"));
-							return true;
-						} else if (plugin.worldMode) {
-							player.sendMessage(Translator.getString("NO_JOINING_WORLDMODE"));
-							return true;
-						} else {
-							plugin.playerManager.joinLobbyPre(player, true, null);
-							return true;
-						}
-						// //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-					} else if (args[0].equalsIgnoreCase("blue")) {
-						if (plugin.worldMode && !Lobby.LOBBY.isMember(player)) {
-							player.sendMessage(Translator.getString("NO_JOINING_WORLDMODE"));
-							return true;
-						}
-						plugin.playerManager.joinTeam(player, true, Lobby.BLUE);
-						return true;
-						// //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-					} else if (args[0].equalsIgnoreCase("red")) {
-						if (plugin.worldMode && !Lobby.LOBBY.isMember(player)) {
-							player.sendMessage(Translator.getString("NO_JOINING_WORLDMODE"));
-							return true;
-						}
-						plugin.playerManager.joinTeam(player, true, Lobby.RED);
-						return true;
-						// //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-					} else if (args[0].equalsIgnoreCase("random") || args[0].equalsIgnoreCase("join")) {
-						if (plugin.worldMode && !Lobby.LOBBY.isMember(player)) {
-							player.sendMessage(Translator.getString("NO_JOINING_WORLDMODE"));
-							return true;
-						}
-						plugin.playerManager.joinTeam(player, true, Lobby.RANDOM);
-						return true;
-						// //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-					} else if (args[0].equalsIgnoreCase("spec")) {
-						if (plugin.worldMode && !Lobby.LOBBY.isMember(player)) {
-							player.sendMessage(Translator.getString("NO_JOINING_WORLDMODE"));
-							return true;
-						}
-						plugin.playerManager.joinTeam(player, true, Lobby.SPECTATE);
-						return true;
-						// //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-					} else if (args[0].equalsIgnoreCase("leave") || args[0].equalsIgnoreCase("exit") || args[0].equalsIgnoreCase("quit")) {
-						if (args.length == 2 && args[1].equalsIgnoreCase("team")) {
-							if (!Lobby.LOBBY.isMember(player) || !(Lobby.inTeam(player) || Lobby.SPECTATE.isMember(player))) {
-								player.sendMessage(Translator.getString("BE_IN_NO_TEAM"));
-								return true;
-							}
-							/*
-							 * if(Lobby.isPlaying(player) || Lobby.isSpectating(player)) {
-							 * player.sendMessage(plugin.t.getString("CANNOT_LEAVE_LOBBY_PLAYING"));
-							 * return true;
-							 * }
-							 */
-							if (Lobby.isPlaying(player) || Lobby.isSpectating(player)) {
-								plugin.matchManager.getMatch(player).left(player);
-								plugin.playerManager.enterLobby(player);
-							}
-							Lobby.getTeam(player).removeMember(player);
-							player.sendMessage(Translator.getString("YOU_LEFT_TEAM"));
-						} else {
-							if (!Lobby.LOBBY.isMember(player)) {
-								player.sendMessage(Translator.getString("NOT_IN_LOBBY"));
-								return true;
-							}
-							/*
-							 * if(Lobby.inTeam(player) || Lobby.SPECTATE.isMember(player)) {
-							 * if(Lobby.isPlaying(player) || Lobby.isSpectating(player)) {
-							 * player.sendMessage(plugin.t.getString("CANNOT_LEAVE_LOBBY_PLAYING"));
-							 * return true;
-							 * }
-							 * Lobby.getTeam(player).removeMember(player);
-							 * player.sendMessage(plugin.t.getString("YOU_LEFT_TEAM"));
-							 * return true;
-							 * } else if(plugin.autoLobby && !player.hasPermission("paintball.admin")) {
-							 * player.sendMessage(plugin.t.getString("CANNOT_LEAVE_LOBBY"));
-							 * return true;
-							 * }
-							 */
-							if (plugin.autoLobby && !player.hasPermission("paintball.admin")) {
-								player.sendMessage(Translator.getString("CANNOT_LEAVE_LOBBY"));
-							} else if (plugin.worldMode) {
-								player.sendMessage(Translator.getString("NO_LEAVING_WORLDMODE"));
-								return true;
-							} else {
-								plugin.playerManager.leaveLobby(player, true);
-							}
-						}
-						return true;
-
-						// //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-					} else if (args[0].equalsIgnoreCase("toggle") || args[0].equalsIgnoreCase("feed")) {
-						if (!Lobby.LOBBY.isMember(player)) {
-							player.sendMessage(Translator.getString("NOT_IN_LOBBY"));
-							return true;
-						}
-						Lobby.toggleFeed(player);
-						player.sendMessage(Translator.getString("TOGGLED_FEED"));
-						return true;
-
-						// //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-					} else if (args[0].equalsIgnoreCase("vote")) {
-						if (!Lobby.LOBBY.isMember(player)) {
-							player.sendMessage(Translator.getString("NOT_IN_LOBBY"));
-							return false;
-						}
-
-						if (!plugin.arenaVoting) {
-							player.sendMessage(Translator.getString("GAME_VOTE_DISABLED"));
-							return true;
-						}
-
-						if (args.length == 1) {
-							plugin.matchManager.sendVoteOptions(player);
-						} else {
-							plugin.matchManager.handleArenaVote(player, args[1]);
-						}
-						return true;
-
-						// //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-					} else if (args[0].equalsIgnoreCase("rank")) {
-						player.sendMessage(Translator.getString("RANK_HEADER"));
-						// send next rank information:
-						Rank rank = plugin.rankManager.getRank(player.getUniqueId());
-						Rank next_rank = plugin.rankManager.getNextRank(rank);
-
-						if (rank == next_rank) {
-							player.sendMessage(Translator.getString("RANK_NEXT_RANK", new KeyValuePair("next_rank", Translator.getString("RANK_MAX_RANK_REACHED"))));
-						} else {
-							int needed_points = next_rank.getNeededPoints() - plugin.playerManager.getPlayerStats(player.getUniqueId()).getStat(PlayerStat.POINTS);
-							player.sendMessage(Translator.getString("RANK_NEXT_RANK", new KeyValuePair("next_rank", next_rank.getName())));
-							player.sendMessage(Translator.getString("RANK_NEXT_RANK_NEEDED_POINTS", new KeyValuePair("needed_points", String.valueOf(needed_points))));
-						}
-
-						player.sendMessage(" ");
-
-						if (args.length == 1) plugin.statsManager.sendRank(player, player.getUniqueId(), player.getName(), PlayerStat.POINTS);
-						else plugin.statsManager.sendRank(player, player.getUniqueId(), player.getName(), args[1]);
-
-						return true;
-						// //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-					} else if (args[0].equalsIgnoreCase("stats")) {
-						plugin.statsManager.sendStats(player, player.getUniqueId(), player.getName());
-						return true;
-						// //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-					} else if (args[0].equalsIgnoreCase("cash") || args[0].equalsIgnoreCase("money")) {
-						plugin.statsManager.sendCash(player, player.getUniqueId(), player.getName());
-						return true;
-						// //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-					} else if (args[0].equalsIgnoreCase("shop")) {
-						// executor
-						return cmdShop.command(sender, args, false);
-						// //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-					}
-				}
-				// //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-				// CONSOLE AND PLAYER
-				if (args[0].equalsIgnoreCase("top")) {
-					if (args.length == 1) plugin.statsManager.sendTop(sender, PlayerStat.POINTS);
-					else plugin.statsManager.sendTop(sender, args[1]);
+				if (args.length == 1) {
+					arenahelp(sender);
 					return true;
-					// //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-				} else if (args[0].equalsIgnoreCase("list")) {
-					sender.sendMessage(Translator.getString("PLAYER_OVERVIEW"));
-					for (Lobby l : Lobby.values()) {
-						sender.sendMessage(l.color() + l.name() + " ( " + l.number() + " ):");
-						for (Player p : l.getMembers()) {
-							if (l != Lobby.LOBBY) sender.sendMessage(ChatColor.GRAY + p.getName() + ChatColor.WHITE + " : " + (Lobby.isPlaying(p) ? ((l == Lobby.SPECTATE) ? Translator.getString("SPECTATING") : Translator.getString("PLAYING")) : Translator.getString("WAITING")));
-							if (l == Lobby.LOBBY && Lobby.getTeam(p) == Lobby.LOBBY) sender.sendMessage(ChatColor.GRAY + p.getName() + ChatColor.WHITE + " : " + Translator.getString("NOT_IN_TEAM"));
-						}
-					}
-					return true;
-					// //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 				} else {
-					if (sender instanceof Player) return false;
-					else sender.sendMessage(Translator.getString("COMMAND_UNKNOWN_OR_NOT_CONSOLE"));
+					// executor:
+					return cmdArena.command(sender, args);
+				}
+			} else if (args[0].equalsIgnoreCase("admin")) {
+				if (!sender.isOp() && !sender.hasPermission("paintball.admin")) {
+					sender.sendMessage(Translator.getString("NO_PERMISSION"));
 					return true;
+				}
+				if (args.length == 1) {
+					adminhelp(sender);
+					return true;
+				} else {
+					// executor:
+					return cmdAdmin.command(sender, args);
+				}
+			} else if (sender instanceof Player) {
+				Player player = (Player) sender;
+				// //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+				if (args[0].equalsIgnoreCase("lobby")) {
+					if (Lobby.LOBBY.isMember(player)) {
+						if (Lobby.isPlaying(player)) {
+							player.sendMessage(Translator.getString("CANNOT_JOIN_LOBBY_PLAYING"));
+							return true;
+						}
+						/*
+						 * if(Lobby.isSpectating(player)) {
+						 * //Lobbyteleport
+						 * player.teleport(plugin.transformLocation(plugin.getLobbySpawns().get(0)));
+						 * Lobby.SPECTATE.setWaiting(player);
+						 * player.getInventory().clear();
+						 * player.getInventory().setHelmet(null);
+						 * player.sendMessage(plugin.green + "You enteplugin.red the lobby!");
+						 * return true;
+						 * }
+						 */
+						player.sendMessage(Translator.getString("ALREADY_IN_LOBBY"));
+						return true;
+					} else if (plugin.worldMode) {
+						player.sendMessage(Translator.getString("NO_JOINING_WORLDMODE"));
+						return true;
+					} else {
+						plugin.playerManager.joinLobbyPre(player, true, null);
+						return true;
+					}
+					// //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+				} else if (args[0].equalsIgnoreCase("blue")) {
+					if (plugin.worldMode && !Lobby.LOBBY.isMember(player)) {
+						player.sendMessage(Translator.getString("NO_JOINING_WORLDMODE"));
+						return true;
+					}
+					plugin.playerManager.joinTeam(player, true, Lobby.BLUE);
+					return true;
+					// //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+				} else if (args[0].equalsIgnoreCase("red")) {
+					if (plugin.worldMode && !Lobby.LOBBY.isMember(player)) {
+						player.sendMessage(Translator.getString("NO_JOINING_WORLDMODE"));
+						return true;
+					}
+					plugin.playerManager.joinTeam(player, true, Lobby.RED);
+					return true;
+					// //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+				} else if (args[0].equalsIgnoreCase("random") || args[0].equalsIgnoreCase("join")) {
+					if (plugin.worldMode && !Lobby.LOBBY.isMember(player)) {
+						player.sendMessage(Translator.getString("NO_JOINING_WORLDMODE"));
+						return true;
+					}
+					plugin.playerManager.joinTeam(player, true, Lobby.RANDOM);
+					return true;
+					// //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+				} else if (args[0].equalsIgnoreCase("spec")) {
+					if (plugin.worldMode && !Lobby.LOBBY.isMember(player)) {
+						player.sendMessage(Translator.getString("NO_JOINING_WORLDMODE"));
+						return true;
+					}
+					plugin.playerManager.joinTeam(player, true, Lobby.SPECTATE);
+					return true;
+					// //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+				} else if (args[0].equalsIgnoreCase("leave") || args[0].equalsIgnoreCase("exit") || args[0].equalsIgnoreCase("quit")) {
+					if (args.length == 2 && args[1].equalsIgnoreCase("team")) {
+						if (!Lobby.LOBBY.isMember(player) || !(Lobby.inTeam(player) || Lobby.SPECTATE.isMember(player))) {
+							player.sendMessage(Translator.getString("BE_IN_NO_TEAM"));
+							return true;
+						}
+						/*
+						 * if(Lobby.isPlaying(player) || Lobby.isSpectating(player)) {
+						 * player.sendMessage(plugin.t.getString("CANNOT_LEAVE_LOBBY_PLAYING"));
+						 * return true;
+						 * }
+						 */
+						if (Lobby.isPlaying(player) || Lobby.isSpectating(player)) {
+							plugin.matchManager.getMatch(player).left(player);
+							plugin.playerManager.enterLobby(player);
+						}
+						Lobby.getTeam(player).removeMember(player);
+						player.sendMessage(Translator.getString("YOU_LEFT_TEAM"));
+					} else {
+						if (!Lobby.LOBBY.isMember(player)) {
+							player.sendMessage(Translator.getString("NOT_IN_LOBBY"));
+							return true;
+						}
+						/*
+						 * if(Lobby.inTeam(player) || Lobby.SPECTATE.isMember(player)) {
+						 * if(Lobby.isPlaying(player) || Lobby.isSpectating(player)) {
+						 * player.sendMessage(plugin.t.getString("CANNOT_LEAVE_LOBBY_PLAYING"));
+						 * return true;
+						 * }
+						 * Lobby.getTeam(player).removeMember(player);
+						 * player.sendMessage(plugin.t.getString("YOU_LEFT_TEAM"));
+						 * return true;
+						 * } else if(plugin.autoLobby && !player.hasPermission("paintball.admin")) {
+						 * player.sendMessage(plugin.t.getString("CANNOT_LEAVE_LOBBY"));
+						 * return true;
+						 * }
+						 */
+						if (plugin.autoLobby && !player.hasPermission("paintball.admin")) {
+							player.sendMessage(Translator.getString("CANNOT_LEAVE_LOBBY"));
+						} else if (plugin.worldMode) {
+							player.sendMessage(Translator.getString("NO_LEAVING_WORLDMODE"));
+							return true;
+						} else {
+							plugin.playerManager.leaveLobby(player, true);
+						}
+					}
+					return true;
+
+					// //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+				} else if (args[0].equalsIgnoreCase("toggle") || args[0].equalsIgnoreCase("feed")) {
+					if (!Lobby.LOBBY.isMember(player)) {
+						player.sendMessage(Translator.getString("NOT_IN_LOBBY"));
+						return true;
+					}
+					Lobby.toggleFeed(player);
+					player.sendMessage(Translator.getString("TOGGLED_FEED"));
+					return true;
+
+					// //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+				} else if (args[0].equalsIgnoreCase("vote")) {
+					if (!Lobby.LOBBY.isMember(player)) {
+						player.sendMessage(Translator.getString("NOT_IN_LOBBY"));
+						return false;
+					}
+
+					if (!plugin.arenaVoting) {
+						player.sendMessage(Translator.getString("GAME_VOTE_DISABLED"));
+						return true;
+					}
+
+					if (args.length == 1) {
+						plugin.matchManager.sendVoteOptions(player);
+					} else {
+						plugin.matchManager.handleArenaVote(player, args[1]);
+					}
+					return true;
+
+					// //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+				} else if (args[0].equalsIgnoreCase("rank")) {
+					player.sendMessage(Translator.getString("RANK_HEADER"));
+					// send next rank information:
+					Rank rank = plugin.rankManager.getRank(player.getUniqueId());
+					Rank next_rank = plugin.rankManager.getNextRank(rank);
+
+					if (rank == next_rank) {
+						player.sendMessage(Translator.getString("RANK_NEXT_RANK", new KeyValuePair("next_rank", Translator.getString("RANK_MAX_RANK_REACHED"))));
+					} else {
+						int needed_points = next_rank.getNeededPoints() - plugin.playerManager.getPlayerStats(player.getUniqueId()).getStat(PlayerStat.POINTS);
+						player.sendMessage(Translator.getString("RANK_NEXT_RANK", new KeyValuePair("next_rank", next_rank.getName())));
+						player.sendMessage(Translator.getString("RANK_NEXT_RANK_NEEDED_POINTS", new KeyValuePair("needed_points", String.valueOf(needed_points))));
+					}
+
+					player.sendMessage(" ");
+
+					if (args.length == 1) plugin.statsManager.sendRank(player, player.getUniqueId(), player.getName(), PlayerStat.POINTS);
+					else plugin.statsManager.sendRank(player, player.getUniqueId(), player.getName(), args[1]);
+
+					return true;
+					// //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+				} else if (args[0].equalsIgnoreCase("stats")) {
+					plugin.statsManager.sendStats(player, player.getUniqueId(), player.getName());
+					return true;
+					// //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+				} else if (args[0].equalsIgnoreCase("cash") || args[0].equalsIgnoreCase("money")) {
+					plugin.statsManager.sendCash(player, player.getUniqueId(), player.getName());
+					return true;
+					// //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+				} else if (args[0].equalsIgnoreCase("shop")) {
+					// executor
+					return cmdShop.command(sender, args, false);
+					// //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 				}
 			}
+			// //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+			// CONSOLE AND PLAYER
+			if (args[0].equalsIgnoreCase("top")) {
+				if (args.length == 1) plugin.statsManager.sendTop(sender, PlayerStat.POINTS);
+				else plugin.statsManager.sendTop(sender, args[1]);
+				return true;
+				// //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+			} else if (args[0].equalsIgnoreCase("list")) {
+				sender.sendMessage(Translator.getString("PLAYER_OVERVIEW"));
+				for (Lobby l : Lobby.values()) {
+					sender.sendMessage(l.color() + l.name() + " ( " + l.number() + " ):");
+					for (Player p : l.getMembers()) {
+						if (l != Lobby.LOBBY) sender.sendMessage(ChatColor.GRAY + p.getName() + ChatColor.WHITE + " : " + (Lobby.isPlaying(p) ? ((l == Lobby.SPECTATE) ? Translator.getString("SPECTATING") : Translator.getString("PLAYING")) : Translator.getString("WAITING")));
+						if (l == Lobby.LOBBY && Lobby.getTeam(p) == Lobby.LOBBY) sender.sendMessage(ChatColor.GRAY + p.getName() + ChatColor.WHITE + " : " + Translator.getString("NOT_IN_TEAM"));
+					}
+				}
+				return true;
+				// //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+			} else {
+				if (sender instanceof Player) return false;
+				else sender.sendMessage(Translator.getString("COMMAND_UNKNOWN_OR_NOT_CONSOLE"));
+				return true;
+			}
 		}
-		return false;
 	}
 
 	public boolean hasGeneralPerm(CommandSender sender) {
