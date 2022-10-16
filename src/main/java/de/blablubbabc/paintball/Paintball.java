@@ -42,7 +42,6 @@ import de.blablubbabc.paintball.thirdparty.util.Updater;
 import de.blablubbabc.paintball.thirdparty.util.Updater.UpdateType;
 import de.blablubbabc.paintball.utils.Log;
 import de.blablubbabc.paintball.utils.PluginUtils;
-import de.blablubbabc.paintball.utils.Serverlister;
 import de.blablubbabc.paintball.utils.TeleportManager;
 import de.blablubbabc.paintball.utils.Translator;
 import de.blablubbabc.paintball.utils.Utils;
@@ -102,7 +101,6 @@ public class Paintball extends JavaPlugin {
 	public Stats statsManager;
 	public RankManager rankManager;
 	public WeaponManager weaponManager;
-	public Serverlister serverList;
 	public InSignsFeature insignsFeature;
 
 	private VaultRewardsFeature vaultRewardsFeature;
@@ -1148,9 +1146,6 @@ public class Paintball extends JavaPlugin {
 			Log.info("--------- ---------------- ----------");
 		}
 
-		// server list:
-		serverList = new Serverlister(this);
-
 		// InSigns sign changer:
 		Plugin insignsPlugin = getServer().getPluginManager().getPlugin("InSigns");
 		if ((insignsPlugin != null) && insignsPlugin.isEnabled()) {
@@ -1193,7 +1188,6 @@ public class Paintball extends JavaPlugin {
 			private final Paintball plugin = Paintball.this;
 			private final boolean versionCheck = Paintball.this.versionCheck;
 			private final File pluginFile = Paintball.this.getFile();
-			private final Serverlister serverList = Paintball.this.serverList;
 
 			@Override
 			public void run() {
@@ -1257,9 +1251,6 @@ public class Paintball extends JavaPlugin {
 					Log.info("-> enable it in the config.");
 					Log.info("--------- ---------------- ----------");
 				}
-
-				// server list post:
-				serverList.post();
 
 				Utils.runTaskLater(plugin, new Runnable() {
 
