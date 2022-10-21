@@ -6,7 +6,7 @@ plugins {
 	id 'maven-publish'
 }
 
-defaultTasks 'licenseFormat', 'clean', 'build', 'install'
+defaultTasks 'clean', 'build', 'publishToMavenLocal'
 
 eclipse {
 	project {
