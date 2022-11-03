@@ -43,6 +43,7 @@ repositories {
 	maven { url 'https://nexus.hc.to/content/repositories/pub_releases' }
 	// IndividualSigns, NuVotifier
 	maven { url 'https://jitpack.io' }
+	maven { url = 'https://repo.extendedclip.com/content/repositories/placeholderapi/' }
 }
 
 dependencies {
@@ -51,6 +52,7 @@ dependencies {
 	compileOnly 'net.milkbowl.vault:VaultAPI:1.6'
 	compileOnly 'com.github.NuVotifier:NuVotifier:2.7.2'
 	compileOnly 'org.bstats:bstats-bukkit:3.0.0'
+	compileOnly 'me.clip:placeholderapi:2.11.2'
 
 	testImplementation 'org.bukkit:bukkit:1.14.2-R0.1-SNAPSHOT'
 	testImplementation 'junit:junit:4.13.1'

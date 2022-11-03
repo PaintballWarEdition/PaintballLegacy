@@ -6,7 +6,7 @@ description: '${pluginDescription}'
 
 main: de.blablubbabc.paintball.Paintball
 api-version: '1.14'
-softdepend: [InSigns, TagAPI, Votifier, Vault, Multiverse-Core, My Worlds, Transporter, Multiworld, PerWorldInventory]
+softdepend: [InSigns, TagAPI, Votifier, Vault, Multiverse-Core, My Worlds, Transporter, Multiworld, PerWorldInventory, PlaceholderAPI]
 
 commands:
     paintball:
