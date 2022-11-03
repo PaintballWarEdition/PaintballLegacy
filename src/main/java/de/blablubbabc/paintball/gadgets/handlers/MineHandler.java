@@ -133,11 +133,11 @@ public class MineHandler extends WeaponHandler implements Listener {
 
 							@Override
 							public void run() {
-								block.setBlockData(Material.FLOWER_POT.createBlockData());
+								block.setBlockData(getItemType().createBlockData());
 							}
 						}, 1L);
 
-						plantMine(match, player, block, Material.FLOWER_POT, event.getBlockReplacedState(), this.getWeaponOrigin());
+						plantMine(match, player, block, getItemType(), event.getBlockReplacedState(), this.getWeaponOrigin());
 
 						if (itemInHand.getAmount() <= 1) {
 							playerInventory.setItemInMainHand(null);
@@ -399,7 +399,7 @@ public class MineHandler extends WeaponHandler implements Listener {
 						public void run() {
 							ball.dispose(true);
 						}
-					}, (long) Paintball.getInstance().mineTime);
+					}, Paintball.getInstance().mineTime);
 				}
 			}
 
@@ -422,7 +422,7 @@ public class MineHandler extends WeaponHandler implements Listener {
 
 		/**
 		 * Returns the creator of this mine.
-		 * 
+		 *
 		 * @return the creator of the mine
 		 */
 		public Player getOwner() {
