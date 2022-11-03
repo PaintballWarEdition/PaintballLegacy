@@ -35,6 +35,7 @@ import de.blablubbabc.paintball.gadgets.Gift;
 import de.blablubbabc.paintball.gadgets.WeaponManager;
 import de.blablubbabc.paintball.metrics.PluginMetrics;
 import de.blablubbabc.paintball.shop.ShopManager;
+import de.blablubbabc.paintball.thirdparty.PaintballPlaceholders;
 import de.blablubbabc.paintball.thirdparty.util.Updater;
 import de.blablubbabc.paintball.thirdparty.util.Updater.UpdateType;
 import de.blablubbabc.paintball.utils.Log;
@@ -1106,6 +1107,14 @@ public class Paintball extends JavaPlugin {
 			} else {
 				Log.info("Plugin 'Vault' not found. Additional vault-economy-reward features disabled.");
 			}
+		}
+		// PlaceholderAPI
+		Plugin papi = getServer().getPluginManager().getPlugin("PlaceholderAPI");
+		if (papi != null && papi.isEnabled()) {
+		    Log.info("Plugin 'PlaceholderAPI' found. Using it now.");
+		    new PaintballPlaceholders(this).register();
+		} else {
+		    Log.info("Plugin 'PlaceholderAPI' not found. Additional placeholder features disabled.");
 		}
 
 		// after all plugins are enabled:
