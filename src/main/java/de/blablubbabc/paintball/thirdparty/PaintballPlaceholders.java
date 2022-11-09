@@ -17,7 +17,6 @@ public class PaintballPlaceholders extends PlaceholderExpansion {
     private final Paintball pb;
 
     public PaintballPlaceholders(Paintball pb) {
-        // Do not use class variables for managers, they are dropped when paintball reloads
         this.pb = pb;
     }
 
