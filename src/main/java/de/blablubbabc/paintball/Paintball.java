@@ -104,6 +104,7 @@ public class Paintball extends JavaPlugin {
 	public InSignsFeature insignsFeature;
 
 	private VaultRewardsFeature vaultRewardsFeature;
+	private PaintballPlaceholders paintballPlaceholders;
 
 	public boolean active;
 	public boolean happyhour;
@@ -1112,7 +1113,8 @@ public class Paintball extends JavaPlugin {
 		Plugin papi = getServer().getPluginManager().getPlugin("PlaceholderAPI");
 		if (papi != null && papi.isEnabled()) {
 		    Log.info("Plugin 'PlaceholderAPI' found. Using it now.");
-		    new PaintballPlaceholders(this).register();
+		    paintballPlaceholders = new PaintballPlaceholders(this);
+		    paintballPlaceholders.register();
 		} else {
 		    Log.info("Plugin 'PlaceholderAPI' not found. Additional placeholder features disabled.");
 		}
@@ -1226,6 +1228,10 @@ public class Paintball extends JavaPlugin {
 		}
 
 		pluginMetrics.onDisable();
+
+		if (paintballPlaceholders != null) {
+		    paintballPlaceholders.unregister();
+		}
 
 		// wait for async tasks to complete:
 		final long start = System.currentTimeMillis();
