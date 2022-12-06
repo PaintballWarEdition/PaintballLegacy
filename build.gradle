@@ -47,7 +47,7 @@ repositories {
 }
 
 dependencies {
-	compileOnly 'org.bukkit:bukkit:1.14.2-R0.1-SNAPSHOT'
+	compileOnly 'org.spigotmc:spigot-api:1.14.2-R0.1-SNAPSHOT'
 	compileOnly 'com.github.blablubbabc:IndividualSigns:2.7.0'
 	compileOnly 'net.milkbowl.vault:VaultAPI:1.6'
 	compileOnly 'com.github.NuVotifier:NuVotifier:2.7.2'
