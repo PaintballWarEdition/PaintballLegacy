@@ -92,8 +92,8 @@ public class VoteManager {
 			votesPair.setValue(String.valueOf(option.getVotes()));
 			String arenaName = option.getArena();
 			
-			Paintball.getInstance().feeder.text(player, Translator.getString("GAME_VOTE_OPTION", idPair, votesPair, new KeyValuePair("arena", arenaName != null ? arenaName : randomOption)));
-			
+			String message = Translator.getString("GAME_VOTE_OPTION", idPair, votesPair, new KeyValuePair("arena", arenaName != null ? arenaName : randomOption));
+			Paintball.getInstance().feeder.clickableText(player, "/pb vote " + id, message);
 		}
 	}
 	
