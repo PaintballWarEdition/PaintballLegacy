@@ -147,7 +147,8 @@ public class UUIDFetcher {
 								Thread.sleep(30000);
 							}
 						} else {
-							// possibly crucial error.. retrying anyways so the already fetched data isn't wasted in
+							// possibly crucial error.. retrying anyways so the already fetched data
+							// isn't wasted in
 							// case this is only a temporary issue:
 							retry = true;
 							Log.info("Error: " + e.getMessage() + ". Trying again in 30 seconds ...");

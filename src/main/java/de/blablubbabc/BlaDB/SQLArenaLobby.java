@@ -149,10 +149,12 @@ public class SQLArenaLobby {
 							Log.warning("[!!!] The world '" + worldName + "' will now be loaded, or created if it is not existing. If you want to delete or rename a world, make sure to remove all arena and lobby spawns from it first!");
 							world = Paintball.getInstance().getServer().createWorld(new WorldCreator(worldName));
 						}
-						Location loc = new Location(world,
-													rs.getDouble("x"), rs.getDouble("y"),
-													rs.getDouble("z"), rs.getFloat("yaw"),
-													rs.getFloat("pitch"));
+						Location loc = new Location(
+								world,
+								rs.getDouble("x"), rs.getDouble("y"),
+								rs.getDouble("z"), rs.getFloat("yaw"),
+								rs.getFloat("pitch")
+						);
 						locs.add(loc);
 					}
 				}
@@ -483,5 +485,4 @@ public class SQLArenaLobby {
 		int row = addLocation(loc);
 		sql.updateQuery("INSERT OR IGNORE INTO specspawns(arena, location_id) VALUES('" + arena + "','" + row + "');");
 	}
-
 }

@@ -17,6 +17,7 @@ import org.bukkit.entity.Player;
 import org.bukkit.plugin.Plugin;
 
 public class Musician {
+
 	private Plugin plugin;
 	private File path;
 
@@ -30,16 +31,23 @@ public class Musician {
 	public Melody defeat;
 	public Melody draw;
 
-	public Musician(Plugin plugin, String winFile, boolean winNbs, String defeatFile, boolean defeatNbs,
-					String drawFile, boolean drawNbs) {
-		// init
+	public Musician(
+			Plugin plugin,
+			String winFile,
+			boolean winNbs,
+			String defeatFile,
+			boolean defeatNbs,
+			String drawFile,
+			boolean drawNbs
+	) {
 		this.plugin = plugin;
 		success = true;
 		path = new File(plugin.getDataFolder().toString() + "/melodies/");
-		if (!path.exists())
-							path.mkdirs();
+		if (!path.exists()) {
+			path.mkdirs();
+		}
 
-		// defaults
+		// Defaults:
 		if (!writeDefaultMelodyFile("win")) success = false;
 		if (!writeDefaultMelodyFile("defeat")) success = false;
 		if (!writeDefaultMelodyFile("draw")) success = false;
@@ -50,7 +58,6 @@ public class Musician {
 		if (winDef == null || defeatDef == null || drawDef == null) success = false;
 		if (!success) return;
 
-		// speziell
 		if (!winFile.equals("win") || winNbs) {
 			win = loadMelody(winFile, winNbs);
 			if (win == null) {
@@ -87,7 +94,7 @@ public class Musician {
 	}
 
 	public boolean writeDefaultMelodyFile(String fileName) {
-		// defaults
+		// Defaults
 		File def_file = new File(path + "/" + fileName + ".txt");
 		InputStream in = null;
 		OutputStream out = null;
@@ -102,13 +109,11 @@ public class Musician {
 					len = in.read(buffer);
 				}
 			} else {
-				log("ERROR: Couldn't load the default " + fileName
-						+ " melody file from jar!");
+				log("ERROR: Could not load the default " + fileName + " melody file from jar!");
 				return false;
 			}
 		} catch (Exception e) {
-			log("ERROR: Couldn't write the default " + fileName
-					+ " melody file!");
+			log("ERROR: Could not write the default " + fileName + " melody file!");
 			e.printStackTrace();
 			return false;
 		} finally {
@@ -137,21 +142,21 @@ public class Musician {
 			// .txt
 			melodyFile = new File(path + "/" + fileName + ".txt");
 			if (!melodyFile.exists()) {
-				log("ERROR: Couldn't find the specified melody file.");
+				log("ERROR: Could not find the specified melody file.");
 				return null;
 			}
 		} else {
 			// .nbs
 			melodyFile = new File(path + "/" + fileName + ".nbs");
 			if (!melodyFile.exists()) {
-				log("ERROR: Couldn't find the specified melody file.");
+				log("ERROR: Could not find the specified melody file.");
 				return null;
 			}
 		}
 		log("Loading the specified melody now: " + melodyFile.getName());
 		Melody melody = loadMelody(melodyFile, nbs);
 		if (melody == null) {
-			log("ERROR: Couldn't load the specified melody file!");
+			log("ERROR: Could not load the specified melody file!");
 			log("Do you use a valid melody file?");
 			return null;
 		} else return melody;
@@ -177,22 +182,19 @@ public class Musician {
 						if (!note.isEmpty()) {
 							String[] noteData = note.split(":");
 							if (noteData.length != 2) {
-								log("ERROR: Couldn't get the note in line: "
-										+ line);
+								log("ERROR: Could not get the note in line: " + line);
 								return null;
 							}
 							// sound
 							Sound sound = getSound(noteData[0]);
 							if (sound == null) {
-								log("ERROR: Couldn't get the instrument in line: "
-										+ line);
+								log("ERROR: Could not get the instrument in line: " + line);
 								return null;
 							}
 							// note (id between 0-24)
 							Integer id = getNoteId(noteData[1]);
 							if (id == null || id < 0 || id > 24) {
-								log("ERROR: Couldn't get a valid note id in line: "
-										+ line);
+								log("ERROR: Could not get a valid note id in line: " + line);
 								return null;
 							}
 							// delay in ticks (line * 2 ticks):
@@ -205,12 +207,12 @@ public class Musician {
 				log("Scanned .txt melody sucessfully. Lines: " + line);
 				return melody;
 			} catch (Exception e) {
-				log("ERROR: Couldn't load the specified melody file.");
+				log("ERROR: Could not load the specified melody file.");
 				e.printStackTrace();
 				return null;
 			} finally {
 				if (scanner != null)
-									scanner.close();
+										scanner.close();
 			}
 		} else {
 			// ./nbs
@@ -273,13 +275,13 @@ public class Musician {
 						byte inst = scanner.readByte();
 						Sound sound = getSound(inst);
 						if (sound == null) {
-							log("ERROR: Couldn't get a instrument right: " + inst);
+							log("ERROR: Could not get a instrument right: " + inst);
 							return null;
 						}
 						byte key = scanner.readByte();
 						key -= 33;
 						if (key < 0 || key > 24) {
-							log("ERROR: Couldn't get a note right: " + key);
+							log("ERROR: Could not get a note right: " + key);
 							return null;
 						}
 						// System.out.print(sound.toString() + " / " + key +
@@ -291,7 +293,7 @@ public class Musician {
 				log("Scanned .nbt melody sucessfully.");
 				return melodie;
 			} catch (Exception e) {
-				log("ERROR: Couldn't load the specified melody file.");
+				log("ERROR: Could not load the specified melody file.");
 				e.printStackTrace();
 				return null;
 			} finally {

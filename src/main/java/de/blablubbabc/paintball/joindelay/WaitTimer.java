@@ -8,7 +8,6 @@ import org.bukkit.entity.Player;
 
 import de.blablubbabc.paintball.Paintball;
 
-
 public class WaitTimer {
 
 	private Paintball plugin;
@@ -16,19 +15,25 @@ public class WaitTimer {
 	private int time;
 	private final JoinWaitRunnable waitRunnable;
 
-	public WaitTimer(final Paintball plugin, final Player player, long preDelay, long delay, final int times, final JoinWaitRunnable waitRunnable) {
+	public WaitTimer(
+			final Paintball plugin,
+			final Player player,
+			long preDelay,
+			long delay,
+			final int times,
+			final JoinWaitRunnable waitRunnable
+	) {
 		this.plugin = plugin;
 		this.waitRunnable = waitRunnable;
 		time = times;
 		task = plugin.getServer().getScheduler().runTaskTimer(plugin, new Runnable() {
-
 			@Override
 			public void run() {
 				// check if player moved:
 				if (waitRunnable.didPlayerMove(player.getLocation())) {
 					plugin.playerManager.abortingJoinWaiting(player);
 				}
-				
+
 				time--;
 				if (time < 1) {
 					end();
@@ -43,9 +48,9 @@ public class WaitTimer {
 	}
 
 	public boolean isRunning() {
-		return task != -1
-				&& (plugin.getServer().getScheduler().isCurrentlyRunning(task) || plugin
-						.getServer().getScheduler().isQueued(task));
+		if (task == -1) return false;
+		return plugin.getServer().getScheduler().isCurrentlyRunning(task)
+				|| plugin.getServer().getScheduler().isQueued(task);
 	}
 
 	public void end() {
@@ -54,10 +59,9 @@ public class WaitTimer {
 			task = -1;
 		}
 	}
-	
+
 	public void onAbort() {
 		if (waitRunnable != null) waitRunnable.onAborted();
 		end();
 	}
-
 }

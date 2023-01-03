@@ -22,6 +22,7 @@ import de.blablubbabc.paintball.utils.Translator;
 import de.blablubbabc.paintball.utils.Utils;
 
 public class ShopMenu {
+
 	private static final ItemStack nextIcon = new ItemStack(Material.WRITABLE_BOOK);
 	private static final ItemStack prevIcon = new ItemStack(Material.WRITABLE_BOOK);
 	private static final ItemStack pageIcon = new ItemStack(Material.PAPER, 0);

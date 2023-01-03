@@ -65,9 +65,9 @@ import de.blablubbabc.paintball.utils.Sounds;
 import de.blablubbabc.paintball.utils.Translator;
 
 public class EventListener implements Listener {
+
 	private Paintball plugin;
 	private Origin meleeOrigin = new Origin() {
-
 		@Override
 		public String getKillMessage(FragInformations fragInfo) {
 			return Translator.getString("WEAPON_FEED_MELEE", getDefaultVariablesMap(fragInfo));
@@ -344,8 +344,9 @@ public class EventListener implements Listener {
 				ItemStack item = event.getItem();
 				if (item != null && item.getType() != Material.POTION && item.getType() != Material.SPLASH_POTION) {
 					// block placement gets denied separately:
-					// TODO this is meant as temporary hack to fix the issue of the BlockPlaceEvent no longer being
-					// triggered if item usage gets denied, due to some latest change in spigot
+					// TODO this is meant as temporary hack to fix the issue of the BlockPlaceEvent
+					// no longer being triggered if item usage gets denied, due to some latest
+					// change in Spigot
 					if (!item.getType().isBlock() && item.getType() != Material.FLOWER_POT) {
 						event.setUseItemInHand(Result.DENY);
 					}
@@ -353,9 +354,9 @@ public class EventListener implements Listener {
 
 				// ignore off-hand interactions from this point on:
 				if (event.getHand() != EquipmentSlot.HAND) return;
-				// Since MC 1.15 the interact event with action LEFT_CLICK_AIR is called for every arm swing
-				// animation, which occurs in various circumstances now, eg. when dropping items, or right clicking
-				// with interactable item, etc.)
+				// Since MC 1.15 the interact event with action LEFT_CLICK_AIR is called for every
+				// arm swing animation, which occurs in various circumstances now, eg. when dropping
+				// items, or right clicking with interactable item, etc.)
 				if (event.getAction() == Action.LEFT_CLICK_AIR) return;
 
 				if (item != null && plugin.shop && item.isSimilar(plugin.shopManager.item)) {

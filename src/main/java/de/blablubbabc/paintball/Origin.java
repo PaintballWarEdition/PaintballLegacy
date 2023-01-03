@@ -10,11 +10,10 @@ import java.util.Map;
 import de.blablubbabc.paintball.utils.Translator;
 
 public class Origin {
-	
+
 	public Origin() {
-		
 	}
-	
+
 	protected Map<String, String> getDefaultVariablesMap(FragInformations fragInfo) {
 		Map<String, String> vars = new HashMap<String, String>();
 		vars.put("killer", fragInfo.getKiller().getName());
@@ -26,13 +25,11 @@ public class Origin {
 		vars.put("pre_target", fragInfo.getPreTarget());
 		vars.put("after_target", fragInfo.getAfterTarget());
 		vars.put("feed_color", Paintball.getInstance().feeder.getFeedColor());
-		
 		return vars;
 	}
-	
+
 	public String getKillMessage(FragInformations fragInfo) {
 		// return default frag message:
 		return Translator.getString("WEAPON_FEED_DEFAULT", getDefaultVariablesMap(fragInfo));
 	}
-	
 }

@@ -9,10 +9,11 @@ import java.io.IOException;
 import java.io.InputStream;
 
 public final class LittleEndianStream {
+
 	protected final DataInputStream dis;
 	protected final InputStream is;
 	protected final byte[] work;
-	
+
 	public LittleEndianStream(InputStream in) {
 		this.is = in;
 		this.dis = new DataInputStream(in);
@@ -26,7 +27,7 @@ public final class LittleEndianStream {
 	public final int read(byte ba[], int off, int len) throws IOException {
 		return is.read(ba, off, len);
 	}
-	
+
 	public final byte readByte() throws IOException {
 		return dis.readByte();
 	}
@@ -50,13 +51,13 @@ public final class LittleEndianStream {
 		return (short) ((work[1] & 0xff) << 8 | (work[0] & 0xff));
 	}
 
-	public final String readString()
-			throws IOException {
+	public final String readString() throws IOException {
 		int length = readInt();
 		int have = 0;
 		byte[] buffer = new byte[length];
-		while (have < length)
+		while (have < length) {
 			have += read(buffer, have, length - have);
+		}
 		return new String(buffer);
 	}
 }

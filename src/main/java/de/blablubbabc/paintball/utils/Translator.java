@@ -20,6 +20,7 @@ import org.bukkit.plugin.Plugin;
 import de.blablubbabc.paintball.Paintball;
 
 public class Translator {
+
 	public static boolean success = false;
 
 	private static Map<String, String> translation = new HashMap<String, String>();

@@ -40,6 +40,7 @@ import de.blablubbabc.paintball.gadgets.handlers.TurretHandler;
 import de.blablubbabc.paintball.utils.Translator;
 
 public class WeaponManager {
+
 	private Map<String, WeaponHandler> weaponHandlers = new HashMap<String, WeaponHandler>();
 
 	private GiftHandler giftHandler;
@@ -163,7 +164,6 @@ public class WeaponManager {
 		giveWeapon(player, getWeaponHandler(weaponName), amount, updateInventory);
 	}
 
-	@SuppressWarnings("deprecation")
 	public void giveWeapon(Player player, WeaponHandler weapon, int amount, boolean updateInventory) {
 		if (player != null && weapon != null) {
 			while (amount > 0) {
@@ -215,7 +215,7 @@ public class WeaponManager {
 		return ballHandler;
 	}
 
-	// EVENTS //
+	// EVENTS
 
 	public void onInteract(PlayerInteractEvent event, Match match) {
 		for (WeaponHandler weaponHandler : weaponHandlers.values()) {

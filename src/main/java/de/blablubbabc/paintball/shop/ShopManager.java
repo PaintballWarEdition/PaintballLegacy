@@ -70,7 +70,6 @@ public class ShopManager {
 	}
 
 	// return true, if good was successfully bought, else false
-	@SuppressWarnings("deprecation")
 	public boolean handleBuy(Player player, ShopGood good, boolean closeInventory) {
 		if (player == null || good == null) return false;
 

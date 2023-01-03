@@ -9,6 +9,9 @@ import org.bukkit.entity.Player;
 
 public class Sounds {
 
+	private Sounds() {
+	}
+
 	public static void playProtected(Player shooter, Player target) {
 		shooter.playSound(shooter.getEyeLocation(), Sound.BLOCK_ANVIL_LAND, 0.3F, 2F);
 		target.playSound(shooter.getEyeLocation(), Sound.BLOCK_ANVIL_LAND, 0.1F, 0F);

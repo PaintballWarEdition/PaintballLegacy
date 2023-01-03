@@ -135,5 +135,4 @@ public class ShotgunHandler extends WeaponHandler {
 	public void cleanUp(Match match) {
 		// nothing to do here
 	}
-
 }

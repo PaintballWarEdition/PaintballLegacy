@@ -48,7 +48,6 @@ public class AirstrikeHandler extends WeaponHandler {
 
 	public AirstrikeHandler(Material customItemType) {
 		super("Airstrike", customItemType, new Origin() {
-
 			@Override
 			public String getKillMessage(FragInformations fragInfo) {
 				return Translator.getString("WEAPON_FEED_AIRSTRIKE", getDefaultVariablesMap(fragInfo));

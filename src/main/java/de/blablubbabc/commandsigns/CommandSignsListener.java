@@ -33,7 +33,8 @@ public class CommandSignsListener implements Listener {
 
 	@EventHandler(ignoreCancelled = false)
 	public void onSignClick(PlayerInteractEvent event) {
-		// not ignoring off-hand interactions at first, so breaking of command signs gets properly denied:
+		// Not ignoring off-hand interactions at first, so breaking of command signs gets properly
+		// denied:
 		Block block = event.getClickedBlock();
 		if (block == null) return;
 		Material type = block.getType();
@@ -44,35 +45,35 @@ public class CommandSignsListener implements Listener {
 		String line1 = ChatColor.stripColor(sign.getLine(0));
 		if (!line1.equalsIgnoreCase(plugin.commandSignIdentifier)) return;
 
-		// allow breaking (do not cancel):
+		// Allow breaking (do not cancel):
 		Player player = event.getPlayer();
 		if (player.isSneaking() && event.getAction() == Action.LEFT_CLICK_BLOCK && player.hasPermission("paintball.admin")) {
 			return;
 		}
 
-		// canceling interaction will prevent sign breaking:
+		// Canceling interaction will prevent sign breaking:
 		event.setCancelled(true);
 
-		// ignore off-hand interactions from this point on, so no commands get triggered for those:
+		// Ignore off-hand interactions from this point on, so no commands get triggered for those:
 		if (event.getHand() != EquipmentSlot.HAND) return;
 
 		String command = ChatColor.stripColor(sign.getLine(1) + sign.getLine(2) + sign.getLine(3));
-		// ignore command-signs which don't have any command on it
+		// Ignore command-signs which don't have any command on it
 		if (command.isEmpty()) return;
 
 		if (command.startsWith("/")) command = command.substring(1);
 
-		// pb shop sign and normal shop disabled:
+		// PB shop sign and normal shop disabled:
 		if (command.startsWith("pb shop") && !plugin.shop && plugin.commandSignIgnoreShopDisabled) {
 			String[] argsCmd = command.split(" ");
 			String[] args = new String[argsCmd.length - 1];
 			for (int j = 1; j < argsCmd.length; j++) {
 				args[j - 1] = argsCmd[j];
 			}
-			// run shop command and ignore shop inactive:
+			// Run shop command and ignore shop inactive:
 			plugin.commandManager.cmdShop.command(player, args, true);
 		} else {
-			// perform command like normal:
+			// Perform command like normal:
 			String eventCommand = "/" + command;
 			PlayerCommandPreprocessEvent commandEvent = new PlayerCommandPreprocessEvent(player, eventCommand);
 			plugin.getServer().getPluginManager().callEvent(commandEvent);

@@ -31,6 +31,7 @@ import org.bukkit.plugin.Plugin;
 import org.bukkit.util.Vector;
 
 public class Utils {
+
 	public static Random random = new Random();
 	private static HashSet<Material> transparentBlocks = new HashSet<Material>();
 
@@ -105,7 +106,8 @@ public class Utils {
 		for (Plugin plugin : Bukkit.getPluginManager().getPlugins()) {
 			to.showPlayer(plugin, player);
 		}
-		// TODO this might not work if there are unloaded plugins which have hidden the player and for which a reference
+		// TODO this might not work if there are unloaded plugins which have hidden the player and
+		// for which a reference
 		// still exist somewhere
 	}
 
@@ -230,8 +232,6 @@ public class Utils {
 
 	public static void updatePlayerInventoryLater(Plugin plugin, final Player player) {
 		plugin.getServer().getScheduler().runTask(plugin, new Runnable() {
-
-			@SuppressWarnings("deprecation")
 			@Override
 			public void run() {
 				player.updateInventory();

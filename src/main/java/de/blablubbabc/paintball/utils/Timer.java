@@ -24,7 +24,7 @@ public class Timer {
 					if (end != null) end.run();
 					return;
 				}
-				
+
 				if (eachDelay != null) eachDelay.run();
 
 				if (send != null) {
@@ -35,14 +35,11 @@ public class Timer {
 					}
 					if ((time % 30) == 0 && time >= 60) {
 						send.run();
-					}
-					else if ((time % 15) == 0 && time > 20 && time < 60) {
+					} else if ((time % 15) == 0 && time > 20 && time < 60) {
 						send.run();
-					}
-					else if ((time % 10) == 0 && time > 5 && time <= 20) {
+					} else if ((time % 10) == 0 && time > 5 && time <= 20) {
 						send.run();
-					}
-					else if (time < 6 && time > 0) {
+					} else if (time < 6 && time > 0) {
 						send.run();
 					}
 				}
@@ -67,5 +64,4 @@ public class Timer {
 			task = -1;
 		}
 	}
-
 }

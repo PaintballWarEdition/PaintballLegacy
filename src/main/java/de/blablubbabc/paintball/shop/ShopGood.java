@@ -20,12 +20,14 @@ import de.blablubbabc.paintball.utils.Translator;
 import de.blablubbabc.paintball.utils.Utils;
 
 public class ShopGood {
+
 	/*
 	 * - 10-Balls-SNOWBALL-0-10-0
 	 * - 50-Balls-SNOWBALL-0-50-0
 	 * - 100-Balls-SNOWBALL-0-100-0
 	 * - 1-Grenade Mark 2-SLIME_BALL-0-15-1
 	 */
+
 	private String name = "empty";
 	private ItemStack itemstack = null;
 	private int price = 0;
@@ -139,5 +141,4 @@ public class ShopGood {
 	public ItemStack getIcon() {
 		return icon;
 	}
-
 }

@@ -61,7 +61,6 @@ public class SniperHandler extends WeaponHandler {
 		} else {
 			snowball.setVelocity(direction.multiply(speed));
 		}
-
 	}
 
 	@Override

@@ -254,7 +254,8 @@ public class MatchManager {
 
 		// afk detection clean up and consequences:
 		if (plugin.afkDetection) {
-			// clearing players from map which didn't play the during the last match or can't be found
+			// clearing players from map which didn't play the during the last match or can't be
+			// found
 			List<UUID> afkPlayerIds = plugin.afkGetEntries();
 
 			for (UUID afkPlayerId : afkPlayerIds) {

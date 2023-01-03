@@ -20,7 +20,7 @@ public class PluginUtils {
 
 	// Returns true on (potentially partial) success and false on failure.
 	public static boolean loadAllPluginClasses(File pluginJarFile, Predicate<String> filter) {
-		//Log.debug("Loading all plugin classes...");
+		// Log.debug("Loading all plugin classes...");
 		try (ZipInputStream jar = new ZipInputStream(new FileInputStream(pluginJarFile))) {
 			for (ZipEntry entry = jar.getNextEntry(); entry != null; entry = jar.getNextEntry()) {
 				if (entry.isDirectory()) continue;
@@ -29,9 +29,9 @@ public class PluginUtils {
 
 				// Try to load the class:
 				String className = entryName.substring(0, entryName.length() - CLASS_FILE_EXTENSION.length()).replace('/', '.');
-				//Log.debug("  Loading: " + className);
+				// Log.debug(" Loading: " + className);
 				if (!filter.test(className)) {
-					//Log.debug("    Skipped.");
+					// Log.debug(" Skipped.");
 					continue;
 				}
 				try {

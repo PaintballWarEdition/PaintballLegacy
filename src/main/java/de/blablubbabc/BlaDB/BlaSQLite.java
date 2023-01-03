@@ -38,10 +38,10 @@ public class BlaSQLite {
 	public SQLGeneralStats sqlGeneralStats;
 
 	public BlaSQLite(Plugin plugin) {
-		// version 1.3.0:
+		// Version 1.3.0:
 		this.databaseFile = new File(plugin.getDataFolder(), "pbdata_130" + ".db");
 
-		// pre checks:
+		// Pre-checks:
 		File oldDBFile = new File(plugin.getDataFolder(), "pbdata_110" + ".db");
 		if (oldDBFile.exists()) {
 			if (Paintball.getInstance().uuidFirstRun) {
@@ -50,7 +50,7 @@ public class BlaSQLite {
 				Log.info("The next time you restart the server, the old paintball data will get imported into a new database file.", true);
 				Log.info("This process will take some while, in which the server will be unresponsive. You will get status reports in the console.", true);
 
-				// in case the plugin was loaded while the server is running:
+				// In case the plugin was loaded while the server is running:
 				for (Player admin : Bukkit.getOnlinePlayers()) {
 					if (admin.hasPermission("paintball.admin")) {
 						admin.sendMessage(ChatColor.RED + "Important! The next reload of Paintball will start a very slow uuid conversion and data import process.");
@@ -71,15 +71,15 @@ public class BlaSQLite {
 			}
 		}
 
-		// this will create the database file:
+		// This creates the database file:
 		sqlArenaLobby = new SQLArenaLobby(this);
 		sqlPlayers = new SQLPlayers(this);
 		sqlGeneralStats = new SQLGeneralStats(this);
 
-		// import data from old db (version 1.1.0):
+		// Import data from old db (version 1.1.0):
 		if (oldDBFile.exists()) {
 			Log.info("Importing data from old database file 'pbdata_110.db'. This may take a while. Do not abort.");
-			// attach old db:
+			// Attach old db:
 			this.updateQuery("ATTACH '" + oldDBFile.getAbsolutePath() + "' AS oldDB;");
 
 			Log.info("Importing lobby and arenas ...");
@@ -146,7 +146,7 @@ public class BlaSQLite {
 			int counter = 0;
 			List<String> unconverted = new ArrayList<String>();
 
-			// start transaction:
+			// Start transaction:
 			this.updateQuery("BEGIN IMMEDIATE TRANSACTION;");
 			for (String playerName : playerNames) {
 				UUID uuid = localUUIDs.get(playerName);
@@ -158,14 +158,15 @@ public class BlaSQLite {
 					}
 				}
 
-				// import player statistics:
+				// Import player statistics:
 
-				// check if we already have player stats for this player in the new database:
+				// Check if we already have statistics for this player in the new database:
 				Map<PlayerStat, Integer> playerStats = sqlPlayers.getPlayerStats(uuid);
 				if (!playerStats.isEmpty()) {
 					Log.warning("Found multiple names for player '" + playerName + "'. Merging statistics.");
-					// the player has multiple names (for example because he already changed his name)
-					// merging other old stats:
+					// The player has multiple names (for example because they already changed their
+					// name).
+					// Merging other old statistics:
 					Result oldStatsResult = this.resultQuery("SELECT * FROM oldDB.players WHERE name='" + playerName + "' LIMIT 1;");
 					ResultSet oldStatsRS = oldStatsResult.getResultSet();
 					try {
@@ -181,15 +182,16 @@ public class BlaSQLite {
 						oldStatsResult.close();
 					}
 
-					// recalculate certain statistic values:
+					// Recalculate certain statistic values:
 					playerStats.put(PlayerStat.HITQUOTE, Utils.calculateQuote(playerStats.get(PlayerStat.HITS), playerStats.get(PlayerStat.SHOTS)));
 					playerStats.put(PlayerStat.KD, Utils.calculateQuote(playerStats.get(PlayerStat.KILLS), playerStats.get(PlayerStat.DEATHS)));
 
-					// save merged stats:
+					// Save merged stats:
 					sqlPlayers.setPlayerStats(uuid, playerStats);
 
-					// update player name, because of the assumption that the name which was added later to the database,
-					// and is therefore at the end of the playerNames list, is the latest anem for the player:
+					// Update player name, because of the assumption that the name which was added
+					// later to the database, and is therefore at the end of the playerNames list,
+					// is the latest name for the player:
 					this.updateQuery("UPDATE OR IGNORE players SET name='" + playerName + "' WHERE uuid='" + uuid.toString() + "';");
 				} else {
 					// insert old player stats:
@@ -197,27 +199,27 @@ public class BlaSQLite {
 							+ uuid.toString() + "\"," + oldPlayerColumns + " FROM oldDB.players WHERE name='" + playerName + "';");
 				}
 
-				// giving feedback about the progress, and flushing data:
+				// Give feedback about the progress, and flush data:
 				counter++;
 				if ((counter % 1000) == 0) {
 					Log.info("Progress: " + counter);
 				}
 			}
 
-			// commit:
+			// Commit:
 			Log.info("Saving changes to disk...");
 			this.updateQuery("END TRANSACTION;");
 
-			// detach old db:
+			// Detach old db:
 			this.updateQuery("DETACH oldDB;");
 
 			Log.logColored(ChatColor.GREEN + "Done!");
 
-			// rename old db file:
+			// Rename old db file:
 			final File backupDBFile = new File(plugin.getDataFolder(), "pbdata_110-backup" + ".db");
 			oldDBFile.renameTo(backupDBFile);
 
-			// informing about unconverted / not imported data:
+			// Inform about unconverted / not imported data:
 			File unconvertedConfigFile = new File(plugin.getDataFolder(), "unconvertedPlayers.yml");
 			if (unconvertedConfigFile.exists()) {
 				Log.warning("Removing old '" + unconvertedConfigFile.getName() + "' file.");
@@ -265,7 +267,7 @@ public class BlaSQLite {
 	}
 
 	public void pragmas() {
-		// nothing here :(
+		// Nothing currently
 	}
 
 	public boolean initialise() {
@@ -359,12 +361,13 @@ public class BlaSQLite {
 	}
 
 	// ///////////////////////////
-	// PAINTBALL SPEZIFISCHER TEIL
+	// PAINTBALL SPECIFIC
 
 	public void createDefaultTable(String name, String query, String indexOn) {
 		this.updateQuery("CREATE TABLE IF NOT EXISTS " + name + "(" + query + ");");
-		if (indexOn != null)
-							this.updateQuery("CREATE UNIQUE INDEX IF NOT EXISTS " + name + "_" + indexOn + " ON " + name + "(" + indexOn + ");");
+		if (indexOn != null) {
+			this.updateQuery("CREATE UNIQUE INDEX IF NOT EXISTS " + name + "_" + indexOn + " ON " + name + "(" + indexOn + ");");
+		}
 	}
 
 	public void createDefaultTable(String name, HashMap<String, String> content, String indexOn) {
@@ -374,8 +377,7 @@ public class BlaSQLite {
 		}
 		if (query.length() > 2) {
 			query = query.substring(0, query.length() - 2);
-			createDefaultTable(name, query, indexOn);
+			this.createDefaultTable(name, query, indexOn);
 		}
 	}
-
 }

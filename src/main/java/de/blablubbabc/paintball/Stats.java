@@ -36,7 +36,6 @@ public class Stats {
 	public void addGeneralStats(final Map<GeneralStat, Integer> stats) {
 		Paintball.addAsyncTask();
 		Bukkit.getScheduler().runTaskAsynchronously(plugin, new Runnable() {
-
 			@Override
 			public void run() {
 				plugin.sql.sqlGeneralStats.addStats(stats);
@@ -48,7 +47,6 @@ public class Stats {
 	public void matchEndStats(final Map<GeneralStat, Integer> stats, final int playerAmount) {
 		Paintball.addAsyncTask();
 		Bukkit.getScheduler().runTaskAsynchronously(plugin, new Runnable() {
-
 			@Override
 			public void run() {
 				plugin.sql.sqlGeneralStats.addStatsMatchEnd(stats, playerAmount);
@@ -60,7 +58,6 @@ public class Stats {
 	public void setGeneralStats(final Map<GeneralStat, Integer> stats) {
 		Paintball.addAsyncTask();
 		Bukkit.getScheduler().runTaskAsynchronously(plugin, new Runnable() {
-
 			@Override
 			public void run() {
 				plugin.sql.sqlGeneralStats.setStats(stats);
@@ -92,7 +89,6 @@ public class Stats {
 	public void sendTop(final CommandSender sender, final PlayerStat stat) {
 		Paintball.addAsyncTask();
 		Bukkit.getScheduler().runTaskAsynchronously(plugin, new Runnable() {
-
 			@Override
 			public void run() {
 				Map<String, String> vars = new HashMap<String, String>();
@@ -142,7 +138,6 @@ public class Stats {
 	public void sendRank(final CommandSender sender, final UUID playerUUID, final String playerName, final PlayerStat stat) {
 		Paintball.addAsyncTask();
 		Bukkit.getScheduler().runTaskAsynchronously(plugin, new Runnable() {
-
 			@Override
 			public void run() {
 				Map<String, String> vars = new HashMap<String, String>();
@@ -162,7 +157,6 @@ public class Stats {
 	public void sendCash(final CommandSender sender, final UUID playerUUID, final String playerName) {
 		Paintball.addAsyncTask();
 		Bukkit.getScheduler().runTaskAsynchronously(plugin, new Runnable() {
-
 			@Override
 			public void run() {
 				Map<String, String> vars = new HashMap<String, String>();
@@ -197,7 +191,6 @@ public class Stats {
 	public void sendStats(final CommandSender sender, final UUID playerUUID, final String playerName) {
 		Paintball.addAsyncTask();
 		Bukkit.getScheduler().runTaskAsynchronously(plugin, new Runnable() {
-
 			@Override
 			public void run() {
 				Map<String, String> vars = new HashMap<String, String>();
@@ -245,5 +238,4 @@ public class Stats {
 			}
 		});
 	}
-
 }

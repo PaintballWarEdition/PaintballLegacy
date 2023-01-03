@@ -57,8 +57,7 @@ public class CmdAdmin {
 			 * }
 			 */
 			Player player = (Player) sender;
-			// player commands:
-			// //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+			// Player commands:
 			if (args[1].equalsIgnoreCase("lobby")) {
 				if (args.length == 3) {
 					if (args[2].equalsIgnoreCase("spawn")) {
@@ -75,7 +74,6 @@ public class CmdAdmin {
 						return true;
 					}
 				}
-				// //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 			} else if (args[1].equalsIgnoreCase("check")) {
 				List<Entity> entities = player.getWorld().getEntities();
 				player.sendMessage("Entities: " + entities.size());
@@ -87,25 +85,20 @@ public class CmdAdmin {
 				}
 				player.sendMessage("Snowballs: " + snowballs);
 				return true;
-				// //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 			} else if (args[1].equalsIgnoreCase("play")) {
 				if (args.length == 3) {
 					Player p = (Player) sender;
 					if (args[2].equalsIgnoreCase("defeat")) {
 						plugin.musik.playDefeat(p);
 						return true;
-					}
-					else if (args[2].equalsIgnoreCase("win")) {
+					} else if (args[2].equalsIgnoreCase("win")) {
 						plugin.musik.playWin(p);
 						return true;
-					}
-					else if (args[2].equalsIgnoreCase("draw")) {
+					} else if (args[2].equalsIgnoreCase("draw")) {
 						plugin.musik.playDraw(p);
 						return true;
-					}
-					else return false;
+					} else return false;
 				} else return false;
-				// //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 			} else if (args[1].equalsIgnoreCase("set")) {
 				if (args.length == 5) {
 					final String playerName = args[2];
@@ -117,7 +110,7 @@ public class CmdAdmin {
 						@Override
 						protected void onComplete(UUID uuid) {
 							PlayerStats stats = uuid == null ? null : plugin.playerManager.getPlayerStats(uuid);
-							// stats for this player even exist ?
+							// stats for this player even exist?
 							if (stats != null) {
 								PlayerStat stat = PlayerStat.getFromKey(key);
 								if (stat != null) {
@@ -154,7 +147,6 @@ public class CmdAdmin {
 
 					return true;
 				}
-				// //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 			} else if (args[1].equalsIgnoreCase("add")) {
 				if (args.length == 5) {
 					final String playerName = args[2];
@@ -204,11 +196,10 @@ public class CmdAdmin {
 					return true;
 				}
 			}
-			// //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 		}
-		// //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-		// console_AND_player-commands:
-		// //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+		// Console and player-commands:
+
 		if (args[1].equalsIgnoreCase("reset")) {
 			if (args.length == 3 && args[2].equalsIgnoreCase("all")) {
 				sender.sendMessage(Translator.getString("THIS_NEEDS_TIME"));
@@ -245,7 +236,7 @@ public class CmdAdmin {
 						if (stats != null) {
 							// reset the players stats:
 							stats.resetStats();
-							// save asynchron:
+							// save asynchronously:
 							stats.saveAsync();
 							// send messages
 							Map<String, String> vars = new HashMap<String, String>();
@@ -275,7 +266,7 @@ public class CmdAdmin {
 							if (stat != null) {
 								// reset the players stat:
 								stats.setStat(stat, 0);
-								// save asynchron:
+								// save asynchronously:
 								stats.saveAsync();
 								// send messages
 								Map<String, String> vars = new HashMap<String, String>();
@@ -298,7 +289,6 @@ public class CmdAdmin {
 				return true;
 			}
 			// moved add and set up
-			// //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 		} else if (args[1].equalsIgnoreCase("stats")) {
 			if (args.length == 3) {
 				final String playerName = args[2];
@@ -319,7 +309,6 @@ public class CmdAdmin {
 
 				return true;
 			}
-			// //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 		} else if (args[1].equalsIgnoreCase("rank")) {
 			if (args.length >= 3) {
 				final String playerName = args[2];
@@ -332,7 +321,7 @@ public class CmdAdmin {
 
 					@Override
 					protected void onComplete(UUID uuid) {
-						// stats for this player even exist ?
+						// stats for this player even exist?
 						if (uuid != null && plugin.playerManager.exists(uuid)) {
 							if (stat != null) {
 
@@ -349,7 +338,6 @@ public class CmdAdmin {
 
 				return true;
 			}
-			// //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 		} else if (args[1].equalsIgnoreCase("next")) {
 			if (args.length == 3) {
 				String arena = args[2];
@@ -367,7 +355,6 @@ public class CmdAdmin {
 				plugin.feeder.text(sender, Translator.getString("NEXT_ARENA_SET", new KeyValuePair("arena", arena)));
 				return true;
 			}
-			// //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 		} else if (args[1].equalsIgnoreCase("disable")) {
 			String status = "";
 			if (plugin.active) {
@@ -381,16 +368,13 @@ public class CmdAdmin {
 			vars.put("status", status);
 			sender.sendMessage(Translator.getString("PLUGIN_STATUS", vars));
 			return true;
-
-			// //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 		} else if (args[1].equalsIgnoreCase("reload")) {
-			// neue matches verhindern
+			// Prevent new matches
 			plugin.active = false;
 			plugin.reload(sender);
 			return true;
-			// //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 		} else if (args[1].equalsIgnoreCase("softreload")) {
-			// neue matches verhindern
+			// Prevent new matches
 			plugin.active = false;
 			plugin.softreload = true;
 			// message:
@@ -399,7 +383,6 @@ public class CmdAdmin {
 			if (plugin.matchManager.softCheck()) plugin.reload(sender);
 			else sender.sendMessage(Translator.getString("RELOAD_SOON"));
 			return true;
-			// //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 		} else if (args[1].equalsIgnoreCase("random")) {
 			// Toggle only random:
 			if (plugin.onlyRandom) {
@@ -410,7 +393,6 @@ public class CmdAdmin {
 				sender.sendMessage(Translator.getString("ONLY_RANDOM_ON"));
 			}
 			return true;
-			// //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 		} else if (args[1].equalsIgnoreCase("happy")) {
 			if (args.length == 3) {
 				try {
@@ -419,7 +401,7 @@ public class CmdAdmin {
 					// Set happyhour:
 					plugin.happyhour = true;
 					setHappyhour(seconds);
-					// sender nicht in der lobby?
+					// Sender not inside the lobby?
 					if (!(sender instanceof Player) || Lobby.getTeam((Player) sender) == null) {
 						sender.sendMessage(plugin.feeder.happyhour(seconds));
 					}
@@ -430,7 +412,6 @@ public class CmdAdmin {
 				}
 				return true;
 			}
-			// //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 		} else if (args[1].equalsIgnoreCase("gifts") || args[1].equalsIgnoreCase("gift")) {
 			if (args.length == 2 || args.length == 3) {
 				int amount = 1;
@@ -444,7 +425,7 @@ public class CmdAdmin {
 				}
 
 				if (amount > 0) {
-					// sender nicht in der lobby?
+					// Sender not inside the lobby?
 					if (!(sender instanceof Player) || !Lobby.isPlaying((Player) sender)) {
 						sender.sendMessage(Translator.getString("YOU_GAVE_ALL_GIFT"));
 					}
@@ -460,7 +441,6 @@ public class CmdAdmin {
 
 				return true;
 			}
-			// //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 		} else {
 			if (sender instanceof Player) return false;
 			else sender.sendMessage(Translator.getString("COMMAND_UNKNOWN_OR_NOT_CONSOLE"));
@@ -483,13 +463,11 @@ public class CmdAdmin {
 					plugin.feeder.textUntoggled(Translator.getString("HAPPYHOUR_END"));
 					return;
 				}
-				if ((happy % 10) == 0)
-				{
+				if ((happy % 10) == 0) {
 					plugin.feeder.text(plugin.feeder.happyhour(happy));
 				}
 
-				if (happy < 6 && happy > 0)
-				{
+				if (happy < 6 && happy > 0) {
 					// if below 6 message here (regardless of divisibility)
 					plugin.feeder.text(plugin.feeder.happyhour(happy));
 				}

@@ -32,9 +32,11 @@ public abstract class Gadget {
 	}
 
 	/**
-	 * Returns false, if this gadget was already removed from the underlying gadgetManager via the dispose-method
+	 * Returns false, if this gadget was already removed from the underlying gadgetManager via the
+	 * dispose-method
 	 * 
-	 * @return false, if this gadget was already removed from the underlying gadgetManager via the dispose-method
+	 * @return false, if this gadget was already removed from the underlying gadgetManager via the
+	 *         dispose-method
 	 */
 	protected boolean isValid() {
 		return valid;
@@ -61,12 +63,12 @@ public abstract class Gadget {
 	}
 
 	/**
-	 * Used to remove this gadget from the underlying GadgetManager's tracking
-	 * and lets WeaponHandlers handle removal.
+	 * Used to remove this gadget from the underlying GadgetManager's tracking and lets
+	 * WeaponHandlers handle removal.
 	 * 
 	 * @param removeFromGadgetHandlerTracking
-	 *            whether or not to remove this gadget from the underlying
-	 *            GadgetManager. After the first time this method is called the gadgets valid flag is set to false.
+	 *            whether or not to remove this gadget from the underlying GadgetManager. After the
+	 *            first time this method is called the gadgets valid flag is set to false.
 	 */
 	public void dispose(boolean removeFromGadgetHandlerTracking) {
 		if (removeFromGadgetHandlerTracking && valid) {
@@ -74,12 +76,13 @@ public abstract class Gadget {
 			Plugin plugin = Paintball.getInstance();
 			if (plugin.isEnabled()) {
 				// Remove delayed:
-				// This resolves some issue with the order of the ProjectileHitEvent (which cleans up the gadget) and
-				// other events, which also try to check if the involved entity is a gadget, having changed in MC 1.16.
-				// The delayed removal allows those other events, after the ProjectileHitEvent, to check if the entity
-				// is a gadget.
-				// TODO Improve this to not create and schedule a new task for every gadget removal. Maybe use one
-				// cleanup task.
+				// This resolves some issue with the order of the ProjectileHitEvent (which cleans
+				// up the gadget) and other events, which also try to check if the involved entity
+				// is a gadget, having changed in MC 1.16.
+				// The delayed removal allows those other events, after the ProjectileHitEvent, to
+				// check if the entity is a gadget.
+				// TODO Improve this to not create and schedule a new task for every gadget removal.
+				// Maybe use one cleanup task.
 				Bukkit.getScheduler().runTask(plugin, () -> {
 					gadgetManager.removeGadget(match, player.getUniqueId(), this);
 				});

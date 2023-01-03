@@ -129,7 +129,6 @@ public class PlayerStats {
 		if (dirty) {
 			Paintball.addAsyncTask();
 			Bukkit.getScheduler().runTaskAsynchronously(Paintball.getInstance(), new Runnable() {
-
 				@Override
 				public void run() {
 					save();

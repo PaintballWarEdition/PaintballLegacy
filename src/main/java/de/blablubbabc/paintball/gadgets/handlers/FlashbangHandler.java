@@ -221,5 +221,4 @@ public class FlashbangHandler extends WeaponHandler implements Listener {
 		}
 
 	}
-
 }

@@ -341,5 +341,4 @@ public class GadgetManager {
 			return gadgetsRemoved;
 		}
 	}
-
 }

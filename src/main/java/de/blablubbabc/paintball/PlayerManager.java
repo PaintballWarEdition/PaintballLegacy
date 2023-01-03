@@ -43,7 +43,6 @@ public class PlayerManager {
 		this.plugin = plugin;
 
 		Bukkit.getScheduler().runTaskLater(plugin, new Runnable() {
-
 			@Override
 			public void run() {
 				initAllOnlinePlayers();
@@ -405,10 +404,12 @@ public class PlayerManager {
 		if (playerUUID == null) return null;
 		PlayerStats stats = playerStats.get(playerUUID);
 		if (stats == null) {
-			// check if in cache, if not return temporary retrieved PlayerStats or null, if no stats exist (yet) for
+			// check if in cache, if not return temporary retrieved PlayerStats or null, if no stats
+			// exist (yet) for
 			// this player:
 			if (!isPlayerStillLocked(playerUUID)) {
-				// TODO this might currently load the stats synchronously if called for a player outside the lobby
+				// TODO this might currently load the stats synchronously if called for a player
+				// outside the lobby
 				if (exists(playerUUID)) stats = new PlayerStats(playerUUID);
 			} // else: return null
 		}
@@ -417,7 +418,8 @@ public class PlayerManager {
 
 	// METHODS
 	// SETTER
-	// adding all players on plugin start is done sync, because it reduces possible problems and it's a one-time-thing
+	// adding all players on plugin start is done sync, because it reduces possible problems and
+	// it's a one-time-thing
 	// on plugin start only: // TODO maybe do async anyways
 	private void initAllOnlinePlayers() {
 		// locking is not needed, because it's done sync:
@@ -478,7 +480,7 @@ public class PlayerManager {
 						}, 1L);
 					}
 				});
-				
+
 				// done:
 				Paintball.removeAsyncTask();
 			}
@@ -486,8 +488,8 @@ public class PlayerManager {
 	}
 
 	/**
-	 * This method should only be used inside this class and surrounded by locking the player by adding and removing it
-	 * from the playersToAdd list.
+	 * This method should only be used inside this class and surrounded by locking the player by
+	 * adding and removing it from the playersToAdd list.
 	 * 
 	 * @param player
 	 */

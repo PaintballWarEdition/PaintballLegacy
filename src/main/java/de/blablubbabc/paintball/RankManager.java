@@ -170,9 +170,9 @@ public class RankManager {
 		ranks.add(new Rank("General", 25000, ChatColor.GOLD + "[" + ChatColor.RED + "General" + ChatColor.GOLD + "] " + ChatColor.RESET, null, new ItemStack(Material.GOLDEN_CHESTPLATE), null, null));
 		ranks.add(new Rank("Commander", 35000, ChatColor.GOLD + "[" + ChatColor.DARK_RED + "Commander" + ChatColor.GOLD + "] " + ChatColor.RESET, null, new ItemStack(Material.DIAMOND_CHESTPLATE), null, null));
 		ranks.add(new Rank("Master Chief", 50000, ChatColor.GOLD + "[" + ChatColor.DARK_RED + "Master Chief" + ChatColor.GOLD + "] " + ChatColor.RESET, null,
-							Utils.setLeatherArmorColor(new ItemStack(Material.LEATHER_CHESTPLATE), DyeColor.GREEN.getColor()),
-							Utils.setLeatherArmorColor(new ItemStack(Material.LEATHER_LEGGINGS), DyeColor.LIME.getColor()),
-							Utils.setLeatherArmorColor(new ItemStack(Material.LEATHER_BOOTS), DyeColor.GREEN.getColor())));
+				Utils.setLeatherArmorColor(new ItemStack(Material.LEATHER_CHESTPLATE), DyeColor.GREEN.getColor()),
+				Utils.setLeatherArmorColor(new ItemStack(Material.LEATHER_LEGGINGS), DyeColor.LIME.getColor()),
+				Utils.setLeatherArmorColor(new ItemStack(Material.LEATHER_BOOTS), DyeColor.GREEN.getColor())));
 	}
 
 	public Rank getRank(UUID uuid) {
@@ -228,5 +228,4 @@ public class RankManager {
 		index = Math.max(0, Math.min(index, ranks.size() - 1));
 		return ranks.get(index);
 	}
-
 }

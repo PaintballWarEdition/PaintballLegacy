@@ -180,8 +180,14 @@ public class TurretHandler extends WeaponHandler implements Listener {
 		}
 	}
 
-	private void calculateTable(int angleMin, int angleMax, int ticks,
-								int xSize, int ySize, double speedmulti) {
+	private void calculateTable(
+			int angleMin,
+			int angleMax,
+			int ticks,
+			int xSize,
+			int ySize,
+			double speedmulti
+	) {
 		TurretHandler.ySize = ySize;
 
 		// if ySize = 50 -> size = 2*50: y-Size in both directions, up and down:
@@ -226,7 +232,7 @@ public class TurretHandler extends WeaponHandler implements Listener {
 		// 0 Location gets angle 0
 		table[0][ySize] = 0.0D;
 
-		// fill empty squares between max and min angle curve:
+		// Fill empty squares between max and min angle curve:
 		for (int x = 0; x < xSize; x++) {
 			int yMin = 0;
 			int yMax = 2 * ySize - 1;
@@ -247,7 +253,7 @@ public class TurretHandler extends WeaponHandler implements Listener {
 			// Fill empty squares between:
 			for (int y = yMax - 1; y > yMin; y--) {
 				if (table[x][y] == null) {
-					// setze oberen Wert ein
+					// Insert upper value:
 					table[x][y] = table[x][y + 1];
 				}
 			}
@@ -396,8 +402,10 @@ public class TurretHandler extends WeaponHandler implements Listener {
 							shoot();
 						} else {
 							if (!entity.hasLineOfSight(target)
-									|| !canBeShoot(entVec.clone().add(new Vector(0, 2, 0)).add(dir2), targetVec.clone(), dir2.clone()))
-																																		target = null;
+									|| !canBeShoot(entVec.clone().add(new Vector(0, 2, 0)).add(dir2), targetVec.clone(), dir2.clone())) {
+								target = null;
+							}
+
 							salve = Paintball.getInstance().turretSalve;
 							salveTask = -1;
 							tick();
@@ -511,7 +519,5 @@ public class TurretHandler extends WeaponHandler implements Listener {
 			}
 			return aim.setY(tan).normalize().multiply(Paintball.getInstance().speedmulti);
 		}
-
 	}
-
 }

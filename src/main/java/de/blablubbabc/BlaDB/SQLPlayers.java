@@ -243,5 +243,4 @@ public class SQLPlayers {
 		}
 		return topStats;
 	}
-
 }

@@ -12,17 +12,18 @@ import org.bukkit.Location;
 import org.bukkit.World;
 
 public class SoftLocation {
+
 	private String worldName;
 	private double x;
 	private double y;
 	private double z;
 	private float yaw;
 	private float pitch;
-	
+
 	public SoftLocation(Location location) {
 		this(location.getWorld().getName(), location.getX(), location.getY(), location.getZ(), location.getYaw(), location.getPitch());
 	}
-	
+
 	public SoftLocation(String worldName, double x, double y, double z, float yaw, float pitch) {
 		this.worldName = worldName;
 		this.x = x;
@@ -63,13 +64,13 @@ public class SoftLocation {
 	public void setZ(double z) {
 		this.z = z;
 	}
-	
+
 	public Location getBukkitLocation() {
 		World world = Bukkit.getServer().getWorld(worldName);
 		if (world == null) return null;
 		return new Location(world, x, y, z, pitch, yaw);
 	}
-	
+
 	@Override
 	public boolean equals(Object obj) {
 		if (obj == null) {
@@ -99,11 +100,8 @@ public class SoftLocation {
 			return false;
 		}
 		return true;
-
-		
-		//return location.getWorld().getName().equals(worldName) && location.getBlockX() == Location.locToBlock(x) && location.getBlockY() == Location.locToBlock(y) && location.getBlockZ() == Location.locToBlock(z);
 	}
-	
+
 	@Override
 	public int hashCode() {
 		int hash = 3;
@@ -116,14 +114,14 @@ public class SoftLocation {
 		hash = 19 * hash + Float.floatToIntBits(this.pitch);
 		return hash;
 	}
-	
+
 	@Override
 	public String toString() {
 		return worldName + ";" + x + ";" + y + ";" + z + ";" + yaw + ";" + pitch;
 	}
-	
+
 	// statics
-	
+
 	public static List<SoftLocation> getFromStringList(List<String> strings) {
 		List<SoftLocation> softLocs = new ArrayList<SoftLocation>();
 		for (String s : strings) {
@@ -132,7 +130,7 @@ public class SoftLocation {
 		}
 		return softLocs;
 	}
-	
+
 	public static List<String> toStringList(List<SoftLocation> softLocs) {
 		List<String> strings = new ArrayList<String>();
 		for (SoftLocation soft : softLocs) {
@@ -140,12 +138,12 @@ public class SoftLocation {
 		}
 		return strings;
 	}
-	
+
 	public static SoftLocation getFromString(String string) {
 		if (string == null) return null;
 		String[] split = string.split(";");
 		if (split.length != 4 && split.length != 6) return null;
-		
+
 		String worldName = split[0];
 		if (worldName == null) return null;
 		Double x = Utils.parseDouble(split[1]);
@@ -154,8 +152,8 @@ public class SoftLocation {
 		if (y == null) return null;
 		Double z = Utils.parseDouble(split[3]);
 		if (z == null) return null;
-		
-		// optional
+
+		// Optional
 		Float yaw = 0.0F;
 		Float pitch = 0.0F;
 		if (split.length == 6) {
@@ -164,8 +162,7 @@ public class SoftLocation {
 			pitch = Utils.parseFloat(split[5]);
 			if (pitch == null) pitch = 0.0F;
 		}
-		
+
 		return new SoftLocation(worldName, x, y, z, yaw, pitch);
 	}
-	
 }

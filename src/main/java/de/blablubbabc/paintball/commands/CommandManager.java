@@ -20,6 +20,7 @@ import de.blablubbabc.paintball.utils.KeyValuePair;
 import de.blablubbabc.paintball.utils.Translator;
 
 public class CommandManager implements CommandExecutor {
+
 	private Paintball plugin;
 	public CmdArena cmdArena;
 	public CmdAdmin cmdAdmin;
@@ -81,7 +82,6 @@ public class CommandManager implements CommandExecutor {
 				}
 			} else if (sender instanceof Player) {
 				Player player = (Player) sender;
-				// //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 				if (args[0].equalsIgnoreCase("lobby")) {
 					if (Lobby.LOBBY.isMember(player)) {
 						if (Lobby.isPlaying(player)) {
@@ -108,7 +108,6 @@ public class CommandManager implements CommandExecutor {
 						plugin.playerManager.joinLobbyPre(player, true, null);
 						return true;
 					}
-					// //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 				} else if (args[0].equalsIgnoreCase("blue")) {
 					if (plugin.worldMode && !Lobby.LOBBY.isMember(player)) {
 						player.sendMessage(Translator.getString("NO_JOINING_WORLDMODE"));
@@ -116,7 +115,6 @@ public class CommandManager implements CommandExecutor {
 					}
 					plugin.playerManager.joinTeam(player, true, Lobby.BLUE);
 					return true;
-					// //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 				} else if (args[0].equalsIgnoreCase("red")) {
 					if (plugin.worldMode && !Lobby.LOBBY.isMember(player)) {
 						player.sendMessage(Translator.getString("NO_JOINING_WORLDMODE"));
@@ -124,7 +122,6 @@ public class CommandManager implements CommandExecutor {
 					}
 					plugin.playerManager.joinTeam(player, true, Lobby.RED);
 					return true;
-					// //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 				} else if (args[0].equalsIgnoreCase("random") || args[0].equalsIgnoreCase("join")) {
 					if (plugin.worldMode && !Lobby.LOBBY.isMember(player)) {
 						player.sendMessage(Translator.getString("NO_JOINING_WORLDMODE"));
@@ -132,7 +129,6 @@ public class CommandManager implements CommandExecutor {
 					}
 					plugin.playerManager.joinTeam(player, true, Lobby.RANDOM);
 					return true;
-					// //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 				} else if (args[0].equalsIgnoreCase("spec")) {
 					if (plugin.worldMode && !Lobby.LOBBY.isMember(player)) {
 						player.sendMessage(Translator.getString("NO_JOINING_WORLDMODE"));
@@ -140,7 +136,6 @@ public class CommandManager implements CommandExecutor {
 					}
 					plugin.playerManager.joinTeam(player, true, Lobby.SPECTATE);
 					return true;
-					// //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 				} else if (args[0].equalsIgnoreCase("leave") || args[0].equalsIgnoreCase("exit") || args[0].equalsIgnoreCase("quit")) {
 					if (args.length == 2 && args[1].equalsIgnoreCase("team")) {
 						if (!Lobby.LOBBY.isMember(player) || !(Lobby.inTeam(player) || Lobby.SPECTATE.isMember(player))) {
@@ -188,8 +183,6 @@ public class CommandManager implements CommandExecutor {
 						}
 					}
 					return true;
-
-					// //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 				} else if (args[0].equalsIgnoreCase("toggle") || args[0].equalsIgnoreCase("feed")) {
 					if (!Lobby.LOBBY.isMember(player)) {
 						player.sendMessage(Translator.getString("NOT_IN_LOBBY"));
@@ -198,8 +191,6 @@ public class CommandManager implements CommandExecutor {
 					Lobby.toggleFeed(player);
 					player.sendMessage(Translator.getString("TOGGLED_FEED"));
 					return true;
-
-					// //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 				} else if (args[0].equalsIgnoreCase("vote")) {
 					if (!Lobby.LOBBY.isMember(player)) {
 						player.sendMessage(Translator.getString("NOT_IN_LOBBY"));
@@ -217,8 +208,6 @@ public class CommandManager implements CommandExecutor {
 						plugin.matchManager.handleArenaVote(player, args[1]);
 					}
 					return true;
-
-					// //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 				} else if (args[0].equalsIgnoreCase("rank")) {
 					player.sendMessage(Translator.getString("RANK_HEADER"));
 					// send next rank information:
@@ -239,28 +228,23 @@ public class CommandManager implements CommandExecutor {
 					else plugin.statsManager.sendRank(player, player.getUniqueId(), player.getName(), args[1]);
 
 					return true;
-					// //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 				} else if (args[0].equalsIgnoreCase("stats")) {
 					plugin.statsManager.sendStats(player, player.getUniqueId(), player.getName());
 					return true;
-					// //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 				} else if (args[0].equalsIgnoreCase("cash") || args[0].equalsIgnoreCase("money")) {
 					plugin.statsManager.sendCash(player, player.getUniqueId(), player.getName());
 					return true;
-					// //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 				} else if (args[0].equalsIgnoreCase("shop")) {
 					// executor
 					return cmdShop.command(sender, args, false);
-					// //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 				}
 			}
-			// //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
 			// CONSOLE AND PLAYER
 			if (args[0].equalsIgnoreCase("top")) {
 				if (args.length == 1) plugin.statsManager.sendTop(sender, PlayerStat.POINTS);
 				else plugin.statsManager.sendTop(sender, args[1]);
 				return true;
-				// //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 			} else if (args[0].equalsIgnoreCase("list")) {
 				sender.sendMessage(Translator.getString("PLAYER_OVERVIEW"));
 				for (Lobby l : Lobby.values()) {
@@ -376,5 +360,4 @@ public class CommandManager implements CommandExecutor {
 		sender.sendMessage(Translator.getString("COMMAND_ADMIN_PLAY"));
 		sender.sendMessage(Translator.getString("COMMAND_ADMIN_GIFTS"));
 	}
-
 }

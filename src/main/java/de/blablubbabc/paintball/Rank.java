@@ -9,6 +9,7 @@ import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.PlayerInventory;
 
 public class Rank implements Comparable<Rank> {
+
 	private final String name;
 	private final int neededPoints;
 	private final String prefix;
@@ -30,7 +31,6 @@ public class Rank implements Comparable<Rank> {
 		this.boots = boots;
 	}
 
-	@SuppressWarnings("deprecation")
 	public void assignArmorToPlayer(Player player) {
 		if (player != null) {
 			PlayerInventory inv = player.getInventory();

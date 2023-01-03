@@ -33,7 +33,6 @@ public class VoteListener implements Listener {
 		final String playerName = vote.getUsername();
 		if (playerName != null && !playerName.isEmpty()) {
 			plugin.playerManager.lookupPlayerUUIDForName(playerName, new Callback<UUID>() {
-
 				@Override
 				protected void onComplete(UUID uuid) {
 					if (uuid == null) {
@@ -48,6 +47,5 @@ public class VoteListener implements Listener {
 				}
 			});
 		}
-
 	}
 }

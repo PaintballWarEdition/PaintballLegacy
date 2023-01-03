@@ -61,7 +61,7 @@ public class InSignsFeature {
 				}
 			};
 
-			// rank changers:
+			// Rank changers:
 			new SimpleChanger(Paintball.getInstance(), "[PB_R_" + s.toUpperCase() + "]", "paintball.admin") {
 
 				@Override

@@ -17,19 +17,19 @@ import de.blablubbabc.paintball.utils.Log;
 public class VaultRewardsFeature {
 
 	private Economy economy = null;
-	//private Map<String, Double> sessions = new HashMap<String, Double>();
-	
+	// private Map<String, Double> sessions = new HashMap<String, Double>();
+
 	public VaultRewardsFeature(Plugin vaultPlugin) {
 		RegisteredServiceProvider<Economy> rsp = Bukkit.getServer().getServicesManager().getRegistration(Economy.class);
 		if (rsp != null) {
 			economy = rsp.getProvider();
 		}
 	}
-	
+
 	public boolean isEconomyDetected() {
 		return economy != null;
 	}
-	
+
 	// returns current money during this session:
 	/*public double givePlayerMoneyAfterSession(String playerName, double moneyToAdd) {
 		if (economy == null || playerName == null) return 0.0;
@@ -41,7 +41,7 @@ public class VaultRewardsFeature {
 		sessions.put(playerName, current);
 		return current;
 	}*/
-	
+
 	/*public double getSessionMoney(String playerName) {
 		Double current = sessions.get(playerName);
 		return current != null ? current : 0.0;
@@ -51,7 +51,7 @@ public class VaultRewardsFeature {
 		Double current = sessions.remove(playerName);
 		return current != null && givePlayerMoneyInstant(playerName, current);
 	}*/
-	
+
 	// return true if successful
 	public boolean givePlayerMoneyInstant(OfflinePlayer player, double moneyToAdd) {
 		if (economy != null && player != null && moneyToAdd > 0) {

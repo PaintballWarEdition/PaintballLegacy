@@ -87,8 +87,14 @@ public class Match {
 	public Lobby win = null;
 	public Lobby loose = null;
 
-	public Match(	final Paintball plugin, Set<Player> red, Set<Player> blue, Set<Player> spec,
-					Set<Player> random, String arena) {
+	public Match(
+			final Paintball plugin,
+			Set<Player> red,
+			Set<Player> blue,
+			Set<Player> spec,
+			Set<Player> random,
+			String arena
+	) {
 		this.plugin = plugin;
 		this.arena = arena;
 		this.started = false;
@@ -150,7 +156,8 @@ public class Match {
 			PlayerDataStore.clearPlayer(player, true, true);
 			spawnPlayer(player);
 
-			// SCOREBOARD (after spawning/teleporting the player due to compatibility to HealthBar which switches
+			// SCOREBOARD (after spawning/teleporting the player due to compatibility to HealthBar
+			// which switches
 			// scoreboard during world changes)
 			initMatchScoreboard(player);
 		}
@@ -320,7 +327,6 @@ public class Match {
 
 	// SPAWNS
 
-	@SuppressWarnings("deprecation")
 	public synchronized void spawnPlayer(final Player player) {
 		boolean red = false;
 		Location loc;
@@ -379,30 +385,36 @@ public class Match {
 
 		if (setting_balls > 0) {
 			plugin.weaponManager.giveWeapon(player, plugin.weaponManager.getBallHandler(), setting_balls);
-			// player.getInventory().addItem(Paintball.instance.weaponManager.setMeta(new ItemStack(Material.SNOW_BALL,
+			// player.getInventory().addItem(Paintball.instance.weaponManager.setMeta(new
+			// ItemStack(Material.SNOW_BALL,
 			// setting_balls)));
 		} else if (setting_balls == -1) {
 			plugin.weaponManager.giveWeapon(player, plugin.weaponManager.getBallHandler(), 10);
-			// player.getInventory().addItem(Paintball.instance.weaponManager.setMeta(new ItemStack(Material.SNOW_BALL,
+			// player.getInventory().addItem(Paintball.instance.weaponManager.setMeta(new
+			// ItemStack(Material.SNOW_BALL,
 			// 10)));
 		}
 
 		if (setting_grenades > 0) {
 			plugin.weaponManager.giveWeapon(player, plugin.weaponManager.getGrenadeHandler(), setting_grenades);
-			// player.getInventory().addItem(Paintball.instance.weaponManager.setMeta(new ItemStack(Material.EGG,
+			// player.getInventory().addItem(Paintball.instance.weaponManager.setMeta(new
+			// ItemStack(Material.EGG,
 			// setting_grenades)));
 		} else if (setting_grenades == -1) {
 			plugin.weaponManager.giveWeapon(player, plugin.weaponManager.getGrenadeHandler(), 10);
-			// player.getInventory().addItem(Paintball.instance.weaponManager.setMeta(new ItemStack(Material.EGG, 10)));
+			// player.getInventory().addItem(Paintball.instance.weaponManager.setMeta(new
+			// ItemStack(Material.EGG, 10)));
 		}
 
 		if (setting_airstrikes > 0) {
 			plugin.weaponManager.giveWeapon(player, plugin.weaponManager.getAirstrikeHandler(), setting_airstrikes);
-			// player.getInventory().addItem(Paintball.instance.weaponManager.setMeta(new ItemStack(Material.STICK,
+			// player.getInventory().addItem(Paintball.instance.weaponManager.setMeta(new
+			// ItemStack(Material.STICK,
 			// setting_airstrikes)));
 		} else if (setting_airstrikes == -1) {
 			plugin.weaponManager.giveWeapon(player, plugin.weaponManager.getAirstrikeHandler(), 10);
-			// player.getInventory().addItem(Paintball.instance.weaponManager.setMeta(new ItemStack(Material.STICK,
+			// player.getInventory().addItem(Paintball.instance.weaponManager.setMeta(new
+			// ItemStack(Material.STICK,
 			// 10)));
 		}
 
@@ -428,7 +440,8 @@ public class Match {
 			player.sendMessage(Translator.getString("PROTECTION", vars));
 		}
 		// JUST RESPAWNED TIMER
-		// this will not work that accurate like intended, if the player gets killed, while being justRespawned.
+		// this will not work that accurate like intended, if the player gets killed, while being
+		// justRespawned.
 		// For that reason is the timers delay very short.
 		justRespawned.add(playerId);
 		plugin.getServer().getScheduler().scheduleSyncDelayedTask(plugin, new Runnable() {
@@ -508,7 +521,6 @@ public class Match {
 		return justRespawned.contains(playerId);
 	}
 
-	@SuppressWarnings("deprecation")
 	public synchronized void spawnSpec(Player player) {
 		if (spawnSpec > (specspawns.size() - 1)) spawnSpec = 0;
 		TeleportManager.teleport(player, specspawns.get(spawnSpec));
@@ -597,7 +609,8 @@ public class Match {
 	}
 
 	public void updateTags() {
-		// TODO This feature has been removed (TagAPI) and needs to be replaced with a scoreboard based solution.
+		// TODO This feature has been removed (TagAPI) and needs to be replaced with a scoreboard
+		// based solution.
 	}
 
 	public void undoAllColors() {
@@ -1142,5 +1155,4 @@ public class Match {
 	public void resetWeaponStuffEnd() {
 		plugin.weaponManager.cleanUp(this);
 	}
-
 }

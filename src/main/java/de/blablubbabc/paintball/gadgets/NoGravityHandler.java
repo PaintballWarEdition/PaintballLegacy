@@ -19,9 +19,9 @@ public class NoGravityHandler {
 	private int taskID = -1;
 
 	public NoGravityHandler() {
-		
+
 	}
-	
+
 	public void addEntity(Entity entity, Vector velocity, int duration) {
 		entities.put(entity, new NoGravityState(velocity, duration));
 		// start task if needed:
@@ -40,7 +40,7 @@ public class NoGravityHandler {
 
 	public void run() {
 		taskID = Paintball.getInstance().getServer().getScheduler().runTaskTimer(Paintball.getInstance(), new Runnable() {
-			
+
 			@Override
 			public void run() {
 				Iterator<Entry<Entity, NoGravityState>> iterator = entities.entrySet().iterator();
@@ -49,7 +49,7 @@ public class NoGravityHandler {
 					Entity entity = entry.getKey();
 					NoGravityState state = entry.getValue();
 					int duration = state.getDuration();
-					
+
 					if (!entity.isValid() || duration <= 0) {
 						iterator.remove();
 						// stop task if no longer needed:
@@ -65,24 +65,24 @@ public class NoGravityHandler {
 			}
 		}, 0L, 1L).getTaskId();
 	}
-	
+
 	private class NoGravityState {
 		private final Vector velocity;
 		private int duration;
-		
+
 		private NoGravityState(Vector velocity, int duration) {
 			this.velocity = velocity;
 			this.duration = duration;
 		}
-		
+
 		private Vector getVelocity() {
 			return velocity;
 		}
-		
+
 		private int getDuration() {
 			return duration;
 		}
-		
+
 		private void setDuration(int duration) {
 			this.duration = duration;
 		}

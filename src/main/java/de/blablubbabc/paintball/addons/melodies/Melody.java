@@ -6,12 +6,14 @@ package de.blablubbabc.paintball.addons.melodies;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 
 import org.bukkit.entity.Player;
 import org.bukkit.plugin.Plugin;
 
 public class Melody {
-	private ArrayList<Note> melody;
+
+	private List<Note> melody;
 	private long maxDelay;
 	private HashMap<String, Integer> playing;
 

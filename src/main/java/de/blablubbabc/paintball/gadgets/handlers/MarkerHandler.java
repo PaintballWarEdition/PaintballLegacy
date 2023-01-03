@@ -25,8 +25,6 @@ import de.blablubbabc.paintball.Match;
 import de.blablubbabc.paintball.Origin;
 import de.blablubbabc.paintball.Paintball;
 import de.blablubbabc.paintball.gadgets.WeaponHandler;
-import de.blablubbabc.paintball.statistics.player.PlayerStat;
-import de.blablubbabc.paintball.statistics.player.PlayerStats;
 import de.blablubbabc.paintball.utils.Translator;
 import de.blablubbabc.paintball.utils.Utils;
 

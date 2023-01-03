@@ -33,7 +33,6 @@ public class ShopListener implements Listener {
 		shopSign = Translator.getString("SHOP_SIGN");
 	}
 
-	@SuppressWarnings("deprecation")
 	@EventHandler(priority = EventPriority.NORMAL)
 	public void onInventoryClick(InventoryClickEvent event) {
 		if (event.getWhoClicked() instanceof Player) {
@@ -61,7 +60,7 @@ public class ShopListener implements Listener {
 
 	@EventHandler(priority = EventPriority.NORMAL, ignoreCancelled = false)
 	public void onSignClick(PlayerInteractEvent event) {
-		// ignore off-hand interactions:
+		// Ignore off-hand interactions:
 		if (event.getHand() != EquipmentSlot.HAND) return;
 
 		Block block = event.getClickedBlock();

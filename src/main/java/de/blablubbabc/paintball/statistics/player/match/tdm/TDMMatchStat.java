@@ -7,6 +7,7 @@ package de.blablubbabc.paintball.statistics.player.match.tdm;
 import de.blablubbabc.paintball.statistics.player.PlayerStat;
 
 public enum TDMMatchStat {
+
 	POINTS(PlayerStat.POINTS),
 	MONEY(PlayerStat.MONEY),
 	MONEY_SPENT(PlayerStat.MONEY_SPENT),
@@ -19,9 +20,9 @@ public enum TDMMatchStat {
 	TEAMATTACKS(PlayerStat.TEAMATTACKS),
 	GRENADES(PlayerStat.GRENADES),
 	AIRSTRIKES(PlayerStat.AIRSTRIKES);
-	
+
 	private final PlayerStat playerStat;
-	
+
 	private TDMMatchStat(PlayerStat playerStat) {
 		this.playerStat = playerStat;
 	}

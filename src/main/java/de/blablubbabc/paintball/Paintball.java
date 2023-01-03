@@ -225,7 +225,8 @@ public class Paintball extends JavaPlugin {
 	public int wishesDelay;
 
 	// player tags
-	// TODO These are not working currently. This feature (TagAPI) has been removed. THis needs to be replaced with some
+	// TODO These are not working currently. This feature (TagAPI) has been removed. THis needs to
+	// be replaced with some
 	// scoreboard based solution.
 	public boolean tags;
 	public boolean tagsColor;
@@ -1112,11 +1113,11 @@ public class Paintball extends JavaPlugin {
 		// PlaceholderAPI
 		Plugin papi = getServer().getPluginManager().getPlugin("PlaceholderAPI");
 		if (papi != null && papi.isEnabled()) {
-		    Log.info("Plugin 'PlaceholderAPI' found. Using it now.");
-		    paintballPlaceholders = new PaintballPlaceholders(this);
-		    paintballPlaceholders.register();
+			Log.info("Plugin 'PlaceholderAPI' found. Using it now.");
+			paintballPlaceholders = new PaintballPlaceholders(this);
+			paintballPlaceholders.register();
 		} else {
-		    Log.info("Plugin 'PlaceholderAPI' not found. Additional placeholder features disabled.");
+			Log.info("Plugin 'PlaceholderAPI' not found. Additional placeholder features disabled.");
 		}
 
 		// after all plugins are enabled:
@@ -1132,17 +1133,19 @@ public class Paintball extends JavaPlugin {
 				// check for updates:
 				if (versionCheck) {
 					Updater updater = new Updater(plugin, 41489, pluginFile, UpdateType.NO_DOWNLOAD, true);
-					Updater.UpdateResult result = updater.getResult(); // this freezes until the result is available
+					// This bocks until the result is available:
+					Updater.UpdateResult result = updater.getResult();
 					Log.info("--------- Checking version ----------");
 					switch (result) {
 					case SUCCESS:
-						// Success: The updater found an update, and has readied it to be loaded the next time the
-						// server restarts/reloads
+						// Success: The updater found an update, and has readied it to be loaded the
+						// next time the server restarts/reloads
 						Log.info("A new version of paintball was found and downloaded: " + updater.getLatestName() + "(" + updater.getLatestType() + ")", true);
 						Log.info("It should be loaded the next time the server restarts/reloads.");
 						break;
 					case NO_UPDATE:
-						// No Update: The updater did not find an update, and nothing was downloaded.
+						// No Update: The updater did not find an update, and nothing was
+						// downloaded.
 						Log.info("You are running the latest version (or a dev- or compat-build). :)");
 						break;
 					case DISABLED:
@@ -1152,22 +1155,23 @@ public class Paintball extends JavaPlugin {
 						Log.info("-> enable it in plugins/Updater/config.yml");
 						break;
 					case FAIL_DOWNLOAD:
-						// Download Failed: The updater found an update, but was unable to download it.
+						// Download Failed: The updater found an update, but was unable to download
+						// it.
 						Log.warning("Download failed. :(");
 						break;
 					case FAIL_DBO:
-						// dev.bukkit.org Failed: For some reason, the updater was unable to contact DBO to download the
-						// file.
+						// dev.bukkit.org Failed: For some reason, the updater was unable to contact
+						// DBO to download the file.
 						Log.info("Couldn't currently connect to DBO. :(");
 						break;
 					case FAIL_NOVERSION:
-						// No version found: When running the version check, the file on DBO did not contain the a
-						// version in the format 'vVersion' such as 'v1.0'.
+						// No version found: When running the version check, the file on DBO did not
+						// contain the a version in the format 'vVersion' such as 'v1.0'.
 						Log.warning("Bad version string format. Nag blablubbabc about this.. :/");
 						break;
 					case FAIL_BADID:
-						// Bad id: The id provided by the plugin running the updater was invalid and doesn't exist on
-						// DBO.
+						// Bad id: The id provided by the plugin running the updater was invalid and
+						// doesn't exist on DBO.
 						Log.warning("Bad project id. Nag blablubbabc about this.. :/");
 						break;
 					case FAIL_APIKEY:
@@ -1175,10 +1179,11 @@ public class Paintball extends JavaPlugin {
 						Log.warning("Bad API key. Check your updater configuration.");
 						break;
 					case UPDATE_AVAILABLE:
-						// There was an update found, but because you had the UpdateType set to NO_DOWNLOAD, it was not
-						// downloaded.
+						// There was an update found, but because you had the UpdateType set to
+						// NO_DOWNLOAD, it was not downloaded.
 						plugin.needsUpdate = true;
-						Log.info("There is a new version of paintball available: " + updater.getLatestName() + " (" + updater.getLatestType().name() + ")", true);
+						Log.info("There is a new version of paintball available: " + updater.getLatestName()
+								+ " (" + updater.getLatestType().name() + ")", true);
 						Log.info("Download at the bukkit dev page.");
 					}
 					Log.info("--------- ---------------- ----------");
@@ -1230,7 +1235,7 @@ public class Paintball extends JavaPlugin {
 		pluginMetrics.onDisable();
 
 		if (paintballPlaceholders != null) {
-		    paintballPlaceholders.unregister();
+			paintballPlaceholders.unregister();
 		}
 
 		// wait for async tasks to complete:
@@ -1265,7 +1270,8 @@ public class Paintball extends JavaPlugin {
 		this.onEnable();
 		reloadConfig();
 		if (sender != null) {
-			sender.sendMessage(Translator.getString("REALOAD_FINISHED")); // TODO Fix the message key
+			// TODO Fix the message key
+			sender.sendMessage(Translator.getString("REALOAD_FINISHED"));
 		}
 	}
 

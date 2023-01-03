@@ -25,6 +25,7 @@ import de.blablubbabc.paintball.Lobby;
 import de.blablubbabc.paintball.Paintball;
 
 public class TeleportManager implements Listener {
+
 	private static Set<String> teleportRequests = new HashSet<String>();
 
 	// TELEPORT (ANTI-INVISIBLE) FIX
@@ -46,8 +47,8 @@ public class TeleportManager implements Listener {
 				this.handleTeleportFix(player);
 			}
 		} else {
-			// workaround: essentials tpaccept command would otherwise allow players to be teleported out of the
-			// match/lobby
+			// workaround: essentials tpaccept command would otherwise allow players to be
+			// teleported out of the match/lobby
 			// they use TeleportCause.COMMAND, so we can detect this:
 			if (Paintball.getInstance().blockCommandTeleports && event.getCause() == TeleportCause.COMMAND && Lobby.LOBBY.isMember(player)) {
 				event.setCancelled(true);
@@ -57,8 +58,8 @@ public class TeleportManager implements Listener {
 	}
 
 	// TODO Check if this currently is sending unneeded player update stuff on match end and start
-	// TODO this might not work properly during plugin disable, and if the plugin gets disabled before making the
-	// players visible again
+	// TODO this might not work properly during plugin disable, and if the plugin gets disabled
+	// before making the players visible again
 	private void handleTeleportFix(final Player player) {
 		// fix the visibility issue one tick later:
 		Bukkit.getScheduler().runTaskLater(Paintball.getInstance(), new Runnable() {
@@ -83,8 +84,7 @@ public class TeleportManager implements Listener {
 	}
 
 	private void updateEntities(final Player tpedPlayer, final List<Player> players, final boolean visible) {
-		// hide or show every player to tpedPlayer
-		// and hide or show tpedPlayer to every player.
+		// hide or show every player to tpedPlayer and hide or show tpedPlayer to every player.
 		Plugin plugin = Paintball.getInstance();
 		for (Player player : players) {
 			if (!player.isOnline()) continue;
@@ -118,7 +118,8 @@ public class TeleportManager implements Listener {
 		player.leaveVehicle();
 
 		// load the chunk if it isn't already loaded:
-		// TODO check if this is needed, useful (if it helps with the 'falling through block' problem) or not
+		// TODO check if this is needed, useful (if it helps with the 'falling through block'
+		// problem) or not
 		Chunk chunk = location.getChunk();
 		if (!chunk.isLoaded()) {
 			// this shouldn't be reached as getChunk() above already loads the chunk..

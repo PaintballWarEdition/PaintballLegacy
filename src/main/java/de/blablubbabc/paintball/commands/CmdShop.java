@@ -20,6 +20,7 @@ import de.blablubbabc.paintball.utils.Translator;
 import de.blablubbabc.paintball.utils.Utils;
 
 public class CmdShop {
+
 	private Paintball plugin;
 
 	public CmdShop(Paintball pl) {
@@ -57,10 +58,10 @@ public class CmdShop {
 					vars.put("id", String.valueOf(i + 1));
 					vars.put("good", goods[i].getSlot());
 					String msg = Translator.getString("SHOP_ENTRY", vars);
-					// check rank:
+					// Check rank:
 					if (goods[i].getNeededRank() > rank.getRankIndex() && !(admin && plugin.ranksAdminBypassShop)) msg = msg.concat(" " + mark);
-					// if(player.hasPermission("paintball.shop.not"+String.valueOf(i)) && !admin) msg = msg.concat("
-					// "+plugin.red+"X");
+					// if(player.hasPermission("paintball.shop.not"+String.valueOf(i)) && !admin)
+					// msg = msg.concat(""+plugin.red+"X");
 					player.sendMessage(msg);
 				}
 				player.sendMessage("");
@@ -68,9 +69,8 @@ public class CmdShop {
 				player.sendMessage(Translator.getString("SHOP_BUY"));
 				plugin.statsManager.sendCash(player, player.getUniqueId(), player.getName());
 				return true;
-				// //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 			} else if (args.length == 2) {
-				// Kaufen in der lobby w�hrend match aber tot:
+				// Shop is only available while playing (i.e. inside match and not dead)
 				Match match = plugin.matchManager.getMatch(player);
 				if (match != null && match.isSurvivor(player)) {
 					Integer id = Utils.parseInteger(args[1]);
@@ -88,13 +88,10 @@ public class CmdShop {
 					return true;
 				}
 			}
-			// //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 		} else {
 			Log.info(Translator.getString("COMMAND_NOT_AS_CONSOLE"));
 			return true;
 		}
 		return false;
 	}
-
-	// //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 }

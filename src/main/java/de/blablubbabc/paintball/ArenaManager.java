@@ -148,7 +148,8 @@ public class ArenaManager {
 				next = voteManager.getVotedAndReadyArena(readyArenas);
 			}
 
-			// still null -> there must be another ready arena, because this methods gets only called after a check
+			// still null -> there must be another ready arena, because this methods gets only
+			// called after a check
 			if (next == null) {
 				if (plugin.arenaRotationRandom) {
 					// random next arena:
@@ -233,12 +234,9 @@ public class ArenaManager {
 	public void addStats(final String arena, final Map<ArenaStat, Integer> stats) {
 		Paintball.addAsyncTask();
 		Bukkit.getScheduler().runTaskAsynchronously(plugin, new Runnable() {
-
 			@Override
 			public void run() {
 				plugin.sql.sqlArenaLobby.addArenaStats(arena, stats);
-				// statsList.add("rounds"); statsList.add("kills"); statsList.add("shots"); statsList.add("grenades");
-				// statsList.add("airstrikes");
 				Paintball.removeAsyncTask();
 			}
 		});
@@ -247,7 +245,6 @@ public class ArenaManager {
 	public void setStats(final String arena, final Map<ArenaStat, Integer> stats) {
 		Paintball.addAsyncTask();
 		Bukkit.getScheduler().runTaskAsynchronously(plugin, new Runnable() {
-
 			@Override
 			public void run() {
 				plugin.sql.sqlArenaLobby.setArenaStats(arena, stats);
@@ -260,12 +257,9 @@ public class ArenaManager {
 	public void setSettings(final String arena, final Map<ArenaSetting, Integer> settings) {
 		Paintball.addAsyncTask();
 		Bukkit.getScheduler().runTaskAsynchronously(plugin, new Runnable() {
-
 			@Override
 			public void run() {
 				plugin.sql.sqlArenaLobby.setArenaSettings(arena, settings);
-				// settingsList.add("balls"); settingsList.add("grenades"); settingsList.add("airstrikes");
-				// settingsList.add("lives"); settingsList.add("respawns");
 				Paintball.removeAsyncTask();
 			}
 		});

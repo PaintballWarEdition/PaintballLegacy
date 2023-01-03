@@ -5,6 +5,7 @@
 package de.blablubbabc.paintball.statistics.player;
 
 public enum PlayerStat {
+
 	POINTS("points"),
 	MONEY("money"),
 	MONEY_SPENT("money_spent"),
@@ -21,9 +22,9 @@ public enum PlayerStat {
 	DRAWS("draws"),
 	GRENADES("grenades"),
 	AIRSTRIKES("airstrikes");
-	
+
 	private final String key;
-	
+
 	private PlayerStat(String key) {
 		this.key = key;
 	}
@@ -31,16 +32,16 @@ public enum PlayerStat {
 	public String getKey() {
 		return key;
 	}
-	
+
 	public static PlayerStat getFromKey(String key) {
 		for (PlayerStat stat : values()) {
 			if (stat.getKey().equals(key)) return stat;
 		}
 		return null;
 	}
-	
+
 	private static String[] keys = null;
-	
+
 	public static String[] getKeys() {
 		if (keys == null) {
 			keys = new String[values().length];
@@ -50,17 +51,17 @@ public enum PlayerStat {
 		}
 		return keys;
 	}
-	
+
 	public static boolean containsKey(String key) {
 		return getFromKey(key) != null;
 	}
-	
+
 	public static String getKeysAsString() {
 		String string = "";
-		for(String key : getKeys()) {
+		for (String key : getKeys()) {
 			string += key + ", ";
 		}
-		if(string.length() > 1) string = string.substring(0, (string.length() - 2));
+		if (string.length() > 1) string = string.substring(0, (string.length() - 2));
 		return string;
 	}
 }
