@@ -12,9 +12,7 @@ import org.bukkit.entity.Player;
 
 import de.blablubbabc.paintball.utils.KeyValuePair;
 import de.blablubbabc.paintball.utils.Translator;
-import net.md_5.bungee.api.chat.ClickEvent;
-import net.md_5.bungee.api.chat.ClickEvent.Action;
-import net.md_5.bungee.api.chat.TextComponent;
+import de.blablubbabc.paintball.utils.spigot.SpigotUtils;
 
 public class Newsfeeder {
 	private Paintball plugin;
@@ -126,9 +124,7 @@ public class Newsfeeder {
 	
 	public void clickableText(CommandSender sender, String command, String message) {
 		String formatted = Translator.getString("TEXT", new KeyValuePair("plugin", pluginName), new KeyValuePair("message", message));
-		TextComponent component = new TextComponent(TextComponent.fromLegacyText(formatted));
-		component.setClickEvent(new ClickEvent(Action.RUN_COMMAND, command));
-		sender.spigot().sendMessage(component);
+		SpigotUtils.sendClickableText(sender, command, formatted);
 	}
 	
 	public void status(String message) {
