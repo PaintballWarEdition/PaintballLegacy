@@ -85,10 +85,6 @@ public class MarkerHandler extends WeaponHandler {
 				Paintball.getInstance().weaponManager.getBallHandler().createBall(match, player, snowball, this.getWeaponOrigin());
 				// BOOST:
 				snowball.setVelocity(direction.multiply(Paintball.getInstance().speedmulti));
-				// STATS
-				// PLAYERSTATS
-				PlayerStats playerStats = Paintball.getInstance().playerManager.getPlayerStats(player.getUniqueId());
-				playerStats.addStat(PlayerStat.SHOTS, 1);
 				// INFORM MATCH
 				match.onShot(player);
 
