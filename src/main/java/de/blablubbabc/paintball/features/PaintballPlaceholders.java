@@ -1,4 +1,8 @@
-package de.blablubbabc.paintball.thirdparty;
+/**
+ * Copyright (c) blablubbabc <http://www.blablubbabc.de>
+ * All rights reserved.
+ */
+package de.blablubbabc.paintball.features;
 
 import org.bukkit.entity.Player;
 
