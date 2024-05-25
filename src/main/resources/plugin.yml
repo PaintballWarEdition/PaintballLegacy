@@ -5,12 +5,14 @@ website: '${dboUrl}'
 description: '${pluginDescription}'
 
 main: de.blablubbabc.paintball.Paintball
-api-version: '1.14'
-softdepend: [InSigns, TagAPI, Votifier, Vault, Multiverse-Core, My Worlds, Transporter, Multiworld, PerWorldInventory, PlaceholderAPI]
+api-version: '1.20.6'
+
+# Load after world management plugins and soft dependencies:
+softdepend: [InSigns, Votifier, Vault, Multiverse-Core, My Worlds, Transporter, Multiworld, PerWorldInventory, PlaceholderAPI]
 
 commands:
     paintball:
-      description: 'Base paintball commands.'
+      description: 'Paintball base command.'
       aliases: [pb]
       usage: '/<command>'
 

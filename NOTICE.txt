@@ -1,4 +1,4 @@
-This program includes or uses the following (partially optional) third-party software components:
+This program uses the following third-party software components:
 
 - Bukkit / Spigot
     http://bukkit.org/
@@ -10,5 +10,3 @@ This program includes or uses the following (partially optional) third-party sof
 - Votifier / NuVotifier
     http://dev.bukkit.org/projects/votifier/
     https://github.com/NuVotifier/NuVotifier
-- TagAPI by mbaxter
-    http://dev.bukkit.org/projects/tag/

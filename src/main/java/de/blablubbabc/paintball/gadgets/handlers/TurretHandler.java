@@ -145,7 +145,7 @@ public class TurretHandler extends WeaponHandler implements Listener {
 
 						Location spawnLoc = block.getLocation();
 						nextTurretSpawn = spawnLoc;
-						Snowman snowman = (Snowman) block.getLocation().getWorld().spawnEntity(spawnLoc, EntityType.SNOWMAN);
+						Snowman snowman = (Snowman) block.getLocation().getWorld().spawnEntity(spawnLoc, EntityType.SNOW_GOLEM);
 						nextTurretSpawn = null;
 						new Turret(gadgetManager, match, player, snowman, this.getWeaponOrigin());
 

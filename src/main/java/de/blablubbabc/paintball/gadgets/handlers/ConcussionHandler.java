@@ -189,8 +189,8 @@ public class ConcussionHandler extends WeaponHandler implements Listener {
 							Player p = (Player) e;
 							Match m = Paintball.getInstance().matchManager.getMatch(p);
 							if (match == m && match.enemys(player, p)) {
-								p.addPotionEffect(new PotionEffect(PotionEffectType.SLOW, 20 * Paintball.getInstance().concussionSlownessDuration, 3), true);
-								p.addPotionEffect(new PotionEffect(PotionEffectType.CONFUSION, 20 * Paintball.getInstance().concussionConfusionDuration, 3), true);
+								p.addPotionEffect(new PotionEffect(PotionEffectType.SLOWNESS, 20 * Paintball.getInstance().concussionSlownessDuration, 3), true);
+								p.addPotionEffect(new PotionEffect(PotionEffectType.NAUSEA, 20 * Paintball.getInstance().concussionConfusionDuration, 3), true);
 								p.addPotionEffect(new PotionEffect(PotionEffectType.BLINDNESS, 20 * Paintball.getInstance().concussionBlindnessDuration, 3), true);
 							}
 
