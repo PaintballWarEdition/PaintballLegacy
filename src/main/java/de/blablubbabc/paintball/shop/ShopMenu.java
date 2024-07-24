@@ -25,7 +25,7 @@ public class ShopMenu {
 
 	private static final ItemStack nextIcon = new ItemStack(Material.WRITABLE_BOOK);
 	private static final ItemStack prevIcon = new ItemStack(Material.WRITABLE_BOOK);
-	private static final ItemStack pageIcon = new ItemStack(Material.PAPER, 0);
+	private static final ItemStack pageIcon = new ItemStack(Material.PAPER, 1);
 
 	private final Paintball plugin;
 	private final ShopGood[] goods;
