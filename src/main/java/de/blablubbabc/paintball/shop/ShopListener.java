@@ -10,6 +10,8 @@ import org.bukkit.ChatColor;
 import org.bukkit.block.Block;
 import org.bukkit.block.BlockState;
 import org.bukkit.block.Sign;
+import org.bukkit.block.sign.Side;
+import org.bukkit.block.sign.SignSide;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
@@ -68,7 +70,8 @@ public class ShopListener implements Listener {
 			BlockState state = block.getState();
 			if (state instanceof Sign) {
 				Sign sign = (Sign) state;
-				String line1 = ChatColor.stripColor(sign.getLine(0));
+				SignSide signFront = sign.getSide(Side.FRONT);
+				String line1 = ChatColor.stripColor(signFront.getLine(0));
 				if (line1.equalsIgnoreCase(shopSign)) {
 					plugin.shopManager.getShopMenu().open(event.getPlayer());
 				}

@@ -424,8 +424,7 @@ public class Paintball extends JavaPlugin {
 		blacklistedCommands.add("/tp {player} {args}");
 		blacklistedCommands.add("/tphere {player}");
 
-		getConfig().options()
-				.header("Use a value of -1 to give the players infinite balls or extras. If you insert a not possible value/wrong value in a section the plugin will use the default value or the nearest possible value (Example: your value at section balls: -3 -> plugin will use -1). 1 Tick = 1/20 seconds.");
+		getConfig().options().setHeader(Arrays.asList("Use a value of -1 to give the players infinite balls or extras. If you insert a not possible value/wrong value in a section the plugin will use the default value or the nearest possible value (Example: your value at section balls: -3 -> plugin will use -1). 1 Tick = 1/20 seconds."));
 		if (getConfig().get("Server.Version Check") == null) getConfig().set("Server.Version Check", true);
 		if (getConfig().get("Server.Metrics") == null) getConfig().set("Server.Metrics", true);
 		if (getConfig().get("Paintball.AFK Detection.enabled") == null) getConfig().set("Paintball.AFK Detection.enabled", true);

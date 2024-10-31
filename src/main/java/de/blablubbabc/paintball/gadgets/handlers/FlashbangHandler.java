@@ -190,9 +190,9 @@ public class FlashbangHandler extends WeaponHandler implements Listener {
 							Player p = (Player) e;
 							Match m = Paintball.getInstance().matchManager.getMatch(p);
 							if (match == m && match.enemys(player, p)) {
-								p.addPotionEffect(new PotionEffect(PotionEffectType.SLOWNESS, 20 * Paintball.getInstance().flashSlownessDuration, 3), true);
-								p.addPotionEffect(new PotionEffect(PotionEffectType.NAUSEA, 20 * Paintball.getInstance().flashConfusionDuration, 3), true);
-								p.addPotionEffect(new PotionEffect(PotionEffectType.BLINDNESS, 20 * Paintball.getInstance().flashBlindnessDuration, 3), true);
+								p.addPotionEffect(new PotionEffect(PotionEffectType.SLOWNESS, 20 * Paintball.getInstance().flashSlownessDuration, 3));
+								p.addPotionEffect(new PotionEffect(PotionEffectType.NAUSEA, 20 * Paintball.getInstance().flashConfusionDuration, 3));
+								p.addPotionEffect(new PotionEffect(PotionEffectType.BLINDNESS, 20 * Paintball.getInstance().flashBlindnessDuration, 3));
 							}
 
 						}

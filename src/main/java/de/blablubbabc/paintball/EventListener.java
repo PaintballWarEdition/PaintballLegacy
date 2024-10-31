@@ -18,6 +18,8 @@ import org.bukkit.Material;
 import org.bukkit.block.Block;
 import org.bukkit.block.BlockState;
 import org.bukkit.block.Sign;
+import org.bukkit.block.sign.Side;
+import org.bukkit.block.sign.SignSide;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.EntityType;
 import org.bukkit.entity.LivingEntity;
@@ -57,6 +59,8 @@ import org.bukkit.event.player.PlayerToggleSneakEvent;
 import org.bukkit.inventory.EquipmentSlot;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.PlayerInventory;
+import org.bukkit.inventory.meta.Damageable;
+import org.bukkit.inventory.meta.ItemMeta;
 
 import de.blablubbabc.paintball.statistics.player.PlayerStat;
 import de.blablubbabc.paintball.statistics.player.PlayerStats;
@@ -163,7 +167,8 @@ public class EventListener implements Listener {
 			BlockState state = block.getState();
 			if (state instanceof Sign) {
 				Sign sign = (Sign) state;
-				String l = ChatColor.stripColor(sign.getLine(0));
+				SignSide signFront = sign.getSide(Side.FRONT);
+				String l = ChatColor.stripColor(signFront.getLine(0));
 
 				if (l.startsWith("[PB ")) {
 					if (l.equalsIgnoreCase("[PB RANK]")) {
@@ -212,9 +217,10 @@ public class EventListener implements Listener {
 				} else {
 					vars.put("value", Translator.getString("NOT_FOUND"));
 				}
-				sign.setLine(1, Translator.getString("SIGN_LINE_TWO", vars));
-				sign.setLine(2, Translator.getString("SIGN_LINE_THREE", vars));
-				sign.setLine(3, Translator.getString("SIGN_LINE_FOUR", vars));
+				SignSide signFront = sign.getSide(Side.FRONT);
+				signFront.setLine(1, Translator.getString("SIGN_LINE_TWO", vars));
+				signFront.setLine(2, Translator.getString("SIGN_LINE_THREE", vars));
+				signFront.setLine(3, Translator.getString("SIGN_LINE_FOUR", vars));
 				sign.update();
 				lastSignUpdate = System.currentTimeMillis();
 			}
@@ -440,8 +446,13 @@ public class EventListener implements Listener {
 							ItemStack[] armor = inventory.getArmorContents();
 
 							for (int i = 0; i < armor.length; i++) {
-								if (armor[i] != null) {
-									armor[i].setDurability((short) 0);
+								ItemStack armorItem = armor[i];
+								if (armorItem == null) continue;
+
+								ItemMeta armorMeta = armorItem.getItemMeta();
+								if (armorMeta instanceof Damageable) {
+									((Damageable) armorMeta).setDamage(0);
+									armorItem.setItemMeta(armorMeta);
 								}
 							}
 

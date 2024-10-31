@@ -22,6 +22,7 @@ import org.bukkit.Material;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.LeatherArmorMeta;
+import org.bukkit.scoreboard.Criteria;
 import org.bukkit.scoreboard.DisplaySlot;
 import org.bukkit.scoreboard.Objective;
 import org.bukkit.scoreboard.Score;
@@ -466,7 +467,7 @@ public class Match {
 
 			String header = Translator.getString("SCOREBOARD_MATCH_HEADER", new KeyValuePair("round_time", "0:00"));
 			if (header.length() > 32) header = header.substring(0, 32);
-			Objective objective = matchBoard.registerNewObjective("pbMatch", "dummy", header);
+			Objective objective = matchBoard.registerNewObjective("pbMatch", Criteria.DUMMY, header);
 			objective.setDisplaySlot(DisplaySlot.SIDEBAR);
 			updateMatchScoreboard(playerId);
 			player.setScoreboard(matchBoard);

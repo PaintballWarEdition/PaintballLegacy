@@ -107,8 +107,7 @@ public class Utils {
 			to.showPlayer(plugin, player);
 		}
 		// TODO this might not work if there are unloaded plugins which have hidden the player and
-		// for which a reference
-		// still exist somewhere
+		// for which a reference still exist somewhere
 	}
 
 	public static boolean isSign(Material material) {

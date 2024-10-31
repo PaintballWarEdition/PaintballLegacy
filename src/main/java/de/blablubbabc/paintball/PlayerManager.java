@@ -18,6 +18,7 @@ import org.bukkit.Location;
 import org.bukkit.OfflinePlayer;
 import org.bukkit.attribute.Attribute;
 import org.bukkit.entity.Player;
+import org.bukkit.scoreboard.Criteria;
 import org.bukkit.scoreboard.DisplaySlot;
 import org.bukkit.scoreboard.Objective;
 import org.bukkit.scoreboard.Score;
@@ -260,7 +261,7 @@ public class PlayerManager {
 
 			String header = Translator.getString("SCOREBOARD_LOBBY_HEADER");
 			if (header.length() > 32) header = header.substring(0, 32);
-			Objective objective = lobbyBoard.registerNewObjective("pbLobby", "dummy", header);
+			Objective objective = lobbyBoard.registerNewObjective("pbLobby", Criteria.DUMMY, header);
 			objective.setDisplaySlot(DisplaySlot.SIDEBAR);
 		}
 

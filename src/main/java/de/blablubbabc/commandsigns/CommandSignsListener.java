@@ -9,6 +9,8 @@ import org.bukkit.Material;
 import org.bukkit.block.Block;
 import org.bukkit.block.BlockState;
 import org.bukkit.block.Sign;
+import org.bukkit.block.sign.Side;
+import org.bukkit.block.sign.SignSide;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
@@ -42,7 +44,8 @@ public class CommandSignsListener implements Listener {
 
 		BlockState state = block.getState();
 		Sign sign = (Sign) state;
-		String line1 = ChatColor.stripColor(sign.getLine(0));
+		SignSide signFront = sign.getSide(Side.FRONT);
+		String line1 = ChatColor.stripColor(signFront.getLine(0));
 		if (!line1.equalsIgnoreCase(plugin.commandSignIdentifier)) return;
 
 		// Allow breaking (do not cancel):
@@ -57,7 +60,7 @@ public class CommandSignsListener implements Listener {
 		// Ignore off-hand interactions from this point on, so no commands get triggered for those:
 		if (event.getHand() != EquipmentSlot.HAND) return;
 
-		String command = ChatColor.stripColor(sign.getLine(1) + sign.getLine(2) + sign.getLine(3));
+		String command = ChatColor.stripColor(signFront.getLine(1) + signFront.getLine(2) + signFront.getLine(3));
 		// Ignore command-signs which don't have any command on it
 		if (command.isEmpty()) return;
 

@@ -19,7 +19,6 @@ import org.bukkit.attribute.AttributeInstance;
 import org.bukkit.attribute.AttributeModifier;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
-import org.bukkit.event.entity.EntityDamageEvent;
 import org.bukkit.inventory.EntityEquipment;
 import org.bukkit.inventory.EquipmentSlot;
 import org.bukkit.inventory.ItemStack;
@@ -62,7 +61,6 @@ public class PlayerDataStore {
 	private float fallDistance;
 	private GameMode gamemode;
 	private double lastDamage;
-	private EntityDamageEvent lastDamageCause;
 	// Level / exp
 	private int level;
 	private float exp;
@@ -139,7 +137,6 @@ public class PlayerDataStore {
 		noDamageTicks = player.getNoDamageTicks();
 		fallDistance = player.getFallDistance();
 		lastDamage = player.getLastDamage();
-		lastDamageCause = player.getLastDamageCause();
 		// vehicle
 		// Level / exp
 		level = player.getLevel();
@@ -198,7 +195,6 @@ public class PlayerDataStore {
 		player.setNoDamageTicks(noDamageTicks);
 		player.setFallDistance(fallDistance);
 		player.setLastDamage(lastDamage);
-		player.setLastDamageCause(lastDamageCause);
 		// Level / exp
 		player.setLevel(level);
 		player.setExp(exp);
