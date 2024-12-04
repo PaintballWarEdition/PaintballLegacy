@@ -6,7 +6,7 @@ package de.blablubbabc.paintball;
 
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.EnumMap;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
@@ -43,7 +43,7 @@ public class PlayerDataStore {
 	// PotionEffects
 	private List<PotionEffect> potionEffects = new ArrayList<PotionEffect>();
 	// attributes:
-	private Map<Attribute, Double> attributeBaseValues = new EnumMap<>(Attribute.class);
+	private Map<Attribute, Double> attributeBaseValues = new HashMap<>();
 	// Flying
 	private boolean allowFlight;
 	private boolean isFlying;
