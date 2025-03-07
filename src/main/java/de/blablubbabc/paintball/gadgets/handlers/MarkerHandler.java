@@ -53,6 +53,7 @@ public class MarkerHandler extends WeaponHandler {
 	protected ItemStack setItemMeta(ItemStack itemStack) {
 		ItemMeta meta = itemStack.getItemMeta();
 		meta.setDisplayName(Translator.getString("WEAPON_PAINTBALL"));
+		meta.setMaxStackSize(64);
 		itemStack.setItemMeta(meta);
 		return itemStack;
 	}
