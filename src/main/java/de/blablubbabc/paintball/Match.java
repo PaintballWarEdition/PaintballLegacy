@@ -27,6 +27,9 @@ import org.bukkit.scoreboard.DisplaySlot;
 import org.bukkit.scoreboard.Objective;
 import org.bukkit.scoreboard.Score;
 import org.bukkit.scoreboard.Scoreboard;
+import org.bukkit.scoreboard.Team;
+import org.bukkit.scoreboard.Team.Option;
+import org.bukkit.scoreboard.Team.OptionStatus;
 
 import de.blablubbabc.paintball.statistics.arena.ArenaSetting;
 import de.blablubbabc.paintball.statistics.player.PlayerStat;
@@ -158,8 +161,7 @@ public class Match {
 			spawnPlayer(player);
 
 			// SCOREBOARD (after spawning/teleporting the player due to compatibility to HealthBar
-			// which switches
-			// scoreboard during world changes)
+			// which switches scoreboard during world changes)
 			initMatchScoreboard(player);
 		}
 
@@ -470,6 +472,37 @@ public class Match {
 			Objective objective = matchBoard.registerNewObjective("pbMatch", Criteria.DUMMY, header);
 			objective.setDisplaySlot(DisplaySlot.SIDEBAR);
 			updateMatchScoreboard(playerId);
+
+			// Setup teams:
+			if (plugin.tags) {
+				Team redTeam = matchBoard.registerNewTeam(Lobby.RED.getName());
+				redT.forEach(p -> redTeam.addEntry(p.getName()));
+
+				Team blueTeam = matchBoard.registerNewTeam(Lobby.BLUE.getName());
+				blueT.forEach(p -> blueTeam.addEntry(p.getName()));
+
+				if (plugin.tagsColor) {
+					redTeam.setColor(Lobby.RED.color());
+					blueTeam.setColor(Lobby.BLUE.color());
+				}
+
+				if (plugin.tagsInvis) {
+					redTeam.setOption(Option.NAME_TAG_VISIBILITY, OptionStatus.FOR_OTHER_TEAMS);
+					blueTeam.setOption(Option.NAME_TAG_VISIBILITY, OptionStatus.FOR_OTHER_TEAMS);
+				}
+
+				if (plugin.tagsRemainingInvis) {
+					Team othersTeam = matchBoard.registerNewTeam("others");
+					// TODO Dynamically react to players entering/leaving the server
+					Bukkit.getOnlinePlayers().forEach(p -> {
+						if (!bothTeams.contains(p)) {
+							othersTeam.addEntry(p.getName());
+						}
+					});
+					othersTeam.setOption(Option.NAME_TAG_VISIBILITY, OptionStatus.FOR_OTHER_TEAMS);
+				}
+			}
+
 			player.setScoreboard(matchBoard);
 		} else {
 			// assign default server scoreboard instead then:

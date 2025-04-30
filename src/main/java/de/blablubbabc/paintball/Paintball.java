@@ -225,9 +225,6 @@ public class Paintball extends JavaPlugin {
 	public int wishesDelay;
 
 	// player tags
-	// TODO These are not working currently. This feature (TagAPI) has been removed. THis needs to
-	// be replaced with some
-	// scoreboard based solution.
 	public boolean tags;
 	public boolean tagsColor;
 	public boolean tagsInvis;
